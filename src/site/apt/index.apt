@@ -21,7 +21,7 @@ Overview
 
 *Example application
 
-	To get a better idea how this all fits together, check out the example {{{phone-directory.html}Phone Directory source code}}, then {{{/directory/app}see it in action}}.
+	To get a better idea how this all fits together, check out the example {{{phone-directory.html}Phone Directory source code}}, then {{{/directory/app?bookmarkablePage=example.ListAndEdit}see it in action}}.
 
 *Getting started (and getting finished)
 

@@ -8,7 +8,9 @@ Phone directory example
 
 *Description
 
-	This is a small Web application for managing a list of names and phone numbers. Its entire source appears below, excluding package and import statements. After you’ve skimmed through it, see what the program looks like {{{/directory/app} in action}}, and don’t be afraid to add, edit, and delete!
+	This is a small Web application for managing a list of names and phone numbers. Its entire source appears below, excluding package and import statements. You can also {{{/releases/directory-.1.tar.gz}download}} it as a Maven 2 project.
+	
+	After you’ve skimmed through the source, see what the program looks like {{{/directory/app?bookmarkablePage=example.ListAndEdit} in action}}, and don’t be afraid to add, edit, and delete!
 	
 *DirectoryApplication.java
 
