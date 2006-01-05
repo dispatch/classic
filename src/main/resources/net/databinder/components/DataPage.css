@@ -1,0 +1,43 @@
+/* Appearance consistent with Wicket's default error pages. */
+
+body {
+	font-family: 'Lucida Grande', 'Lucida Sans', 'Helvetica', 'Sans-serif', 'sans';
+	font-size: 9pt;
+	line-height: 1.8em;
+	color: #6F6F6F;
+}
+h1,h2,h3,h4,h5,h6,h7,h8 {
+	color: #E9601A;
+}
+h1 {
+	font-size : 1.5em;
+}
+h2 {
+	font-size : 1.4em;
+}
+h3 {
+	font-size : 1.3em;
+}
+h4 {
+	font-size : 1.2em;
+}
+pre, table, td { 
+	font-family : 'MS Trebuchet', 'Verdana', Arial, Helvetica; font-size : 10pt; line-height:1.2em;
+}
+label {
+	float: left;
+	clear: left;
+	width: 9em;
+}
+.feedback ul {
+	border: solid 2px #E9601A;
+	width: 35em;
+	color: black;
+}
+tr.b {
+	background: #F5F5F5;
+}
+
+tr.a {
+	background: #E6E6E5;
+}

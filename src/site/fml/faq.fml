@@ -1,0 +1,112 @@
+<faqs title="Frequently Asked Questions">
+
+  <part>
+    <title>Dependencies</title>
+   
+    <faq id="size">
+      <question>
+        The Databinder library seems pretty small. Where’s the beef?
+      </question>
+      <answer>
+        <p>It’s no secret: the beef is in <a href="http://wicket.sourceforge.net/">Wicket</a> and <a href="http://www.hibernate.org/">Hibernate</a>. Databinder is a little bit of code to make them work together nicely, and some documentation and tutorials to get you started, all wrapped up in a Maven project.</p>
+      </answer>
+    </faq>
+    <faq id="write-own">
+      <question>
+        Okay, so couldn’t I write this myself then?
+      </question>
+      <answer>
+        <p>Yes. But first you would need to learn how Wicket works (and Hibernate too if you’ve been living <i>in a cave</i>).</p>
+        <p>If you’re not yet sure that Wicket is the one true Web framework, you may want to see some results before you spend a week figuring it out. That’s where Databinder comes in.</p>
+      </answer>
+    </faq>
+    <faq id="tied">
+      <question>
+        Will my application be permanently tied to this library?
+      </question>
+      <answer>
+        <p>Not at all. Using Databinder to jump-start your program doesn’t prevent you from later writing your own integration to Hibernate or some other database framework. You may decide that your mature application will benefit from configuration and management through <a href="http://springframework.org/">Spring</a>, which does its own Hibernate session (and transaction) management.</p>
+        <p>More than anything else, a Databinder application is tied to Wicket, as adapting a Wicket app in an old-style Web framework would require rewriting your user interface. (Don’t worry, once you get that far you’ll never want to go back.) </p>
+      </answer>
+    </faq>
+  </part>
+  
+  <part>
+    <title>Suitability</title>
+
+    <faq id="migrate">
+      <question>
+        Can I migrate my existing Web application?
+      </question>
+      <answer>
+        <p>This library is optimized for getting new projects off the ground quickly. Adapting an existing one won’t be as easy as following the tutorials here, but you should still find Databinder helpful.</p>
+      </answer>
+    </faq>
+
+    <faq id="demo">
+      <question>
+        Helpful? How so?
+      </question>
+      <answer>
+        <p>Before you decide to migrate a large application to Wicket, you should probably write a proof-of-concept demo. If you program for a living, your demo will probably need to connect to a database.</p>
+        <p>Use Databinder to code something that talks to one of your test databases, then fire it up for your boss and be a rock star for five minutes.</p>
+        <p>Later, for the hard work of actually migrating your application, feel free to borrow ideas from Databinder’s source if the library as-packaged isn’t a perfect fit.</p>
+      </answer>
+    </faq>
+
+    <faq id="spring">
+      <question>
+        What about my Spring application?
+      </question>
+      <answer>
+        <p>It’s unlikely that any application would use both Spring and Databinder. You would surely want to make use of Spring’s <a href="http://www.springframework.org/docs/api/org/springframework/orm/hibernate/support/OpenSessionInViewFilter.html">request filter</a> to manage the database session, for one thing.</p>
+        <p>Beyond that, you’ll find Databinder’s “You want data? You got it!” attitude fairly incompatible with traditionally partitioned database code. If you want some outside the box thinking about the best practices for injecting Wicket into enterprise-class IoC Spring-managed applications, you’ll have to look <a href="http://www.wicket-wiki.org.uk/wiki/index.php/Spring">elsewhere</a>. <strong>Good luck!</strong> </p>
+      </answer>
+    </faq>
+
+    <faq id="production">
+      <question>
+        Enough about migration. What about a brand-new Web app, is Databinder safe to run in production?
+      </question>
+      <answer>
+        <p>That’s for you to decide. Databinder’s source is available and, as <a href="#size">mentioned</a>, brief. Read it. Check if any <a href="dependencies.html"> dependencies</a> are pre-release. Test your application under load. Until someone else rolls out a high volume Web site with Databinder (or Wicket, for that matter) you’re a pioneer.</p>
+      </answer>
+    </faq>
+  </part>
+  
+  <part>
+    <title>Meta</title>
+
+    <faq id="related">
+      <question>
+        Is this project related to Wicket?
+      </question>
+      <answer>
+        <p>Databinder is not made, supported, or endorsed by the Wicket project, which is <a href="http://wicket.sourceforge.net/Vision.html">solely concerned</a> with “enabling component-oriented, programmatic manipulation of markup.”</p>
+        <p>Databinder is solely concerned with hooking Wicket up to a database so you can use a next-generation framework without going on sabbatical.</p>
+      </answer>
+    </faq>
+
+    <faq id="who">
+      <question>
+        Then who makes this thing?
+      </question>
+      <answer>
+        <p>A New York programer who uses Wicket at his day job, is an outrageous fanboy of the framework, and hopes that a dose of database practicality is all it needs to take over the world.</p>
+        <p> Write me an <a href="mailto:nathan@technically.us">e-mail</a> for your suggestions, rants, or raves. Read my <a href="http://technically.us/n8">technical weblog</a> for my suggestions, rants, and raves.</p>
+        <p>— Nathan Hamblen</p>
+      </answer>
+    </faq>
+<!--
+    <faq id="">
+      <question>
+        
+      </question>
+      <answer>
+        <p>  </p>
+      </answer>
+    </faq>
+-->
+
+  </part>
+</faqs>

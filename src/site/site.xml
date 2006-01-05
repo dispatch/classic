@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="databinder">
+  <bannerLeft>
+    <name>Databinder</name>
+    <src>/images/logo.png</src>
+    <href>http://databinder.net/</href>
+    <alt>Databinder: a simple bridge from Wicket to Hibernate</alt>
+  </bannerLeft>
+  <body>
+
+
+    <menu name="Databinder">
+      <item name="Overview" href="index.html"/>
+      <item name="Example app" href="phone-directory.html"/>
+      <item name="Setup guide" href="setup-guide.html"/>
+      <item name="Javadoc" href="javadoc/"/>
+      <item name="Download" href="download.html"/>
+      <item name="License" href="license.html" />
+      <item name="FAQ" href="faq.html"/>
+    </menu>
+  </body>
+</project>

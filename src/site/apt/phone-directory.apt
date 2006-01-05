@@ -1,0 +1,253 @@
+		------------------
+		Databinder: Phone directory example
+		-----------------
+		Nathan Hamblen
+		------------------
+
+Phone directory example
+
+*Description
+
+	This is a small Web application for managing a list of names and phone numbers. Its entire source appears below, excluding package and import statements. After you’ve skimmed through it, see what the program looks like {{{/directory/app} in action}}, and don’t be afraid to add, edit, and delete!
+	
+*DirectoryApplication.java
+
+------------------------------------------------------------
+/**
+ * Simple app for listing and editing phone numbers.
+ */
+public class DirectoryApplication extends DataApplication {
+	protected Class getHomePage() {
+		return ListAndEdit.class;
+	}
+	
+	protected void configureHibernate(AnnotationConfiguration config) {
+		super.configureHibernate(config);					// set default config
+		config.addAnnotatedClass(Contact.class);	// maps to a table
+	}
+}
+------------------------------------------------------------
+	
+*DirectoryApplication.properties
+
+------------------------------------------------------------
+RequiredValidator=Please enter a value for ${label}. 
+------------------------------------------------------------
+
+*Contact.java
+
+------------------------------------------------------------
+/**
+ * Contact type with basic properties, all automatically persisted.
+ */
+ @Entity
+public class Contact {
+	private String name;
+	private Integer id;
+	private String phoneNumber;
+	
+	@Id (generate = GeneratorType.AUTO)
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}	
+}
+------------------------------------------------------------
+
+*ListAndEdit.html
+
+------------------------------------------------------------
+<html>
+<head>
+<!-- render css in a WYSIWYG editor, if server is running -->
+<link href="http://localhost:8080/directory/app/resources/net.databinder.components.DataPage/DataPage.css" 
+ type="text/css" rel="stylesheet" />
+</head>
+<body>
+<!-- nothing outside of this extend renders in Wicket -->
+<wicket:extend>
+
+<h1 wicket:id="pageTitleHeader">Phone Directory List & Edit</h1>
+
+
+<form wicket:id="searchForm">
+<input wicket:id="searchField" type="text" /> <input type="submit" value="Filter names" />
+</form>
+<table><tbody>
+	<tr>
+		<th>Name</th>
+		<th>Phone Number</th>
+	</tr>
+	<tr class="a" wicket:id="contacts">
+		<td><a wicket:id="link"><span wicket:id="name">Seth</span></a></td>
+		<td wicket:id="phoneNumber">555-1212</td>
+	</tr>
+<wicket:remove>
+	<tr class="b">
+		<td><a><span>Summer</span></a></td>
+		<td wicket:id="phoneNumber">555-1313</td>
+	</tr>
+</wicket:remove>
+</tbody></table>
+
+<p><a wicket:id="newLink" href="#">Edit new contact</a></p>
+
+<form wicket:id="editForm">
+	<h2 wicket:id="editHeader"> <!-- only one of these h2s renders -->
+		Editing 
+		<span wicket:id="name" style="font-style:italic">Someone</span>
+	</h2>
+	<h2 wicket:id="newHeader">Enter new contact</h2>
+	<p>
+		<label for="name">Name</label> 
+		<input wicket:id="name" type="text" id="name" />
+	</p>
+	<p>
+		<label for="phone">Phone number</label> 
+		<input type="text" id="name" wicket:id="phoneNumber"/>
+	</p>
+	<p>
+		<input type="submit" value="Save contact" /> 
+		<input type="submit" value="Delete contact" wicket:id="delete" />
+	</p>
+</form>
+
+<p><a href="/phone-directory.html">About this application</a></p>
+</wicket:extend>
+</body>
+</html>
+------------------------------------------------------------
+
+*ListAndEdit.java
+
+------------------------------------------------------------
+/**
+ * Single page for listing and editing names and phone numbers.
+ */
+public class ListAndEdit extends DataPage {
+	private EditForm form;
+	private ListView contacts;
+	
+	protected String getName() {
+		return "Phone Directory List & Edit";  // becomes page title attribute
+	}
+	
+	public ListAndEdit() {
+		super();
+		
+		// display title on page
+		add(new Label("pageTitleHeader", new Model() {
+			public Object getObject(Component component) {
+				return getName();
+			}
+		}));	
+
+		add(new SearchForm("searchForm"));	// filters results list
+		
+		// list of all contacts, this model can be replaced in SearchForm
+		IModel contactList = new HibernateListModel("from Contact order by name");
+		add(contacts = new PropertyListView("contacts", contactList)  
+		{
+			protected void populateItem(final ListItem item) {
+				item.add(new Link("link") {
+					public void onClick() {
+						// change edit forms object to this one
+						form.setPersistentObject(item.getModelObject());
+					}
+				}.add(new Label("name")));
+				item.add(new Label("phoneNumber"));
+				item.add(new AlternatingClassModifier(item)); // table row color
+			}
+		});
+		
+		add(new Link("newLink") {
+			public void onClick() {
+				form.clearPersistentObject();
+			}
+			public boolean isVisible() {
+				return form.getContact().getId() != null; // hide if already new
+			}
+		});
+		
+		add(form = new EditForm("editForm"));		// edits a selected contact
+	}
+	
+	/**
+	 * Filter contacts listing by replacing its model with one based on a
+	 * more specific query.
+	 */
+	public class SearchForm extends Form {
+		private TextField searchField;
+		public SearchForm(String id) {
+			super(id);
+			add(searchField = new TextField("searchField", new Model(null)));
+		}
+		protected void onSubmit() {
+			IQueryBinder binder = new IQueryBinder() {
+				public void bind(org.hibernate.Query query) {
+					query.setString(0, "%" + searchField.getModelObjectAsString() + "%");
+				}
+			};
+			IModel model = new HibernateListModel(
+					"from Contact where name like ? order by name", binder);
+			contacts.setModel(model);	// listing will update
+		}
+	}
+	
+	/**
+	 * Edit a selected or new Contact.
+	 */
+	public class EditForm extends DataForm {
+		public EditForm(String id) {
+			super(id, Contact.class);
+			// use one of two headers depending on ID state
+			WebMarkupContainer editHeader = new WebMarkupContainer("editHeader") {
+				public boolean isVisible() {
+					return getContact().getId() != null;
+				}
+			};
+			add(editHeader.add(new Label("name")));
+			add(new WebMarkupContainer("newHeader") {
+				public boolean isVisible() {
+					return getContact().getId() == null;
+				}
+			});
+
+			// label appears in failed validation message
+			add(new RequiredTextField("name").setLabel(new Model("contact name")));
+			add(new TextField("phoneNumber"));
+			
+			add(new Button("delete"){
+				@Override
+				protected void onSubmit() {
+					deletePersistentObject();
+					clearPersistentObject();
+				}
+				@Override
+				public boolean isVisible() {
+					return getContact().getId() != null;	// don't show on unsaved Contacts
+				}
+			}.setDefaultFormProcessing(false));	// default processing saves object
+		}
+		
+		/** Convenience method */
+		Contact getContact() {
+			return (Contact) getModelObject();
+		}
+	}
+}
+------------------------------------------------------------

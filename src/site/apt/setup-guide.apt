@@ -1,0 +1,87 @@
+		------------------
+		Databinder: Setup guide
+		-----------------
+		Nathan Hamblen
+		------------------
+
+Setup guide
+
+*Environment
+
+	Databinder requires the {{{http://java.sun.com/j2se/1.5.0/download.jsp}J2SE Development Kit (JDK) 5.0}} supporting Java 1.5. A qualifying development environment should report a version number of at least 1.5 following the command <<<java -version>>>.
+
+	It is also recommended that you install {{{http://maven.apache.org/download.html}Maven 2}}. If you want to set up Databinder without Maven, you’re on your own. With Maven, just follow the instructions below. The command <<<mvn -v>>> should report a version number of at least 2.0.1.
+
+*Special dependencies
+
+	Most of the dependencies you need will be automatically downloaded by Maven from a remote repository, but two by Sun can’t be held there. Go to {{{http://java.sun.com/products/jta/}this page}} to get the JTA interfaces from the Download link next to “Class Files 1.0.1B,” then paste the following into a shell in your download directory:
+
+-----------------------------------------------------
+mvn install:install-file -DgroupId=javax.transaction \
+  -DartifactId=jta -Dversion=1.0.1B -Dpackaging=jar \
+  -Dfile=jta-1_0_1B-classes.zip
+-----------------------------------------------------
+
+	(Or use jta.jar from the Hibernate 3.1 distribution, if you have that already — just change the <<<-Dfile=>>> parameter above.)
+
+	For the EJB 3.0 dependency, you’ll need to download {{{http://prdownloads.sourceforge.net/hibernate/hibernate-annotations-3.1beta7.tar.gz?download}Hibernate Annotations}}, expand the archive, change to its lib directory, then:
+
+-----------------------------------------------------
+mvn install:install-file -DgroupId=javax.persistence \
+  -DartifactId=ejb -Dversion=3.0-public_review \
+  -Dpackaging=jar -Dfile=ejb3-persistence.jar 
+-----------------------------------------------------
+
+	That’s it for the painful JAR wrangling, the rest is magic…
+
+*Create a Databinder project
+
+	Maven downloads any required dependencies it can find to fulfill a command. To download Wicket, Hibernate, Databinder, and a lots of other stuff, just tell Maven to create a project based on Databinder’s “data-app” archetype.
+
+-----------------------------------------------------
+mvn archetype:create -DarchetypeGroupId=net.databinder \
+  -DarchetypeArtifactId=data-app -DarchetypeVersion=.1 \
+  -DgroupId=example -DartifactId=directory
+-----------------------------------------------------
+
+	A Maven groupId is your company or organization name, “example” is used here and “directory” is the name of the project. 
+
+*Database configuration
+
+	Your project will have a default database configuration in <<<src/main/resources/hibernate.properties>>>. If you have a MySQL server running on localhost with no root password (and you’re crazy), you don‘t need to change anything. 
+
+	This is also your chance to change the database name if you don’t want it to match your artifactId. Create the database if you need to, but don’t worry about creating tables because Hibernate will do that itself.
+
+*Fire it up
+
+	<<Note:>> All <<<mvn>>> commands below should be run from the root directory of your project.
+
+	Your “data-app” based project is configured for the {{{http://jetty.mortbay.org/jetty6/maven-plugin/index.html}Jetty6 Maven plugin}}, so you can start the server in one step:
+
+-----------------------------------------------------
+mvn compile jetty6:run
+-----------------------------------------------------
+
+	More downloading ensues, and eventually Jetty will start up on port 8080. Try connecting to <<<http://localhost:8080/directory/app>>> and you should see your project name in orange.
+
+	The Jetty plugin will poll the classes directory for changes. Leave it running and try editing <<<MyDataPage.java>>> (deep under the src directory) to return a different page name. Run <<<mvn compile>>>, and Jetty will see the change. Reload your browser, click through the session expiration notice, and you should see the new name.
+
+*Eclipse integration
+
+	Now that you’ve got everything working on the command line, turning it into an Eclipse project is a cinch. First, add a Maven repository variable to your workspace with a command like this one:
+
+-----------------------------------------------------
+mvn -Declipse.workspace=/home/me/workspace eclipse:add-maven-repo
+-----------------------------------------------------
+
+	Then run <<<mvn eclipse:eclipse>>> to create project metadata for Eclipse. Just import the project to your workspace and its dependencies, source, and target directories will be ready to go.
+
+	You will find two Eclipse plugins very useful for this (or any other Web project): {{{http://jettylauncher.sourceforge.net/docs/}Jetty Launcher}} and {{{http://amateras.sourceforge.jp/cgi-bin/fswiki_en/wiki.cgi?page=EclipseHTMLEditor}Amateras HTML Editor}}. The second of those is particulary hard to install, but they are both well worth the trouble.
+
+*Make an application
+
+	The rest is up to you. Check out the {{{/phone-directory.html}Phone directory example}} to get an idea of how things work.
+
+	When you add annotated classes to your Hibernate configuration, tables to hold them and their mapped properties will be automatically created when Jetty is starting up. Tables and columns will never be deleted, so drop them or the entire database yourself whenever you want a fresh start.
+
+	Now, go do something unusual: have fun programming.
