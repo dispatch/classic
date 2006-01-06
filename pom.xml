@@ -6,7 +6,7 @@
   <inceptionYear>2005</inceptionYear>
   <organization><name>Nathan Hamblen</name></organization>
   <packaging>jar</packaging>
-  <version>0.1</version>
+  <version>0.1-SNAPSHOT</version>
   <name>Databinder</name>
   <description>A simple bridge from Wicket to Hibernate</description>
   <url>http://databinder.net</url>
