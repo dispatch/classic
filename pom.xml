@@ -33,7 +33,7 @@
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
         <configuration>
-          <tagBase>scm://databinder/</tagBase>
+          <tagBase>svn://databinder/</tagBase>
         </configuration>
       </plugin>
     </plugins>
