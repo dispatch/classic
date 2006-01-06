@@ -6,10 +6,15 @@
   <inceptionYear>2005</inceptionYear>
   <organization><name>Nathan Hamblen</name></organization>
   <packaging>jar</packaging>
-  <version>.1</version>
+  <version>0.1</version>
   <name>Databinder</name>
   <description>A simple bridge from Wicket to Hibernate</description>
   <url>http://databinder.net</url>
+  <scm>
+    <connection>scm:svn:svn://databinder/trunk</connection>
+    <developerConnection>scm:svn:svn://databinder/trunk</developerConnection>
+  </scm>
+
   <build>
     <plugins>
       <plugin>
@@ -18,6 +23,12 @@
         <configuration>
           <source>1.5</source>
           <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagBase>scm://databinder/</tagBase>
         </configuration>
       </plugin>
     </plugins>
