@@ -1,24 +1,29 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?><project>
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.databinder</groupId>
   <artifactId>databinder</artifactId>
-  <inceptionYear>2005</inceptionYear>
-  <organization><name>Nathan Hamblen</name></organization>
-  <packaging>jar</packaging>
-  <version>0.1-SNAPSHOT</version>
   <name>Databinder</name>
+  <version>0.1</version>
   <description>A simple bridge from Wicket to Hibernate</description>
   <url>http://databinder.net</url>
+  <inceptionYear>2005</inceptionYear>
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License</name>
+      <url>http://www.gnu.org/copyleft/lesser.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
   <scm>
-    <connection>scm:svn:svn://databinder/trunk</connection>
-    <developerConnection>scm:svn:svn://databinder/trunk</developerConnection>
+    <connection>scm:svn:svn://databinder/tags/r0.1</connection>
+    <developerConnection>scm:svn:svn://databinder/tags/r0.1</developerConnection>
   </scm>
-
+  <organization>
+    <name>Nathan Hamblen</name>
+  </organization>
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <source>1.5</source>
@@ -33,49 +38,11 @@
       </plugin>
     </plugins>
   </build>
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-site-plugin</artifactId>
-        <configuration>
-          <outputEncoding>UTF-8</outputEncoding>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <reportSets>
-          <reportSet>
-            <reports>
-            <report>dependencies</report>
-            <report>license</report>
-            <!-- <report>scm</report> -->
-          </reports>
-        </reportSet>
-      </reportSets>
-    </plugin>
-  </plugins>
-  </reporting>
-  <licenses>
-    <license>
-      <name>GNU Lesser General Public License</name>
-      <url>http://www.gnu.org/copyleft/lesser.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-  <distributionManagement>
-    <site>
-      <id>website</id>
-      <url>file:///var/dbwww/</url>
-    </site>
-  </distributionManagement>
-
   <dependencies>
     <dependency>
-      <groupId>wicket</groupId>
-      <artifactId>wicket</artifactId>
-      <version>1.1</version>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-annotations</artifactId>
+      <version>3.1beta7</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
@@ -83,9 +50,9 @@
       <version>3.1</version>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-annotations</artifactId>
-      <version>3.1beta7</version>
+      <groupId>wicket</groupId>
+      <artifactId>wicket</artifactId>
+      <version>1.1</version>
     </dependency>
     <dependency>
       <groupId>c3p0</groupId>
@@ -93,4 +60,31 @@
       <version>0.9.0.2</version>
     </dependency>
   </dependencies>
+  <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>dependencies</report>
+              <report>license</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <artifactId>maven-site-plugin</artifactId>
+        <configuration>
+          <outputEncoding>UTF-8</outputEncoding>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+  <distributionManagement>
+    <site>
+      <id>website</id>
+      <url>file:///var/dbwww/</url>
+    </site>
+  </distributionManagement>
 </project>
