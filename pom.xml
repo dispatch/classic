@@ -15,8 +15,8 @@
     </license>
   </licenses>
   <scm>
-    <connection>scm:svn:svn://databinder/tags/r0.1/</connection>
-    <developerConnection>scm:svn:svn://tags/r0.1/</developerConnection>
+    <connection>scm:svn:svn://localhost/databinder</connection>
+    <developerConnection>scm:svn:svn://localhost/databinder/</developerConnection>
   </scm>
   <organization>
     <name>Nathan Hamblen</name>
@@ -33,7 +33,7 @@
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
         <configuration>
-          <tagBase>svn://databinder/</tagBase>
+          <tagBase>svn://localhost/databinder/</tagBase>
         </configuration>
       </plugin>
     </plugins>
