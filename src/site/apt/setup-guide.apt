@@ -40,7 +40,7 @@ mvn install:install-file -DgroupId=javax.persistence \
 
 -----------------------------------------------------
 mvn archetype:create -DarchetypeGroupId=net.databinder \
-  -DarchetypeArtifactId=data-app -DarchetypeVersion=.1 \
+  -DarchetypeArtifactId=data-app -DarchetypeVersion=0.1 \
   -DgroupId=example -DartifactId=directory
 -----------------------------------------------------
 
