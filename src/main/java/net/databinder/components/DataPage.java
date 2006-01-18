@@ -56,7 +56,7 @@ public abstract class DataPage extends WebPage {
 	
 	/**
 	 * Construct the page with an existing model.
-	 * @param model presumedly created in another page or component 
+	 * @param model presumably created in another page or component 
 	 */
 	protected DataPage(IModel model) {
 		super(model);
