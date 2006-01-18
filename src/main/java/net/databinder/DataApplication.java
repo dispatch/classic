@@ -21,16 +21,9 @@ package net.databinder;
 
 import org.hibernate.cfg.AnnotationConfiguration;
 
-import wicket.IRequestCycleFactory;
 import wicket.ISessionFactory;
-import wicket.Request;
-import wicket.RequestCycle;
-import wicket.Response;
 import wicket.Session;
 import wicket.protocol.http.WebApplication;
-import wicket.protocol.http.WebRequest;
-import wicket.protocol.http.WebResponse;
-import wicket.protocol.http.WebSession;
 
 /**
  * Databinder Application subclass for request cycle hooks and a basic configuration.
@@ -40,7 +33,8 @@ public abstract class DataApplication extends WebApplication {
 	private boolean development;
 	/**
 	 * Configures this application for development or production, sets a home page,
-	 * and turns of default page versioning. Override for customization.
+	 * turns off default page versioning, and sets a session factory. Override for 
+	 * customization.
 	 */
 	@Override
 	protected void init() {
@@ -50,6 +44,22 @@ public abstract class DataApplication extends WebApplication {
 		getPages().setHomePage(getHomePage());
 		// versioning doesn't do so much for database driven pages 
 		getSettings().setVersionPagesByDefault(false);
+
+		setSessionFactory(new ISessionFactory() {
+			public Session newSession()
+			{
+				return newDataSession();
+			}
+    	});
+	}
+	
+	/**
+	 * Returns a new instance of a DataSession. Override if your application uses
+	 * its own DataSession subclass. 
+	 * @return new instance of DataSession
+	 */
+	protected DataSession newDataSession() {
+		return new DataSession(DataApplication.this);
 	}
 	
 	/**
@@ -75,34 +85,13 @@ public abstract class DataApplication extends WebApplication {
 	protected  void configureHibernate(AnnotationConfiguration config) {
     	if (isDevelopment())
     		config.setProperty("hibernate.hbm2ddl.auto", "update");
-    	else
-    		config.setProperty("hibernate.c3p0.max_size", "20");
+    	else {
+    		config.setProperty("hibernate.c3p0.max_size", "20")
+    		.setProperty("hibernate.c3p0.timeout","3000")
+    		.setProperty("hibernate.c3p0.idle_test_period", "300");
+    	}
 	}
 	
-	/**
-	 * Instatiates DataRequestCycle objects through custom request cycle and session factories.
-	 */
-	@Override
-	protected final ISessionFactory getSessionFactory() {
-		return sessionFactory;
-	}
-
-	private ISessionFactory sessionFactory = new ISessionFactory()
-	{
-		public Session newSession()
-		{
-			return new WebSession(DataApplication.this) {
-				@Override
-				protected IRequestCycleFactory getRequestCycleFactory() {
-					return new IRequestCycleFactory() {
-						public RequestCycle newRequestCycle(Session session, Request request, Response response) {
-							return new DataRequestCycle((WebSession)session, (WebRequest)request, (WebResponse)response);
-						};
-					};
-				}
-			};
-		}
-	};
 	/**
 	 * Return your application's default page.
 	 */
