@@ -1,7 +1,7 @@
 /* Appearance consistent with Wicket's default error pages. */
 
 body {
-	font-family: 'Lucida Grande', 'Lucida Sans', 'Helvetica', 'Sans-serif', 'sans';
+	font-family: 'Lucida Grande', 'Lucida Sans', 'Helvetica', sans-serif;
 	font-size: 9pt;
 	line-height: 1.8em;
 	color: #6F6F6F;
