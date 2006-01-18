@@ -57,7 +57,7 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 	}
 	
 	/**
-	 * Construct with a Hibernate persistant object.
+	 * Construct with a Hibernate persistent object.
 	 * @param persistentObject must already be contained in the Hibernate session
 	 */
 	public HibernateObjectModel(Object persistentObject) {
@@ -65,8 +65,8 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 	}
 	
 	/**
-	 * Change the persistant object contained in this model. By using this method instead of
-	 * replacing the model itself, you avoid accidently referencing the old model.
+	 * Change the persistent object contained in this model. By using this method instead of
+	 * replacing the model itself, you avoid accidentally referencing the old model.
 	 */
 	public void setPersistentObject(Object persistentObject) {
 		objectId = DataRequestCycle.getHibernateSession().getIdentifier(persistentObject);
