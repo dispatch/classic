@@ -10,7 +10,7 @@ Setup guide
 
 	Databinder requires the {{{http://java.sun.com/j2se/1.5.0/download.jsp}J2SE Development Kit (JDK) 5.0}} supporting Java 1.5. A qualifying development environment should report a version number of at least 1.5 following the command <<<java -version>>>.
 
-	It is also recommended that you install {{{http://maven.apache.org/download.html}Maven 2}}. If you want to set up Databinder without Maven, you’re on your own. With Maven, just follow the instructions below. The command <<<mvn -v>>> should report a version number of at least 2.0.1.
+	You’ll also need to install {{{http://maven.apache.org/download.html}Maven 2}} if you haven’t already. (It’s possible to use Databinder without Maven, but these instructions assume you’re too busy to track down a dozen {{{dependencies.html}dependencies}} yourself.) The command <<<mvn -v>>> should report a version number of at least 2.0.1.
 
 *Special dependencies
 
@@ -32,11 +32,11 @@ mvn install:install-file -DgroupId=javax.persistence \
   -Dpackaging=jar -Dfile=ejb3-persistence.jar 
 -----------------------------------------------------
 
-	That’s it for the painful JAR wrangling, the rest is magic…
-
 *Create a Databinder project
 
-	Maven downloads any required dependencies it can find to fulfill a command. To download Wicket, Hibernate, Databinder, and a lots of other stuff, just tell Maven to create a project based on Databinder’s “data-app” archetype.
+	<<Note:>> As you follow the intructions below, Maven will download Wicket, Hibernate, Databinder, and a lots of other stuff. Sit back, relax, and be glad you don’t have to do it yourself.
+
+	To get started, tell Maven to create a project based on Databinder’s “data-app” archetype.
 
 -----------------------------------------------------
 mvn archetype:create -DarchetypeGroupId=net.databinder \
@@ -84,4 +84,4 @@ mvn -Declipse.workspace=/home/me/workspace eclipse:add-maven-repo
 
 	When you add annotated classes to your Hibernate configuration, tables to hold them and their mapped properties will be automatically created when Jetty is starting up. Tables and columns will never be deleted, so drop them or the entire database yourself whenever you want a fresh start.
 
-	Now, go do something unusual: have fun programming.
+	Now, seriously, go have fun with database programming.

@@ -25,8 +25,8 @@
         Will my application be permanently tied to this library?
       </question>
       <answer>
-        <p>Not at all. Using Databinder to jump-start your program doesn’t prevent you from later writing your own integration to Hibernate or some other database framework. You may decide that your mature application will benefit from configuration and management through <a href="http://springframework.org/">Spring</a>, which does its own Hibernate session (and transaction) management.</p>
-        <p>More than anything else, a Databinder application is tied to Wicket, as adapting a Wicket app in an old-style Web framework would require rewriting your user interface. (Don’t worry, once you get that far you’ll never want to go back.) </p>
+        <p>Not at all. Using Databinder to jump-start your program doesn’t prevent you from later writing your own integration to Hibernate or some other database framework.</p>
+	<p>You may decide that your mature application will benefit from configuration and management through <a href="http://springframework.org/">Spring</a>, which does its own Hibernate session (and transaction) management.</p>
       </answer>
     </faq>
   </part>
@@ -69,7 +69,7 @@
         Enough about migration. What about a brand-new Web app, is Databinder safe to run in production?
       </question>
       <answer>
-        <p>That’s for you to decide. Databinder’s source is available and, as <a href="#size">mentioned</a>, brief. Read it. Check if any <a href="dependencies.html"> dependencies</a> are pre-release. Test your application under load. Until someone else rolls out a high volume Web site with Databinder (or Wicket, for that matter) you’re a pioneer.</p>
+        <p>That’s for you to decide. Databinder’s source is <a href="/releases.html">available</a> and, as <a href="#size">mentioned</a>, brief. Read it. Check if any <a href="dependencies.html"> dependencies</a> are pre-release. Test your application under load. Until someone else rolls out a high volume Web site with Databinder (or Wicket, for that matter) you’re a pioneer.</p>
       </answer>
     </faq>
   </part>
@@ -92,7 +92,7 @@
         Then who makes this thing?
       </question>
       <answer>
-        <p>A New York programer who uses Wicket at his day job, is an outrageous fanboy of the framework, and hopes that a dose of database practicality is all it needs to take over the world.</p>
+        <p>A New York programer who uses Wicket at his day job, loves it, and hopes that a dose of database practicality is all it needs to take over the world.</p>
         <p> Write me an <a href="mailto:nathan@technically.us">e-mail</a> for your suggestions, rants, or raves. Read my <a href="http://technically.us/n8">technical weblog</a> for my suggestions, rants, and raves.</p>
         <p>— Nathan Hamblen</p>
       </answer>
