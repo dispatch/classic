@@ -25,6 +25,7 @@ import net.databinder.util.URLConverter;
 
 import org.hibernate.cfg.AnnotationConfiguration;
 
+import wicket.ApplicationPages;
 import wicket.ISessionFactory;
 import wicket.Session;
 import wicket.protocol.http.WebApplication;
@@ -49,6 +50,7 @@ public abstract class DataApplication extends WebApplication {
 		development = configuration.equalsIgnoreCase("development");
 		getSettings().configure(configuration);
 		getPages().setHomePage(getHomePage());
+		getPages().setHomePageRenderStrategy(ApplicationPages.BOOKMARK_REDIRECT);
 		// versioning doesn't do so much for database driven pages 
 		getSettings().setVersionPagesByDefault(false);
 
