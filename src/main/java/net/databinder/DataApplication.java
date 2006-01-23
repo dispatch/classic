@@ -19,11 +19,17 @@
 
 package net.databinder;
 
+import java.net.URL;
+
+import net.databinder.util.URLConverter;
+
 import org.hibernate.cfg.AnnotationConfiguration;
 
 import wicket.ISessionFactory;
 import wicket.Session;
 import wicket.protocol.http.WebApplication;
+import wicket.util.convert.Converter;
+import wicket.util.convert.IConverterFactory;
 
 /**
  * Databinder Application subclass for request cycle hooks and a basic configuration.
@@ -31,6 +37,7 @@ import wicket.protocol.http.WebApplication;
  */
 public abstract class DataApplication extends WebApplication {
 	private boolean development;
+	
 	/**
 	 * Configures this application for development or production, sets a home page,
 	 * turns off default page versioning, and sets a session factory. Override for 
@@ -51,6 +58,20 @@ public abstract class DataApplication extends WebApplication {
 				return newDataSession();
 			}
     	});
+	}
+	
+	/**
+	 * A factory that registers URLConverter in addition to the Wicket defaults.
+	 */
+	@Override
+	public IConverterFactory getConverterFactory() {
+		return new IConverterFactory() {
+			public wicket.util.convert.IConverter newConverter(java.util.Locale locale) {
+				Converter conv = new Converter(locale);
+				conv.set(URL.class, new URLConverter());
+				return conv;
+			}
+		};
 	}
 	
 	/**
@@ -79,7 +100,6 @@ public abstract class DataApplication extends WebApplication {
 	 * as required. Otherwise, it is configured for C3P0 connection pooling. (At present the two
 	 * seem to be incompatible.) If you don't want this behaviour, don't call the 
 	 * super-implementation.
-	 * 
 	 * @param config used to build Hibernate session factory
 	 */
 	protected  void configureHibernate(AnnotationConfiguration config) {
