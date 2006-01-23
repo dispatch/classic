@@ -41,8 +41,8 @@ public abstract class DataApplication extends WebApplication {
 	
 	/**
 	 * Configures this application for development or production, sets a home page,
-	 * turns off default page versioning, and sets a session factory. Override for 
-	 * customization.
+	 * turns off default page versioning, sets BOOKMARK_REDIRECT, and a 
+	 * DataSession factory. Override for customization.
 	 */
 	@Override
 	protected void init() {
