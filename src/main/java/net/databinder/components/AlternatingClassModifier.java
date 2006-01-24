@@ -35,10 +35,18 @@ public class AlternatingClassModifier extends AttributeModifier {
 	 * @param item Object whose index determines class value.
 	 */
 	public AlternatingClassModifier(final ListItem item) {
+		this(item, "a", "b");
+	}
+	
+	/**
+	 * Constructs AttributeModifier for "class" with the given alternating class values.
+	 * @param item Object whose index determines class value.
+	 */
+	public AlternatingClassModifier(final ListItem item, final String classA, final String classB) {
 		super("class", new Model() {
 			@Override
 			public Object getObject(Component component) {
-				return item.getIndex() % 2 == 0 ? "a" : "b";
+				return item.getIndex() % 2 == 0 ? classA : classB;
 			}
 		});
 	}
