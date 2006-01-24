@@ -113,7 +113,7 @@ public class DataForm extends Form {
 		if (!session.contains(modelObject))
 			return false;
 		session.delete(modelObject);
-		DataRequestCycle.getHibernateSession().flush();
+		session.flush();
 		return true;
 	}
 }
