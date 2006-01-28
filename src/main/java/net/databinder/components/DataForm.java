@@ -95,10 +95,12 @@ public class DataForm extends Form {
 	@Override
 	protected void onSubmit() {
 		Object modelObject = getModelObject();
-		if (!DataRequestCycle.getHibernateSession().contains(modelObject)) {
-			DataRequestCycle.getHibernateSession().save(modelObject);
+		Session session = DataRequestCycle.getHibernateSession();
+		if (!session.contains(modelObject)) {
+			session.save(modelObject);
 			setPersistentObject(modelObject);	// tell model this object is now bound
 		}
+		session.getTransaction().commit();
 	}
 	
 	/**

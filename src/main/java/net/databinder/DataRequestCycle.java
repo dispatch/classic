@@ -71,8 +71,10 @@ public class DataRequestCycle extends WebRequestCycle {
 	 * @return the open Hibernate session for this request cycle.
 	 */
 	protected Session getCycleHibernateSession() {
-		if(hibernateSession == null)
+		if(hibernateSession == null) {
 			hibernateSession = openSession();
+			hibernateSession.beginTransaction();
+		}
 		return hibernateSession;
 	}
 	
