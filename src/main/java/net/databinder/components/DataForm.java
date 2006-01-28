@@ -90,7 +90,8 @@ public class DataForm extends Form {
 	}
 	
 	/**
-	 * Saves the form's model object to persistent storage if it is new.
+	 * Saves the form's model object to persistent storage if it is new, and commits
+	 * database transaction.
 	 */
 	@Override
 	protected void onSubmit() {

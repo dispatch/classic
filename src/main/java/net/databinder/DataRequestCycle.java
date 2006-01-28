@@ -68,6 +68,8 @@ public class DataRequestCycle extends WebRequestCycle {
 	}
 	
 	/**
+	 * Opens a session and a transaction if a session is not already associated with
+	 * this request cycle.
 	 * @return the open Hibernate session for this request cycle.
 	 */
 	protected Session getCycleHibernateSession() {
