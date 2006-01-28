@@ -85,7 +85,8 @@ public class DataRequestCycle extends WebRequestCycle {
     }
 	
     /**
-     * Closes but does not flush a Hibernate session, if one was open for this request.
+     * Closes the Hibernate session, if one was open for this request. Hibernate will
+     * persistent any changes by default.
      */
 	@Override
 	protected void onEndRequest() {

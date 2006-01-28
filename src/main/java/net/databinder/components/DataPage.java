@@ -19,11 +19,8 @@
 
 package net.databinder.components;
 
-import wicket.AttributeModifier;
 import wicket.Component;
 import wicket.PageParameters;
-import wicket.markup.html.PackageResourceReference;
-import wicket.markup.html.WebMarkupContainer;
 import wicket.markup.html.WebPage;
 import wicket.markup.html.basic.Label;
 import wicket.markup.html.panel.FeedbackPanel;
@@ -74,9 +71,7 @@ public abstract class DataPage extends WebPage {
 			}
 		}).setRenderBodyOnly(true));
 		
-		String cssUrl = urlFor(new PackageResourceReference(DataPage.class, "DataPage.css").getPath());
-		add(new WebMarkupContainer("stylesheetLink").add(new AttributeModifier("href", new Model(cssUrl))));
-		
+		add(new PageStyleLink("dataStylesheet", DataPage.class));		
 		add(new FeedbackPanel("feedback"));
 	}
 	

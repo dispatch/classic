@@ -90,17 +90,15 @@ public class DataForm extends Form {
 	}
 	
 	/**
-	 * Saves the form's model object to persistent storage.
+	 * Saves the form's model object to persistent storage if it is new.
 	 */
 	@Override
 	protected void onSubmit() {
-		Session session = DataRequestCycle.getHibernateSession();
 		Object modelObject = getModelObject();
-		if (!session.contains(modelObject)) {
-			session.save(modelObject);
+		if (!DataRequestCycle.getHibernateSession().contains(modelObject)) {
+			DataRequestCycle.getHibernateSession().save(modelObject);
 			setPersistentObject(modelObject);	// tell model this object is now bound
 		}
-		DataRequestCycle.getHibernateSession().flush();
 	}
 	
 	/**
