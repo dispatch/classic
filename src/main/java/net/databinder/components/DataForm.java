@@ -73,7 +73,8 @@ public class DataForm extends Form {
 	}
 	
 	/**
-	 * Replaces the model object with a new, blank instance.
+	 * Replaces the form's model object with a new, blank instance. Does not affect
+	 * persistent storage.
 	 * @return this form, for chaining
 	 */
 	public DataForm clearPersistentObject() {
