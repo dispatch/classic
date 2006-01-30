@@ -10,7 +10,7 @@ Setup guide
 
 	Databinder requires the {{{http://java.sun.com/j2se/1.5.0/download.jsp}J2SE Development Kit (JDK) 5.0}} supporting Java 1.5. A qualifying development environment should report a version number of at least 1.5 following the command <<<java -version>>>.
 
-	You’ll also need to install {{{http://maven.apache.org/download.html}Maven 2}} if you haven’t already. (It’s possible to use Databinder without Maven, but these instructions assume you’re too busy to track down a dozen {{{dependencies.html}dependencies}} yourself.) The command <<<mvn -v>>> should report a version number of at least 2.0.1.
+	You’ll also need to install {{{http://maven.apache.org/download.html}Maven 2}} if you haven’t already. (It’s possible to use Databinder without Maven, but these instructions assume you’re too busy to track down a dozen {{{dependencies.html}dependencies}} yourself.) The command <<<mvn -v>>> should report a version number of at least 2.0.2.
 
 *Special dependencies
 
@@ -22,14 +22,14 @@ mvn install:install-file -DgroupId=javax.transaction \
   -Dfile=jta-1_0_1B-classes.zip
 -----------------------------------------------------
 
-	(Or use jta.jar from the Hibernate 3.1 distribution, if you have that already — just change the <<<-Dfile=>>> parameter above.)
+	(Or use jta.jar from the Hibernate 3.1.1 distribution, if you have that already — just change the <<<-Dfile=>>> parameter above.)
 
-	For the EJB 3.0 dependency, you’ll need to download {{{http://prdownloads.sourceforge.net/hibernate/hibernate-annotations-3.1beta7.tar.gz?download}Hibernate Annotations}}, expand the archive, change to its lib directory, then:
+	For the EJB 3.0 dependency, you’ll need to download {{{http://prdownloads.sourceforge.net/hibernate/hibernate-annotations-3.1beta8.tar.gz?download}Hibernate Annotations}}, expand the archive, change to its lib directory, then:
 
 -----------------------------------------------------
 mvn install:install-file -DgroupId=javax.persistence \
-  -DartifactId=ejb -Dversion=3.0-public_review \
-  -Dpackaging=jar -Dfile=ejb3-persistence.jar 
+  -DartifactId=ejb -Dversion=3.0 \
+  -Dpackaging=jar -Dfile=ejb3-persistence.jar
 -----------------------------------------------------
 
 *Create a Databinder project
@@ -40,7 +40,7 @@ mvn install:install-file -DgroupId=javax.persistence \
 
 -----------------------------------------------------
 mvn archetype:create -DarchetypeGroupId=net.databinder \
-  -DarchetypeArtifactId=data-app -DarchetypeVersion=0.1 \
+  -DarchetypeArtifactId=data-app -DarchetypeVersion=0.2 \
   -DgroupId=example -DartifactId=directory
 -----------------------------------------------------
 
@@ -80,7 +80,7 @@ mvn -Declipse.workspace=/home/me/workspace eclipse:add-maven-repo
 
 *Make an application
 
-	The rest is up to you. Check out the {{{/phone-directory.html}Phone directory example}} to get an idea of how things work.
+	The rest is up to you. Check out the {{{examples.html}examples}} if you haven’t already, and try running them locally.
 
 	When you add annotated classes to your Hibernate configuration, tables to hold them and their mapped properties will be automatically created when Jetty is starting up. Tables and columns will never be deleted, so drop them or the entire database yourself whenever you want a fresh start.
 

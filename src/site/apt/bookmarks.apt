@@ -1,0 +1,217 @@
+		------------------
+		Databinder: Bookmarks example application
+		-----------------
+		Nathan Hamblen
+		------------------
+
+Bookmarks example application
+
+*Description
+
+	This is a very small Web application for adding and deleting Web bookmarks. Its meager sources appear below, excluding package and import statements in Java. You can also {{{/releases/bookmarks-0.2.tar.gz} download}} it as a Maven 2 project.
+	
+	After you’ve skimmed through the code,  {{{/bookmarks/app} add your own bookmarks}} or delete someone else’s.
+	
+*BookmarksApplication.java
+
+------------------------------------------------------------
+/**
+ * Simple app for adding, listing and deleting Web bookmarks.
+ */
+public class BookmarkApplication extends DataApplication {
+
+	/** Go to ListAndAdd (the only page) if no page requested. */
+	protected Class getHomePage() {
+		return ListAndAdd.class;
+	}
+	
+	/** Set default configuration and mapping for Bookmark. */
+	protected void configureHibernate(AnnotationConfiguration config) {
+		super.configureHibernate(config);
+		config.addAnnotatedClass(Bookmark.class);
+	}
+}
+------------------------------------------------------------
+	
+*BookmarksApplication.properties
+
+------------------------------------------------------------
+RequiredValidator=Please enter a value for ${label}. 
+TypeValidator=Please check the format of ${label}.
+------------------------------------------------------------
+
+*Bookmark.java
+
+------------------------------------------------------------
+/**
+ * Bookmark type with name and URL properties, automatically persisted.
+ */
+@Entity
+public class Bookmark {
+	private Integer id;
+	private String name;
+	private URL url;
+	
+
+	@Id @GeneratedValue(strategy = GenerationType.AUTO)
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public URL getUrl() {
+		return url;
+	}
+	public void setUrl(URL url) {
+		this.url = url;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+}
+------------------------------------------------------------
+
+
+*ListAndAdd.html
+
+------------------------------------------------------------
+<html>
+<head>
+<!-- apply css in a WYSIWYG editor, if server is running -->
+<link href="http://localhost:8080/bookmark/app/resources/net.databinder.components.DataPage/DataPage.css" 
+ type="text/css" rel="stylesheet" />
+<wicket:head>
+<!-- add local css, loads directly in WYSIWYG and via Wicket when running -->
+<link wicket:id="bookmarkStylesheet" href="ListAndAdd.css" type="text/css" rel="stylesheet" />
+</wicket:head>
+<title>Bookmarks</title>
+</head>
+<body>
+<!-- nothing outside of this extend renders in Wicket -->
+<wicket:extend>
+
+<h1 wicket:id="pageTitleHeader">Bookmarks</h1>
+<ul>
+	<li wicket:id="bookmarks">
+		<a wicket:id="url"href="#"><span wicket:id="name">My bookmark</span></a> 
+		<a wicket:id="delete" href="#" title="Delete this item">
+			<img wicket:id="trash" src="trash.png" alt="Delete" />
+		</a>
+	</li>
+<wicket:remove>
+	<li><a href="#">My other bookmark</a> <a href="#"><img src="trash.png" /></a></li>
+</wicket:remove>
+</ul>
+
+<h2>Add new bookmark</h2>
+<form wicket:id="entryForm">
+	<p>URL <input wicket:id="url" type="text" style="width: 30em" /></p>
+	<p>Name <input wicket:id="name" type="text" style="width: 15em" /></p>
+	<input type="submit" value="Add" />
+</form>
+<p><a href="/bookmarks.html">About this application</a></p>
+</wicket:extend>
+
+</body>
+</html>
+------------------------------------------------------------
+
+*ListAndAdd.css
+
+------------------------------------------------------------
+li img {
+	vertical-align: middle;
+	border: none;
+	margin-left: .3em;
+}
+------------------------------------------------------------
+
+*trash.png
+
+[images/trash.png]
+
+*ListAndAdd.java
+
+------------------------------------------------------------
+/**
+ * Single page for adding and deleting bookmarks.
+ */
+public class ListAndAdd extends DataPage {
+	/** Used in DataPage as the page title, and below within the page. */ 
+	protected String getName() {
+		return "Bookmarks";
+	}
+	
+	/** Adds components to page.  */
+	public ListAndAdd() {
+		super();
+		
+		// adds the page name as component for on-page display
+		add(new Label("pageTitleHeader", new Model() {
+			public Object getObject(Component component) {
+				return getName();
+			}
+		}));
+		
+		// custom styles for this page
+		add(new PageStyleLink("bookmarkStylesheet", ListAndAdd.class));
+		
+		// data to list
+		final IModel listModel = new HibernateListModel("from Bookmark order by name");
+		// view of list
+		add(new PropertyListView("bookmarks", listModel) {
+			protected void populateItem(final ListItem item) {
+				item.add(new WebLink("url")		// link to the bookmarked page
+					.add(new Label("name")));	// text to form body of anchor tag
+				
+				// link to delete this bookmark
+				item.add(new Link("delete") {
+					/** Delete from persistent storage */
+					public void onClick() {
+						DataRequestCycle.getHibernateSession().delete(item.getModelObject());
+						listModel.detach();
+					}
+					/** Add JavaScript confirmation. */
+					protected String getOnClickScript(String url) {
+						return "return confirm('Are you sure you want to delete this item?');";
+					}
+				}.add(new Image("trash", // add trash can image as anchor content 
+						new PackageResourceReference(this.getClass(), "trash.png"))));
+			}
+		});
+		add(new EntryForm("entryForm"));
+	}
+	
+	/**
+	 * Form for entering new Bookmark objects.
+	 */
+	public class EntryForm extends DataForm {
+		/** Add entry components.	 */
+		public EntryForm(String id) {
+			super(id, Bookmark.class);	// embeds new Bookmark in a HibernateModel
+							// inside a BoundCompoundPropertyModel
+			add(new RequiredTextField("name")
+				.setLabel(new Model("Name"))); // Labels used in error messages
+			add(new RequiredTextField("url")
+					.add(new TypeValidator(URL.class)) // ensure a valid URL
+					.setLabel(new Model("URL")));
+		}
+		/**
+		 * Disassociates from its model after submission, since this form is
+		 * for creating new objects only.
+		 */
+		protected void onSubmit() {
+			super.onSubmit();		// saves to persistent storage
+			clearPersistentObject();	// clears from form
+		}
+	}
+}
+------------------------------------------------------------
+
+*Next…
+
+	Got all that? Then head on to the {{{phone-directory.html}Phone directory}} corral, hotshot.

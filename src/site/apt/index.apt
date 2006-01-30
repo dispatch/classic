@@ -19,9 +19,9 @@ Overview
 
 	Your job is to feed annotated data classes to Databinder, then write your view classes and HTML templates to render them in a browser. (You can take “fastest XML typist in the West” off your resume now.)
 
-*Example application
+*Example applications
 
-	To get a better idea how this all fits together, check out the example {{{phone-directory.html}Phone Directory source code}}, then {{{/directory/app?bookmarkablePage=example.ListAndEdit}see it in action}}.
+	To get a better idea of how it all fits together, check out the source code and live demos of the {{{examples.html}example applications}}.
 
 *Getting started (and getting finished)
 
@@ -31,4 +31,4 @@ Overview
 
 *Still got questions?
 
-	Please see the {{{faq.html}FAQ}}. In fact, take a look even if you <don’t> have questions. It’s a good read.
+	Please see the {{{faq.html}FAQ}}. In fact, take a look even if you <don’t> have questions. You might learn something.

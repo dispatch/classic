@@ -1,16 +1,16 @@
 		------------------
-		Databinder: Phone directory example
+		Databinder: Phone directory example application
 		-----------------
 		Nathan Hamblen
 		------------------
 
-Phone directory example
+Phone directory example application
 
 *Description
 
-	This is a small Web application for managing a list of names and phone numbers. Its entire source appears below, excluding package and import statements. You can also {{{/releases/directory-0.1.tar.gz}download}} it as a Maven 2 project.
+	This small Web application, a little more complicated than the {{{bookmarks.html} Bookmarks example}}, manages a list of names and phone numbers. Its source files appear below, excluding package and import statements in Java. You can also {{{/releases/directory-0.2.tar.gz} download}} it as a Maven 2 project.
 	
-	After you’ve skimmed through the source, see what the program looks like {{{/directory/app?bookmarkablePage=example.ListAndEdit} in action}}, and don’t be afraid to add, edit, and delete!
+	After you’ve looked over the code, {{{/directory/app} give ’er a flight test}}. Add your favorite celebrity (and delete your enemies).
 	
 *DirectoryApplication.java
 
@@ -19,13 +19,16 @@ Phone directory example
  * Simple app for listing and editing phone numbers.
  */
 public class DirectoryApplication extends DataApplication {
+
+	/** Go to ListAndEdit(the only page) if no page requested. */
 	protected Class getHomePage() {
 		return ListAndEdit.class;
 	}
 	
+	/** Set default config and map to Contact table. */
 	protected void configureHibernate(AnnotationConfiguration config) {
-		super.configureHibernate(config);					// set default config
-		config.addAnnotatedClass(Contact.class);	// maps to a table
+		super.configureHibernate(config);
+		config.addAnnotatedClass(Contact.class);
 	}
 }
 ------------------------------------------------------------
@@ -42,13 +45,14 @@ RequiredValidator=Please enter a value for ${label}.
 /**
  * Contact type with basic properties, all automatically persisted.
  */
- @Entity
+@Entity
 public class Contact {
 	private String name;
 	private Integer id;
 	private String phoneNumber;
+	private Integer version;
 	
-	@Id (generate = GeneratorType.AUTO)
+	@Id @GeneratedValue(strategy = GenerationType.AUTO)
 	public Integer getId() {
 		return id;
 	}
@@ -66,6 +70,14 @@ public class Contact {
 	}
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
+	}
+	/** Enable optimistic locking. */
+	@Version
+	public Integer getVersion() {
+		return version;
+	}
+	public void setVersion(Integer version) {
+		this.version = version;
 	}	
 }
 ------------------------------------------------------------
@@ -75,7 +87,7 @@ public class Contact {
 ------------------------------------------------------------
 <html>
 <head>
-<!-- render css in a WYSIWYG editor, if server is running -->
+<!-- apply css in a WYSIWYG editor, if server is running -->
 <link href="http://localhost:8080/directory/app/resources/net.databinder.components.DataPage/DataPage.css" 
  type="text/css" rel="stylesheet" />
 </head>
@@ -83,11 +95,14 @@ public class Contact {
 <!-- nothing outside of this extend renders in Wicket -->
 <wicket:extend>
 
-<h1 wicket:id="pageTitleHeader">Phone Directory List & Edit</h1>
+<h1 wicket:id="pageTitleHeader">Phone Directory</h1>
 
 
 <form wicket:id="searchForm">
-<input wicket:id="searchField" type="text" /> <input type="submit" value="Filter names" />
+	Name <input wicket:id="name" style="width: 6em" type="text" />
+	Number <input wicket:id="phoneNumber" style="width: 6em" type="text" />
+	<input type="submit" value="Search" />
+	<input type="submit" wicket:id="reset" value="Clear Search" />
 </form>
 <table><tbody>
 	<tr>
@@ -101,7 +116,7 @@ public class Contact {
 <wicket:remove>
 	<tr class="b">
 		<td><a><span>Summer</span></a></td>
-		<td wicket:id="phoneNumber">555-1313</td>
+		<td>555-1313</td>
 	</tr>
 </wicket:remove>
 </tbody></table>
@@ -142,10 +157,9 @@ public class Contact {
  */
 public class ListAndEdit extends DataPage {
 	private EditForm form;
-	private ListView contacts;
 	
 	protected String getName() {
-		return "Phone Directory List & Edit";  // becomes page title attribute
+		return "Phone Directory";
 	}
 	
 	public ListAndEdit() {
@@ -158,16 +172,18 @@ public class ListAndEdit extends DataPage {
 			}
 		}));	
 
-		add(new SearchForm("searchForm"));	// filters results list
+		// the filter, updated by the form, affects query results
+		SearchFilter searchFilter = new SearchFilter();
+		add(new SearchForm("searchForm", searchFilter));
 		
-		// list of all contacts, this model can be replaced in SearchForm
-		IModel contactList = new HibernateListModel("from Contact order by name");
-		add(contacts = new PropertyListView("contacts", contactList)  
+		// list of contacts, filter binds to query parameters
+		IModel contactList = new HibernateListModel(getString("query"), searchFilter);
+		add(new PropertyListView("contacts", contactList)  
 		{
 			protected void populateItem(final ListItem item) {
 				item.add(new Link("link") {
+					/** Change edit forms object to this one. */
 					public void onClick() {
-						// change edit forms object to this one
 						form.setPersistentObject(item.getModelObject());
 					}
 				}.add(new Label("name")));
@@ -189,24 +205,41 @@ public class ListAndEdit extends DataPage {
 	}
 	
 	/**
-	 * Filter contacts listing by replacing its model with one based on a
-	 * more specific query.
+	 * Binds query parameters to its public properties. Extends Contact to skip
+	 * defining similar properties.
+	 */
+	private static class SearchFilter extends Contact 
+			implements IQueryBinder, Serializable {
+		public void bind(org.hibernate.Query query) {
+			query.setString("name", matchAnywhere(getName()));
+			query.setString("phoneNumber", matchAnywhere(getPhoneNumber()));
+		}
+		private String matchAnywhere(String str) {
+			return str == null ? null : "%" + str + "%";
+		}
+	}
+	
+	/**
+	 * Update contacts listing by changing the search filter's properties.
 	 */
 	public class SearchForm extends Form {
-		private TextField searchField;
-		public SearchForm(String id) {
-			super(id);
-			add(searchField = new TextField("searchField", new Model(null)));
-		}
-		protected void onSubmit() {
-			IQueryBinder binder = new IQueryBinder() {
-				public void bind(org.hibernate.Query query) {
-					query.setString(0, "%" + searchField.getModelObjectAsString() + "%");
+		public SearchForm(String id, SearchFilter filter) {
+			// wrap the filter in a compound model for easy updating
+			super(id, new CompoundPropertyModel(filter));
+			final TextField name, number;
+			add(name = new TextField("name"));
+			add(number = new TextField("phoneNumber"));
+			add(new Button("reset") {
+				/** Hide reset button if already blank. */
+				public boolean isVisible() {
+					return name.getModelObject() != null 
+						|| number.getModelObject() != null;
 				}
-			};
-			IModel model = new HibernateListModel(
-					"from Contact where name like ? order by name", binder);
-			contacts.setModel(model);	// listing will update
+				protected void onSubmit() {
+					name.setModelObject(null);
+					number.setModelObject(null);
+				}
+			});
 		}
 	}
 	
@@ -234,22 +267,27 @@ public class ListAndEdit extends DataPage {
 			add(new TextField("phoneNumber"));
 			
 			add(new Button("delete"){
-				@Override
+				/** Perform Contact delete. */
 				protected void onSubmit() {
 					deletePersistentObject();
 					clearPersistentObject();
 				}
-				@Override
+				/** Hide if not yet saved. */
 				public boolean isVisible() {
-					return getContact().getId() != null;	// don't show on unsaved Contacts
+					return getContact().getId() != null;
 				}
-			}.setDefaultFormProcessing(false));	// default processing saves object
+			}.setDefaultFormProcessing(false)); // default processing saves object
 		}
 		
-		/** Convenience method */
-		Contact getContact() {
+		/** Convenience, retrieve and cast our model. */
+		protected Contact getContact() {
 			return (Contact) getModelObject();
 		}
 	}
 }
+
 ------------------------------------------------------------
+
+*Next…
+
+	What, you’re too smart for these trivial apps? Time to {{{setup-guide.html}set up Databinder}} and make the sexiest order provisioning system your department has ever seen!

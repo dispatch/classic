@@ -1,0 +1,9 @@
+		------------------
+		Databinder: Example applications
+		-----------------
+		Nathan Hamblen
+		------------------
+
+Example applications
+
+		Databinder has two sample applications to show how it helps you do more database work in less Java and XML code. Start with the simple {{{bookmarks.html}Bookmarks}} application, then proceed to the slightly more complicated {{{phone-directory.html}Phone directory}}.
