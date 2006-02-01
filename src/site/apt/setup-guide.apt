@@ -34,7 +34,7 @@ mvn install:install-file -DgroupId=javax.persistence \
 
 *Create a Databinder project
 
-	<<Note:>> As you follow the intructions below, Maven will download Wicket, Hibernate, Databinder, and a lots of other stuff. Sit back, relax, and be glad you don’t have to do it yourself.
+	<<Note:>> As you follow the instructions below, Maven will download Wicket, Hibernate, Databinder, and a lots of other stuff. Sit back, relax, and be glad you don’t have to do it yourself.
 
 	To get started, tell Maven to create a project based on Databinder’s “data-app” archetype.
 

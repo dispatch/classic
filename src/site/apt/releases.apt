@@ -10,6 +10,24 @@ Releases
 
 	Though it’s possible to download Databinder from the links below (and its {{{dependencies.html}dependencies}} from all over the Web), it’s not recommended. Please see the {{{/setup-guide.html}Setup guide}} for detailed start-to-finish instructions using Maven 2.
 
+*Release 0.2
+
+	Dependencies are updated to Hibernate 3.1.1, Annotations 3.1beta8, and Wicket 1.1.1. DataApplication.getSessionFactory() is no longer final (or overridden), and c3p0 pooling defaults to testing for closed connections. Wicket's log4j dependency is now excluded; add it to your <<<pom.xml>>> if you use it.
+
+	New component WebLink along with a URLConverter provide better support for linking outside of Wicket. PageStyleLink makes it easy to add a stylesheet specific to a page or component
+
+	DataRequestCycle now begins a Hibernate transaction when creating a Hibernate session, and DataForm commits that transaction in onSubmit().
+
+	Improved Phone directory example applies optimistic locking, and its ListAndEdit page uses a compact SearchFilter implementation. New Bookmark example application is very short, simple, and intended for Wicket novices.
+
+	{{{/releases/databinder-0.2.tar.gz}Datbinder library & source}}
+	
+	{{{/releases/data-app-0.2.tar.gz}Data-app archetype}}
+
+	{{{/releases/bookmark-0.2.tar.gz}Bookmark example}}
+	
+	{{{/releases/directory-0.2.tar.gz}Phone directory example}}
+
 *Release 0.1
 
 	Support for Hibernate 3.1, Hibernate Annotations 3.1beta7, and Wicket 1.1. This is the first public release of Databinder. All that is known for sure is that it can support the small {{{phone-directory.html}Phone directory}} example application.
