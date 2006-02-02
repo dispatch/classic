@@ -9,7 +9,7 @@ import wicket.model.Model;
 
 /**
  * Component for a stylesheet link. The stylesheet is expected to be named
- * &gt;ClassName&lt;.css for the Class specified in the constructor or via a
+ * &lt;ClassName&gt;.css for the class specified in the constructor or via a
  * compound model, and be located in the same package as that class.
  * @author Nathan Hamblen
  */
