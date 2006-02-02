@@ -3,7 +3,7 @@
   <groupId>net.databinder</groupId>
   <artifactId>databinder</artifactId>
   <name>Databinder</name>
-  <version>0.2-SNAPSHOT</version>
+  <version>0.2</version>
   <description>A simple bridge from Wicket to Hibernate</description>
   <url>http://databinder.net</url>
   <inceptionYear>2005</inceptionYear>
@@ -15,8 +15,8 @@
     </license>
   </licenses>
   <scm>
-    <connection>scm:svn:svn://localhost/databinder/trunk</connection>
-    <developerConnection>scm:svn:svn://localhost/databinder/trunk</developerConnection>
+    <connection>scm:svn:svn://localhost/databinder/tags/r0.2</connection>
+    <developerConnection>scm:svn:svn://localhost/databinder/tags/r0.2</developerConnection>
   </scm>
   <organization>
     <name>Nathan Hamblen</name>
@@ -48,11 +48,10 @@
       <groupId>wicket</groupId>
       <artifactId>wicket</artifactId>
       <version>1.1.1</version>
-     <exclusions>
+      <exclusions>
         <exclusion>
-          <!-- log4j should be optional in Wicket -->
-          <groupId>log4j</groupId>
           <artifactId>log4j</artifactId>
+          <groupId>log4j</groupId>
         </exclusion>
       </exclusions>
     </dependency>
