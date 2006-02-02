@@ -90,7 +90,8 @@ public class DataRequestCycle extends WebRequestCycle {
 	
     /**
      * Closes the Hibernate session, if one was open for this request. Hibernate will
-     * persistent any changes by default.
+     * try to rollback any uncommited transactions.
+     * @see net.databinder.components.DataForm#onSubmit()
      */
 	@Override
 	protected void onEndRequest() {

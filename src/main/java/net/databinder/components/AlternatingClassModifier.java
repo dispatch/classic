@@ -25,8 +25,8 @@ import wicket.markup.html.list.ListItem;
 import wicket.model.Model;
 
 /**
- * Alternates between class attribute values of "a" and "b" depending 
- * upon an item's index.
+ * Alternates between class attribute values of "a" and "b", or user selected
+ * values, for even and odd ListItem components.
  * @author Nathan Hamblen
  */
 public class AlternatingClassModifier extends AttributeModifier {

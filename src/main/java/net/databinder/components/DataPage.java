@@ -44,7 +44,7 @@ public abstract class DataPage extends WebPage {
 	
 	/**
 	 * If this constructor is public in a subclass, the page will be bookmarkable and a valid default page.
-	 * When this and a no argument constructor are both public, this one will be used by default.	 * 
+	 * When this and a no argument constructor are both public, this one will be used by default.
 	 */	
 	protected DataPage(PageParameters params) {
 		super(params);	// nothing is done with params in WebPage
@@ -76,7 +76,7 @@ public abstract class DataPage extends WebPage {
 	}
 	
 	/**
-	 * Name to be used as a title in the HEAD.
+	 * Name to be used as a title in the page header.
 	 * @return
 	 */
 	protected abstract String getName();
