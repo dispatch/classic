@@ -10,7 +10,7 @@ Releases
 
 	Though it’s possible to download Databinder from the links below (and its {{{dependencies.html}dependencies}} from all over the Web), it’s not recommended. Please see the {{{/setup-guide.html}Setup guide}} for detailed start-to-finish instructions using Maven 2.
 
-*Release 0.2
+*Version 0.2
 
 	Dependencies are updated to Hibernate 3.1.1, Annotations 3.1beta8, and Wicket 1.1.1. DataApplication.getSessionFactory() is no longer final (or overridden), and c3p0 pooling defaults to testing for closed connections. Wicket's log4j dependency is now excluded; add it to your <<<pom.xml>>> if you use it.
 
@@ -28,7 +28,7 @@ Releases
 	
 	{{{/releases/directory-0.2.tar.gz}Phone directory example}}
 
-*Release 0.1
+*Version 0.1
 
 	Support for Hibernate 3.1, Hibernate Annotations 3.1beta7, and Wicket 1.1. This is the first public release of Databinder. All that is known for sure is that it can support the small {{{phone-directory.html}Phone directory}} example application.
 	

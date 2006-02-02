@@ -149,6 +149,16 @@ public class Contact {
 </html>
 ------------------------------------------------------------
 
+	
+*ListAndEdit.properties
+
+------------------------------------------------------------
+query=from Contact where \
+	(:name is null or name like :name) and \
+	(:phoneNumber is null or phoneNumber like :phoneNumber) \
+	order by name	
+------------------------------------------------------------
+
 *ListAndEdit.java
 
 ------------------------------------------------------------
@@ -290,4 +300,4 @@ public class ListAndEdit extends DataPage {
 
 *Next…
 
-	What, you’re too smart for these trivial apps? Time to {{{setup-guide.html}set up Databinder}} and make the sexiest order provisioning system your department has ever seen!
+	What, you’re too smart for these trivial apps? Time to {{{setup-guide.html}set up Databinder}} and make the slickest order provisioning system your department has ever seen!
