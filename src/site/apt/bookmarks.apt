@@ -8,9 +8,9 @@ Bookmarks example application
 
 *Description
 
-	This is a very small Web application for adding and deleting Web bookmarks. Its meager sources appear below, excluding package and import statements in Java. You can also {{{/releases/bookmarks-0.2.tar.gz} download}} it as a Maven 2 project.
+	This is a very small Web application for adding and deleting Web bookmarks. Its meager sources appear below, excluding package and import statements in Java. You can also {{{/releases/bookmark-0.2.tar.gz} download}} it as a Maven 2 project.
 	
-	After you’ve skimmed through the code,  {{{/bookmarks/app} add your own bookmarks}} or delete someone else’s.
+	After you’ve skimmed through the code,  {{{/bookmark/app} add your own bookmarks}} or delete someone else’s.
 	
 *BookmarksApplication.java
 
@@ -91,7 +91,6 @@ public class Bookmark {
 <title>Bookmarks</title>
 </head>
 <body>
-<!-- nothing outside of this extend renders in Wicket -->
 <wicket:extend>
 
 <h1 wicket:id="pageTitleHeader">Bookmarks</h1>
@@ -173,6 +172,8 @@ public class ListAndAdd extends DataPage {
 					/** Delete from persistent storage */
 					public void onClick() {
 						DataRequestCycle.getHibernateSession().delete(item.getModelObject());
+                                                // commit transaction (automatic only for form submit)
+                                                DataRequestCycle.getHibernateSession().getTransaction().commit();
 						listModel.detach();
 					}
 					/** Add JavaScript confirmation. */

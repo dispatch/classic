@@ -279,14 +279,16 @@ public class ListAndEdit extends DataPage {
 			add(new Button("delete"){
 				/** Perform Contact delete. */
 				protected void onSubmit() {
-					deletePersistentObject();
-					clearPersistentObject();
+					deletePersistentObject();	// delete from DB
+					clearPersistentObject();	// clear from display
+					// commit since we don't pass through DataForm.onSubmit();
+					DataRequestCycle.getHibernateSession().getTransaction().commit();
 				}
 				/** Hide if not yet saved. */
 				public boolean isVisible() {
 					return getContact().getId() != null;
 				}
-			}.setDefaultFormProcessing(false)); // default processing saves object
+			}.setDefaultFormProcessing(false));     // default would save object
 		}
 		
 		/** Convenience, retrieve and cast our model. */

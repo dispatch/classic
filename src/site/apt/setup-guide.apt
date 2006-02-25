@@ -24,17 +24,29 @@ mvn install:install-file -DgroupId=javax.transaction \
 
 	(Or use jta.jar from the Hibernate 3.1.1 distribution, if you have that already — just change the <<<-Dfile=>>> parameter above.)
 
-	For the EJB 3.0 dependency, you’ll need to download {{{http://prdownloads.sourceforge.net/hibernate/hibernate-annotations-3.1beta8.tar.gz?download}Hibernate Annotations}}, expand the archive, change to its lib directory, then:
+	For the {EJB} 3.0 <public final draft> dependency, you’ll need to download {{{http://prdownloads.sourceforge.net/hibernate/hibernate-annotations-3.1beta8.tar.gz?download}Hibernate Annotations}}, expand the archive, change to its lib directory, then:
 
 -----------------------------------------------------
 mvn install:install-file -DgroupId=javax.persistence \
-  -DartifactId=ejb -Dversion=3.0 \
+  -DartifactId=ejb -Dversion=3.0-public-draft-20060118 \
   -Dpackaging=jar -Dfile=ejb3-persistence.jar
 -----------------------------------------------------
 
-*Create a Databinder project
+*Maven repository mirrors
 
-	<<Note:>> As you follow the instructions below, Maven will download Wicket, Hibernate, Databinder, and a lots of other stuff. Sit back, relax, and be glad you don’t have to do it yourself.
+	Maven 2 is configured by default to use a single repository, one that sometimes suffers from overwhelming demand. If you notice that downloads are taking longer than is reasonable, try using a mirror.
+
+	Mirrors are defined in either the global or user-specifc <<<settings.xml>>>. Unix-y people can run the commands below to download a  mirror settings file to the correct directory:
+
+-----------------------------------------------------
+curl http://databinder.net/releases/settings.xml > ~/.m2/settings.xml
+-----------------------------------------------------
+
+	Windows users, download the {{{http://databinder.net/releases/settings.xml }same file}} and put it in <<<\\Documents and Settings\\USERNAME\\.m2\\>>> 
+
+	This settings file is pulled from Maven’s {{{http://maven.apache.org/guides/mini/guide-mirror-settings.html}guide to mirrors}}, with the default repository commented out. The mirror picker seems to like the last repository in the list, though its behavior is undocumented.
+
+*Create a Databinder project
 
 	To get started, tell Maven to create a project based on Databinder’s “data-app” archetype.
 
@@ -74,7 +86,13 @@ mvn compile jetty6:run
 mvn -Declipse.workspace=/home/me/workspace eclipse:add-maven-repo
 -----------------------------------------------------
 
-	Then run <<<mvn eclipse:eclipse>>> to create project metadata for Eclipse. Just import the project to your workspace and its dependencies, source, and target directories will be ready to go.
+	Then download available library sources (like Databinder’s) and create the project metadata for Eclipse:
+
+-----------------------------------------------------
+mvn -Declipse.downloadSources=true eclipse:eclipse
+-----------------------------------------------------
+
+	Import the project to your Eclipse workspace and its dependencies, source, and target directories will be ready to go.
 
 	You will find two Eclipse plugins very useful for this (or any other Web project): {{{http://jettylauncher.sourceforge.net/docs/}Jetty Launcher}} and {{{http://amateras.sourceforge.jp/cgi-bin/fswiki_en/wiki.cgi?page=EclipseHTMLEditor}Amateras HTML Editor}}. The second of those is particulary hard to install, but they are both well worth the trouble.
 

@@ -8,11 +8,11 @@ Releases
 
 *Downloading
 
-	Though it’s possible to download Databinder from the links below (and its {{{dependencies.html}dependencies}} from all over the Web), it’s not recommended. Please see the {{{/setup-guide.html}Setup guide}} for detailed start-to-finish instructions using Maven 2.
+	Though it’s possible to download Databinder from the links below (and its {{{dependencies.html}dependencies}} from all over the Web), it’s not recommended. Please see the {{{setup-guide.html}Setup guide}} for detailed start-to-finish instructions using Maven 2. If you’re upgrading, skim through it for new dependency versions.
 
 *Version 0.2
 
-	Dependencies are updated to Hibernate 3.1.1, Annotations 3.1beta8, and Wicket 1.1.1. DataApplication.getSessionFactory() is no longer final (or overridden), and c3p0 pooling defaults to testing for closed connections. Wicket's log4j dependency is now excluded; add it to your <<<pom.xml>>> if you use it.
+	Dependencies are updated to Hibernate 3.1.1, Annotations 3.1beta8 (new {{{setup-guide.html#EJB}EJB lib}} required), and Wicket 1.1.1. DataApplication.getSessionFactory() is no longer final (nor overridden), and c3p0 pooling defaults to testing for closed connections. Wicket's log4j dependency is now excluded; add it to your <<<pom.xml>>> if you use it.
 
 	New component WebLink along with a URLConverter provide better support for linking outside of Wicket. PageStyleLink makes it easy to add a stylesheet specific to a page or component
 
