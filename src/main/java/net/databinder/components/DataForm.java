@@ -19,11 +19,12 @@
 
 package net.databinder.components;
 
+import java.io.Serializable;
+
 import net.databinder.DataRequestCycle;
 import net.databinder.models.HibernateObjectModel;
 
 import org.hibernate.Session;
-
 
 import wicket.markup.html.form.Form;
 import wicket.model.BoundCompoundPropertyModel;
@@ -35,22 +36,36 @@ import wicket.model.BoundCompoundPropertyModel;
  * @author Nathan Hamblen
  */
 public class DataForm extends Form {
+	private Serializable version;
+	
 	/**
 	 * Create form with an existing persistent object model.
 	 * @param id
 	 * @param model to be wrapped in a BoundCompoundPropertyModel
 	 */
 	public DataForm(String id, HibernateObjectModel model) {
-		super(id, model);
+		super(id, new BoundCompoundPropertyModel(model));
+		version = getPersistentObjectModel().getVersion();
 	}
 	
 	/**
 	 * Instatiates this form and a new, blank instance of the given class as a persistent model object. 
 	 * @param id
-	 * @param modelClass for the model object
+	 * @param modelClass for the persistent object
 	 */
 	public DataForm(String id, Class modelClass) {
 		super(id, new BoundCompoundPropertyModel(new HibernateObjectModel(modelClass)));
+	}
+	
+	/**
+	 * Instantiates this form with a persistent object of the given class and id.
+	 * @param id Wicket id
+	 * @param modelClass for the persistent object
+	 * @param persistentObjectId id of the persistent object
+	 */
+	public DataForm(String id, Class modelClass, Serializable persistentObjectId) {
+		super(id, new BoundCompoundPropertyModel(
+				new HibernateObjectModel(modelClass, persistentObjectId)));
 	}
 	
 	protected HibernateObjectModel getPersistentObjectModel() {
@@ -69,6 +84,7 @@ public class DataForm extends Form {
 	public DataForm setPersistentObject(Object object) {
 		getPersistentObjectModel().setPersistentObject(object);
 		setModel(getModel());		// informs child components
+		version = getPersistentObjectModel().getVersion();
 		return this;
 	}
 	
@@ -80,6 +96,7 @@ public class DataForm extends Form {
 	public DataForm clearPersistentObject() {
 		getPersistentObjectModel().clearPersistentObject();
 		setModel(getModel());		// informs child components
+		version = null;
 		return this;
 	}
 	
@@ -103,6 +120,16 @@ public class DataForm extends Form {
 			setPersistentObject(modelObject);	// tell model this object is now bound
 		}
 		session.getTransaction().commit();
+	}
+	
+	@Override
+	protected void validate() {
+		if (version != null) {
+			Serializable newVersion = getPersistentObjectModel().getVersion();
+			if (!newVersion.equals(version))
+				error("version mismatch");
+		}
+		else super.validate();
 	}
 	
 	/**

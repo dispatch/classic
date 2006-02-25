@@ -20,9 +20,12 @@
 package net.databinder.models;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import javax.persistence.Version;
 
 import net.databinder.DataRequestCycle;
-
 import wicket.model.LoadableDetachableModel;
 
 /**
@@ -41,6 +44,7 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 	public HibernateObjectModel(Class objectClass, Serializable objectId) {
 		this.objectClass = objectClass;
 		this.objectId = objectId;
+		attach();
 	}
 	
 	/**
@@ -95,5 +99,28 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 			throw new RuntimeException("Unable to instantiate object. Does it have a default constructor?", e);
 		}
 		return DataRequestCycle.getHibernateSession().load(objectClass, objectId);
+	}
+	
+	/**
+	 * Uses version annotation to find version for this Model's object. 
+	 * @return Persistent storage version number if available, null otherwise
+	 */
+	public Serializable getVersion() {
+		Object o = getObject(null);
+		if (o != null)
+			// must check superclasses; won't show on subs (incl cglib)
+			for (Class c = o.getClass(); c != null; c = c.getSuperclass())
+				for (Method m : c.getMethods())
+					if (m.isAnnotationPresent(Version.class) 
+							&& m.getParameterTypes().length == 0
+							&& m.getReturnType() instanceof Serializable)
+						try {
+							return (Serializable) m.invoke(o, new Object[] {});
+						} catch (InvocationTargetException e) {
+							throw new RuntimeException(e);
+						} catch (IllegalAccessException e) {
+							throw new RuntimeException(e);
+						}
+		return null;
 	}
 }
