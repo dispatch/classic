@@ -120,16 +120,23 @@ public class DataForm extends Form {
 			setPersistentObject(modelObject);	// tell model this object is now bound
 		}
 		session.getTransaction().commit();
+		// if version is present it should have changed
+		if (version != null) {
+			version = getPersistentObjectModel().getVersion();
+		}
 	}
 	
 	@Override
 	protected void validate() {
 		if (version != null) {
-			Serializable newVersion = getPersistentObjectModel().getVersion();
-			if (!newVersion.equals(version))
-				error("version mismatch");
+			Serializable currentVersion = getPersistentObjectModel().getVersion();
+			if (!version.equals(currentVersion)) {
+				error("Version mismatch");
+				version = currentVersion;
+			}
 		}
-		else super.validate();
+			
+		super.validate();
 	}
 	
 	/**
