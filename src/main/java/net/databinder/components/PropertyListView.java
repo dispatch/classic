@@ -19,8 +19,11 @@
 
 package net.databinder.components;
 
+import java.util.Collections;
 import java.util.List;
 
+import wicket.markup.html.link.Link;
+import wicket.markup.html.list.ListItem;
 import wicket.markup.html.list.ListView;
 import wicket.model.BoundCompoundPropertyModel;
 import wicket.model.IModel;
@@ -28,6 +31,8 @@ import wicket.model.IModel;
 /**
  * Simple ListVew subclass that wraps its item models in a BoundCompoundPropertyModel.
  * Useful for lists where the item components will be mapped through property expressions.
+ * Also contains Link subclasses that can be used to move or remove list elements (which
+ * could be nested in a standard ListView).
  * @author Nathan Hamblen
  */
 
@@ -60,4 +65,128 @@ public abstract class PropertyListView extends ListView {
 	protected IModel getListItemModel(IModel model, int index) {
 		return new BoundCompoundPropertyModel(super.getListItemModel(model, index));
 	}
+	
+	/**
+	 * Similar to the Link created by ListView.moveDownLink(), but can be overridden
+	 * for saving changes to persistent storage.
+	 */
+	public static class MoveDownLink extends Link {
+		private ListItem item;
+		
+		/**
+		 * @param id Wicket id of move link
+		 * @param item associated list item
+		 */
+		public MoveDownLink (String id, ListItem item) {
+			super(id);
+			this.item = item;
+		}
+
+		/** @return parent of ListItem casted as ListView. */
+		protected ListView getListView() {
+			return (ListView) item.getParent();
+		}
+
+		/** Disable link as appropriate.  */
+		protected void onBeginRequest()
+		{
+			setAutoEnable(false);
+			List list = getListView().getList();
+			if (list.indexOf(item.getModelObject()) == (list.size() - 1))
+				setEnabled(false);
+		}
+
+		/** 
+		 * Moves linked item within its list. Override to save changes after calling
+		 * this super implementation.
+		 */ 
+		public void onClick()
+		{
+			List list = getListView().getList();
+			final int index = list.indexOf(item.getModelObject());
+			if (index != -1)
+			{
+				getListView().modelChanging();
+				Collections.swap(list, index, index + 1);
+				getListView().modelChanged();
+			}
+		}
+	}
+	
+	/**
+	 * Similar to the Link created by ListView.moveUpLink(), but can be overridden
+	 * for saving changes to persistent storage.
+	 */
+	public static class MoveUpLink extends Link {
+		private ListItem item;
+		
+		/**
+		 * @param id Wicket id of move link
+		 * @param item associated list item
+		 */
+		public MoveUpLink (String id, ListItem item) {
+			super(id);
+			this.item = item;
+		}
+
+		/** @return parent of ListItem casted as ListView. */
+		protected ListView getListView() {
+			return (ListView) item.getParent();
+		}
+
+		/** Disable link as appropriate.  */
+		protected void onBeginRequest()
+		{
+			setAutoEnable(false);
+            if (getListView().getList().indexOf(item.getModelObject()) == 0)
+				setEnabled(false);
+		}
+
+		/** 
+		 * Moves linked item within its list. Override to save changes after calling
+		 * this super implementation.
+		 */ 
+		public void onClick()
+		{
+			List list = getListView().getList();
+			final int index = list.indexOf(item.getModelObject());
+			if (index != -1)
+			{
+				getListView().modelChanging();
+				Collections.swap(list, index, index - 1);
+				getListView().modelChanged();
+			}
+		}
+	}
+	
+	/**
+	 * Similar to the Link created by ListView.removeLink(), but can be overridden
+	 * for saving changes to persistent storage.
+	 */
+	public static class RemoveLink extends Link {
+		private ListItem item;
+		/**
+		 * @param id Wicket id of removal link
+		 * @param item associated list item
+		 */
+		public RemoveLink(String id, ListItem item) {
+			super(id);
+			this.item = item;
+		}
+		/** @return parent of ListItem casted as ListView. */
+		protected ListView getListView() {
+			return (ListView) item.getParent();
+		}
+		/** 
+		 * Removes linked item from its list. Override to save changes after calling
+		 * this super implementation.
+		 */ 
+		public void onClick()
+		{
+			getListView().modelChanging();
+			getListView().getList().remove(item.getModelObject());
+			getListView().modelChanged();
+		}
+	}
+
 }
