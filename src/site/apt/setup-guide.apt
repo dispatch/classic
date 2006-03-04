@@ -53,10 +53,10 @@ curl http://databinder.net/releases/settings.xml > ~/.m2/settings.xml
 -----------------------------------------------------
 mvn archetype:create -DarchetypeGroupId=net.databinder \
   -DarchetypeArtifactId=data-app -DarchetypeVersion=0.2 \
-  -DgroupId=example -DartifactId=directory
+  -DgroupId=example -DartifactId=myExample
 -----------------------------------------------------
 
-	A Maven groupId is your company or organization name, “example” is used here and “directory” is the name of the project. 
+	A Maven groupId is your company or organization name, “example” is used here and “myExample” is the name of the project. 
 
 *Database configuration
 
