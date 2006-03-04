@@ -126,14 +126,19 @@ public class DataForm extends Form {
 		}
 	}
 	
+	/**
+	 * Checks that the version number, if present, is the last known version number.
+	 * If it does not match, validation fails and will continue to fail until the form is
+	 * reloaded with the updated data and version number. This allows the user to
+	 * preserve her unsaved changes while preventing overwrites.   
+	 */
 	@Override
 	protected void validate() {
 		if (version != null) {
 			Serializable currentVersion = getPersistentObjectModel().getVersion();
-			if (!version.equals(currentVersion)) {
-				error("Version mismatch");
-				version = currentVersion;
-			}
+			if (!version.equals(currentVersion))
+				error(getString("version.mismatch", null)); // report error
+				// do not update version number as old data still appears in form
 		}
 			
 		super.validate();
