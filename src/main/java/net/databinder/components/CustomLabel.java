@@ -15,7 +15,7 @@ public abstract class CustomLabel extends Label {
 	
 	/**
 	 * @param id Wicket id of component
-	 * @param converter specific convert to use before display
+	 * @param converter specific converter to use before display
 	 */
 	protected CustomLabel(String id, CustomConverter converter) {
 		super(id);
@@ -26,7 +26,7 @@ public abstract class CustomLabel extends Label {
 	/**
 	 * @param id Wicket id of component
 	 * @param model model to be passed through converter
-	 * @param converter specific convert to use before display
+	 * @param converter specific converter to use before display
 	 */
 	protected CustomLabel(String id, IModel model, CustomConverter converter) {
 		super(id, model);
