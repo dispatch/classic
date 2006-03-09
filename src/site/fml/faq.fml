@@ -31,6 +31,7 @@
     </faq>
   </part>
   
+
   <part>
     <title>Suitability</title>
 
@@ -74,6 +75,30 @@
     </faq>
   </part>
   
+  <part>
+    <title>Helpers</title>
+
+    <faq id="non-database">
+      <question>
+        DateLabel, ScriptLink, WebLink… what’s with all these non-database classes?
+      </question>
+      <answer>
+	<p> Wicket is lean, and of course that’s good, but a lot of new users are surely confused the first time they need to render a standard date like “April 1, 2006” and there’s nothing to go on but a half-finished wiki-page. With Databinder they can just use a DateLabel and get on with their programming.</p>
+      </answer>
+    </faq>
+
+    <faq id="helper">
+      <question>
+        Yes, but random helper classes? This is supposed to be “a simple bridge from…”
+      </question>
+      <answer>
+        <p>The tagline describes what Databinder is, not everything it does.</p>
+	<p> Besides, the helpers are <i>not</i> random. They were all inspired by the database-driven example applications and would be handy in almost any project. They all have something to do with the practical need to retrieve, format, and display database information in a Web browser.</p>
+      </answer>
+    </faq>
+
+  </part>
+
   <part>
     <title>Meta</title>
 

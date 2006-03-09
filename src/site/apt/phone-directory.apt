@@ -8,9 +8,9 @@ Phone directory example application
 
 *Description
 
-	This small Web application, a little more complicated than the {{{bookmarks.html} Bookmarks example}}, manages a list of names and phone numbers. Its source files appear below, excluding package and import statements in Java. You can also {{{/releases/directory-0.2.tar.gz} download}} it as a Maven 2 project.
+	This small Web application, a little more complicated than the {{{bookmarks.html} bookmarks example}}, manages a list of names and phone numbers. Its source files appear below, excluding package and import statements in Java. You can also {{{/releases/directory-0.3.tar.gz} download}} it as a Maven 2 project.
 	
-	After you’ve looked over the code, {{{/directory/app} give ’er a flight test}}. Add your favorite celebrity (and delete your enemies).
+	After you’ve looked over the code, {{{/directory/app} give ’er a flight test}}. If you want to see Databinder’s built-in versioning support in action, open two browsers and edit the same entry in each one. That’s right, <just try> to break the optimistic lock.
 	
 *DirectoryApplication.java
 
@@ -36,7 +36,7 @@ public class DirectoryApplication extends DataApplication {
 *DirectoryApplication.properties
 
 ------------------------------------------------------------
-RequiredValidator=Please enter a value for ${label}. 
+RequiredValidator=Please enter something for ${label}. 
 ------------------------------------------------------------
 
 *Contact.java
@@ -279,16 +279,15 @@ public class ListAndEdit extends DataPage {
 			add(new Button("delete"){
 				/** Perform Contact delete. */
 				protected void onSubmit() {
-					deletePersistentObject();	// delete from DB
-					clearPersistentObject();	// clear from display
-					// commit since we don't pass through DataForm.onSubmit();
-					DataRequestCycle.getHibernateSession().getTransaction().commit();
+					deletePersistentObject();
+					// commit transaction
+					DataRequestCycle.getHibernateSession().getTransaction().commit();					clearPersistentObject();
 				}
 				/** Hide if not yet saved. */
 				public boolean isVisible() {
 					return getContact().getId() != null;
 				}
-			}.setDefaultFormProcessing(false));     // default would save object
+			}.setDefaultFormProcessing(false)); // default processing saves object
 		}
 		
 		/** Convenience, retrieve and cast our model. */
@@ -297,9 +296,8 @@ public class ListAndEdit extends DataPage {
 		}
 	}
 }
-
 ------------------------------------------------------------
 
 *Next…
 
-	What, you’re too smart for these trivial apps? Time to {{{setup-guide.html}set up Databinder}} and make the slickest order provisioning system your department has ever seen!
+	Your training is almost complete. But, like Jade Fox in <Crouching Tiger, Hidden Dragon>, Databinder has one last {{{recipe-book.html}lesson}} for you, precocious one.

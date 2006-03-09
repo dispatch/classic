@@ -6,4 +6,6 @@
 
 Example applications
 
-		Databinder has two sample applications to show how it helps you do more database work in less Java and XML code. Start with the simple {{{bookmarks.html}Bookmarks}} application, then proceed to the slightly more complicated {{{phone-directory.html}Phone directory}}.
+		Databinder has several example applications to show how it helps you do more database work in less Java and XML code.
+
+		Start with the simple {{{bookmarks.html}bookmarks}} application, then proceed to the slightly more complicated {{{phone-directory.html}phone directory}}. Finally, check out the {{{recipe-book.html}recipe book}} for an application that someone might actually want to use.

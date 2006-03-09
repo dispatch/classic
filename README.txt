@@ -19,7 +19,7 @@ Version History
 	in a validation error.
 
 	Dependencies have been updated to Hibernate 3.1.2 for the 
-	library, and jetty6beta10 in the archetype. Fixed a bug in the 
+	library, and jetty6beta9 in the archetype. Fixed a bug in the 
 	DataForm(id, model) constructor; it now wraps the model in a 
 	compound model as indicated in the comments. PageStyleLink has 
 	been renamed StyleLink to reflect its applicability to any 

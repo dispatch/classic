@@ -10,9 +10,27 @@ Releases
 
 	Though it’s possible to download Databinder from the links below (and its {{{dependencies.html}dependencies}} from all over the Web), it’s not recommended. Please see the {{{setup-guide.html}Setup guide}} for detailed start-to-finish instructions using Maven 2. If you’re upgrading, skim through it for new dependency versions.
 
+*Version 0.3
+
+	New helper components: <<<TextileLabel>>> and <<<DateLabel>>>. The former renders its content using {{{http://philwilson.org/projects/jtextile/}JTextile}} (modified for Java’s built-in regular expression processor) and the latter using {{{http://java.sun.com/j2se/1.5.0/docs/api/java/text/SimpleDateFormat.html}SimpleDateFormat}} with a supplied format string. A new {{{recipe-book.html}recipe book example}} demonstrates the Textile support, as well as some basic Panel use, embedded Hibernate objects, and JavaScript.
+
+	Transparent version awareness added to DataForm, following a method {{{http://jroller.com/page/dashorst?entry=wicket_goodie_hibernate_versioned_form}suggested}} in Martijn Dashorst’s weblog. Attempting to overwrite another user’s unseen changes to an object now results in a validation error.
+
+	Dependencies have been updated to Hibernate 3.1.2 for the library, and jetty6beta9 in the archetype. Fixed a bug in the <<<DataForm(id, model)>>> constructor; it now wraps the model in a compound model as indicated in the comments. PageStyleLink has 	been renamed StyleLink to reflect its applicability to any component, and a new ScriptLink component helps attach JavaScript.
+	
+	{{{/releases/databinder-0.3.tar.gz}Datbinder library & source}}
+	
+	{{{/releases/data-app-0.3.tar.gz}Data-app archetype}}
+
+	{{{/releases/bookmark-0.3.tar.gz}Bookmark example}}
+	
+	{{{/releases/directory-0.3.tar.gz}Phone directory example}}
+
+	{{{/releases/recipe-0.3.tar.gz}Recipe book example}}
+	
 *Version 0.2
 
-	Dependencies are updated to Hibernate 3.1.1, Annotations 3.1beta8 (new {{{setup-guide.html#EJB}EJB lib}} required), and Wicket 1.1.1. DataApplication.getSessionFactory() is no longer final (nor overridden), and c3p0 pooling defaults to testing for closed connections. Wicket's log4j dependency is now excluded; add it to your <<<pom.xml>>> if you use it.
+	Dependencies are updated to Hibernate 3.1.1, Annotations 3.1beta8 (new {{{setup-guide.html#EJB}EJB lib}} required), and Wicket 1.1.1. DataApplication.getSessionFactory() is no longer final (nor overridden), and c3p0 pooling defaults to testing for closed connections. Wicket’s log4j dependency is now excluded; add it to your <<<pom.xml>>> if you use it.
 
 	New component WebLink along with a URLConverter provide better support for linking outside of Wicket. PageStyleLink makes it easy to add a stylesheet specific to a page or component
 

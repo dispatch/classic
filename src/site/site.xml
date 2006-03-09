@@ -14,6 +14,7 @@
       <item name="Examples" href="examples.html" collapse="false" >
         <item name="Bookmarks" href="bookmarks.html"/>
         <item name="Phone directory" href="phone-directory.html"/>
+        <item name="Recipe book" href="recipe-book.html"/>
       </item>
       <item name="Setup guide" href="setup-guide.html"/>
       <item name="Javadoc" href="javadoc/"/>

@@ -1,0 +1,59 @@
+		------------------
+		Databinder: Recipe book example application
+		-----------------
+		Nathan Hamblen
+		------------------
+
+Recipe book example application
+
+*Description
+
+	This example is a functional recipe book, with each recipe having an ingredient list and a free-form procedure (how to prepare) section rendered as {{{http://textism.com/tools/textile/} Textile}}.
+
+	You can {{{/releases/recipe-0.3.tar.gz} download}} the whole thing as a Maven 2 project, or just {{{/recipe/app} run it here}} to see how it works. Add an heirloom recipe! If someone beats you to the broccoli casserole, there’s always congealed salad.
+	
+*Source files
+
+	Click through to the sources below to see how the recipe book ticks. (The HTML templates will render in your browser; use <view source> to see details.)
+
+	* {{{/recipe-src/java/example/RecipeApplication.xhtml} RecipeApplication.java}}
+
+	* {{{/recipe-src/resources/example/RecipeApplication.properties} RecipeApplication.properties}}
+
+	* {{{/recipe-src/java/example/Recipe.xhtml} Recipe.java}} — main data class
+
+	* {{{/recipe-src/java/example/Ingredient.xhtml} Ingredient.java}} — embedded in <<<Recipe.ingredients>>>
+
+	* {{{/recipe-src/resources/example/RecipeBook.html} RecipeBook.html}} — template for all pages
+
+	* {{{/recipe-src/resources/example/RecipeBook.css} RecipeBook.css}}
+
+	* {{{/recipe-src/java/example/RecipeBook.xhtml} RecipeBook.java}}
+
+	* {{{/recipe-src/resources/example/ShowRecipe.html} ShowRecipe.html}} — panel for recipe display
+
+	* {{{/recipe-src/java/example/ShowRecipe.xhtml} ShowRecipe.java}}
+
+	* {{{/recipe-src/resources/example/EditRecipe.html} EditRecipe.html}} — panel for editing recipe
+
+	* {{{/recipe-src/resources/example/EditRecipe.css} EditRecipe.css}} — styles specific to the edit panel
+
+	* {{{/recipe-src/resources/example/EditRecipe.js} EditRecipe.js}} — field focusing function used on edit page
+
+	* {{{/recipe-src/java/example/EditRecipe.xhtml} EditRecipe.java}}
+
+	* trash.png — 
+
+[/recipe-src/resources/example/trash.png]
+
+	* up-arrow.png — 
+	
+[/recipe-src/resources/example/up-arrow.png]
+
+	* down-arrow.png — 
+	
+[/recipe-src/resources/example/down-arrow.png]
+
+*Next…
+
+	Show’s over, folks. Time to {{{setup-guide.html}set up Databinder}} and get started on that baseball card database you’ve always wanted to make.
