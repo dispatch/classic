@@ -60,7 +60,7 @@ public class StyleLink extends WebMarkupContainer {
 	protected void onComponentTag(ComponentTag tag) {
 		Class pageClass = (Class) getModelObject();
 		tag.put("href", getPage().urlFor(new PackageResourceReference(pageClass, 
-				pageClass.getSimpleName() + ".css").getPath()));
+				pageClass.getSimpleName() + ".css")));
 		// ensure valid css attributes
 		tag.put("type", "text/css");
 		tag.put("rel", "stylesheet");

@@ -60,7 +60,7 @@ public class ScriptLink extends WebMarkupContainer {
 	protected void onComponentTag(ComponentTag tag) {
 		Class pageClass = (Class) getModelObject();
 		tag.put("src", getPage().urlFor(new PackageResourceReference(pageClass, 
-				pageClass.getSimpleName() + ".js").getPath()));
+				pageClass.getSimpleName() + ".js")));
 		super.onComponentTag(tag);
 	}
 }
