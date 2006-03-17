@@ -20,12 +20,12 @@
 package net.databinder;
 
 import java.net.URL;
+import java.util.Locale;
 
 import net.databinder.util.URLConverter;
 
 import org.hibernate.cfg.AnnotationConfiguration;
 
-import wicket.ApplicationPages;
 import wicket.ISessionFactory;
 import wicket.Session;
 import wicket.protocol.http.WebApplication;
@@ -41,19 +41,26 @@ public abstract class DataApplication extends WebApplication {
 	
 	/**
 	 * Configures this application for development or production, sets a home page,
-	 * turns off default page versioning, sets BOOKMARK_REDIRECT, and a 
-	 * DataSession factory. Override for customization.
+	 * turns off default page versioning, and establishes a DataSession factory. 
+	 * Override for customization.
 	 */
 	@Override
 	protected void init() {
-		String configuration = System.getProperty("net.databinder.configuration", "development");
-		development = configuration.equalsIgnoreCase("development");
-		getSettings().configure(configuration);
-		getPages().setHomePage(getHomePage());
-		getPages().setHomePageRenderStrategy(ApplicationPages.BOOKMARK_REDIRECT);
+		String configuration = System.getProperty("net.databinder.configuration", DEVELOPMENT);
+		development = configuration.equalsIgnoreCase(DEVELOPMENT);
+		configure(configuration);
 		// versioning doesn't do so much for database driven pages 
-		getSettings().setVersionPagesByDefault(false);
+		getPageSettings().setVersionPagesByDefault(false);
 
+		getApplicationSettings().setConverterFactory(new IConverterFactory() {
+			/** Registers URLConverter in addition to the Wicket defaults. */
+			public wicket.util.convert.IConverter newConverter(Locale locale) {
+				Converter conv = new Converter(locale);
+				conv.set(URL.class, new URLConverter());
+				return conv;
+			}
+		});
+		
 		setSessionFactory(new ISessionFactory() {
 			public Session newSession()
 			{
@@ -61,21 +68,7 @@ public abstract class DataApplication extends WebApplication {
 			}
     	});
 	}
-	
-	/**
-	 * A factory that registers URLConverter in addition to the Wicket defaults.
-	 */
-	@Override
-	public IConverterFactory getConverterFactory() {
-		return new IConverterFactory() {
-			public wicket.util.convert.IConverter newConverter(java.util.Locale locale) {
-				Converter conv = new Converter(locale);
-				conv.set(URL.class, new URLConverter());
-				return conv;
-			}
-		};
-	}
-	
+		
 	/**
 	 * Returns a new instance of a DataSession. Override if your application uses
 	 * its own DataSession subclass. 
@@ -113,9 +106,4 @@ public abstract class DataApplication extends WebApplication {
     		.setProperty("hibernate.c3p0.idle_test_period", "300");
     	}
 	}
-	
-	/**
-	 * Return your application's default page.
-	 */
-	protected abstract Class getHomePage();
 }
