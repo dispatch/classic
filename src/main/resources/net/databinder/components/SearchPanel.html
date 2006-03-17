@@ -1,0 +1,32 @@
+<html>
+<head>
+<!-- apply css in a WYSIWYG editor, if server is running -->
+<link href="http://localhost:8080/directory/app/resources/net.databinder.components.DataPage/DataPage.css"  type="text/css" rel="stylesheet" />
+<wicket:head>
+<link wicket:id="searchStylesheet" href="SearchPanel.css" type="text/css" rel="stylesheet" />
+</wicket:head>
+</head>
+
+<body>
+<wicket:panel>
+
+<form wicket:id="searchForm">
+	<div>
+		<!-- Lots of floating divs below since IE fumbles inline AJAX targets -->
+		<div id="searchEntry">
+			Search <span wicket:id="searchWrap">
+				<input wicket:id="search" id="search" type="text" />
+			</span>
+		</div>
+		<div wicket:id="clearWrap" class="clearbutton">
+			<a wicket:id="clearLink" title="Clear Search">
+				<img src="clear.png" wicket:id="clear" /></a>
+			<!-- ghost to hold place when the clear img isn't rendered -->
+			<img src="clear.png" wicket:id="clearGhost" id="clearGhost" />
+		</div>
+	</div>
+</form>
+
+</wicket:panel>
+</body>
+</html>

@@ -1,0 +1,12 @@
+div#searchEntry {
+	margin-right: 4px;
+	float: left;
+}
+
+img#clearGhost {
+	visibility: hidden;
+}
+
+div.clearbutton {
+	padding-top: 2px;
+}
