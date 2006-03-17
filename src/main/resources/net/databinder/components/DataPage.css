@@ -41,3 +41,7 @@ tr.b {
 tr.a {
 	background: #E6E6E5;
 }
+
+a img {
+	border: none;
+}
