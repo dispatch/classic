@@ -25,6 +25,8 @@ import java.lang.reflect.Method;
 
 import javax.persistence.Version;
 
+import org.hibernate.Query;
+
 import net.databinder.DataRequestCycle;
 import wicket.model.LoadableDetachableModel;
 
@@ -36,6 +38,8 @@ import wicket.model.LoadableDetachableModel;
 public class HibernateObjectModel extends LoadableDetachableModel {
 	private Class objectClass;
 	private Serializable objectId;
+	private String queryString;
+	private IQueryBinder queryBinder;
 	
 	/**
 	 * @param objectClass class to be loaded and stored by Hibernate
@@ -44,7 +48,6 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 	public HibernateObjectModel(Class objectClass, Serializable objectId) {
 		this.objectClass = objectClass;
 		this.objectId = objectId;
-		attach();
 	}
 	
 	/**
@@ -67,38 +70,62 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 	public HibernateObjectModel(Object persistentObject) {
 		setPersistentObject(persistentObject);
 	}
-	
+
 	/**
-	 * Change the persistent object contained in this model. By using this method instead of
-	 * replacing the model itself, you avoid accidentally referencing the old model.
+	 * Construct with a query that returns exactly one result. Use this for fetch
+	 * instructions, scalar results, or if the persistent object ID is not available.
+	 * Queries that do not return exactly one result will produce exceptions.
+	 * @param queryString query returning one result
+	 * @param queryBinder bind id or other parameters
 	 */
-	public void setPersistentObject(Object persistentObject) {
-		objectId = DataRequestCycle.getHibernateSession().getIdentifier(persistentObject);
-		objectClass = persistentObject.getClass();
-		attach();
+	public HibernateObjectModel(String queryString, IQueryBinder queryBinder) {
+		this.queryString = queryString;
+		this.queryBinder = queryBinder;
 	}
 	
 	/**
-	 * Disassociates this object from any persitant object, but retains the class information
+	 * Change the persistent object contained in this model. By using this method instead of
+	 * replacing the model itself, you avoid accidentally referencing the old model. 
+	 * Because this method establishes a persistent object ID, queries and binders
+	 * are removed if present.
+	 */
+	public void setPersistentObject(Object persistentObject) {
+		clearPersistentObject();
+		objectId = DataRequestCycle.getHibernateSession().getIdentifier(persistentObject);
+		objectClass = persistentObject.getClass();
+	}
+	
+	/**
+	 * Disassociates this object from any persitant object, but retains the class information.
 	 * @see HibernateObjectModel(Class objectClass)
 	 */
 	public void clearPersistentObject() {
 		objectId = null;
-		attach();
+		queryBinder = null; 
+		queryString =null;
+		detach();
 	}
 	
 	/**
 	 * Load the object through Hibernate, or contruct a new instance if it is not bound to an id.
+	 * @throws org.hibernate.HibernateException on load error
 	 */
 	@Override
 	protected Object load() {
 		try {
-			if (objectId == null)
+			if (objectId == null && queryString == null)
 				return objectClass.newInstance();
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to instantiate object. Does it have a default constructor?", e);
 		}
-		return DataRequestCycle.getHibernateSession().load(objectClass, objectId);
+		if (objectId != null)
+			return DataRequestCycle.getHibernateSession().load(objectClass, objectId);
+		
+		Query query = DataRequestCycle.getHibernateSession().createQuery(queryString);
+		// if querybinder was null in constructor, that's weird, but continue
+		if (queryBinder != null)
+			queryBinder.bind(query);
+		return query.uniqueResult();
 	}
 	
 	/**

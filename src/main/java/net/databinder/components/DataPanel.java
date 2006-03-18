@@ -36,7 +36,7 @@ public class DataPanel extends Panel {
 	
 	/**
 	 * Create panel with an existing persistent object model.
-	 * @param id
+	 * @param id Wicket id
 	 * @param model to be wrapped in a BoundCompoundPropertyModel
 	 */
 	public DataPanel(String id, HibernateObjectModel model) {
@@ -55,6 +55,16 @@ public class DataPanel extends Panel {
 	}
 	
 	/**
+	 * Create panel without a model. Use this constructor only if the intended model
+	 * is not available at construction time of DataPanel subclass.
+	 * @param id Wicket id
+	 * @see DataPanel.setPersistentObject(Object object)
+	 */
+	protected DataPanel(String id) {
+		super(id);
+	}
+	
+	/**
 	 * @return the nested model, casted to the expected IModel subclass.
 	 */
 	protected HibernateObjectModel getPersistentObjectModel() {
@@ -67,12 +77,23 @@ public class DataPanel extends Panel {
 	
 	/**
 	 * Change the persistent model object of this panel.
-	 * @param object  to attach to this form
-	 * @return this form, for chaining
+	 * @param object  to attach to this panel
+	 * @return this panel, for chaining
 	 */
 	public DataPanel setPersistentObject(Object object) {
 		getPersistentObjectModel().setPersistentObject(object);
 		setModel(getModel());		// informs child components
+		return this;
+	}
+	
+	/**
+	 * Set the persistant object model. Use this when a DataPanel subclass has
+	 * been constructed without a model.
+	 * @param model to back this panel
+	 * @return this panel, for chaining
+	 */
+	protected DataPanel setPersistentObjectModel(HibernateObjectModel model) {
+		setModel(new BoundCompoundPropertyModel(model));
 		return this;
 	}
 	
