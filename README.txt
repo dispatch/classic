@@ -6,6 +6,23 @@ http://databinder.net
 
 Version History
 
+0.4	Integration with Wicket 1.2 beta 2 and exploitation of its 
+	built-in Ajax capabilities. Databinder's new SearchPanel component 
+	provides ready-made live search functionality, and all three 
+	example applications have been updated to use Ajax as 
+	appropriate (or in some cases, just to show how it works).
+
+	HibernateObjectModel can now be initialized with a query for the 
+	not-so-special case of eager fetch joins and scalar results. 
+
+	In existing Databinder applications, subclasses of DataApplication 
+	must change the visibility of getHomePage() from protected to 
+	public, as Wicket has added exactly that method to its base 
+	Application class. Other changes to your applications may be 
+	necessary; see Wicket's 1.2 migration guide for more information:
+
+	http://wicket-wiki.org.uk/wiki/index.php/Migrate-1.2
+
 0.3	New helper components: TextileLabel and DateLabel. The former 
 	renders its content using JTextile (modified for Java's built-in 
 	regular expression processor) and the latter using 
