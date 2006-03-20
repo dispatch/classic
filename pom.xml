@@ -3,7 +3,7 @@
   <groupId>net.databinder</groupId>
   <artifactId>databinder</artifactId>
   <name>Databinder</name>
-  <version>0.4-SNAPSHOT</version>
+  <version>0.4</version>
   <description>A simple bridge from Wicket to Hibernate</description>
   <url>http://databinder.net</url>
   <inceptionYear>2005</inceptionYear>
@@ -15,8 +15,8 @@
     </license>
   </licenses>
   <scm>
-    <connection>scm:svn:svn://localhost/databinder/trunk</connection>
-    <developerConnection>scm:svn:svn://localhost/databinder/trunk</developerConnection>
+    <connection>scm:svn:svn://localhost/databinder/tags/r0.4</connection>
+    <developerConnection>scm:svn:svn://localhost/databinder/tags/r0.4</developerConnection>
   </scm>
   <organization>
     <name>Nathan Hamblen</name>
@@ -40,6 +40,12 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.3</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-annotations</artifactId>
       <version>3.1beta8</version>
@@ -60,13 +66,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-	<dependency>
-		<groupId>javax.servlet</groupId>
-		<artifactId>servlet-api</artifactId>
-		<version>2.3</version>
-		<type>jar</type>
-		<scope>provided</scope>
-	</dependency>
     <dependency>
       <groupId>c3p0</groupId>
       <artifactId>c3p0</artifactId>
