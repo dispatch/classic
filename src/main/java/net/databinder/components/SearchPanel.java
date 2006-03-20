@@ -90,9 +90,6 @@ public abstract class SearchPanel extends Panel {
 					new PackageResourceReference(this.getClass(), "clear.png")));
 			clearWrap.add(clearLink);
 
-			clearWrap.add( new Image("clearGhost", 
-					new PackageResourceReference(this.getClass(), "clear.png")));
-
 			// listen on key up events
 			search.add(new AjaxFormComponentUpdatingBehavior("onkeyup") {
 				protected void onUpdate(AjaxRequestTarget target) {

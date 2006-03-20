@@ -11,19 +11,14 @@
 <wicket:panel>
 
 <form wicket:id="searchForm">
-	<div>
-		<!-- Lots of floating divs below since IE fumbles inline AJAX targets -->
-		<div id="searchEntry">
-			Search <span wicket:id="searchWrap">
-				<input class="searchField" wicket:id="search" id="search" type="text" />
-			</span>
-		</div>
-		<div wicket:id="clearWrap" class="clearbutton">
+	<div class="searchPanel">
+		Search <span wicket:id="searchWrap">
+			<input class="searchField" wicket:id="search" id="search" type="text" />
+		</span>
+		<span wicket:id="clearWrap" class="clearbutton">
 			<a wicket:id="clearLink" title="Clear Search">
 				<img src="clear.png" wicket:id="clear" /></a>
-			<!-- ghost to hold place when the clear img isn't rendered -->
-			<img src="clear.png" wicket:id="clearGhost" id="clearGhost" />
-		</div>
+		</span>
 	</div>
 </form>
 
