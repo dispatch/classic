@@ -4,7 +4,7 @@
 		Nathan Hamblen
 		------------------
 
-Version 0.3
+Version 0.4
 
 *What it is
 
@@ -21,7 +21,7 @@ Version 0.3
 
 *Example applications
 
-	To get a better idea of how it all fits together, check out the source code and live demos of the {{{examples.html}example applications}}.
+	To get a better idea of how it all fits together, check out the source code and live demos of the {{{examples.html}example applications}}. And all three are loaded with enough <<Wicket-powered Ajax>> to keep you from dozing off.
 
 *Getting started (and getting finished)
 
@@ -31,4 +31,4 @@ Version 0.3
 
 *Still got questions?
 
-	Please see the {{{faq.html}FAQ}}. In fact, take a look even if you <don’t> have questions. You might learn something.
+	Please see the {{{faq.html}FAQ}}. In fact, take a look even if you <don’t> have questions. It’s just good manners.

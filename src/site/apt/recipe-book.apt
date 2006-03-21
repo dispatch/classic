@@ -8,9 +8,9 @@ Recipe book example application
 
 *Description
 
-	This example is a functional recipe book, with each recipe having an ingredient list and a free-form procedure (how to prepare) section rendered as {{{http://textism.com/tools/textile/} Textile}}.
+	This example is a functional recipe book, with each recipe having an ingredient list and a free-form procedure (how to prepare) section rendered as {{{http://textism.com/tools/textile/} Textile}}. The Ajax <<<SearchPanel>>> from the {{{phone-directory.html} last example}} reports for duty in this one as well. And in another bit of Wicket 1.2 goodness, the recipe URLs along the left column are so "friendly" you might have trouble getting rid of them.
 
-	You can {{{/releases/recipe-0.3.tar.gz} download}} the whole thing as a Maven 2 project, or just {{{/recipe/app} run it here}} to see how it works. Add an heirloom recipe! If someone beats you to the broccoli casserole, there’s always congealed salad.
+	You can {{{/releases/recipe-0.4.tar.gz} download}} the recipe book as a Maven 2 project, or just {{{/recipe/app} run it here}} to see how it works. Add an heirloom recipe! If someone beats you to the broccoli casserole, there’s always congealed salad.
 	
 *Source files
 

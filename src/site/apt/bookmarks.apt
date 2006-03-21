@@ -8,7 +8,7 @@ Bookmarks example application
 
 *Description
 
-	This is a very small Web application for adding and deleting Web bookmarks. Its meager sources appear below, excluding package and import statements in Java. You can also {{{/releases/bookmark-0.3.tar.gz} download}} it as a Maven 2 project.
+	This is a very small Web application for adding and deleting Web bookmarks, but it manages to squeeze in just a touch of Ajax — can you find it? The sources appear below, excluding package and import statements in Java. You can also {{{/releases/bookmark-0.4.tar.gz} download}} it as a Maven 2 project.
 	
 	After you’ve skimmed through the code,  {{{/bookmark/app} add your own favorite site}}.
 	
@@ -21,7 +21,7 @@ Bookmarks example application
 public class BookmarkApplication extends DataApplication {
 
 	/** Go to ListAndAdd (the only page) if no page requested. */
-	protected Class getHomePage() {
+	public Class getHomePage() {
 		return ListAndAdd.class;
 	}
 	
@@ -95,23 +95,25 @@ public class Bookmark {
 <wicket:extend>
 
 <h1 wicket:id="pageTitleHeader">Bookmarks</h1>
-<ul>
-	<li wicket:id="bookmarks">
-		<a wicket:id="url"href="#"><span wicket:id="name">My bookmark</span></a> 
-		&mdash; <span class="date" wicket:id="created">Sun March 5, '06 16:49 EST</span>
-		<a wicket:id="delete" href="#" title="Delete this item" 
-		 onclick="return confirm('Are you sure you want to delete this bookmark?');">
-			<img wicket:id="trash" src="trash.png" alt="Delete" />
-		</a>
-	</li>
+<div wicket:id="bookmarksWrap"> <!-- need wrapper for AJAX target -->
+	<ul>
+		<li wicket:id="bookmarks">
+			<a wicket:id="url"href="#"><span wicket:id="name">My bookmark</span></a> 
+			&mdash; <span class="date" wicket:id="created">Sun March 5, '06 16:49 EST</span>
+			<a wicket:id="delete" href="#" title="Delete this item" 
+			 onclick="return confirm('Are you sure you want to delete this bookmark?');">
+				<img wicket:id="trash" src="trash.png" alt="Delete" />
+			</a>
+		</li>
 <wicket:remove>
-	<li>
-		<a href="#">My other bookmark</a>
-		&mdash; <span class="date">Sun March 5, '06 16:53 EST</span>
-		<a href="#"><img src="trash.png" /></a>
-	</li>
+		<li>
+			<a href="#">My other bookmark</a>
+			&mdash; <span class="date">Sun March 5, '06 16:53 EST</span>
+			<a href="#"><img src="trash.png" /></a>
+		</li>
 </wicket:remove>
-</ul>
+	</ul>
+</div>
 
 <h2>Add new bookmark</h2>
 <form wicket:id="entryForm">
@@ -170,23 +172,29 @@ public class ListAndAdd extends DataPage {
 		// custom styles for this page
 		add(new StyleLink("bookmarkStylesheet", ListAndAdd.class));
 		
+		final WebMarkupContainer bookmarksWrap = // wrapper to act as AJAX target
+			new WebMarkupContainer("bookmarksWrap");
+		add(bookmarksWrap.setOutputMarkupId(true));
+		
 		// data to list
 		final IModel listModel = new HibernateListModel("from Bookmark order by name");
 		// view of list
-		add(new PropertyListView("bookmarks", listModel) {
+		bookmarksWrap.add(new PropertyListView("bookmarks", listModel) {
 			protected void populateItem(final ListItem item) {
 				item.add(new WebLink("url")	// link to the bookmarked page
 					.add(new Label("name")));	// text to form body of anchor tag
 				// date the item was added, with format string
 				item.add(new DateLabel("created", "EE MMMM d, ’yy k:mm z"));
 				// link to delete this bookmark
-				item.add(new Link("delete") {
+				item.add(new AjaxLink("delete") {
 					/** Delete from persistent storage */
-					public void onClick() {
+					public void onClick(AjaxRequestTarget target) {
 						DataRequestCycle.getHibernateSession().delete(item.getModelObject());
 						// commit transaction (automatic only for form submit)
 						DataRequestCycle.getHibernateSession().getTransaction().commit();
 						listModel.detach();
+						// tell Wicket to update the bookmarks list through AJAX
+						target.addComponent(bookmarksWrap);
 					}
 				}.add(new Image("trash", // add trash can image as anchor content 
 						new PackageResourceReference(this.getClass(), "trash.png"))));
@@ -205,8 +213,7 @@ public class ListAndAdd extends DataPage {
 															// inside a BoundCompoundPropertyModel
 			add(new RequiredTextField("name")
 				.setLabel(new Model("Name"))); // Labels used in error messages
-			add(new RequiredTextField("url")
-					.add(new TypeValidator(URL.class)) // ensure a valid URL
+			add(new RequiredTextField("url", URL.class) // required, type validation
 					.setLabel(new Model("URL")));
 		}
 		/**
@@ -219,9 +226,10 @@ public class ListAndAdd extends DataPage {
 		}
 	}
 }
-
 ------------------------------------------------------------
 
 *Next…
 
-	Got all that? Then head on to the {{{phone-directory.html}phone directory}} corral, hotshot.
+	Did you find it? The Ajax is in the delete function; it deletes a bookmark without reloading the page (yes, just for kicks).
+
+	Now head on to the {{{phone-directory.html}phone directory}} corral for a little more excitement.
