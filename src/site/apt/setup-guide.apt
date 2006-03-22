@@ -60,9 +60,13 @@ mvn archetype:create -DarchetypeGroupId=net.databinder \
 
 *Database configuration
 
-	Your project will have a default database configuration in <<<src/main/resources/hibernate.properties>>>. If you have a MySQL server running on localhost with no root password (and you’re crazy), you don‘t need to change anything. 
+	Your project will have a default database configuration in <<<src/main/resources/hibernate.properties>>>. If you have a MySQL server running on localhost with no root password (Don’t wear a seat belt either, huh?), you don‘t need to change anything.
 
 	This is also your chance to change the database name if you don’t want it to match your artifactId. Create the database if you need to, but don’t worry about creating tables because Hibernate will do that itself.
+
+-----------------------------------------------------
+mysqladmin -uroot create myExample
+-----------------------------------------------------
 
 *Fire it up
 
@@ -98,8 +102,10 @@ mvn -Declipse.downloadSources=true eclipse:eclipse
 
 *Make an application
 
-	The rest is up to you. Check out the {{{examples.html}examples}} if you haven’t already, and try running them locally.
+	The rest is up to you. Read through the {{{examples.html}examples}} if you haven’t already, and try running them locally. Each one uses a different database; see their <<<hibernate.properties>>> files.
 
-	When you add annotated classes to your Hibernate configuration, tables to hold them and their mapped properties will be automatically created when Jetty is starting up. Tables and columns will never be deleted, so drop them or the entire database yourself whenever you want a fresh start.
+	When you add annotated classes to your Hibernate configuration, tables to hold them and their mapped properties will be automatically created as your application is starting up. Tables and columns will never be deleted, so drop them or the entire database yourself whenever you want a fresh start.
+
+	If you run into trouble with Hibernate, check the {{{http://www.hibernate.org/329.html} Annotations FAQ}} for some sneaky traps they’ve lain. And if you need to do something complicated, it’s probably outlined somewhere in the {{{ http://www.hibernate.org/hib_docs/annotations/reference/en/html/}annotations}} or {{{http://www.hibernate.org/5.html#A3}core}} documentation.
 
 	Now, seriously, go have fun with database programming.

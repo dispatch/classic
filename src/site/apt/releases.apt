@@ -8,7 +8,15 @@ Releases
 
 *Downloading
 
-	Though it’s possible to download Databinder from the links below (and its {{{dependencies.html}dependencies}} from all over the Web), it’s not recommended. Please see the {{{setup-guide.html}Setup guide}} for detailed start-to-finish instructions using Maven 2. If you’re upgrading, skim through it for new dependency versions.
+	Though it’s possible to download Databinder from the links below (and its {{{dependencies.html}dependencies}} from all over the Web), it’s not recommended. Please see the {{{setup-guide.html}Setup guide}} for detailed start-to-finish instructions using Maven 2. If you’re upgrading, just increment the Databinder version number in your <<<pom.xml>>>.
+
+*Version 0.4
+
+	Integration with Wicket 1.2 beta 2 and exploitation of its built-in Ajax capabilities. Databinder's new {{{/javadoc/net/databinder/components/SearchPanel.html}SearchPanel}} component provides ready-made live search functionality, and all three {{{examples.html}example}} applications have been updated to use Ajax as appropriate (or in some cases just to show how it works).
+
+	{{{/javadoc/net/databinder/models/HibernateObjectModel.html}HibernateObjectModel}} can now be initialized with a query for the not-so-special case of eager fetch joins and scalar results.
+
+	In existing Databinder applications, subclasses of {{{/javadoc/net/databinder/DataApplication.html}DataApplication}} must <<change the visibility of getHomePage()>> from protected to public, as Wicket has added exactly that method to its base Application class. Other changes to your applications may be necessary; see Wicket's {{{http://wicket-wiki.org.uk/wiki/index.php/Migrate-1.2}1.2 migration guide}} for more information.
 
 *Version 0.3
 

@@ -8,7 +8,7 @@ Bookmarks example application
 
 *Description
 
-	This is a very small Web application for adding and deleting Web bookmarks, but it manages to squeeze in just a touch of Ajax — can you find it? The sources appear below, excluding package and import statements in Java. You can also {{{/releases/bookmark-0.4.tar.gz} download}} it as a Maven 2 project.
+	This is a very small Web application for adding and deleting Web bookmarks, with just a touch of Ajax — can you find it? The sources appear below, excluding package and import statements in Java. You can also {{{/releases/bookmark-0.4.tar.gz} download}} it as a Maven 2 project.
 	
 	After you’ve skimmed through the code,  {{{/bookmark/app} add your own favorite site}}.
 	
