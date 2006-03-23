@@ -18,6 +18,16 @@ Releases
 
 	In existing Databinder applications, subclasses of {{{/javadoc/net/databinder/DataApplication.html}DataApplication}} must <<change the visibility of getHomePage()>> from protected to public, as Wicket has added exactly that method to its base Application class. Other changes to your applications may be necessary; see Wicket's {{{http://wicket-wiki.org.uk/wiki/index.php/Migrate-1.2}1.2 migration guide}} for more information.
 
+	{{{/releases/databinder-0.4.tar.gz}Datbinder library & source}}
+	
+	{{{/releases/data-app-0.4.tar.gz}Data-app archetype}}
+
+	{{{/releases/bookmark-0.4.tar.gz}Bookmark example}}
+	
+	{{{/releases/directory-0.4.tar.gz}Phone directory example}}
+
+	{{{/releases/recipe-0.4.tar.gz}Recipe book example}}
+
 *Version 0.3
 
 	New helper components: <<<TextileLabel>>> and <<<DateLabel>>>. The former renders its content using {{{http://philwilson.org/projects/jtextile/}JTextile}} (modified for Java’s built-in regular expression processor) and the latter using {{{http://java.sun.com/j2se/1.5.0/docs/api/java/text/SimpleDateFormat.html}SimpleDateFormat}} with a supplied format string. A new {{{recipe-book.html}recipe book example}} demonstrates the Textile support, as well as some basic Panel use, embedded Hibernate objects, and JavaScript.

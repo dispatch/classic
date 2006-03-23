@@ -29,6 +29,15 @@
 	<p>You may decide that your mature application will benefit from configuration and management through <a href="http://springframework.org/">Spring</a>, which does its own Hibernate session (and transaction) management.</p>
       </answer>
     </faq>
+    <faq id="uptodate">
+      <question>
+			Why can’t I use the latest snapshot of Wicket—is this project even <b>active</b> anymore?
+      </question>
+      <answer>
+        <p>Okay, take a deep breath. Relax. Yes, Databinder is alive and well. There is a lag, partly intentional, partly unavoidable, between dependency releases and Databinder releases. The first priority of Databinder is to be easy to set up and learn for novices, and this site will do its best to direct you to something polished and complete.</p>
+		<p>But once you’ve learned the basics, it’s perfectly reasonable to want the newest toys. For minor Wicket updates, just add them to your <tt>pom.xml</tt> (and <tt>mvn install</tt> them from source if they aren't on the <a href="http://repo1.maven.org/maven2/wicket">repo</a>). Bigger updates will require follwing a <a href="http://technically.us/n8">certain weblog</a> where prerelease versions will be discreetly revealed to the Databinder intelligentsia. <i>Shhh!</i></p>
+      </answer>
+    </faq>
   </part>
   
 
