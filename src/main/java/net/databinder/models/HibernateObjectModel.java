@@ -28,6 +28,8 @@ import javax.persistence.Version;
 import org.hibernate.Query;
 
 import net.databinder.DataRequestCycle;
+import org.hibernate.Session;
+import org.hibernate.proxy.HibernateProxy;
 import wicket.model.LoadableDetachableModel;
 
 /**
@@ -36,6 +38,9 @@ import wicket.model.LoadableDetachableModel;
  */
 
 public class HibernateObjectModel extends LoadableDetachableModel {
+	/** Used preferentially in loading objects. */
+	private String entityName;
+	/** Used if entityName unavailable, or for new objects. */
 	private Class objectClass;
 	private Serializable objectId;
 	private String queryString;
@@ -91,23 +96,37 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 	 */
 	public void setPersistentObject(Object persistentObject) {
 		clearPersistentObject();
-		objectId = DataRequestCycle.getHibernateSession().getIdentifier(persistentObject);
-		objectClass = persistentObject.getClass();
+		Session sess = DataRequestCycle.getHibernateSession();
+		objectId = sess.getIdentifier(persistentObject);
+		// the entityName, rather than the objectClass, will be used to load
+		entityName = sess.getEntityName(persistentObject);
 	}
 	
 	/**
-	 * Disassociates this object from any persitant object, but retains the class information.
+	 * Disassociates this object from any persitant object, but retains the class
+	 * for contructing a blank copy if requested.
 	 * @see HibernateObjectModel(Class objectClass)
 	 */
 	public void clearPersistentObject() {
+		Object o = getObject(null);
+		if (o != null)
+			if (o instanceof HibernateProxy)
+				objectClass = ((HibernateProxy)o).getHibernateLazyInitializer()
+					.getImplementation().getClass();
+			else
+				objectClass = o.getClass();
+		entityName = null;
 		objectId = null;
 		queryBinder = null; 
-		queryString =null;
+		queryString = null;
 		detach();
 	}
 	
 	/**
-	 * Load the object through Hibernate, or contruct a new instance if it is not bound to an id.
+	 * Load the object through Hibernate, or contruct a new instance if it is not 
+	 * bound to an id. This method uses the entityName to load when possible, simply
+	 * because that is the recomended method. A correct (unproxied) objectClass
+	 * is always available for contructing empty objects.
 	 * @throws org.hibernate.HibernateException on load error
 	 */
 	@Override
@@ -118,10 +137,14 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to instantiate object. Does it have a default constructor?", e);
 		}
-		if (objectId != null)
-			return DataRequestCycle.getHibernateSession().load(objectClass, objectId);
+		Session sess = DataRequestCycle.getHibernateSession();
+		if (objectId != null) {
+			if (entityName != null)
+				return sess.load(entityName, objectId);
+			return sess.load(objectClass, objectId);
+		}			
 		
-		Query query = DataRequestCycle.getHibernateSession().createQuery(queryString);
+		Query query = sess.createQuery(queryString);
 		// if querybinder was null in constructor, that's weird, but continue
 		if (queryBinder != null)
 			queryBinder.bind(query);
@@ -149,5 +172,13 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 							throw new RuntimeException(e);
 						}
 		return null;
+	}
+
+	public String getEntityName() {
+		return entityName;
+	}
+
+	public void setEntityName(String entityName) {
+		this.entityName = entityName;
 	}
 }
