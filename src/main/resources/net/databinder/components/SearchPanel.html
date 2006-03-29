@@ -12,13 +12,17 @@
 
 <form wicket:id="searchForm">
 	<div class="searchPanel">
-		Search <span wicket:id="searchWrap">
-			<input class="searchField" wicket:id="search" id="search" type="text" />
-		</span>
-		<span wicket:id="clearWrap" class="clearbutton">
-			<a wicket:id="clearLink" title="Clear Search">
-				<img src="clear.png" wicket:id="clear" /></a>
-		</span>
+		<table><tbody> <!-- a table calms IE's Ajax jumpiness -->
+			<tr>
+				<td>Search</td>
+				<td><span wicket:id="searchWrap">
+					<input class="searchField" wicket:id="search" id="search" type="text" />
+				</span></td>
+				<td><span wicket:id="clearWrap">
+					<a wicket:id="clearLink" title="Clear Search"><img src="clear.png" wicket:id="clear" /></a>
+				</span></td>
+			</tr>
+		</tbody></table>
 	</div>
 </form>
 
