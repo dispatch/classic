@@ -106,6 +106,15 @@
       </answer>
     </faq>
 
+    <faq id="help">
+      <question>
+        Speaking of “help,” I need some. Help me!
+      </question>
+      <answer>
+        <p>Please ask your question in the <a href="forum/">forum</a>.</p>
+      </answer>
+    </faq>
+
   </part>
 
   <part>
@@ -127,7 +136,7 @@
       </question>
       <answer>
         <p>A New York programer who uses Wicket at his day job, loves it, and hopes that a dose of database practicality is all it needs to take over the world.</p>
-        <p> Write me an <a href="mailto:nathan@technically.us">e-mail</a> for your suggestions, rants, or raves. Read my <a href="http://technically.us/n8">technical weblog</a> for my suggestions, rants, and raves.</p>
+        <p> Write me an <a href="mailto:nathan@technically.us">e-mail</a> for your off-the-record suggestions, rants, or raves. Read my <a href="http://technically.us/n8">technical weblog</a> for my on-the-record suggestions, rants, and raves.</p>
         <p>— Nathan Hamblen</p>
       </answer>
     </faq>

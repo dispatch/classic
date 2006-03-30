@@ -110,4 +110,4 @@ mvn -Declipse.downloadSources=true eclipse:eclipse
 
 	If you run into trouble with Hibernate, check the {{{http://www.hibernate.org/329.html} Annotations FAQ}} for some sneaky traps they’ve lain. And if you need to do something complicated, it’s probably outlined somewhere in the {{{ http://www.hibernate.org/hib_docs/annotations/reference/en/html/}annotations}} or {{{http://www.hibernate.org/5.html#A3}core}} documentation.
 
-	Now, seriously, go have fun with database programming.
+	Now go pop a wheelie. If you skin your knees, we’ll help you out on the {{{/forum}forum}}.
