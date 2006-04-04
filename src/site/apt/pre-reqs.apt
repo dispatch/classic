@@ -8,23 +8,25 @@ Prerequisites
 
 *Java
 
-	Databinder requires a {{{http://java.sun.com/j2se/1.5.0/download.jsp}J2SE Development Kit (JDK) 5.0}} supporting Java 1.5. For Windows, download and execute an installer from Sun’s site. On Mac OS X you’ll need {{{http://www.apple.com/support/downloads/java2se50release3.html}Java 2 SE 5.0 Release 3}}. For Linux, the easiest course is to download the rpm or self-extracting executable from Sun, then install a wrapper package as appropriate for your distribution.
+	Databinder requires a {{{http://java.sun.com/j2se/1.5.0/download.jsp}J2SE Development Kit (JDK) 5.0}} supporting Java 1.5.
+	
+	For Windows, download and execute an installer from Sun’s site. On Mac OS X you’ll need {{{http://www.apple.com/support/downloads/java2se50release3.html}Java 2 SE 5.0 Release 3}}. For Linux, the easiest course is to download the rpm or self-extracting executable from Sun, then install a wrapper package as appropriate for your distribution.
 
-	When running <<<java -version>>> on a command line returns at least 1.5, you’re ready for Maven. (Ignore for Mac OS X; installing the update above is sufficient.)
+	When running <<<java -version>>> on a command line returns at least 1.5, you’re ready for Maven. (For Mac OS X, ignore that and just be sure you’ve installed the update above.)
 
 *Maven
 
 	Download {{{http://maven.apache.org/download.html}Maven 2}} if you haven’t already. (It’s possible to use Databinder without Maven, but these instructions assume you’re too busy to track down a dozen {{{dependencies.html}dependencies}} yourself.)
 	
-	Installation of Maven is not automated on any platform. Instead, extract the files to an appropriate directory (/usr/local/ is good for Linux and Mac OS X, with a symlink of /usr/local/maven) and add the bin directory to your executable search path. On Mac OS X, you’ll need to specify that Maven 2 use version 1.5 of the JDK. You can do this, and set your path, with the following in your ~/.bash_profile :
+	Installation of Maven is not automated on any platform. Instead, extract the files to an appropriate directory (/usr/local/ is good for Linux and Mac OS X, with a symlink of /usr/local/maven) and add the bin directory to your executable search path. On Mac OS X, you’ll need to specify that Maven use version 1.5 of the JDK. You can do this, and set your path, with the following in your ~/.bash_profile :
 
 -----------------------------------------------------
 export PATH=/usr/local/maven/bin:$PATH
-export JAVA_VERSION=1.5
+export JAVA_VERSION=1.5	# for Mac
 -----------------------------------------------------
 
 	The command <<<mvn -v>>> should report a version number of at least 2.0.3.
 
 *Next…
 
-	Start pulling down jars in the {{{basic-setup.html}basic setup}}.
+	Start pulling down jars for a {{{basic-setup.html}basic setup}}.

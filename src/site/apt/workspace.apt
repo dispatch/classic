@@ -1,10 +1,10 @@
 		------------------
-		Databinder: Workspace
+		Databinder: Workspace optimization
 		-----------------
 		Nathan Hamblen
 		------------------
 
-Workspace
+Workspace optimization
 
 *Why bother?
 
@@ -40,13 +40,15 @@ mvn -Declipse.downloadSources=true eclipse:eclipse
 	
 	NetBeans is on the verge of greatness (and has been perched there since 1997). The good news is that it includes a servlet container (Tomcat) and an HTML Editor that’s almost as good as Amateras. Because it uses Swing instead of SWT, it looks and feels much better than Eclipse on Mac OS X, much worse than Eclipse on Linux, and about the same on Windows. So if you’re a GNOME-head, don’t waste your time (until Java 6), but Aquarians will be right at home.
 	
-	The bad news is NetBeans is still distinctly <second fiddle> to Eclipse in the free Java IDE orchestra. You won’t find as much support using it, or add-on goodies written for it. {{{http://maven.apache.org/guides/mini/guide-ide-netbeans/guide-ide-netbeans.html}These instructions}} for generating NetBeans projects with Maven 2 seem to be a complete fiction, so you’re left with the {{{http://docs.codehaus.org/display/MEVENIDE/MevenideNetBeans2.0}mevenide NetBeans plugin}}}. It seems to work all right, once you’ve patched over the second major bug described on its homepage. But compared to the lightweight route of Jetty+Eclipse with background compilation, it’s about as agile as a bean bag.
+	The bad news is NetBeans is still distinctly <second fiddle> to Eclipse in the free Java IDE orchestra. You won’t find as much support for using it, or add-on goodies written for it. {{{http://maven.apache.org/guides/mini/guide-ide-netbeans/guide-ide-netbeans.html}These instructions}} for generating NetBeans projects with Maven 2 seem to be a complete fiction, so you’re left with the {{{http://docs.codehaus.org/display/MEVENIDE/MevenideNetBeans2.0}mevenide NetBeans plugin}}.
 	
-	So don’t go the NetBeans route unless you’re just looking to kill a Saturday afternoon. This section will be expanded, and the recommendation changed, as the connections between Maven 2 and NetBeans 5 improve.
+	Things seem to work all right, once you’ve patched over the second major bug described on the mevenide homepage. But compared to the lightweight route of Jetty+Eclipse with background compilation, it’s about as agile as a bean bag.
+	
+	Don’t go the NetBeans route unless you’re just looking to kill a Saturday afternoon. This section will be expanded, and the recommendation changed, as the connections between Maven 2 and NetBeans 5 improve.
 
 *Ok, <<now>> make an application
 
-	With your IDE tweaked-out and ready to go, it’s time to stop configuring and start programming. Read through the {{{examples.html}examples}} if you haven’t already, and try running them locally. Each one uses a different database; see their <<<hibernate.properties>>> files.
+	With your IDE tweaked-out and ready to go, it’s time to stop configuring and start programming. Read through the {{{examples.html}examples}} if you haven’t already, and try running them locally. Each one uses a different database, as described in its <<<hibernate.properties>>>.
 
 	When you add annotated classes to your Hibernate configuration, tables to hold them and their mapped properties will be automatically created as your application is starting up. Tables and columns will never be deleted, so drop them or the entire database yourself whenever you want a fresh start.
 
