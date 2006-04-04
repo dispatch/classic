@@ -34,7 +34,7 @@ mvn -Declipse.downloadSources=true eclipse:eclipse
 
 	{{{http://amateras.sourceforge.jp/cgi-bin/fswiki_en/wiki.cgi?page=EclipseHTMLEditor}Amateras HTML Editor}} is an HTML editor plugin with syntax folding and an almost-live preview. (Turn on the preview pane in preferences; it will update after every save.) Amateras’s install is a little tricky so you may want to postpone it until you’re working heavily in HTML. 
 	
-	When you do have it installed, turn off HTML syntax validation in the Amateras tab of your project preferences, as it will red-flag every instance of “wicket:preview.”
+	When you do have it installed, turn off HTML syntax validation in the Amateras tab of your project preferences, as it will red-flag every instance of “wicket:extend,” etc.
 
 *NetBeans
 	
