@@ -76,8 +76,10 @@ mvn compile jetty6:run
 
 	The Jetty plugin will poll the classes directory for changes. Leave it running and try editing <<<MyDataPage.java>>> (deep under the src directory) to return a different page name. Run <<<mvn compile>>>, and Jetty will see the change. Reload your browser, click through the session expiration notice, and you should see the new name.
 
-	<<Bug alert!>> This plugin is prerelease software. While it's handy to get things running pronto, you will run into problems with form validation and character encoding. It's much better to test your application in a release-quality servlet container, as described in the next section.
+	<<Bug alert!>> The jetty6 plugin is prerelease software. While it's handy to get things running pronto, you will run into problems with form validation and character encoding. It's much better to test your application in a release-quality servlet container, as described in the next section.
 
 *Next…
 
-	No matter how old-school you are, editing in vi and testing your application without a debugger is not the fastest way to program. Set up a more efficient {{{workspace.html}workspace}} before you get too ambitious.
+	No matter how old-school you are, editing in vi and testing your application without a debugger is not the fastest way to program.
+	
+	Set up a more efficient {{{workspace.html}workspace}} before you get too ambitious.
