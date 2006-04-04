@@ -1,0 +1,83 @@
+		------------------
+		Databinder: Basic setup
+		-----------------
+		Nathan Hamblen
+		------------------
+
+Basic setup
+
+*Special dependencies
+
+	Most of the dependencies you need will be automatically downloaded by Maven from a remote repository, but two by Sun can’t be held there. Go to {{{http://java.sun.com/products/jta/}this page}} to get the JTA interfaces from the Download link next to “Class Files 1.0.1B,” then paste the following into a shell in your download directory:
+
+-----------------------------------------------------
+mvn install:install-file -DgroupId=javax.transaction \
+  -DartifactId=jta -Dversion=1.0.1B -Dpackaging=jar \
+  -Dfile=jta-1_0_1B-classes.zip
+-----------------------------------------------------
+
+	(Or use jta.jar from the Hibernate 3.1.1 distribution, if you have that already — just change the <<<-Dfile=>>> parameter above.)
+
+	For the {EJB} 3.0 <public final draft> dependency, you’ll need to download {{{http://prdownloads.sourceforge.net/hibernate/hibernate-annotations-3.1beta8.tar.gz?download}Hibernate Annotations}}, expand the archive, change to its lib directory, then:
+
+-----------------------------------------------------
+mvn install:install-file -DgroupId=javax.persistence \
+  -DartifactId=ejb -Dversion=3.0-public-draft-20060118 \
+  -Dpackaging=jar -Dfile=ejb3-persistence.jar
+-----------------------------------------------------
+
+*Maven repository mirrors
+
+	Maven 2 is configured by default to use a single repository, one that sometimes suffers from overwhelming demand. If you notice that downloads are taking longer than is reasonable, try using a mirror.
+
+	Mirrors are defined in either the global or user-specific <<<settings.xml>>>. Unix-y people can run the commands below to download a  mirror settings file to the correct directory:
+
+-----------------------------------------------------
+curl http://databinder.net/releases/settings.xml > ~/.m2/settings.xml
+-----------------------------------------------------
+
+	Windows users, download the {{{http://databinder.net/releases/settings.xml }same file}} and put it in <<<\\Documents and Settings\\USERNAME\\.m2\\>>> 
+
+	This settings file is pulled from Maven’s {{{http://maven.apache.org/guides/mini/guide-mirror-settings.html}guide to mirrors}}, with the default repository commented out. The mirror picker seems to like the last repository in the list, though its behavior is undocumented.
+
+*Create a Databinder project
+
+	To get started, tell Maven to create a project based on Databinder’s “data-app” archetype.
+
+-----------------------------------------------------
+mvn archetype:create -DarchetypeGroupId=net.databinder \
+  -DarchetypeArtifactId=data-app -DarchetypeVersion=0.4 \
+  -DgroupId=example -DartifactId=myExample
+-----------------------------------------------------
+
+	A Maven groupId is your company or organization name, “example” is used here and “myExample” is the name of the project. 
+
+*Database configuration
+
+	Your project will have a default database configuration in <<<src/main/resources/hibernate.properties>>>. If you have a MySQL server running on localhost with no root password (Don’t wear a seat belt either, huh?), you don‘t need to change anything.
+
+	This is also your chance to change the database name if you don’t want it to match your artifactId. Create the database if you need to, but don’t worry about creating tables because Hibernate will do that itself.
+
+-----------------------------------------------------
+mysqladmin -uroot create myExample
+-----------------------------------------------------
+
+*Fire it up
+
+	<<Note:>> All <<<mvn>>> commands below should be run from the root directory of your project.
+
+	Your “data-app” based project is configured for the {{{http://jetty.mortbay.org/jetty6/maven-plugin/index.html}Jetty6 Maven plugin}}, so you can start the server in one step:
+
+-----------------------------------------------------
+mvn compile jetty6:run
+-----------------------------------------------------
+
+	More downloading ensues, and eventually Jetty will start up on port 8080. Try connecting to <<<http://localhost:8080/directory/app>>> and you should see your project name in orange.
+
+	The Jetty plugin will poll the classes directory for changes. Leave it running and try editing <<<MyDataPage.java>>> (deep under the src directory) to return a different page name. Run <<<mvn compile>>>, and Jetty will see the change. Reload your browser, click through the session expiration notice, and you should see the new name.
+
+	<<Bug alert!>> This plugin is prerelease software. While it's handy to get things running pronto, you will run into problems with form validation and character encoding. It's much better to test your application in a release-quality servlet container, as described in the next section.
+
+*Next…
+
+	No matter how old-school you are, editing in vi and testing your application without a debugger is not the fastest way to program. Set up a more efficient {{{workspace.html}workspace}} before you get too ambitious.

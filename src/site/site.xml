@@ -16,7 +16,11 @@
         <item name="Phone directory" href="phone-directory.html"/>
         <item name="Recipe book" href="recipe-book.html"/>
       </item>
-      <item name="Setup guide" href="setup-guide.html"/>
+      <item name="Setup guide" href="setup-guide.html" collapse="false">
+        <item name="Prequisites" href="pre-reqs.html"/>
+        <item name="Basic setup" href="basic-setup.html"/>
+        <item name="Workspace" href="workspace.html"/>
+      </item>
       <item name="Javadoc" href="javadoc/"/>
       <item name="Releases" href="releases.html"/>
       <item name="License" href="license.html" />
