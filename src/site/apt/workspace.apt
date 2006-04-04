@@ -42,7 +42,7 @@ mvn -Declipse.downloadSources=true eclipse:eclipse
 	
 	The bad news is NetBeans is still distinctly <second fiddle> to Eclipse in the free Java IDE orchestra. You won’t find as much support for using it, or add-on goodies written for it. {{{http://maven.apache.org/guides/mini/guide-ide-netbeans/guide-ide-netbeans.html}These instructions}} for generating NetBeans projects with Maven 2 seem to be a complete fiction, so you’re left with the {{{http://docs.codehaus.org/display/MEVENIDE/MevenideNetBeans2.0}mevenide NetBeans plugin}}.
 	
-	That plugin seems to work all right, once you’ve patched over the Web app bug described on the mevenide homepage. But compared to the lightweight route of Jetty+Eclipse with background compilation, it’s about as agile as a bean bag.
+	That plugin works all right, once you’ve patched over the Web app bug described on the mevenide homepage. But compared to the lightweight route of Jetty+Eclipse with background compilation, it’s about as agile as a bean bag.
 	
 	Don’t go the NetBeans route unless you’re just looking to kill a Saturday afternoon. This section will be expanded, and the recommendation changed, as the connections between Maven 2 and NetBeans 5 improve.
 
