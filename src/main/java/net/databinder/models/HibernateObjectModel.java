@@ -131,7 +131,7 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 	 */
 	@Override
 	protected Object load() {
-		if (objectClass == null && entityName == null)
+		if (objectClass == null && entityName == null && queryString == null)
 			return null;	// can't load without one of these
 		try {
 			if (objectId == null && queryString == null)
