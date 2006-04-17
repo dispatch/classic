@@ -37,18 +37,28 @@ import wicket.util.convert.IConverterFactory;
  * @author Nathan Hamblen
  */
 public abstract class DataApplication extends WebApplication {
+	/** true if in development mode, false if deployment */
 	private boolean development;
 	
 	/**
-	 * Configures this application for development or production, sets a home page,
+	 * Configures this application for development or production,
 	 * turns off default page versioning, and establishes a DataSession factory. 
-	 * Override for customization.
+	 * Development configuration is the default; set a JVM property of
+	 * wicket.configuration=deployment for production. (The context and init params
+	 * in wicket.protocol.http.WebApplication are not supported here). Override 
+	 * this method for further customization.
 	 */
 	@Override
 	protected void init() {
-		String configuration = System.getProperty("net.databinder.configuration", DEVELOPMENT);
+		// this databinder-specific parameter will eventually be dropped in favor
+		// of wicket.configuration
+		String configuration = System.getProperty("net.databinder.configuration");
+		if (configuration != null)
+			configure(configuration);
+		else
+			configuration = System.getProperty("wicket." + CONFIGURATION, DEVELOPMENT);
+		// (if using wicket.configuration, calling configure() is unnecessary)
 		development = configuration.equalsIgnoreCase(DEVELOPMENT);
-		configure(configuration);
 		// versioning doesn't do so much for database driven pages 
 		getPageSettings().setVersionPagesByDefault(false);
 
