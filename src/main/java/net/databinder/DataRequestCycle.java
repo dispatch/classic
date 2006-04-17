@@ -42,18 +42,22 @@ import wicket.protocol.http.WebSession;
  */
 public class DataRequestCycle extends WebRequestCycle {
 	private Session hibernateSession;
-	private static final SessionFactory hibernateSessionFactory;
+	private static SessionFactory hibernateSessionFactory;
 
-    static {
-        try {
-        	AnnotationConfiguration config = new AnnotationConfiguration();
-        	DataApplication app = ((DataApplication)Application.get());
-        	app.configureHibernate(config);
-            hibernateSessionFactory = config.buildSessionFactory();
-        } catch (Throwable ex) {
-            throw new ExceptionInInitializerError(ex);
-        }
-    }
+	/**
+	 * Init our static Hibernate session factory, triggering a general Hibernate
+	 * initialization.
+	 */
+	protected static void initHibernate() {
+		try {
+			AnnotationConfiguration config = new AnnotationConfiguration();
+			DataApplication app = ((DataApplication)Application.get());
+			app.configureHibernate(config);
+				hibernateSessionFactory = config.buildSessionFactory();
+		} catch (Throwable ex) {
+				throw new ExceptionInInitializerError(ex);
+		}
+  }
 	
 	public DataRequestCycle(final WebSession session, final WebRequest request, final Response response) {
 		super(session, request, response);
@@ -85,7 +89,9 @@ public class DataRequestCycle extends WebRequestCycle {
 	 */
     private static Session openSession()
             throws HibernateException {
-    			return hibernateSessionFactory.openSession();
+			if (hibernateSessionFactory == null)
+				initHibernate(); // called in DataApplication.init(), but can be overridden
+    	return hibernateSessionFactory.openSession();
     }
 	
     /**

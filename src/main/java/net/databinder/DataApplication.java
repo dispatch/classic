@@ -41,9 +41,9 @@ public abstract class DataApplication extends WebApplication {
 	private boolean development;
 	
 	/**
-	 * Configures this application for development or production,
-	 * turns off default page versioning, and establishes a DataSession factory. 
-	 * Development configuration is the default; set a JVM property of
+	 * Configures this application for development or production, turns off 
+	 * default page versioning, and establishes a DataSession factory, and 
+	 * initializes Hibernate. Development mode is the default; set a JVM property of
 	 * wicket.configuration=deployment for production. (The context and init params
 	 * in wicket.protocol.http.WebApplication are not supported here). Override 
 	 * this method for further customization.
@@ -76,7 +76,9 @@ public abstract class DataApplication extends WebApplication {
 			{
 				return newDataSession();
 			}
-    	});
+    });
+		
+		DataRequestCycle.initHibernate(); // don't wait for first request
 	}
 		
 	/**
