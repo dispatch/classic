@@ -29,12 +29,12 @@ import wicket.model.BoundCompoundPropertyModel;
 import wicket.model.IModel;
 
 /**
- * Simple ListVew subclass that wraps its item models in a BoundCompoundPropertyModel.
- * Useful for lists where the item components will be mapped through property expressions.
- * Also contains Link subclasses that can be used to move or remove list elements (which
- * could be nested in a standard ListView).
- * @author Nathan Hamblen
+ * This component has been replaced by wicket.markup.html.list.PropertyListView.
+ * Its static inner classes for list manipulation have been promoted to standard 
+ * classes in this package. Please update your code as this class will not live
+ * for much longer.
  */
+@Deprecated
 
 public abstract class PropertyListView extends ListView {
 
