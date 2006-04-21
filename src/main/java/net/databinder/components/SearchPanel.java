@@ -1,13 +1,13 @@
 package net.databinder.components;
 
+import net.databinder.models.IQueryBinder;
+
 import org.hibernate.Query;
 
-import net.databinder.models.IQueryBinder;
 import wicket.ajax.AjaxRequestTarget;
 import wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import wicket.ajax.markup.html.AjaxLink;
 import wicket.markup.html.PackageResourceReference;
-import wicket.markup.html.WebMarkupContainer;
 import wicket.markup.html.form.Form;
 import wicket.markup.html.form.TextField;
 import wicket.markup.html.image.Image;
@@ -64,14 +64,14 @@ public abstract class SearchPanel extends Panel {
 		public SearchForm(String id, IModel searchModel) {
 			super(id);
 
-			final WebMarkupContainer searchWrap = new WebMarkupContainer("searchWrap");
-			add(searchWrap.setOutputMarkupId(true));
+			final Wrapper searchWrap = new Wrapper("searchWrap");
+			add(searchWrap);
 			final TextField search = new TextField("search", searchModel);
 			search.setOutputMarkupId(true);
 			searchWrap.add(search);
 
-			final WebMarkupContainer clearWrap = new WebMarkupContainer("clearWrap");
-			add(clearWrap.setOutputMarkupId(true));
+			final Wrapper clearWrap = new Wrapper("clearWrap");
+			add(clearWrap);
 			final AjaxLink clearLink = new AjaxLink("clearLink") {
 				/** Clear field and register updates. */
 				public void onClick(AjaxRequestTarget target) {
