@@ -19,31 +19,21 @@
 
 package net.databinder.util;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Locale;
-
-import wicket.util.convert.ConversionException;
-import wicket.util.convert.converters.AbstractConverter;
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
- * Convert an object to a java.net.URL. Will be deprecated if a similar converter is
- * ever built into Wicket.
- * 
+ * Used to send browsers from the context root (where there is nothing of
+ * interest) to the Wicket servlet.
  * @author Nathan Hamblen
  */
-public class URLConverter extends AbstractConverter {
 
-	@Override
-	protected Class getTargetType() {
-		return URL.class;
-	}
-
-	public Object convert(Object obj, Locale arg1) {
-		try {
-			return new URL(obj.toString());
-		} catch (MalformedURLException e) {
-			throw new ConversionException(e);
-		}
+public class RedirectServlet extends HttpServlet {
+	
+	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		resp.sendRedirect(getInitParameter("redirectUrl"));
 	}
 }
