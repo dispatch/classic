@@ -25,11 +25,13 @@ import java.lang.reflect.Method;
 
 import javax.persistence.Version;
 
-import org.hibernate.Query;
-
 import net.databinder.DataRequestCycle;
+
+import org.hibernate.Query;
+import org.hibernate.QueryException;
 import org.hibernate.Session;
 import org.hibernate.proxy.HibernateProxy;
+
 import wicket.model.LoadableDetachableModel;
 
 /**
@@ -49,10 +51,13 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 	/**
 	 * @param objectClass class to be loaded and stored by Hibernate
 	 * @param objectId id of the persistent object
+	 * @throws org.hibernate.ObjectNotFoundException if objectId is not valid
 	 */
 	public HibernateObjectModel(Class objectClass, Serializable objectId) {
 		this.objectClass = objectClass;
 		this.objectId = objectId;
+		// load object early, provoking load exceptions when they can be easily caught
+		getObject(null);
 	}
 	
 	/**
@@ -82,10 +87,12 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 	 * Queries that do not return exactly one result will produce exceptions.
 	 * @param queryString query returning one result
 	 * @param queryBinder bind id or other parameters
+	 * @throws org.hibernate.HibernateException on load error
 	 */
 	public HibernateObjectModel(String queryString, IQueryBinder queryBinder) {
 		this.queryString = queryString;
 		this.queryBinder = queryBinder;
+		getObject(null);	// loads & retains object
 	}
 	
 	/**
@@ -150,7 +157,10 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 		// if querybinder was null in constructor, that's weird, but continue
 		if (queryBinder != null)
 			queryBinder.bind(query);
-		return query.uniqueResult();
+		Object o = query.uniqueResult();
+		if (o == null)
+			throw new QueryException("Returned no results", queryString);
+		return o;
 	}
 	
 	/**
