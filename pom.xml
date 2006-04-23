@@ -48,13 +48,15 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-annotations</artifactId>
-      <version>3.1beta8</version>
+      <version>3.1beta9</version>
     </dependency>
+<!-- this version included by annotations
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate</artifactId>
-      <version>3.1.2</version>
+      <version>3.2-CR1</version>
     </dependency>
+-->
     <dependency>
       <groupId>wicket</groupId>
       <artifactId>wicket</artifactId>
