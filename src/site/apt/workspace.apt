@@ -38,7 +38,7 @@ mvn -Declipse.downloadSources=true eclipse:eclipse
 
 *NetBeans
 	
-	NetBeans is on the verge of greatness — and has been perched there since 1997. The good news is that it includes a servlet container (Tomcat) and an HTML Editor that’s almost as good as Amateras. Because it uses Swing instead of SWT, it looks and feels much better than Eclipse on Mac OS X, much worse than Eclipse on Linux, and about the same on Windows. So if you’re a GNOME-head, don’t waste your time (until Java 6), but Aquarians Window-gazers will be right at home.
+	NetBeans is on the verge of greatness — and has been perched there since 1997. The good news is that it includes a servlet container (Tomcat) and an HTML Editor that’s almost as good as Amateras. Because it uses Swing instead of SWT, it looks and feels much better than Eclipse on Mac OS X, much worse than Eclipse on Linux, and about the same on Windows. So if you’re a GNOME-head, don’t waste your time (until Java 6), but Aquarians and Window-gazers will feel right at home.
 	
 	The bad news is NetBeans is still distinctly <second fiddle> to Eclipse in the free Java IDE orchestra. You won’t find as much support for using it, or add-on goodies written for it. {{{http://maven.apache.org/guides/mini/guide-ide-netbeans/guide-ide-netbeans.html}These instructions}} for generating NetBeans projects with Maven 2 seem to be a complete fiction, so you’re left with the {{{http://docs.codehaus.org/display/MEVENIDE/MevenideNetBeans2.0}mevenide NetBeans plugin}}.
 	
