@@ -22,13 +22,17 @@ package net.databinder;
 import java.net.URL;
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletResponse;
+
 import net.databinder.util.URLConverter;
 
 import org.hibernate.cfg.AnnotationConfiguration;
 
 import wicket.ISessionFactory;
 import wicket.Session;
+import wicket.protocol.http.BufferedWebResponse;
 import wicket.protocol.http.WebApplication;
+import wicket.protocol.http.WebResponse;
 import wicket.util.convert.Converter;
 import wicket.util.convert.IConverterFactory;
 
@@ -39,6 +43,9 @@ import wicket.util.convert.IConverterFactory;
 public abstract class DataApplication extends WebApplication {
 	/** true if in development mode, false if deployment */
 	private boolean development;
+	
+	/** true if cookieless use is supported through URL rewriting(defaults to true). */
+	private boolean cookielessSupported = true;
 	
 	/**
 	 * Configures this application for development or production, turns off 
@@ -117,5 +124,50 @@ public abstract class DataApplication extends WebApplication {
     		.setProperty("hibernate.c3p0.timeout","3000")
     		.setProperty("hibernate.c3p0.idle_test_period", "300");
     	}
+	}
+	
+	/**
+	 * If <code>isCookielessSupported()</code> returns false, this method returns
+	 * a custom WebResponse that disables URL rewriting.
+	 */
+	@Override
+	protected WebResponse newWebResponse(final HttpServletResponse servletResponse)
+	{
+		if (isCookielessSupported())
+			return super.newWebResponse(servletResponse);
+		if (getRequestCycleSettings().getBufferResponse())
+			return new BufferedWebResponse(servletResponse) {
+				@Override
+				public CharSequence encodeURL(CharSequence url) {
+					return url;
+				}
+			};
+		else
+			return (new WebResponse(servletResponse) {
+				@Override
+				public CharSequence encodeURL(CharSequence url) {
+					return url;
+				}
+			});
+	}
+
+	/**
+	 * @return  true if cookieless use is supported through URL rewriting.
+	 */
+	public boolean isCookielessSupported() {
+		return cookielessSupported;
+	}
+
+	/**
+	 * Set to false to disable URL rewriting and consequentally hamper cookieless 
+	 * browsing.  Users with cookies disabled, and more importantly search engines, 
+	 * will still be able to browse the application through bookmarkable URLs. Because
+	 * rewriting is disabled, these URLs will have no jsessionid appended and will 
+	 * remain static.
+	 * @param cookielessSupported  true if cookieless use is supported through 
+	 * URL rewriting
+	 */
+	protected void setCookielessSupported(boolean cookielessSupported) {
+		this.cookielessSupported = cookielessSupported;
 	}
 }

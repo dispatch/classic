@@ -60,7 +60,7 @@
     <dependency>
       <groupId>wicket</groupId>
       <artifactId>wicket</artifactId>
-      <version>1.2-rc2</version>
+      <version>1.2-rc3</version>
       <exclusions>
         <exclusion>
           <artifactId>log4j</artifactId>
