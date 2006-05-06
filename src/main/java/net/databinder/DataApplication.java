@@ -24,12 +24,14 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
 
+import net.databinder.components.PageExpiredCookieless;
 import net.databinder.util.URLConverter;
 
 import org.hibernate.cfg.AnnotationConfiguration;
 
 import wicket.ISessionFactory;
 import wicket.Session;
+import wicket.markup.html.pages.PageExpiredErrorPage;
 import wicket.protocol.http.BufferedWebResponse;
 import wicket.protocol.http.WebApplication;
 import wicket.protocol.http.WebResponse;
@@ -164,10 +166,23 @@ public abstract class DataApplication extends WebApplication {
 	 * will still be able to browse the application through bookmarkable URLs. Because
 	 * rewriting is disabled, these URLs will have no jsessionid appended and will 
 	 * remain static.
+	 * <p> The Application's "page expired" error page will be set to PageExpiredCookieless
+	 * if cookielessSupported is false, unless an alternate error page has already been
+	 * specified. This page will appear when cookieless users try to follow a link or 
+	 * form-submit that requires a session, informing them that cookies are required.
+	 * </p>
 	 * @param cookielessSupported  true if cookieless use is supported through 
 	 * URL rewriting
+	 * @see net.databinder.components.PageExpiredCookieless
 	 */
 	protected void setCookielessSupported(boolean cookielessSupported) {
+		Class expected = this.cookielessSupported ? 
+				PageExpiredErrorPage.class : PageExpiredCookieless.class;
+		
 		this.cookielessSupported = cookielessSupported;
+		
+		if (getApplicationSettings().getPageExpiredErrorPage().equals(expected))
+			getApplicationSettings().setPageExpiredErrorPage(cookielessSupported ?
+					PageExpiredErrorPage.class : PageExpiredCookieless.class);
 	}
 }
