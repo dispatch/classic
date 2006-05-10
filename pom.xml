@@ -36,6 +36,19 @@
           <tagBase>svn://localhost/databinder/</tagBase>
         </configuration>
       </plugin>
+          <plugin>
+            <inherited>true</inherited>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
     </plugins>
   </build>
   <dependencies>
@@ -95,6 +108,11 @@
     </plugins>
   </reporting>
   <distributionManagement>
+    <repository>
+      <id>databinder</id>
+      <name>Databinder repository</name>
+      <url>file:///var/dbwww/maven</url>
+    </repository>
     <site>
       <id>website</id>
       <url>file:///var/dbwww/</url>
