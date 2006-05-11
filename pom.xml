@@ -118,4 +118,11 @@
       <url>file:///var/dbwww/</url>
     </site>
   </distributionManagement>
+  <repositories>
+    <repository>
+      <id>wicket</id>
+      <name>Wicket repository</name>
+      <url>http://wicket.sourceforge.net/maven2</url>
+    </repository>
+  </repositories>
 </project>
