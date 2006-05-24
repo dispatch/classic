@@ -60,13 +60,13 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-annotations</artifactId>
-      <version>3.1beta9</version>
+      <version>3.2.0.cr1</version>
     </dependency>
 <!-- this version included by annotations
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate</artifactId>
-      <version>3.2-CR1</version>
+      <version>3.2.0.cr2</version>
     </dependency>
 -->
     <dependency>
