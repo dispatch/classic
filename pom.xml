@@ -3,7 +3,7 @@
   <groupId>net.databinder</groupId>
   <artifactId>databinder</artifactId>
   <name>Databinder</name>
-  <version>0.5-SNAPSHOT</version>
+  <version>0.5</version>
   <description>A simple bridge from Wicket to Hibernate</description>
   <url>http://databinder.net</url>
   <inceptionYear>2005</inceptionYear>
@@ -15,8 +15,8 @@
     </license>
   </licenses>
   <scm>
-    <connection>scm:svn:svn://localhost/databinder/trunk</connection>
-    <developerConnection>scm:svn:svn://localhost/databinder/trunk</developerConnection>
+    <connection>scm:svn:svn://localhost/databinder/tags/r0.5</connection>
+    <developerConnection>scm:svn:svn://localhost/databinder/tags/r0.5</developerConnection>
   </scm>
   <organization>
     <name>Nathan Hamblen</name>
@@ -36,21 +36,27 @@
           <tagBase>svn://localhost/databinder/</tagBase>
         </configuration>
       </plugin>
-          <plugin>
-            <inherited>true</inherited>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>attach-sources</id>
-                <goals>
-                  <goal>jar</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+        <inherited>true</inherited>
+      </plugin>
     </plugins>
   </build>
+  <repositories>
+    <repository>
+      <id>wicket</id>
+      <name>Wicket repository</name>
+      <url>http://wicket.sourceforge.net/maven2</url>
+    </repository>
+  </repositories>
   <dependencies>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -62,13 +68,6 @@
       <artifactId>hibernate-annotations</artifactId>
       <version>3.2.0.cr1</version>
     </dependency>
-<!-- this version included by annotations
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate</artifactId>
-      <version>3.2.0.cr2</version>
-    </dependency>
--->
     <dependency>
       <groupId>wicket</groupId>
       <artifactId>wicket</artifactId>
@@ -115,14 +114,7 @@
     </repository>
     <site>
       <id>website</id>
-      <url>file:///var/dbwww/</url>
+      <url>file:///var/dbwww</url>
     </site>
   </distributionManagement>
-  <repositories>
-    <repository>
-      <id>wicket</id>
-      <name>Wicket repository</name>
-      <url>http://wicket.sourceforge.net/maven2</url>
-    </repository>
-  </repositories>
 </project>
