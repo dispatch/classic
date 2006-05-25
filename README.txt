@@ -6,6 +6,30 @@ http://databinder.net
 
 Version History
 
+0.5	Trimming and meshing for Wicket 1.2, including deprecation of
+	PropertyListView and removal of application.properties from
+	the data-app archetype. Recognition of the wicket.configuration
+	JVM parameter, in addition to net.databinder.configuration. Ajax
+	convenience Wrapper class added.
+
+	Hibernate dependency updated to 3.2.0 cr2 and Annotations 
+	3.2.0 cr1. Fixed bug leading to unknown entity exceptions caused
+	by Hibernate proxy classes. Added trigger for Hibernate 
+	initialization on startup rather than the first page request.
+	HibernateObjectModel now loads objects upon  instantiation so 
+	that object not found (and other) exceptions can be easily 
+	caught.
+
+	New overridable isCookielessSupported() method of DataApplication
+	allows URL rewriting to be disabled in Wicket so that search 
+	engines can crawl bookmarkable links without jsessionid URL
+	parameters.
+
+	RedirectServlet provided for easily sending requests from the
+	Web root to WicketServlet. Added configuration for this, as
+	well as the databinder.net repository, to the data-app archetype.
+
+
 0.4	Integration with Wicket 1.2 beta 2 and exploitation of its 
 	built-in Ajax capabilities. Databinder's new SearchPanel component 
 	provides ready-made live search functionality, and all three 
