@@ -6,6 +6,7 @@
     <href>http://databinder.net/</href>
     <alt>Databinder: a simple bridge from Wicket to Hibernate</alt>
   </bannerLeft>
+  <publishDate position="left" format="EEE d MMM HH:mm:ss z yyyy"/>
   <body>
 
 

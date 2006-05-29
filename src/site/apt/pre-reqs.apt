@@ -24,7 +24,7 @@ Prerequisites
 export PATH=/usr/local/maven/bin:$PATH
 -----------------------------------------------------
 
-	When that's all said and done, <<<mvn -v>>> should work, and report a version number of at least 2.0.3.
+	When that's all said and done, <<<mvn -v>>> should work, and report a version number of at least 2.0.4.
 
 *Next…
 

@@ -18,17 +18,17 @@ mvn install:install-file -DgroupId=javax.transaction \
 
 	(Or use jta.jar from the Hibernate 3.1.1 distribution, if you have that already — just change the <<<-Dfile=>>> parameter above.)
 
-	For the {EJB} 3.0 <public final draft> dependency, you’ll need to download {{{http://prdownloads.sourceforge.net/hibernate/hibernate-annotations-3.1beta8.tar.gz?download}Hibernate Annotations}}, expand the archive, change to its lib directory, then:
+	For the {EJB} 3.0 <public final draft> dependency, you’ll need to download {{{http://prdownloads.sourceforge.net/hibernate/hibernate-annotations-3.2.cr1.tar.gz?download}Hibernate Annotations}}, expand the archive, change to its lib directory, then:
 
 -----------------------------------------------------
 mvn install:install-file -DgroupId=javax.persistence \
-  -DartifactId=ejb -Dversion=3.0-public-draft-20060118 \
+  -DartifactId=ejb -Dversion=3.0-public-draft-20060502 \
   -Dpackaging=jar -Dfile=ejb3-persistence.jar
 -----------------------------------------------------
 
 *Maven repository mirrors
 
-	Maven 2 is configured by default to use a single repository, one that sometimes suffers from overwhelming demand. If you notice that downloads are taking longer than is reasonable, try using a mirror.
+	If Maven has been downloading dependencies at an acceptable speed then <<skip this step>>. Otherwise, you might benefit from one of the Maven repository mirrors.
 
 	Mirrors are defined in either the global or user-specific <<<settings.xml>>>. Unix-y people can run the commands below to download a  mirror settings file to the correct directory:
 
@@ -38,7 +38,7 @@ curl http://databinder.net/releases/settings.xml > ~/.m2/settings.xml
 
 	Windows users, download the {{{http://databinder.net/releases/settings.xml }same file}} and put it in <<<\\Documents and Settings\\USERNAME\\.m2\\>>> 
 
-	This settings file is pulled from Maven’s {{{http://maven.apache.org/guides/mini/guide-mirror-settings.html}guide to mirrors}}, with the default repository commented out. The mirror picker seems to like the last repository in the list, though its behavior is undocumented.
+	This settings file is pulled from Maven’s {{{http://maven.apache.org/guides/mini/guide-mirror-settings.html}guide to mirrors}}, with the Ibiblio repository commented out. The mirror picker seems to like the last repository in the list, though its behavior is undocumented.
 
 *Create a Databinder project
 
@@ -46,7 +46,7 @@ curl http://databinder.net/releases/settings.xml > ~/.m2/settings.xml
 
 -----------------------------------------------------
 mvn archetype:create -DarchetypeGroupId=net.databinder \
-  -DarchetypeArtifactId=data-app -DarchetypeVersion=0.4 \
+  -DarchetypeArtifactId=data-app -DarchetypeVersion=0.5 \
   -DgroupId=example -DartifactId=myExample
 -----------------------------------------------------
 

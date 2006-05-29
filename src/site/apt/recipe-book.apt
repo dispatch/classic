@@ -8,52 +8,60 @@ Recipe book example application
 
 *Description
 
-	This example is a functional recipe book, with each recipe having an ingredient list and a free-form procedure (how to prepare) section rendered as {{{http://textism.com/tools/textile/} Textile}}. The Ajax <<<SearchPanel>>> from the {{{phone-directory.html} last example}} reports for duty in this one as well. And in another bit of Wicket 1.2 goodness, the recipe URLs along the left column are so "friendly" you might have trouble getting rid of them.
+	This example is a functional recipe book, with each recipe having an ingredient list and a free-form procedure (how to prepare) section rendered as {{{http://textism.com/tools/textile/} Textile}}. The Ajax <<<SearchPanel>>> from the {{{phone-directory.html} last example}} reports for duty in this one as well. And in another bit of Wicket 1.2 goodness, the recipe URLs along the left column are the friendly type.
 
-	You can {{{/releases/recipe-0.4.tar.gz} download}} the recipe book as a Maven 2 project, or just {{{/recipe/app} run it here}} to see how it works. Add an heirloom recipe! If someone beats you to the broccoli casserole, there’s always congealed salad.
-	
+	In this example, URL rewriting is disabled. Doing so guarantees that Internet search engines will refer to its pages with clean URLs, but prevents cookieless users from editing recipes. (We suppose that cookie-haters aren’t the most enthusiastic cooks.)
+
+	{{{/recipe/app} Try this application}} and add an heirloom recipe. Someone's already beaten you to the <Currywurst>, but there’s always asparagus with potatoes.
+
 *Source files
 
 	Click through to the sources below to see how the recipe book ticks. (The HTML templates will render in your browser; use <view source> to see details.)
 
-	* {{{/recipe-src/java/example/RecipeApplication.xhtml} RecipeApplication.java}}
+	* {{{/wsvn/Databinder/recipe/r0.5/src/main/java/example/RecipeApplication.java?op=file} RecipeApplication.java}}
 
-	* {{{/recipe-src/resources/example/RecipeApplication.properties} RecipeApplication.properties}}
+	* {{{/wsvn/Databinder/recipe/r0.5/src/main/java/example/Recipe.java?op=file} Recipe.java}} — <main data class>
 
-	* {{{/recipe-src/java/example/Recipe.xhtml} Recipe.java}} — main data class
+	* {{{/wsvn/Databinder/recipe/r0.5/src/main/java/example/Ingredient.java?op=file} Ingredient.java}} — <embedded in Recipe.ingredients>
 
-	* {{{/recipe-src/java/example/Ingredient.xhtml} Ingredient.java}} — embedded in <<<Recipe.ingredients>>>
+	* {{{/wsvn/Databinder/recipe/r0.5/src/main/resources/example/RecipeBook.html?op=file}RecipeBook.html}} — <template for all pages>
 
-	* {{{/recipe-src/resources/example/RecipeBook.html} RecipeBook.html}} — template for all pages
+	* {{{/wsvn/Databinder/recipe/r0.5/src/main/resources/example/RecipeBook.css?op=file} RecipeBook.css}}
 
-	* {{{/recipe-src/resources/example/RecipeBook.css} RecipeBook.css}}
+	* {{{/wsvn/Databinder/recipe/r0.5/src/main/resources/example/RecipeBook.properties?op=file} RecipeBook.properties}} — <query store>
 
-	* {{{/recipe-src/java/example/RecipeBook.xhtml} RecipeBook.java}}
+	* {{{/wsvn/Databinder/recipe/r0.5/src/main/java/example/RecipeBook.java?op=file} RecipeBook.java}}
 
-	* {{{/recipe-src/resources/example/ShowRecipe.html} ShowRecipe.html}} — panel for recipe display
+	* {{{/wsvn/Databinder/recipe/r0.5/src/main/resources/example/ShowRecipe.properties?op=file} ShowRecipe.properties}} — <query store>
 
-	* {{{/recipe-src/java/example/ShowRecipe.xhtml} ShowRecipe.java}}
+	* {{{/wsvn/Databinder/recipe/r0.5/src/main/resources/example/ShowRecipe.html?op=file} ShowRecipe.html}} — <panel for recipe display>
 
-	* {{{/recipe-src/resources/example/EditRecipe.html} EditRecipe.html}} — panel for editing recipe
+	* {{{/wsvn/Databinder/recipe/r0.5/src/main/java/example/ShowRecipe.java?op=file} ShowRecipe.java}}
 
-	* {{{/recipe-src/resources/example/EditRecipe.css} EditRecipe.css}} — styles specific to the edit panel
+	* {{{/wsvn/Databinder/recipe/r0.5/src/main/resources/example/EditRecipe.html?op=file} EditRecipe.html}} — <panel for editing recipe>
 
-	* {{{/recipe-src/resources/example/EditRecipe.js} EditRecipe.js}} — field focusing function used on edit page
+	* {{{/wsvn/Databinder/recipe/r0.5/src/main/resources/example/EditRecipe.css?op=file} EditRecipe.css}} — <styles specific to the edit panel>
 
-	* {{{/recipe-src/java/example/EditRecipe.xhtml} EditRecipe.java}}
+	* {{{/wsvn/Databinder/recipe/r0.5/src/main/resources/example/EditRecipe.js?op=file} EditRecipe.js}} — <field focusing function used on edit page>
+
+	* {{{/wsvn/Databinder/recipe/r0.5/src/main/java/example/EditRecipe.java?op=file} EditRecipe.java}}
 
 	* trash.png — 
 
-[/recipe-src/resources/example/trash.png]
+[images/trash.png]
 
 	* up-arrow.png — 
 	
-[/recipe-src/resources/example/up-arrow.png]
+[images/up-arrow.png]
 
 	* down-arrow.png — 
 	
-[/recipe-src/resources/example/down-arrow.png]
+[images/down-arrow.png]
+
+*
+
+	If you’re {{{setup-guide.html} set up}} for Databinder, {{{/releases/recipe-0.5.tar.gz} download and run}} this at home.
 
 *Next…
 
-	Show’s over, folks. Time to {{{setup-guide.html}set up Databinder}} and get started on that baseball card database you’ve always wanted to make.
+	Show’s over, folks. Time to get started on that baseball card database you’ve always wanted to make.

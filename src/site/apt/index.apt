@@ -4,31 +4,28 @@
 		Nathan Hamblen
 		------------------
 
-Version 0.4
+Version 0.5
 
 *What it is
 
-	<<Databinder>> is a programming toolkit for assembling database driven Web applications. It brings together {{{http://wicket.sourceforge.net/}Wicket}} and {{{http://hibernate.org}Hibernate}}, so you can start using the best programming technologies today, without fussing over their configuration.
-	
-	The project’s ideal is efficient, common-sense coding in {{{http://java.sun.com/}Java}}.
-	
+	<<Databinder>> is a {{{http://java.sun.com/}Java}} programming toolkit for database driven Web applications using {{{http://wicket.sourceforge.net/}Wicket}} and {{{http://hibernate.org}Hibernate}}. It melds the world’s best Web and database technologies, then gets out of the way.
 
-*How to use it
+*How it works
 
-	Databinder provides you with a lightly managed Hibernate session, a couple of {{{http://www.wicket-wiki.org.uk/wiki/index.php/Models}Wicket model classes}} using that session to populate themselves, and some base view classes that hook into the models automatically.
+	Databinder provides you with {singular} and {plural} Wicket {{{http://www.wicket-wiki.org.uk/wiki/index.php/Models}model classes}} that populate themselves using a lightly managed Hibernate session. Included view classes bind to these models automatically.
 
-	Your job is to feed annotated data classes to Databinder, then write your view classes and HTML templates to render them in a browser. (You can take “fastest XML typist in the West” off your resume now.)
+	A Databinder application feeds annotated data classes to the toolkit, then renders the data in view class and HTML templates. Everything happens in Java and HTML—if you're looking for fussy XML configuration, you’ll have to look elsewhere.
 
 *Example applications
 
-	To get a better idea of how it all fits together, check out the source code and live demos of the {{{examples.html}example applications}}. And all three are loaded with enough <<Wicket-powered Ajax>> to keep you from dozing off.
+	To get a better idea of how Databinder applications come together, check out the source code and live demos of the {{{examples.html}example applications}}. And all three are loaded with enough <<Wicket-powered Ajax>> to keep you from dozing off.
 
 *Getting started (and getting finished)
 
-	Because Databinder’s priorities are simplicity and speed over flexibility and philosophy, starting a project from scratch is easy. If you already have a suitable programming workstation with JDK 5 and Maven 2 installed, you could be rendering your first Wicket page in ten minutes and editing table data with it in twenty.
+	Because Databinder’s priorities are simplicity and speed over flexibility and philosophy, starting a project from scratch is easy. A programming workstation with Java 5 and Maven 2 installed is only few minutes away from serving data-driven pages.
 
-	Don’t worry about downloading Databinder, Wicket, Hibernate Annotations or whatever other JARs you don’t have. <<Just use Maven.>> Head over to the {{{setup-guide.html}Setup guide}} for detailed, step-by-step instructions.
+	You won’t need to download Databinder, Wicket, or Hibernate. <<Maven does this for you.>> Head over to the {{{setup-guide.html}setup guide}} for detailed, step-by-step instructions.
 
 *Still got questions?
 
-	Please see the {{{faq.html}FAQ}}. In fact, take a look even if you <don’t> have questions. It’s just good manners.
+	Please see the {{{faq.html}FAQ}}. That’s <foire aux quéstions>, to you Jacques.

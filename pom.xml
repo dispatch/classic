@@ -101,6 +101,7 @@
       <plugin>
         <artifactId>maven-site-plugin</artifactId>
         <configuration>
+          <inputEncoding>UTF-8</inputEncoding>
           <outputEncoding>UTF-8</outputEncoding>
         </configuration>
       </plugin>
