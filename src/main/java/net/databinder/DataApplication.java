@@ -101,7 +101,7 @@ public abstract class DataApplication extends WebApplication {
 	
 	/**
 	 * Reports if the program is running in a development environment, as determined by the
-	 * "net.databinder.configuration" environment variable. If that variable is unset or set to 
+	 * "wicket.configuration" environment variable. If that variable is unset or set to 
 	 * "development", the app is considered to be running in development.  
 	 * @return true if running in a development environment
 	 */
