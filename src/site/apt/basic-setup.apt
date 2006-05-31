@@ -18,7 +18,7 @@ mvn install:install-file -DgroupId=javax.transaction \
 
 	(Or use jta.jar from the Hibernate 3.1.1 distribution, if you have that already — just change the <<<-Dfile=>>> parameter above.)
 
-	For the {EJB} 3.0 <public final draft> dependency, you’ll need to download {{{http://prdownloads.sourceforge.net/hibernate/hibernate-annotations-3.2.cr1.tar.gz?download}Hibernate Annotations}}, expand the archive, change to its lib directory, then:
+	For the {EJB} 3.0 <public final draft> dependency, you’ll need to download {{{http://prdownloads.sourceforge.net/hibernate/hibernate-annotations-3.2.0.CR1.tar.gz?download}Hibernate Annotations}}, expand the archive, change to its lib directory, then:
 
 -----------------------------------------------------
 mvn install:install-file -DgroupId=javax.persistence \
@@ -42,11 +42,13 @@ curl http://databinder.net/releases/settings.xml > ~/.m2/settings.xml
 
 *Create a Databinder project
 
+        <<Note:>> The latest archetype version has not yet arrived at the central Maven repository. Execute the command below, then change the Databinder version in the <<<pom.xml>>> it creates to <<0.5>> .
+
 	To get started, tell Maven to create a project based on Databinder’s “data-app” archetype.
 
 -----------------------------------------------------
 mvn archetype:create -DarchetypeGroupId=net.databinder \
-  -DarchetypeArtifactId=data-app -DarchetypeVersion=0.5 \
+  -DarchetypeArtifactId=data-app -DarchetypeVersion=0.4 \
   -DgroupId=example -DartifactId=myExample
 -----------------------------------------------------
 
