@@ -16,7 +16,7 @@ Recipe book example application
 
 *Source files
 
-	Click through to the sources below to see how the recipe book ticks. (The HTML templates will render in your browser; use <view source> to see details.)
+	Click through to the sources below to see how the recipe book ticks.
 
 	* {{{/wsvn/Databinder/recipe/r0.5/src/main/java/example/RecipeApplication.java?op=file} RecipeApplication.java}}
 
