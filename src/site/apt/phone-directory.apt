@@ -28,7 +28,7 @@ Phone directory example application
 
 	* {{{/wsvn/Databinder/directory/r0.5/src/main/java/example/ListAndEdit.java?op=file}ListAndEdit.java}} — <page subclass>
 
-*
+	[]
 
 	If you’re {{{setup-guide.html} set up}} for Databinder, {{{/releases/directory-0.5.tar.gz} download and run}} this at home.
 
