@@ -16,7 +16,7 @@ public class User implements IUser{
 	private Integer id;
 	private String password;
 	private String username;
-	private Set<Role> roles;
+	private Set<String> roles;
 	
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
 	public Integer getId() {
@@ -42,16 +42,23 @@ public class User implements IUser{
 		this.password = password;
 	}
 	
-	public boolean hasAnyRole(Roles roles) {
-		return roles.contains(roles);
+	/**
+	 * @return true if authorized and this user have any
+	 * roles in common
+	 */
+	public boolean hasAnyRole(Roles authorized) {
+		for (String role: roles)
+			if (authorized.hasRole(role))
+				return true;
+		return false;
 	}
 
 	@CollectionOfElements
-	public Set<Role> getRoles() {
+	public Set<String> getRoles() {
 		return roles;
 	}
 
-	public void setRoles(Set<Role> roles) {
+	public void setRoles(Set<String> roles) {
 		this.roles = roles;
 	}
 }

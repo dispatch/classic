@@ -86,7 +86,7 @@ public abstract class DataApplication extends WebApplication {
 				return newDataSession();
 			}
 		});
-		
+		//@bug don't assume we have a DataRequestCycle
 		DataRequestCycle.initHibernate(); // don't wait for first request
 	}
 		

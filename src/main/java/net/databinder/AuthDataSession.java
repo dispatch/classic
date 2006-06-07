@@ -7,7 +7,6 @@ import net.databinder.models.IQueryBinder;
 import org.hibernate.Query;
 import org.hibernate.QueryException;
 
-import wicket.authorization.strategies.role.Roles;
 import wicket.model.IModel;
 
 public class AuthDataSession extends DataSession {
@@ -19,10 +18,6 @@ public class AuthDataSession extends DataSession {
 		userClass = application.getUserClass();
 	}
 	
-	public boolean hasAnyRole(Roles roles) {
-		return isSignedIn() ? getUser().hasAnyRole(roles) : false;
-	}
-
 	public IUser getUser() {
 		
 		return isSignedIn() ? (IUser) user.getObject(null) : null;

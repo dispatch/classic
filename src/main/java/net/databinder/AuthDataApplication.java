@@ -45,7 +45,8 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 	}
 	
 	public final boolean hasAnyRole(Roles roles) {
-		return ((AuthDataSession)Session.get()).hasAnyRole(roles);
+		IUser user = ((AuthDataSession)Session.get()).getUser();
+		return user == null ? false : user.hasAnyRole(roles);
 	}
 	
 	public Class< ? extends IUser> getUserClass() {
