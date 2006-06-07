@@ -70,7 +70,7 @@
     </dependency>
     <dependency>
       <groupId>wicket</groupId>
-      <artifactId>wicket</artifactId>
+      <artifactId>wicket-auth-roles</artifactId>
       <version>1.2</version>
       <exclusions>
         <exclusion>
