@@ -55,8 +55,14 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 		return User.class;
 	}
 
-	protected Class< ? extends WebPage> getSignInPageClass() {
+	public Class< ? extends WebPage> getSignInPageClass() {
 		return DataSignInPage.class;
 	}
 	
+	/**
+	 * Cryptographic salt to be used in authentication. The default IUser
+	 * implementation uses this value. If your imlementation does not require
+	 * a salt value (!), return null.
+	 * @return
+	 */
 	public abstract byte[] getSalt();}

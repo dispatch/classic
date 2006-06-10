@@ -86,8 +86,7 @@ public abstract class DataApplication extends WebApplication {
 				return newDataSession();
 			}
 		});
-		//@bug don't assume we have a DataRequestCycle
-		DataRequestCycle.initHibernate(); // don't wait for first request
+		initDataRequestCycle();
 	}
 		
 	/**
@@ -97,6 +96,15 @@ public abstract class DataApplication extends WebApplication {
 	 */
 	protected DataSession newDataSession() {
 		return new DataSession(DataApplication.this);
+	}
+	
+	/**
+	 * Statically initializes DataRequestCycle or subclass, generally 
+	 * initializing the Hibernate configuration inside it. Override if you use 
+	 * a DataRequestCycle subclass with a custom initHibernate() method.
+	 */
+	protected void initDataRequestCycle() {
+		DataRequestCycle.initHibernate(); // don't wait for first request
 	}
 	
 	/**

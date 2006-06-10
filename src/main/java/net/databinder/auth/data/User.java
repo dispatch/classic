@@ -17,11 +17,12 @@ import org.hibernate.annotations.CollectionOfElements;
 
 import wicket.Application;
 import wicket.authorization.strategies.role.Roles;
+import wicket.util.crypt.Base64;
 
 @Entity
 public class User implements IUser{
 	private Integer id;
-	private byte[] passwordHash;
+	private String passwordHash;
 	private String username;
 	private Set<String> roles;
 	
@@ -53,23 +54,33 @@ public class User implements IUser{
 		this.username = username;
 	}
 	
-	protected byte[] getHash(String password) {
+	/**
+	 * Generates a hash for password using salt from AuthDataApplication.getSalt()
+	 * and returns the hash encoded as a Base64 String.
+	 * @see AuthDataApplication.getSalt();
+	 * @param password to encode
+	 * @return base64 encoded SHA hash, 28 characters 
+	 */
+	protected String getHash(String password) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("SHA");
 			md.update(((AuthDataApplication)Application.get()).getSalt());
-			return md.digest(password.getBytes());
+			byte[] hash = md.digest(password.getBytes());
+			// using a Base64 string for the hash because butting a 
+			// byte[] into a blob isn't working consistently.
+			return new String(Base64.encodeBase64(hash));
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException(
-					"Hash algorithm not found. Make available, or override this method.", e);
+					"SHA Hash algorithm not found. Make available, or override this method.", e);
 		}
 	}
 
-	@Column(length = 20, nullable = false)
-	public byte[] getPasswordHash() {
+	@Column(length = 28, nullable = false)
+	public String getPasswordHash() {
 		return passwordHash;
 	}
 
-	public void setPasswordHash(byte[] passwordHash) {
+	public void setPasswordHash(String passwordHash) {
 		this.passwordHash = passwordHash;
 	}
 	
@@ -78,12 +89,12 @@ public class User implements IUser{
 	}
 	
 	/**
-	 * @return true if authorized and this user have any
+	 * @return true if validRoles and this user have any
 	 * roles in common
 	 */
-	public boolean hasAnyRole(Roles authorized) {
+	public boolean hasAnyRole(Roles validRoles) {
 		for (String role: roles)
-			if (authorized.hasRole(role))
+			if (validRoles.hasRole(role))
 				return true;
 		return false;
 	}
