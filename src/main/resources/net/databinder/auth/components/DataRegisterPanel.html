@@ -1,0 +1,38 @@
+<html>
+<head>
+	<link wicket:id="dataStylesheet" rel="stylesheet" type="text/css" href="DataPage.css" />
+</head>
+<body>
+<wicket:panel>
+
+<div class="feedback" wicket:id="feedback">
+</div>
+
+<form wicket:id="registerForm">
+
+	<p>
+		Username
+		<input wicket:id="username" type="text" value="foo@goo.moo" />
+	</p>
+	<p>
+		Password
+		<input wicket:id="password" type="password" value="password" />
+	</p>
+	<p>
+		Retype Password
+		<input wicket:id="passwordConfirm" type="password" />
+	</p>
+	<!--
+	<p wicket:id="rememberMeRow">
+		<input wicket:id="rememberMe" id="rememberMe"type="checkbox" />
+		<label style="float: none" for="rememberMe">Remember Me </label>
+	</p>
+	-->
+	<p> <input type="submit" name="submit" value="Register"/> </p>
+
+</form>
+	
+</wicket:panel>
+</body>
+
+</html>

@@ -1,4 +1,4 @@
-package net.databinder.data;
+package net.databinder.auth.data;
 
 import javax.persistence.Embeddable;
 

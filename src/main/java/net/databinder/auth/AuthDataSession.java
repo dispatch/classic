@@ -1,6 +1,7 @@
-package net.databinder;
+package net.databinder.auth;
 
-import net.databinder.data.IUser;
+import net.databinder.DataSession;
+import net.databinder.auth.data.IUser;
 import net.databinder.models.HibernateObjectModel;
 import net.databinder.models.IQueryBinder;
 
@@ -29,19 +30,20 @@ public class AuthDataSession extends DataSession {
 	
 	public boolean signIn(final String username, final String password) {
 		String query = "from " + userClass.getCanonicalName() 
-			+ " where username = :username and password = :password";
+			+ " where username = :username";
 		
 		try {
-			user = new HibernateObjectModel(query, new IQueryBinder() {
+			IModel potential = new HibernateObjectModel(query, new IQueryBinder() {
 				public void bind(Query query) {
-					query.setString("username", username)
-						.setString("password", password);
+					query.setString("username", username);
 				}
 			});
-		} catch (QueryException e){
-			return false;
-		}
-		return true;
+			IUser potentialUser = (IUser) potential.getObject(null);
+			if (potentialUser.checkPassword(password))
+				user = potential;
+		} catch (QueryException e){ }
+		
+		return isSignedIn();
 	}
 	
 	@Override

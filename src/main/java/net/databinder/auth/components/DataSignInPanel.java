@@ -1,9 +1,10 @@
-package net.databinder.components;
+package net.databinder.auth.components;
 
-import net.databinder.AuthDataSession;
+import net.databinder.auth.AuthDataSession;
 import wicket.authentication.panel.SignInPanel;
 
 public class DataSignInPanel extends SignInPanel {
+
 	public DataSignInPanel(String id) {
 		super(id);
 	}

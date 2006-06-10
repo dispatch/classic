@@ -1,10 +1,12 @@
-package net.databinder;
+package net.databinder.auth;
+
+import net.databinder.DataApplication;
+import net.databinder.auth.components.DataSignInPage;
+import net.databinder.auth.data.IUser;
+import net.databinder.auth.data.User;
 
 import org.hibernate.cfg.AnnotationConfiguration;
 
-import net.databinder.components.DataSignInPage;
-import net.databinder.data.IUser;
-import net.databinder.data.User;
 import wicket.Component;
 import wicket.RestartResponseAtInterceptPageException;
 import wicket.Session;
@@ -56,4 +58,5 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 	protected Class< ? extends WebPage> getSignInPageClass() {
 		return DataSignInPage.class;
 	}
-}
+	
+	public abstract byte[] getSalt();}
