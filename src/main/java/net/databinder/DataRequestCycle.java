@@ -39,7 +39,7 @@ import wicket.protocol.http.WebSession;
  * end. Creates a Hibernate session factory in a static initialization block, configuring it with
  * annotatied classes in a DataApplication subclass.</p>
  * <p>If you want to use a custom session factory, you will need to override initHibernate()
- * and openSession(). Both of these refer to this class's private session factory, which
+ * and openSession(). Both of these refer to this class's private static session factory, which
  * would remain null in such a configuration. </p>
  * @see DataApplication.initDataRequestCycle()
  * @author Nathan Hamblen
