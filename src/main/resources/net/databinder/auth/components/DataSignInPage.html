@@ -4,26 +4,30 @@
 <head>
 <title>Please sign in</title>
 <link wicket:id="dataStylesheet" rel="stylesheet" type="text/css" href="../../components/DataPage.css" />
+<link wicket:id="signinStylesheet" rel="stylesheet" type="text/css" href="DataSignInPage.css" />
 </head>
 <body>
 
-<p wicket:id="gotoRegister">
-	Don't have an account? 
-	<a wicket:id="register" href="DataRegisterPanel.html">Register now</a>.
-</p>
-
-<p wicket:id="gotoSignIn">
-	Already have an account? 
-	<a wicket:id="signIn" href="DataSignInPanel.html">Sign in</a>.
-</p>
-
-<div wicket:id="signInPanel">
-Sign in goes here
+<div id="box">
+	
+	<p wicket:id="gotoRegister">
+		Don't have an account? 
+		<a wicket:id="register" href="DataRegisterPanel.html">Register now</a>.
+	</p>
+	
+	<p wicket:id="gotoSignIn">
+		Already have an account? 
+		<a wicket:id="signIn" href="DataSignInPanel.html">Sign in</a>.
+	</p>
+	
+	<div wicket:id="signInPanel">
+	Sign in goes here
+	</div>
+	
+	<div wicket:id="registerPanel">
+	Register goes here
+	</div>
+	
 </div>
-
-<div wicket:id="registerPanel">
-Register goes here
-</div>
-
 </body>
 </html>

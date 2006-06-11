@@ -1,0 +1,6 @@
+div#box {
+	border: thin dotted #6F6F6F; 
+	padding: 0 1em; 
+	float: left; 
+	margin: 10em;
+}

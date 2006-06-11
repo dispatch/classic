@@ -19,6 +19,7 @@ public class DataSignInPage extends WebPage {
 			throw new WicketRuntimeException("The sign in page requested does not match that defined in the AuthDataApplication subclass.");
 		
 		add(new StyleLink("dataStylesheet", DataPage.class));
+		add(new StyleLink("signinStylesheet", DataSignInPage.class));
 		
 		add(new WebMarkupContainer("gotoRegister"){
 			@Override
