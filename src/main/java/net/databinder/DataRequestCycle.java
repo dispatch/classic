@@ -35,9 +35,13 @@ import wicket.protocol.http.WebRequestCycle;
 import wicket.protocol.http.WebSession;
 
 /**
- * Opens Hibernate sessions as required and closes (but does not flush) them at a request's
+ * <p>Opens Hibernate sessions as required and closes (but does not flush) them at a request's
  * end. Creates a Hibernate session factory in a static initialization block, configuring it with
- * annotatied classes in a DataApplication subclass.
+ * annotatied classes in a DataApplication subclass.</p>
+ * <p>If you want to use a custom session factory, you will need to override initHibernate()
+ * and openSession(). Both of these refer to this class's private session factory, which
+ * would remain null in such a configuration. </p>
+ * @see DataApplication.initDataRequestCycle()
  * @author Nathan Hamblen
  */
 public class DataRequestCycle extends WebRequestCycle {
@@ -87,10 +91,8 @@ public class DataRequestCycle extends WebRequestCycle {
 	/**
 	 * @return a newly opened session
 	 */
-    private static Session openSession()
+    protected Session openSession()
             throws HibernateException {
-			if (hibernateSessionFactory == null)
-				initHibernate(); // called in DataApplication.init(), but can be overridden
     	return hibernateSessionFactory.openSession();
     }
 	

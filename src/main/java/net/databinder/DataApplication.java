@@ -101,7 +101,8 @@ public abstract class DataApplication extends WebApplication {
 	/**
 	 * Statically initializes DataRequestCycle or subclass, generally 
 	 * initializing the Hibernate configuration inside it. Override if you use 
-	 * a DataRequestCycle subclass with a custom initHibernate() method.
+	 * a DataRequestCycle subclass with a custom session factory.
+	 * @see DataRequestCycle
 	 */
 	protected void initDataRequestCycle() {
 		DataRequestCycle.initHibernate(); // don't wait for first request
