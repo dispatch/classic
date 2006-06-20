@@ -36,34 +36,48 @@ public abstract class SublistProjectionModel extends AbstractDetachableModel
         protected abstract int getSize(int parentIdx);
         
         /**
+         * Breaks the parent list into chunks of the requested size, in the same order as
+         * the parent list.
+         */
+		public static class Chunked extends SublistProjectionModel {
+		    
+		    protected int chunkSize;
+		    
+		    public Chunked(int chunkSize, IModel master)
+		    {
+		        super(master);
+		        this.chunkSize = chunkSize;
+		    }
+		
+		    protected int transform(int parentIdx, int sublistIdx)
+		    {
+		        return parentIdx * chunkSize + sublistIdx;
+		    }
+		
+		    protected int getSize(int parentIdx) {
+		    	return Math.min(getMasterList().size() - parentIdx * chunkSize, chunkSize);
+		    }
+		
+		    protected int getParentSize()
+		    {
+		        return (getMasterList().size() - 1) / chunkSize + 1;
+		    }
+		}
+
+        /**
          * Transposes rows and columns so the list runs top to bottom rather than
          * left to right. 
          */
-        public static class Transposed extends SublistProjectionModel {
-            
-            private int columns;
+        public static class Transposed extends Chunked  {
             
             public Transposed(int columns, IModel master)
             {
-                super(master);
-                this.columns = columns;
+                super(columns, master);
             }
 
             protected int transform(int parentIdx, int sublistIdx)
             {
                 return parentIdx + sublistIdx * getParentSize();
-            }
-
-            protected int getSize(int parentIdx) {
-                if (parentIdx + 1 < getParentSize())
-                    return columns;
-                int r = getMasterList().size() % columns;
-                return r == 0 ? columns : r;
-            }
-
-            protected int getParentSize()
-            {
-                return (getMasterList().size() - 1) / columns + 1;
             }
         }
 
@@ -117,38 +131,6 @@ public abstract class SublistProjectionModel extends AbstractDetachableModel
                 return getSize(parentIdx);
             }
         }
-
-        /**
-         * Breaks the parent list into chunks of the requested size, in the same order as
-         * the parent list.
-         */
-		public static class Chunked extends SublistProjectionModel {
-		    
-		    private int chunkSize;
-		    
-		    public Chunked(int chunkSize, IModel master)
-		    {
-		        super(master);
-		        this.chunkSize = chunkSize;
-		    }
-		
-		    protected int transform(int parentIdx, int sublistIdx)
-		    {
-		        return parentIdx * getParentSize() + sublistIdx;
-		    }
-		
-		    protected int getSize(int parentIdx) {
-		        if (parentIdx + 1 < getParentSize())
-		            return chunkSize;
-		        int r = getMasterList().size() % chunkSize;
-		        return r == 0 ? chunkSize : r;
-		    }
-		
-		    protected int getParentSize()
-		    {
-		        return (getMasterList().size() - 1) / chunkSize + 1;
-		    }
-		}
 
 		@Override
         public void onDetach()
