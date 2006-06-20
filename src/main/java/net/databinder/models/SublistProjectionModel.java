@@ -20,6 +20,8 @@ public abstract class SublistProjectionModel extends AbstractDetachableModel
 {
 	/** Continuous list used to feed this model's sublists. */
 	private IModel master;
+	
+	private transient List<List> parent;
 
 	public SublistProjectionModel(IModel master)
 	{
@@ -92,10 +94,12 @@ public abstract class SublistProjectionModel extends AbstractDetachableModel
 	@Override
 	protected Object onGetObject(Component component)
 	{
-		int rows = getParentSize();
-		List<List> parent = new ArrayList<List>(rows);
-		for (int i = 0; i < rows; i++)
-			parent.add(new ProjectedSublist(i));
+		if (parent == null) {
+			int rows = getParentSize();
+			parent = new ArrayList<List>(rows);
+			for (int i = 0; i < rows; i++)
+				parent.add(new ProjectedSublist(i));
+		}
 		return parent;
 	}
 
@@ -136,6 +140,7 @@ public abstract class SublistProjectionModel extends AbstractDetachableModel
 	public void onDetach()
 	{
 		master.detach();
+		parent = null;
 	}
 
 	@Override
