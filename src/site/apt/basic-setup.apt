@@ -42,7 +42,7 @@ curl http://databinder.net/releases/settings.xml > ~/.m2/settings.xml
 
 *Create a Databinder project
 
-	<<Important:>> Maven 2.0.4’s archetype processing has changed such that <<the comamnd below will not work>>. This problem will be fixed in the next version of Databinder—until then, please download {{{http://databinder.net/releases/myExample.tar.gz}this sample project}}, similar to the one that would be created by the archetype.
+	<<Important:>> Maven 2.0.4’s archetype processing has changed such that <<the command below will not work>>. This problem will be fixed in the next version of Databinder—until then, please download {{{http://databinder.net/releases/myExample.tar.gz}this sample project}}, similar to the one that would be created by the archetype.
 
 	To get started, tell Maven to create a project based on Databinder’s “data-app” archetype.
 
