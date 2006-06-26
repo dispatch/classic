@@ -28,10 +28,15 @@ import wicket.authentication.panel.SignInPanel;
 public class DataSignInPanel extends SignInPanel {
 
 	public DataSignInPanel(String id) {
-		super(id);
+		// hide remember me
+		super(id, false);
 	}
 	
-	//TODO: remember me doesn't work
+	public void setPersistent(final boolean enable) {
+		// just don't do anything here; will be called with "true" (wicket-auth-user bug?)
+	}
+
+	
 	
 	@Override
 	public boolean signIn(String username, String password) {
