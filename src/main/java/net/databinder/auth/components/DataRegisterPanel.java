@@ -64,8 +64,7 @@ public class DataRegisterPanel extends Panel {
 					if (username == null || !isAvailable(username)) {
 						Map<String, String> m = new HashMap<String, String>(1);
 						m.put("username", username);
-						// TODO: doesn't work
-						error(formComponent, "unavailable", m);
+						error(formComponent, "usernameTaken", m);
 					}
 				}
 			}));

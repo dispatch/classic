@@ -9,7 +9,15 @@ import wicket.markup.html.link.PageLink;
 import wicket.markup.html.panel.Panel;
 import wicket.model.Model;
 
+/**
+ * Displays sign in and out links, as well as current user if any. 
+ * @author Nathan Hamblen
+ */
 public class DataUserStatusPanel extends Panel {
+	/**
+	 * Constructs sign in and out links.
+	 * @param id Wicket id
+	 */
 	public DataUserStatusPanel(String id) {
 		super(id);
 		
@@ -36,6 +44,7 @@ public class DataUserStatusPanel extends Panel {
 		});
 	}
 	
+	/** @return casted web session*/
 	protected AuthDataSession getAuthSession() {
 		return (AuthDataSession) getSession();
 	}
