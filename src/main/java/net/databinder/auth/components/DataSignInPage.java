@@ -80,7 +80,13 @@ public class DataSignInPage extends WebPage {
 			}
 		});
 		
-		// TODO: allow subclass here ?
+		addRegisterPanel();
+	}
+	/**
+	 * Add panel that appears after user clicks registration link. Override to use subclass
+	 * or other panel.
+	 */
+	protected void addRegisterPanel() {
 		add(new DataRegisterPanel("registerPanel") {
 			@Override
 			public boolean isVisible() {
