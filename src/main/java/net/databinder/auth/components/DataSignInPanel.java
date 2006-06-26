@@ -31,6 +31,8 @@ public class DataSignInPanel extends SignInPanel {
 		super(id);
 	}
 	
+	//TODO: remember me doesn't work
+	
 	@Override
 	public boolean signIn(String username, String password) {
 		return ((AuthDataSession) getSession()).signIn(username, password);

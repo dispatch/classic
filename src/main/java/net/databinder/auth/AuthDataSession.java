@@ -48,7 +48,6 @@ public class AuthDataSession extends DataSession {
 	 * @return IUser object for current user, or null if none signed in.
 	 */
 	public IUser getUser() {
-		
 		return isSignedIn() ? (IUser) user.getObject(null) : null;
 	}
 	
@@ -75,6 +74,11 @@ public class AuthDataSession extends DataSession {
 		} catch (QueryException e){ }
 		
 		return isSignedIn();
+	}
+	
+	/** Detach user from session */
+	public void signOut() {
+		user = null;
 	}
 	
 	/**

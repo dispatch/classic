@@ -107,4 +107,12 @@ public class User implements IUser{
 	public void setRoles(Set<String> roles) {
 		this.roles = roles;
 	}
+	
+	/**
+	 * @return username
+	 */
+	@Override
+	public String toString() {
+		return username;
+	}
 }
