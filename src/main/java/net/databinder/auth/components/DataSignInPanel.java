@@ -37,7 +37,11 @@ public class DataSignInPanel extends SignInPanel {
 	}
 
 	
-	
+	/**
+	 * Call sign in method for session. Override to call a different sign in method.
+	 * @return true if credentials allowed sign-in
+	 * @see AuthDataSession 
+	 */
 	@Override
 	public boolean signIn(String username, String password) {
 		return ((AuthDataSession) getSession()).signIn(username, password);
