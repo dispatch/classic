@@ -8,7 +8,7 @@ Phone directory example application
 
 *Description
 
-	This small step up from the {{{bookmarks.html} bookmarks example}} manages a list of names and phone numbers. It features a live Ajax search by the {{{file://localhost/javadoc/net/databinder/components/SearchPanel.html}SearchPanel}} Databinder component.
+	This small step up from the {{{bookmarks.html} bookmarks example}} manages a list of names and phone numbers. It features a live Ajax search by the {{{/javadoc/net/databinder/components/SearchPanel.html}SearchPanel}} Databinder component.
 
 	If you want to see automatic data versioning in action, open two browsers and edit the same entry in each one. Hibernate’s optimistic locking will allow the first change and reject the second.
 
