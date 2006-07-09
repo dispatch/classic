@@ -1,0 +1,33 @@
+		------------------
+		Databinder: Graffiti example application
+		-----------------
+		Nathan Hamblen
+		------------------
+
+Graffiti example application
+
+*Description
+
+	This <plaire et instruire>-style lesson takes the text you enter and displays it on a virtual wall. While the data is retained indefinitely, only the ten most recent tags are displayed. Oh, one more thing—while the persisted data is textual, it's rendered into an image for display.
+	
+	{{{/graffiti/} Try this application }} and make your mark.
+	
+*Source files
+
+	* {{{/wsvn/Databinder/graffiti/r0.6/src/main/java/example/GraffitiApplication.java?op=file} GraffitiApplication.java}} — <application configuration>
+
+	* {{{/wsvn/Databinder/graffiti/r0.6/src/main/java/example/Graffito.java?op=file} Graffito.java}} — <annotated data class>
+
+	* {{{/wsvn/Databinder/graffiti/r0.6/src/main/java/example/TheWall.html?op=file} TheWall.html}} — <page template>
+
+	* {{{/wsvn/Databinder/graffiti/r0.6/src/main/java/example/TheWall.java?op=file} TheWall.css}} — <page subclass>
+
+	* spidershank.ttf — <a free typeface>
+
+	[]
+
+	If you’re {{{setup-guide.html} set up }}for Databinder, {{{/releases/graffiti-0.6.tar.gz} download and run}} this at home.
+
+*Next…
+
+	After you’ve finished scrawling, {{{bookmarks.html}bookmarks}} are waiting to help you keep your place.

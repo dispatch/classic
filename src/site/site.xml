@@ -13,6 +13,7 @@
     <menu name="Databinder">
       <item name="Overview" href="index.html"/>
       <item name="Examples" href="examples.html" collapse="false" >
+        <item name="Graffiti" href="graffiti.html"/>
         <item name="Bookmarks" href="bookmarks.html"/>
         <item name="Phone directory" href="phone-directory.html"/>
         <item name="Recipe book" href="recipe-book.html"/>

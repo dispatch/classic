@@ -8,29 +8,31 @@ Bookmarks example application
 
 *Description
 
-	This barebones Web application manages a list of bookmarks. You can add and delete (with Ajax!), but you can’t change bookmarks after they’ve been added.
+	This bare-bones Web application manages a list of bookmarks. You can add and delete (with Ajax!), but you can’t change bookmarks after they’ve been added.
+	
+	Bookmarks are displayed in two vertically ordered columns. This arragement is normally a bit of a pain, but here it’s handled neatly with a <<<SublistProjectionModel>>>.
 	
 	{{{/bookmark/} Try this application }} and list your own favorite site.
 	
 *Source files
 
-	* {{{/wsvn/Databinder/bookmark/r0.5/src/main/java/example/BookmarkApplication.java?op=file}BookmarksApplication.java}} — <application configuration>
+	* {{{/wsvn/Databinder/bookmark/r0.6/src/main/java/example/BookmarkApplication.java?op=file}BookmarksApplication.java}} — <application configuration>
 
-	* {{{/wsvn/Databinder/bookmark/r0.5/src/main/java/example/Bookmark.java?op=file} Bookmark.java}} — <annotated data class>
+	* {{{/wsvn/Databinder/bookmark/r0.6/src/main/java/example/Bookmark.java?op=file} Bookmark.java}} — <annotated data class>
 
-	* {{{/wsvn/Databinder/bookmark/r0.5/src/main/resources/example/ListAndAdd.html?op=file} ListAndAdd.html}} — <page template>
+	* {{{/wsvn/Databinder/bookmark/r0.6/src/main/resources/example/ListAndAdd.html?op=file} ListAndAdd.html}} — <page template>
 
-	* {{{/wsvn/Databinder/bookmark/r0.5/src/main/resources/example/ListAndAdd.css?op=file}ListAndAdd.css}}
+	* {{{/wsvn/Databinder/bookmark/r0.6/src/main/resources/example/ListAndAdd.css?op=file}ListAndAdd.css}}
 
 	* trash.png — 
 
 [images/trash.png]
 
-	* {{{/wsvn/Databinder/bookmark/r0.5/src/main/java/example/ListAndAdd.java?op=file} ListAndAdd.java}} — <page subclass>
+	* {{{/wsvn/Databinder/bookmark/r0.6/src/main/java/example/ListAndAdd.java?op=file} ListAndAdd.java}} — <page subclass>
 
 	[]
 
-	If you’re {{{setup-guide.html} set up }}for Databinder, {{{/releases/bookmark-0.5.tar.gz} download and run}} this at home.
+	If you’re {{{setup-guide.html} set up }}for Databinder, {{{/releases/bookmark-0.6.tar.gz} download and run}} this at home.
 
 *Next…
 

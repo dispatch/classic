@@ -1,5 +1,6 @@
 package net.databinder.components;
 
+import wicket.model.IModel;
 import jtextile.JTextile;
 
 /**
@@ -16,6 +17,15 @@ public class TextileLabel extends CustomLabel {
 		setEscapeModelStrings(false); // since the contents will be in HTML
 	}	
 	
+	/**
+	 * @param Wicket id
+	 * @param String model
+	 */
+	public TextileLabel(String id, IModel model) {
+		super(id, model, new TextileConverter());
+		setEscapeModelStrings(false); // since the contents will be in HTML
+	}	
+
 	/**
 	 * Passes all source objects through JTextile, checks that conversion is String-String.
 	 * @see jtextile.JTextile

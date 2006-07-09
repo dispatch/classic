@@ -6,6 +6,14 @@
 
 Example applications
 
-		There are three example applications for performing common database tasks using Databinder.
-
-		Start with the simple {{{bookmarks.html}bookmarks}} application, then proceed to the slightly more complicated {{{phone-directory.html}phone directory}}. Finally, check out the {{{recipe-book.html}recipe book}} for a demo app that’s almost good for something.
+		Databinder has four example applications for common tasks. A good way to learn the toolkit is to read through these examples, run them yourself, and enhance them with your own ideas.
+		
+		The examples, in order of increasing complexity:
+		
+		[[1]] {{{graffiti.html}Graffiti}}
+		
+		[[2]] {{{bookmarks.html}Bookmarks}}
+		
+		[[3]] {{{phone-directory.html}Phone directory}}
+		
+		[[4]] {{{recipe-book.html}Recipe book}}
