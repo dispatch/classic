@@ -10,6 +10,23 @@ Releases
 
 	Though it’s possible to download Databinder from the links below (and its {{{dependencies.html}dependencies}} from all over the Web), it’s not recommended. Please see the {{{setup-guide.html}setup guide}} for detailed start-to-finish instructions using Maven 2. If you’re upgrading, just increment the Databinder version number in your <<<pom.xml>>>.
 
+*Version 0.6
+
+	Integration with the <<wicket-auth-roles>> package, supplemented by default implementation classes for users and roles. Provides basic sign in and registration pages are 
+
+	{{{/releases/databinder-0.6.tar.gz}Datbinder library & source}}
+	
+	{{{/releases/data-app-0.6.tar.gz}Data-app archetype}}
+
+	{{{/releases/graffiti-0.6.tar.gz}Graffiti example}}
+
+	{{{/releases/bookmark-0.6.tar.gz}Bookmark example}}
+	
+	{{{/releases/directory-0.6.tar.gz}Phone directory example}}
+
+	{{{/releases/recipe-0.6.tar.gz}Recipe book example}}
+
+
 *Version 0.5
 
 	Trimming and meshing for {{{http://wicketframework.org/}Wicket}} 1.2, including deprecation of {{{/javadoc/net/databinder/components/PropertyListView.html}PropertyListView}} and removal of <<<application.properties>>> from the data-app archetype. Now recognizes the <<<wicket.configuration>>> JVM parameter, in addition to <<<net.databinder.configuration>>>. Ajax convenience {{{/javadoc/net/databinder/components/Wrapper.html}Wrapper}} class added.
