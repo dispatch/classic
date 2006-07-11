@@ -12,7 +12,11 @@ Releases
 
 *Version 0.6
 
-	Integration with the <<wicket-auth-roles>> package, supplemented by default implementation classes for users and roles. Provides basic sign in and registration pages are 
+	This version adds integration with the <<wicket-auth-roles>> package via the AuthDataApplication superclass. Default implementation classes for users and roles are built in, along with basic sign in and registration pages. The {{{recipe-book.html}recipe book example}} demonstrates selective authentication.
+	
+	A new SublistProjectionModel class breaks lists into chunked or transposed sublists for common rendering styles (see {{{bookmarks.html}bookmarks}}). And finally, the RenderedLabel component renders its model into an image using any font available to the JVM, as demonstrated in the new {{{graffiti.html}graffiti}} example.
+	
+	Changed structure of data-app archetype to be compatible with Maven 2.0.4. HTML and property resources are now stored alongside Java sources by default.
 
 	{{{/releases/databinder-0.6.tar.gz}Datbinder library & source}}
 	

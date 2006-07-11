@@ -8,7 +8,7 @@ Recipe book example application
 
 *Description
 
-	This example is a functional recipe book, with each recipe having an ingredient list and a free-form procedure (how to prepare) section rendered as {{{http://textism.com/tools/textile/} Textile}}. The Ajax <<<SearchPanel>>> from the {{{phone-directory.html} last example}} reports for duty in this one as well. And in another bit of Wicket 1.2 goodness, the recipe URLs along the left column are the friendly type.
+	This example is a functional recipe book, with each recipe having an ingredient list and a free-form procedure (how to prepare) section rendered as {{{http://textism.com/tools/textile/} Textile}}. The Ajax {{{/javadoc/net/databinder/components/SearchPanel.html}SearchPanel}} from the {{{phone-directory.html} last example}} reports for duty in this one as well. And in another bit of Wicket 1.2 goodness, the recipe URLs along the left column are the friendly type.
 	
 	To edit recipes (and see the fancy live Textile preview) you’ll need to sign in. Not to protect the recipes but to demonstrate Databinder-assisted authentication. Register with a username and phony password, it’ll only take a sec.
 
