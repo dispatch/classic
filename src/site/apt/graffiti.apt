@@ -8,7 +8,9 @@ Graffiti example application
 
 *Description
 
-	This first example takes the text you enter and displays it on a virtual wall. While the data is retained indefinitely, only the ten most recent tags are displayed. Oh, one more thing—while the persisted data is textual, it's rendered into an image for display.
+	This first example takes the text you enter and displays it on a virtual wall. While the data is retained indefinitely, only the ten most recent tags are displayed.
+	
+	Oh, one more thing—while the persisted data is textual, it's rendered into an image for display.
 	
 	{{{/graffiti/} Try this application }} and make your mark.
 	
