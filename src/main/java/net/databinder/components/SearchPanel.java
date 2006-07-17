@@ -5,7 +5,6 @@ import net.databinder.models.IQueryBinder;
 import org.hibernate.Query;
 
 import wicket.ajax.AjaxRequestTarget;
-import wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import wicket.ajax.markup.html.AjaxLink;
 import wicket.markup.html.PackageResourceReference;
 import wicket.markup.html.form.Form;
@@ -90,8 +89,8 @@ public abstract class SearchPanel extends Panel {
 					new PackageResourceReference(this.getClass(), "clear.png")));
 			clearWrap.add(clearLink);
 
-			// listen on key up events
-			search.add(new AjaxFormComponentUpdatingBehavior("onkeyup") {
+			// triggered when user pauses or tabs out
+			search.add(new AjaxOnKeyPausedUpdater() {
 				protected void onUpdate(AjaxRequestTarget target) {
 					target.addComponent(clearWrap);
 					SearchPanel.this.onUpdate(target);
