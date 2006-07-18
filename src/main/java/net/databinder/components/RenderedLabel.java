@@ -5,8 +5,10 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.io.InputStream;
 
 import wicket.Component;
+import wicket.Resource;
 import wicket.WicketRuntimeException;
 import wicket.markup.ComponentTag;
 import wicket.markup.html.image.Image;
@@ -162,5 +164,21 @@ public class RenderedLabel extends Image {
 		this.font = font;
 		resource.invalidate();
 		return this;
+	}
+	
+	/**
+	 * Utility method for creating Font objects from resources.
+	 * @param fontRes Resource containing  a TrueType font descriptor.
+	 * @return Plain, 16pt font derived from the resource.
+	 */
+	public static Font fontForResource(Resource fontRes) {
+		try {
+			InputStream is = fontRes.getResourceStream().getInputStream();
+			Font font = Font.createFont(Font.TRUETYPE_FONT, is);
+			is.close();
+			return font.deriveFont(Font.PLAIN, 16);
+		} catch (Throwable e) {
+			throw new WicketRuntimeException("Error loading font resources", e);
+		}
 	}
 }
