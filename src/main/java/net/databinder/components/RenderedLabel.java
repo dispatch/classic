@@ -22,9 +22,10 @@ import wicket.model.IModel;
 /**
  * Renders its model text into a PNG, using any typeface available to the JVM. The size of 
  * the image is determined by the model text and the characteristics of font selected. The
- * default font is 14pt sans, plain black on a white background. The image's alt attribute
- * will be set to the model text. <p>This class is inspired by, and draws code from, Wicket's 
- * DefaultButtonImageResource. </p>
+ * default font is 14pt sans, plain black on a white background. Background may be set
+ * to null for alpha transparency, depending on browser support. The image's alt attribute
+ * will be set to the model text. 
+ * <p>This class is inspired by, and draws code from, Wicket's DefaultButtonImageResource. </p>
  * @author Nathan Hamblen
  * @see wicket.markup.html.image.resource.DefaultButtonImageResource
  */
@@ -186,6 +187,12 @@ public class RenderedLabel extends Image {
 		return backgroundColor;
 	}
 	
+	/**
+	 * Specify a background color to match the page. Specify null for a transparent background blended
+	 * with the alpha channel, causing IE6 to display a gray background.
+	 * @param backgroundColor color or null for transparent
+	 * @return this for chaining
+	 */
 	public RenderedLabel setBackgroundColor(Color backgroundColor) {
 		this.backgroundColor = backgroundColor;
 		resource.invalidate();
