@@ -1,10 +1,12 @@
 package net.databinder.components;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
@@ -88,6 +90,7 @@ public class RenderedLabel extends Image {
 		public RenderedTextImageResource()
 		{
 			super(10, 10,"png");	// tiny default that will resize to fit text
+			setType(BufferedImage.TYPE_INT_ARGB); // allow alpha transparency
 		}
 		
 		/** Renders text into image. */
@@ -96,9 +99,13 @@ public class RenderedLabel extends Image {
 			String text = getText(); // get text from outer class model
 			final int width = getWidth(), height = getHeight();
 
-			// Fill background
-			graphics.setColor(backgroundColor);
-			graphics.fillRect(0, 0, width, height);
+			// draw background if not null
+			if (backgroundColor != null) {
+				graphics.setColor(backgroundColor);
+				graphics.fillRect(0, 0, width, height);
+			} else
+				// otherwise leave transparent; DstOver seems to render more nicely
+				graphics.setComposite(AlphaComposite.DstOver);
 
 			if (text == null)
 				return true;	// no text? we're done here
