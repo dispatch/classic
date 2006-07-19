@@ -1,6 +1,5 @@
 package net.databinder.components;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -99,13 +98,11 @@ public class RenderedLabel extends Image {
 			String text = getText(); // get text from outer class model
 			final int width = getWidth(), height = getHeight();
 
-			// draw background if not null
+			// draw background if not null, otherwise leave transparent
 			if (backgroundColor != null) {
 				graphics.setColor(backgroundColor);
 				graphics.fillRect(0, 0, width, height);
-			} else
-				// otherwise leave transparent; DstOver seems to render more nicely
-				graphics.setComposite(AlphaComposite.DstOver);
+			}
 
 			if (text == null)
 				return true;	// no text? we're done here
