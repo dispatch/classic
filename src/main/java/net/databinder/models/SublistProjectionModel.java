@@ -4,8 +4,6 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 
-import wicket.Component;
-import wicket.WicketRuntimeException;
 import wicket.model.IModel;
 import wicket.model.LoadableDetachableModel;
 
@@ -13,6 +11,9 @@ import wicket.model.LoadableDetachableModel;
  * Projects a single list into a multiple, arbitrarily transformed sublists without replicating
  *  the list data. A parent list containing sublists is the object wrapped in this model,
  *  while the master list model passed in is held and used internally.
+ *  <p>If you need to detach the master list, detach this model and the command will be 
+ *  passed to the contained master list. Any other action that changes the size of the master 
+ *  list must also detach this model so it can recalculate the sublists.
  *  
  * @author Nathan Hamblen
  */
@@ -89,9 +90,9 @@ public abstract class SublistProjectionModel extends LoadableDetachableModel
 
         }
 
-        protected List<List> getMasterList()
+        protected List getMasterList()
         {
-                return (List<List>)master.getObject(null);
+                return (List) master.getObject(null);
         }
 
         @Override
@@ -130,15 +131,12 @@ public abstract class SublistProjectionModel extends LoadableDetachableModel
                         return getSize(parentIdx);
                 }
         }
-
+        
+        /**
+         * Detach master list.
+         */
         @Override
-        public IModel getNestedModel()
-        {
-                return null;
-        }
-
-        @Override
-        protected void onAttach()
-        {
+        protected void onDetach() {
+        	master.detach();
         }
 }
