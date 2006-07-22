@@ -70,7 +70,11 @@ public class RenderedLabel extends Image  {
 
 		String text = getText();
 		if (text != null) {
-			int hash= text.hashCode() ^ font.hashCode() ^ backgroundColor.hashCode() ^ color.hashCode() ^ maxWidth.hashCode();
+			int hash= text.hashCode() ^ font.hashCode() ^ color.hashCode();
+			if (backgroundColor != null)
+				hash ^= backgroundColor.hashCode();
+			if (maxWidth != null)
+				hash ^= maxWidth.hashCode();
 			
 			String url = tag.getAttributes().getString("src");
 			url = url + ((url.indexOf("?") >= 0) ? "&" : "?");
