@@ -49,12 +49,26 @@ public class DataForm extends Form {
 	}
 	
 	/**
-	 * Instatiates this form and a new, blank instance of the given class as a persistent model object. 
+	 * Instatiates this form and a new, blank instance of the given class as a persistent modell
+	 * object. By default the model object created is <b>not</b> retained between requests until
+	 * it is persisted. This works well when the object's initial state is determined wholly by
+	 * data posted with this form. For special cases, such as non-posting ajax requests, 
+	 * call <tt>retainUnsaved()</tt>.   
 	 * @param id
 	 * @param modelClass for the persistent object
 	 */
 	public DataForm(String id, Class modelClass) {
 		super(id, new BoundCompoundPropertyModel(new HibernateObjectModel(modelClass)));
+	}
+	
+	/**
+	 * Tells the form's persistant model to retain objects in the session unil they are saved to
+	 * persistant storage.
+	 * @return this, for chaining
+	 */
+	public DataForm retainUnsaved() {
+		getPersistentObjectModel().setRetainUnsaved(true);
+		return this;
 	}
 	
 	/**

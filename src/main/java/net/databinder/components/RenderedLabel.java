@@ -18,23 +18,25 @@ import wicket.markup.html.image.Image;
 import wicket.markup.html.image.resource.RenderedDynamicImageResource;
 import wicket.model.ICompoundModel;
 import wicket.model.IModel;
+import wicket.util.string.Strings;
 
 /**
  * Renders its model text into a PNG, using any typeface available to the JVM. The size of 
  * the image is determined by the model text and the characteristics of font selected. The
  * default font is 14pt sans, plain black on a white background. Background may be set
  * to null for alpha transparency, depending on browser support. The image's alt attribute
- * will be set to the model text. 
+ * will be set to the model text, and width and height attributes will be set appropriately.
  * <p>This class is inspired by, and draws code from, Wicket's DefaultButtonImageResource. </p>
  * @author Nathan Hamblen
  * @see wicket.markup.html.image.resource.DefaultButtonImageResource
  */
-public class RenderedLabel extends Image {
+public class RenderedLabel extends Image  {
 
 	private Color backgroundColor = Color.WHITE;
 	private Color color = Color.BLACK;
 	private Font font = new Font("sans", Font.PLAIN, 14);
 	private Integer maxWidth;
+	private String renderedText; 
 	
 	private RenderedTextImageResource resource;
 	
@@ -58,10 +60,29 @@ public class RenderedLabel extends Image {
 		setImageResource(resource = new RenderedTextImageResource());
 	}
 	
-	/** Adds alt attribute for accessibility. */
+	/** 
+	 * Adds image-specific attributes including width, height, and alternate text. A hash is appended
+	 * to the source URL to trigger a reload whenever drawing attributes change. 
+	 */
 	@Override
 	protected void onComponentTag(ComponentTag tag) {
 		super.onComponentTag(tag);
+
+		String text = getText();
+		if (text != null) {
+			int hash= text.hashCode() ^ font.hashCode() ^ backgroundColor.hashCode() ^ color.hashCode() ^ maxWidth.hashCode();
+			
+			String url = tag.getAttributes().getString("src");
+			url = url + ((url.indexOf("?") >= 0) ? "&" : "?");
+			url = url + "wicket:antiCache=" + hash;
+
+			tag.put("src", url);
+		}
+		
+		resource.determineSize();
+		tag.put("width", resource.getWidth() );
+		tag.put("height", resource.getHeight() );
+
 		tag.put("alt", getText());
 	}
 	
@@ -89,14 +110,14 @@ public class RenderedLabel extends Image {
 	{
 		public RenderedTextImageResource()
 		{
-			super(10, 10,"png");	// tiny default that will resize to fit text
+			super(1, 1,"png");	// tiny default that will resize to fit text
 			setType(BufferedImage.TYPE_INT_ARGB); // allow alpha transparency
 		}
 		
 		/** Renders text into image. */
 		protected boolean render(final Graphics2D graphics)
 		{
-			String text = getText(); // get text from outer class model
+			renderedText = getText(); // get text from outer class model
 			final int width = getWidth(), height = getHeight();
 
 			// draw background if not null, otherwise leave transparent
@@ -105,8 +126,14 @@ public class RenderedLabel extends Image {
 				graphics.fillRect(0, 0, width, height);
 			}
 
-			if (text == null)
-				return true;	// no text? we're done here
+			// render as a 1x1 pixel if text is empty
+			if (renderedText == null) {
+				if (width == 1 && height == 1)
+					return true;
+				setWidth(1);
+				setHeight(1);
+				return false;
+			}
 			
 			// Get size of text
 			graphics.setFont(font);
@@ -114,12 +141,12 @@ public class RenderedLabel extends Image {
 			
 			List<String> lines = new LinkedList<String>();
 			
-			int dxText = breakLines(text, metrics, lines),
+			int dxText = breakLines(renderedText, metrics, lines),
 				lineHeight = metrics.getHeight(),
 				dyText = lineHeight * lines.size();
 			
-			// grow and redraw if we need to
-			if (dxText > width || dyText > height)
+			// resize and redraw if we need to
+			if (dxText !=  width || dyText != height)
 			{
 				setWidth(dxText);
 				setHeight(dyText);
@@ -172,6 +199,11 @@ public class RenderedLabel extends Image {
 			outputLines.add(line.toString());
 			return topWidth;
 		}
+		
+		/** Called when the correct size of this resource is needed before its data. */
+		public void determineSize() {
+			render();
+		}
 	}
 	
 	/** @return String to be rendered */
@@ -181,6 +213,12 @@ public class RenderedLabel extends Image {
 		} catch (ClassCastException e) {
 			throw new WicketRuntimeException("A RenderedLabel's model object MUST be a String.", e);
 		}
+	}
+
+	@Override
+	protected void onBeforeRender() {
+		if (!Strings.isEqual(renderedText,getText()))
+			resource.invalidate();
 	}
 	
 	public Color getBackgroundColor() {

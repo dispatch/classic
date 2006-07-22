@@ -47,6 +47,10 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 	private Serializable objectId;
 	private String queryString;
 	private IQueryBinder queryBinder;
+	/** May store unsaved objects between requests. */
+	private Serializable retainedObject;
+	/** Enable retaining unsaved objects between requests. */
+	private boolean retainUnsaved = false;
 	
 	/**
 	 * @param objectClass class to be loaded and stored by Hibernate
@@ -126,14 +130,15 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 		objectId = null;
 		queryBinder = null; 
 		queryString = null;
+		retainedObject = null;
 		detach();
 	}
 	
 	/**
-	 * Load the object through Hibernate, or contruct a new instance if it is not 
-	 * bound to an id. This method uses the entityName to load when possible, simply
-	 * because that is the recomended method. A correct (unproxied) objectClass
-	 * is always available for contructing empty objects.
+	 * Load the object through Hibernate, contruct a new instance if it is not 
+	 * bound to an id, or use unsaved retained object. This method uses the entityName 
+	 * to load when possible. A correct  (unproxied) objectClass is always available for 
+	 * contructing empty objects.
 	 * @throws org.hibernate.HibernateException on load error
 	 */
 	@Override
@@ -141,9 +146,17 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 		if (objectClass == null && entityName == null && queryString == null)
 			return null;	// can't load without one of these
 		try {
-			if (objectId == null && queryString == null)
-				return objectClass.newInstance();
-		} catch (Exception e) {
+			if (objectId == null && queryString == null) {
+				if (retainUnsaved && retainedObject != null)
+					return retainedObject;
+				else if (retainUnsaved)
+					return retainedObject = (Serializable) objectClass.newInstance();
+				else
+					return objectClass.newInstance();
+			}
+		} catch (ClassCastException e) {
+			throw new RuntimeException("Retaining unsaved model objects requires that they be Serializable.", e);
+		} catch (Throwable e) {
 			throw new RuntimeException("Unable to instantiate object. Does it have a default constructor?", e);
 		}
 		Session sess = DataRequestCycle.getHibernateSession();
@@ -192,5 +205,20 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 
 	public void setEntityName(String entityName) {
 		this.entityName = entityName;
+	}
+
+	/**
+	 * @return true if unsaved objects should be retained between requests.
+	 */
+	public boolean getRetainUnsaved() {
+		return retainUnsaved;
+	}
+
+	/**
+	 * Unsaved Serializable objects can be retained between requests.
+	 * @param retainUnsaved set to true to retain unsaved objects
+	 */
+	public void setRetainUnsaved(boolean retainUnsaved) {
+		this.retainUnsaved = retainUnsaved;
 	}
 }
