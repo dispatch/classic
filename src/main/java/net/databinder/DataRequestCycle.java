@@ -23,6 +23,11 @@
 
 package net.databinder;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.Cookie;
+
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -32,6 +37,7 @@ import wicket.Application;
 import wicket.Response;
 import wicket.protocol.http.WebRequest;
 import wicket.protocol.http.WebRequestCycle;
+import wicket.protocol.http.WebResponse;
 import wicket.protocol.http.WebSession;
 
 /**
@@ -47,6 +53,8 @@ import wicket.protocol.http.WebSession;
 public class DataRequestCycle extends WebRequestCycle {
 	private Session hibernateSession;
 	private static SessionFactory hibernateSessionFactory;
+	/** cache of cookies from request */ 
+	private Map<String, Cookie> cookies;
 
 	/**
 	 * Init our static Hibernate session factory, triggering a general Hibernate
@@ -108,6 +116,41 @@ public class DataRequestCycle extends WebRequestCycle {
 				hibernateSession.close();
 		} finally {
 			hibernateSession = null;
-		}		
+		}
+	}
+	
+	/**
+	 * Return or build cache of cookies cookies from request.
+	 */
+	protected Map<String, Cookie> getCookies() {
+		if (cookies == null) {
+			Cookie ary[] = ((WebRequest)getRequest()).getCookies();
+			cookies = new HashMap<String, Cookie>(ary.length);
+			for (Cookie c : ary)
+				cookies.put(c.getName(), c);
+		}
+		return cookies;
+	}
+	
+	/**
+	 * Retrieve cookie from request, so long as it hasn't been cleared. Cookies  cleared by
+	 * clearCookie() are still contained in the current request's cookie array, but this method
+	 * will not return them.
+	 * @param name cookie name
+	 * @return cookie requested, or null if unavailable
+	 */
+	public Cookie getCookie(String name) {
+		return getCookies().get(name);
+	}
+	
+	/**
+	 * Sets a new a cookie with an expiration time of zero to an clear an old one from the 
+	 * browser, and removes any copy from this request's cookie cache. Subsequent calls to 
+	 * <tt>getCookie(String name)</tt> during this request will not return a cookie of that name. 
+	 * @param name cookie name
+	 */
+	public void clearCookie(String name) {
+		getCookies().remove(name);
+		((WebResponse)getResponse()).clearCookie(new Cookie(name, ""));
 	}
 }

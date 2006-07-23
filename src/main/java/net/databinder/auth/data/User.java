@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import net.databinder.auth.AuthDataApplication;
 
@@ -19,8 +20,13 @@ import wicket.Application;
 import wicket.authorization.strategies.role.Roles;
 import wicket.util.crypt.Base64;
 
+/**
+ * Basic implementation of IUser.CookieAuth. Stores no passwords in memory or persistent
+ * storage, only a hash. 
+ * @author Nathan Hamblen
+ */
 @Entity
-public class User implements IUser{
+public class User implements IUser.CookieAuth {
 	private Integer id;
 	private String passwordHash;
 	private String username;
@@ -84,6 +90,10 @@ public class User implements IUser{
 		this.passwordHash = passwordHash;
 	}
 	
+	/**
+	 * Performs hash on given password and compares it to the correct hash.
+	 * @true if hashed password is correct
+	 */
 	public boolean checkPassword(String password){
 		return passwordHash.equals(getHash(password));
 	}
@@ -106,6 +116,23 @@ public class User implements IUser{
 
 	public void setRoles(Set<String> roles) {
 		this.roles = roles;
+	}
+	
+	/** 
+	 * @return salted hash that is determined by both username and password hash. 
+	 */
+	@Transient
+	public String getToken() {
+		try {
+			MessageDigest md = MessageDigest.getInstance("SHA");
+			md.update(((AuthDataApplication)Application.get()).getSalt());
+			md.update(passwordHash.getBytes());
+			byte[] hash = md.digest(username.getBytes());
+			return new String(Base64.encodeBase64(hash));
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(
+					"SHA Hash algorithm not found. Make available, or override this method.", e);
+		}
 	}
 	
 	/**

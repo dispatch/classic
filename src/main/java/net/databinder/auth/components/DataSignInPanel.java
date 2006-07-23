@@ -19,31 +19,71 @@
 package net.databinder.auth.components;
 
 import net.databinder.auth.AuthDataSession;
-import wicket.authentication.panel.SignInPanel;
+import wicket.PageParameters;
+import wicket.markup.html.WebMarkupContainer;
+import wicket.markup.html.form.CheckBox;
+import wicket.markup.html.form.Form;
+import wicket.markup.html.form.PasswordTextField;
+import wicket.markup.html.form.RequiredTextField;
+import wicket.markup.html.form.TextField;
+import wicket.markup.html.panel.FeedbackPanel;
+import wicket.markup.html.panel.Panel;
+import wicket.model.Model;
 
 /**
+ * Displays username and password fields, along with optional "remember me" checkbox.
  * Queries the AuthDataSession upon a login attempt.
  * @see AuthDataSession
  */
-public class DataSignInPanel extends SignInPanel {
+public class DataSignInPanel extends Panel {
 
 	public DataSignInPanel(String id) {
-		// hide remember me
-		super(id, false);
+		super(id);
+		add(new FeedbackPanel("feedback"));
+		add(new SignInForm("signInForm"));
 	}
 	
-	public void setPersistent(final boolean enable) {
-		// just don't do anything here; will be called with "true" (wicket-auth-user bug?)
+	protected class SignInForm extends Form {
+		private CheckBox rememberMe;
+		private TextField username, password;
+		protected SignInForm(String id) {
+			super(id);
+			add(username = new RequiredTextField("username", new Model(null)));
+			add(password = new PasswordTextField("password", new Model(null)));
+			add(new WebMarkupContainer("rememberMeRow") {
+				@Override
+				public boolean isVisible() {
+					return includeRememberMe();
+				}
+			}.add(rememberMe = new CheckBox("rememberMe", new Model(Boolean.FALSE))));
+		}
+		@Override
+		protected void onSubmit() {
+			if (signIn((String)username.getModelObject(), (String)password.getModelObject(), 
+					(Boolean)rememberMe.getModelObject() && includeRememberMe()))
+			{
+				if (!continueToOriginalDestination())
+					setResponsePage(getApplication().getSessionSettings().getPageFactory().newPage(
+							getApplication().getHomePage(), (PageParameters)null));
+			} else
+				error(getLocalizer().getString("signInFailed", this, "Sorry, name and password not recognized."));
+		}
 	}
 
+	/**
+	 * Returns true by default. Override to disable "remember me" functionality.
+	 * @return true to include remember me option
+	 */
+	protected boolean includeRememberMe() {
+		return false;
+	}
 	
 	/**
 	 * Call sign in method for session. Override to call a different sign in method.
 	 * @return true if credentials allowed sign-in
 	 * @see AuthDataSession 
 	 */
-	@Override
-	public boolean signIn(String username, String password) {
-		return ((AuthDataSession) getSession()).signIn(username, password);
+	protected boolean signIn(String username, String password, boolean setCookie) {
+		return ((AuthDataSession) getSession()).signIn(username, password, setCookie);
 	}
 }
