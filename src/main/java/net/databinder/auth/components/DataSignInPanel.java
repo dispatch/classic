@@ -66,7 +66,7 @@ public class DataSignInPanel extends Panel {
 					setResponsePage(getApplication().getSessionSettings().getPageFactory().newPage(
 							getApplication().getHomePage(), (PageParameters)null));
 			} else
-				error(getLocalizer().getString("signInFailed", this, "Sorry, name and password not recognized."));
+				error(getLocalizer().getString("signInFailed", this, "Sorry, these credentials are not recognized."));
 		}
 	}
 
