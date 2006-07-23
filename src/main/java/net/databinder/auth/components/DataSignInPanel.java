@@ -75,7 +75,7 @@ public class DataSignInPanel extends Panel {
 	 * @return true to include remember me option
 	 */
 	protected boolean includeRememberMe() {
-		return false;
+		return true;
 	}
 	
 	/**
