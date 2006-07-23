@@ -21,6 +21,7 @@ package net.databinder.models;
 
 import net.databinder.DataRequestCycle;
 
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 
 import wicket.model.LoadableDetachableModel;
@@ -32,6 +33,8 @@ import wicket.model.LoadableDetachableModel;
 public class HibernateListModel extends LoadableDetachableModel {
 	private String queryString;
 	private IQueryBinder queryBinder;
+	private Class objectClass;
+	private ICriteriaBuilder criteriaBuilder;
 	
 	/**
 	 * Contructor for a simple query.
@@ -50,15 +53,40 @@ public class HibernateListModel extends LoadableDetachableModel {
 		this(queryString);
 		this.queryBinder = queryBinder;
 	}
-	
+
+	/**
+	 * Constructor for a list of all results in class. While this query will be too open for 
+	 * most applications, it can useful in early development.
+	 * @param objectClass class objects to return
+	 */
+	public HibernateListModel(Class objectClass) {
+		this.objectClass = objectClass;
+	}
+
+	/**
+	 * Constructor for a list of results in class matching a built criteria.
+	 * @param objectClass class for root criteria
+	 * @param criteriaBuilder builder to apply criteria restrictions
+	 */
+	public HibernateListModel(Class objectClass, ICriteriaBuilder criteriaBuilder) {
+		this.objectClass = objectClass;
+		this.criteriaBuilder = criteriaBuilder;
+	}
+
 	/**
 	 * Load the object List through Hibernate, binding query parameters if available.
 	 */
 	@Override
 	protected Object load() {
-		Query query = DataRequestCycle.getHibernateSession().createQuery(queryString);
-		if (queryBinder != null)
-			queryBinder.bind(query);
-		return query.list();
+		if (queryString != null) {
+			Query query = DataRequestCycle.getHibernateSession().createQuery(queryString);
+			if (queryBinder != null)
+				queryBinder.bind(query);
+			return query.list();
+		}
+		Criteria criteria = DataRequestCycle.getHibernateSession().createCriteria(objectClass);
+		if (criteriaBuilder != null)
+			criteriaBuilder.build(criteria);
+		return criteria.list();
 	}
 }

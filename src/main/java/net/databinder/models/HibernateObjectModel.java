@@ -27,6 +27,7 @@ import javax.persistence.Version;
 
 import net.databinder.DataRequestCycle;
 
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.QueryException;
 import org.hibernate.Session;
@@ -47,6 +48,7 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 	private Serializable objectId;
 	private String queryString;
 	private IQueryBinder queryBinder;
+	private ICriteriaBuilder criteriaBuilder;
 	/** May store unsaved objects between requests. */
 	private Serializable retainedObject;
 	/** Enable retaining unsaved objects between requests. */
@@ -86,9 +88,9 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 	}
 
 	/**
-	 * Construct with a query that returns exactly one result. Use this for fetch
+	 * Construct with a query and binder that return exactly one result. Use this for fetch
 	 * instructions, scalar results, or if the persistent object ID is not available.
-	 * Queries that do not return exactly one result will produce exceptions.
+	 * Queries that return more than one result will produce exceptions.
 	 * @param queryString query returning one result
 	 * @param queryBinder bind id or other parameters
 	 * @throws org.hibernate.HibernateException on load error
@@ -96,6 +98,19 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 	public HibernateObjectModel(String queryString, IQueryBinder queryBinder) {
 		this.queryString = queryString;
 		this.queryBinder = queryBinder;
+		getObject(null);	// loads & retains object
+	}
+	
+	/**
+	 * Construct with a class and criteria binder that return exactly one result. Use this for fetch
+	 * instructions, scalar results, or if the persistent object ID is not available. Criteria that 
+	 * return more than one result will produce exceptions.
+	 * @param objectClass class of object for root criteria
+	 * @param criteriaBuilder builder to apply criteria restrictions
+	 */
+	public HibernateObjectModel(Class objectClass, ICriteriaBuilder criteriaBuilder) {
+		this.objectClass = objectClass;
+		this.criteriaBuilder = criteriaBuilder;
 		getObject(null);	// loads & retains object
 	}
 	
@@ -130,6 +145,7 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 		objectId = null;
 		queryBinder = null; 
 		queryString = null;
+		criteriaBuilder = null;
 		retainedObject = null;
 		detach();
 	}
@@ -146,7 +162,7 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 		if (objectClass == null && entityName == null && queryString == null)
 			return null;	// can't load without one of these
 		try {
-			if (objectId == null && queryString == null) {
+			if (objectId == null && queryString == null && criteriaBuilder == null) {
 				if (retainUnsaved && retainedObject != null)
 					return retainedObject;
 				else if (retainUnsaved)
@@ -164,7 +180,13 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 			if (entityName != null)
 				return sess.load(entityName, objectId);
 			return sess.load(objectClass, objectId);
-		}			
+		}
+		
+		if(criteriaBuilder != null) {
+			Criteria criteria = sess.createCriteria(objectClass);
+			criteriaBuilder.build(criteria);
+			return criteria.uniqueResult();
+		}
 		
 		Query query = sess.createQuery(queryString);
 		// if querybinder was null in constructor, that's weird, but continue

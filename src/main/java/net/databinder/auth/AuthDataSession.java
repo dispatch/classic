@@ -28,13 +28,15 @@ import net.databinder.DataRequestCycle;
 import net.databinder.DataSession;
 import net.databinder.auth.data.IUser;
 import net.databinder.models.HibernateObjectModel;
-import net.databinder.models.IQueryBinder;
+import net.databinder.models.ICriteriaBuilder;
 
-import org.hibernate.Query;
-import org.hibernate.QueryException;
+import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
+import org.hibernate.criterion.Restrictions;
 
 import wicket.Application;
 import wicket.RequestCycle;
+import wicket.WicketRuntimeException;
 import wicket.model.IModel;
 import wicket.protocol.http.WebResponse;
 import wicket.util.time.Duration;
@@ -110,18 +112,17 @@ public class AuthDataSession extends DataSession {
 	 * @return user object from persistent storage
 	 */
 	protected IModel getUser(final String username) {
-		String query = "from " + userClass.getCanonicalName() 
-		+ " where username = :username";
-	
 		try {
-			IModel user = new HibernateObjectModel(query, new IQueryBinder() {
-				public void bind(Query query) {
-					query.setString("username", username);
+			IModel user = new HibernateObjectModel(userClass,new ICriteriaBuilder() {
+				public void build(Criteria criteria) {
+					criteria.add(Restrictions.eq("username", username));
 				}
 			});
-			return user;
-		} catch (QueryException e){
-			return null;
+			if (user.getObject(null) != null)
+				return user;
+			return null;	// no results
+		} catch (HibernateException e){
+			throw new WicketRuntimeException("Multiple users returned for query", e); 
 		}
 	}
 	
