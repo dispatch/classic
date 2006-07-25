@@ -68,10 +68,10 @@ mysqladmin -uroot create myExample
 
 	<<Note:>> All <<<mvn>>> commands below should be run from the root directory of your project.
 
-	Your “data-app” based project is configured for the {{{http://jetty.mortbay.org/jetty6/maven-plugin/index.html}Jetty6 Maven plugin}}, so you can start the server in one step:
+	Your “data-app” based project is configured for the {{{http://jetty.mortbay.org/jetty/maven-plugin/index.html}Jetty Maven plugin}}, so you can start the server in one step:
 
 -----------------------------------------------------
-mvn compile jetty6:run
+mvn compile jetty:run
 -----------------------------------------------------
 
 	More downloading ensues, and eventually Jetty will start up on port 8080. Try connecting to <<<http://localhost:8080/directory/app>>> and you should see your project name in orange.
