@@ -18,6 +18,7 @@
  */
 package net.databinder.auth.components;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -103,7 +104,7 @@ public class DataRegisterPanel extends Panel {
 		return q.list().isEmpty();
 	}
 	
-	protected static class Credentials {
+	protected static class Credentials implements Serializable {
 		private String username;
 		private String password;
 		public String getPassword() {

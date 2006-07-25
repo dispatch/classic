@@ -31,6 +31,7 @@ import wicket.util.string.Strings;
  * @see wicket.markup.html.image.resource.DefaultButtonImageResource
  */
 public class RenderedLabel extends Image  {
+	private static final long serialVersionUID = 1L;
 
 	private Color backgroundColor = Color.WHITE;
 	private Color color = Color.BLACK;

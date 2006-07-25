@@ -19,13 +19,15 @@
 
 package net.databinder.models;
 
+import java.io.Serializable;
+
 import org.hibernate.Query;
 
 /**
  * Inteface for object that binds Hibernate query parameters to values.
  * @author Nathan Hamblen
  */
-public interface IQueryBinder {
+public interface IQueryBinder extends Serializable {
 	/**
 	 * Set values for parameters in the query.
 	 * @param query Hibernate query
