@@ -60,6 +60,8 @@ Recipe book example application
 	
 [images/down-arrow.png]
 
+	* gentium-regular.ttf — <open source typeface, makes nice recipe titles>
+
 	[]
 
 	If you’re {{{setup-guide.html} set up}} for Databinder, {{{/releases/recipe-0.6.tar.gz} download and run}} this at home.
