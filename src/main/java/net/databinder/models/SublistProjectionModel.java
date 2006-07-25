@@ -17,126 +17,112 @@ import wicket.model.LoadableDetachableModel;
  *  
  * @author Nathan Hamblen
  */
-public abstract class SublistProjectionModel extends LoadableDetachableModel
-{
-        /** Continuous list used to feed this model's sublists. */
-        private IModel master;
-        
-        public SublistProjectionModel(IModel master)
-        {
-                this.master = master;
-        }
+public abstract class SublistProjectionModel extends LoadableDetachableModel {
+	/** Continuous list used to feed this model's sublists. */
+	private IModel master;
 
-        /** @return number of sublists */
-        protected abstract int getParentSize();
+	public SublistProjectionModel(IModel master) {
+		this.master = master;
+	}
 
-        /** @return index of master list mapped to parameters */
-        protected abstract int transform(int parentIdx, int sublistIdx);
+	/** @return number of sublists */
+	protected abstract int getParentSize();
 
-        /** @return size sublist at given index*/
-        protected abstract int getSize(int parentIdx);
+	/** @return index of master list mapped to parameters */
+	protected abstract int transform(int parentIdx, int sublistIdx);
 
-        /**
-         * Breaks the parent list into chunks of the requested size, in the same order as
-         * the parent list.
-         */
-        public static class Chunked extends SublistProjectionModel {
+	/** @return size sublist at given index*/
+	protected abstract int getSize(int parentIdx);
 
-                protected int chunkSize;
+	/**
+	 * Breaks the parent list into chunks of the requested size, in the same order as
+	 * the parent list.
+	 */
+	public static class Chunked extends SublistProjectionModel {
 
-                public Chunked(int chunkSize, IModel master)
-                {
-                        super(master);
-                        this.chunkSize = chunkSize;
-                }
+		protected int chunkSize;
 
-                protected int transform(int parentIdx, int sublistIdx)
-                {
-                        return parentIdx * chunkSize + sublistIdx;
-                }
+		public Chunked(int chunkSize, IModel master) {
+			super(master);
+			this.chunkSize = chunkSize;
+		}
 
-                protected int getSize(int parentIdx) {
-                        return Math.min(getMasterList().size() - parentIdx * chunkSize, chunkSize);
-                }
+		protected int transform(int parentIdx, int sublistIdx) {
+			return parentIdx * chunkSize + sublistIdx;
+		}
 
-                protected int getParentSize()
-                {
-                        return (getMasterList().size() - 1) / chunkSize + 1;
-                }
-        }
+		protected int getSize(int parentIdx) {
+			return Math.min(getMasterList().size() - parentIdx * chunkSize,
+					chunkSize);
+		}
 
-        /**
-         * Transposes rows and columns so the list runs top to bottom rather than
-         * left to right. 
-         */
-        public static class Transposed extends Chunked  {
+		protected int getParentSize() {
+			return (getMasterList().size() - 1) / chunkSize + 1;
+		}
+	}
 
-                public Transposed(int columns, IModel master)
-                {
-                        super(columns, master);
-                }
+	/**
+	 * Transposes rows and columns so the list runs top to bottom rather than
+	 * left to right. 
+	 */
+	public static class Transposed extends Chunked {
 
-                protected int transform(int parentIdx, int sublistIdx)
-                {
-                        return parentIdx + sublistIdx * getParentSize();
-                }
+		public Transposed(int columns, IModel master) {
+			super(columns, master);
+		}
 
-                protected int getSize(int parentIdx) {
-                    int lastColLen = getMasterList().size() % getParentSize();;
-                    if (lastColLen == 0 || lastColLen > parentIdx)
-                        return chunkSize;
-                    return chunkSize - 1;
-                }
+		protected int transform(int parentIdx, int sublistIdx) {
+			return parentIdx + sublistIdx * getParentSize();
+		}
 
-        }
+		protected int getSize(int parentIdx) {
+			return (getMasterList().size() - parentIdx - 1) / getParentSize() + 1;
+		}
 
-        protected List getMasterList()
-        {
-                return (List) master.getObject(null);
-        }
+	}
 
-        @Override
-        protected List<List>load() {
-                int rows = getParentSize();
-                List<List> parent = new ArrayList<List>(rows);
-                for (int i = 0; i < rows; i++)
-                        parent.add(new ProjectedSublist(i));
+	protected List getMasterList() {
+		return (List) master.getObject(null);
+	}
 
-                return parent;
-        }
+	@Override
+	protected List<List> load() {
+		int rows = getParentSize();
+		List<List> parent = new ArrayList<List>(rows);
+		for (int i = 0; i < rows; i++)
+			parent.add(new ProjectedSublist(i));
 
-        /**
-         * This is a virtual list, a projection of the master list. Its size and index trasform is 
-         * governed by the containing object.
-         */
-        @SuppressWarnings("unchecked")
-        protected class ProjectedSublist extends AbstractList
-        {
-                private int parentIdx;
+		return parent;
+	}
 
-                public ProjectedSublist(final int parentIdx)
-                {
-                        this.parentIdx = parentIdx;
-                }
+	/**
+	 * This is a virtual list, a projection of the master list. Its size and index trasform is 
+	 * governed by the containing object.
+	 */
+	@SuppressWarnings("unchecked")
+	protected class ProjectedSublist extends AbstractList {
+		private int parentIdx;
 
-                @Override
-                public Object get(final int index)
-                {
-                        return getMasterList().get(transform(parentIdx, index));
-                }
+		public ProjectedSublist(final int parentIdx) {
+			this.parentIdx = parentIdx;
+		}
 
-                @Override
-                public int size()
-                {
-                        return getSize(parentIdx);
-                }
-        }
-        
-        /**
-         * Detach master list.
-         */
-        @Override
-        protected void onDetach() {
-        	master.detach();
-        }
+		@Override
+		public Object get(final int index) {
+			return getMasterList().get(transform(parentIdx, index));
+		}
+
+		@Override
+		public int size() {
+			return getSize(parentIdx);
+		}
+	}
+
+	/**
+	 * Detach master list.
+	 */
+	@Override
+	protected void onDetach() {
+		master.detach();
+	}
 }
