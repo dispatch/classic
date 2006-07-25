@@ -22,7 +22,7 @@ Graffiti example application
 
 	* {{{/wsvn/Databinder/graffiti/r0.6/src/main/java/example/TheWall.html?op=file} TheWall.html}} — <page template>
 
-	* {{{/wsvn/Databinder/graffiti/r0.6/src/main/java/example/TheWall.java?op=file} TheWall.css}} — <page subclass>
+	* {{{/wsvn/Databinder/graffiti/r0.6/src/main/java/example/TheWall.java?op=file} TheWall.java}} — <page subclass>
 
 	* spidershank.ttf — <a free typeface>
 
