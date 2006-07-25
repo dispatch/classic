@@ -6,6 +6,19 @@ http://databinder.net
 
 Version History
 
+0.5	This version adds integration with the wicket-auth-roles package
+	via the AuthDataApplication superclass. Default implementation
+	classes for users and roles are built in, along with basic sign
+	in, registration, and remember-me functionality. The recipe book
+	example demonstrates selective authentication for data editing.	A new SublistProjectionModel class breaks lists into chunked or
+	transposed sublists for common rendering styles (see bookmarks). 
+	A RenderedLabel component renders its model into an image using
+	any font available to the JVM, as demonstrated in the new
+	graffiti example. AjaxOnKeyPausedUpdater triggers Ajax updates
+	when input pauses in a TextField or TextArea and replaces the
+	old "every key" behavior of SearchPanel. Added support for
+	Hibernate criteria queries to object and list models.Changed structure of data-app archetype to be compatible with Maven 2.0.4. HTML and property resources are now stored alongside Java sources by default. Incremented versions of several dependencies, including Wicket to 1.2.1 which now enforces that session-stored objects be Serializable by default. (Expect a few migration hick-ups.)
+
 0.5	Trimming and meshing for Wicket 1.2, including deprecation of
 	PropertyListView and removal of application.properties from
 	the data-app archetype. Recognition of the wicket.configuration

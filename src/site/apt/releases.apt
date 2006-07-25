@@ -12,11 +12,11 @@ Releases
 
 *Version 0.6
 
-	This version adds integration with the <<wicket-auth-roles>> package via the AuthDataApplication superclass. Default implementation classes for users and roles are built in, along with basic sign in and registration pages. The {{{recipe-book.html}recipe book example}} demonstrates selective authentication.
+	This version adds integration with the <<wicket-auth-roles>> package via the AuthDataApplication superclass. Default implementation classes for users and roles are built in, along with basic sign in, registration, and remember-me functionality. The {{{recipe-book.html}recipe book example}} demonstrates selective authentication for data editing.
 	
-	A new SublistProjectionModel class breaks lists into chunked or transposed sublists for common rendering styles (see {{{bookmarks.html}bookmarks}}). And finally, the RenderedLabel component renders its model into an image using any font available to the JVM, as demonstrated in the new {{{graffiti.html}graffiti}} example.
+	A new SublistProjectionModel class breaks lists into chunked or transposed sublists for common rendering styles (see {{{bookmarks.html}bookmarks}}). A RenderedLabel component renders its model into an image using any font available to the JVM, as demonstrated in the new {{{graffiti.html}graffiti}} example. AjaxOnKeyPausedUpdater triggers Ajax updates when input pauses in a <<<TextField>>> or <<<TextArea>>> and replaces the old “every key” behavior of {{{/javadoc/net/databinder/components/SearchPanel.html}SearchPanel}}. Added support for Hibernate {{{http://www.hibernate.org/hib_docs/reference/en/html/querycriteria.html}criteria queries}} to {{{/javadoc/net/databinder/models/HibernateObjectModel.html}object}} and {{{/javadoc/net/databinder/models/HibernateListModel.html}list}} models.
 	
-	Changed structure of data-app archetype to be compatible with Maven 2.0.4. HTML and property resources are now stored alongside Java sources by default.
+	Changed structure of data-app archetype to be compatible with Maven 2.0.4. HTML and property resources are now stored alongside Java sources by default. Incremented versions of several dependencies, including Wicket to 1.2.1 which now enforces that session-stored objects be <<<Serializable>>> by default. (Expect a few migration hick-ups.)
 
 	{{{/releases/databinder-0.6.tar.gz}Datbinder library & source}}
 	
