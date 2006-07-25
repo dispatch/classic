@@ -1,5 +1,6 @@
 package net.databinder.auth.data;
 
+import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
@@ -26,7 +27,7 @@ import wicket.util.crypt.Base64;
  * @author Nathan Hamblen
  */
 @Entity
-public class User implements IUser.CookieAuth {
+public class User implements IUser.CookieAuth, Serializable {
 	private Integer id;
 	private String passwordHash;
 	private String username;
