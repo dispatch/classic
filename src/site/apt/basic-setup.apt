@@ -42,7 +42,7 @@ curl http://databinder.net/releases/settings.xml > ~/.m2/settings.xml
 
 *Create a Databinder project
 
-	<<Note:>> The newest version of Databinder and its data-app archetype are not yet available from the central Maven repository. Please download {{{http://databinder.net/releases/myExample.tar.gz}this sample project}}, which is similar to the one that would be created with the following command:
+	<<Note:>> The newest version of Databinder and its data-app archetype are not yet available from the central Maven repository. Please download {{{http://databinder.net/releases/myExample.tar.gz}this sample project}}, which is identical to the one that would be created with the following command:
 
 ~~	To get started, tell Maven to create a project based on Databinder’s “data-app” archetype.
 
