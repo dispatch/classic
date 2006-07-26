@@ -47,8 +47,7 @@
       &lt;name&gt;Wicket repository&lt;/name&gt;
       &lt;url&gt;http://wicket.sourceforge.net/maven2&lt;/url&gt;
     &lt;/repository&gt;
-  &lt;/repositories&gt;
-]]>
+  &lt;/repositories&gt;  ]]>
 		</pre>
 		<p>This <tt>pom.xml</tt> setup allows you to specify final releases that haven’t yet appeared at the central repository, as well as snapshot releases you may have heard about on <a href="http://technically.us/n8/">this Databinder weblog</a>.</p>
       </answer>
