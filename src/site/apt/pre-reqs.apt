@@ -10,7 +10,7 @@ Prerequisites
 
 	Databinder requires a {{{http://java.sun.com/j2se/1.5.0/download.jsp}J2SE Development Kit (JDK) 5.0}} supporting Java 1.5.
 	
-	For Windows, download and execute an installer from Sun’s site. On Mac you’ll need OS 10.4 and the latest Java available through Software Update. For Linux, the best course is to download the rpm or self-extracting executable from Sun, then install a wrapper package as appropriate for your distribution.
+	For Windows, download and execute an installer from Sun’s site. On Mac you’ll need OS 10.4 and the latest Java available through Software Update. For Linux, the Sun JDK is now included in the non-free sections of some distributions ({{{https://jdk-distros.dev.java.net/ubuntu.html}Ubuntu Dapper}})—otherwise, there are package-wrappers and scripts available for Sun’s installer.
 
 	When running <<<java -version>>> on a command line returns at least 1.5, you’re ready for Maven.
 
@@ -18,7 +18,7 @@ Prerequisites
 
 	Download {{{http://maven.apache.org/download.html}Maven 2}} if you haven’t already. (It’s possible to use Databinder without Maven, but these instructions assume you’re too busy to track down a dozen {{{dependencies.html}dependencies}} yourself.)
 	
-	Installation of Maven is not automated on any platform. Instead, extract the files to an appropriate directory (<<</usr/local/>>> is good for Linux and Mac OS X, with a symlink of <<</usr/local/maven>>>) and add the bin directory to your executable search path. On Mac OS X, you’ll need to specify that Maven use version 1.5 of the JDK. You can do this, and set your path, with the following in your <<<~/.bash_profile>>> :
+	Installation of Maven is not automated on any platform. Instead, extract the files to an appropriate directory (<<</usr/local/>>> is good for Linux and Mac OS X, with a symlink of <<</usr/local/maven>>>) and add its bin directory to your executable search path (<<<~/.bash_profile>>> or other):
 
 -----------------------------------------------------
 export PATH=/usr/local/maven/bin:$PATH
