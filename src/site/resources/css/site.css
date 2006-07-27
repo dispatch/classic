@@ -9,9 +9,8 @@ body, td, select, input, li {
 }
 #breadcrumbs {
   background: white;
-}
-#breadcrumbs {
   border-color: black;
+  color: #444;
 }
 #leftColumn {
   background: white;
