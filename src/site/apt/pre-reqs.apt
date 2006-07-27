@@ -10,7 +10,7 @@ Prerequisites
 
 	Databinder requires a {{{http://java.sun.com/j2se/1.5.0/download.jsp}J2SE Development Kit (JDK) 5.0}} supporting Java 1.5.
 	
-	For Windows, download and execute an installer from Sun’s site. On Mac you’ll need OS 10.4 and the latest Java available through Software Update. For Linux, the Sun JDK is now included in the non-free sections of some distributions ({{{https://jdk-distros.dev.java.net/ubuntu.html}Ubuntu Dapper}})—otherwise, there are package-wrappers and scripts available for Sun’s installer.
+	For Windows, download and execute an installer from Sun’s site. On Mac you’ll need OS 10.4 and the latest Java available through Software Update. For Linux, the Sun JDK is now included in the non-free sections of some distributions ({{{https://jdk-distros.dev.java.net/ubuntu.html}Ubuntu Dapper}}). Otherwise, there are package-wrappers and scripts available for Sun’s installer.
 
 	When running <<<java -version>>> on a command line returns at least 1.5, you’re ready for Maven.
 
