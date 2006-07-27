@@ -125,9 +125,10 @@ public class DataRequestCycle extends WebRequestCycle {
 	protected Map<String, Cookie> getCookies() {
 		if (cookies == null) {
 			Cookie ary[] = ((WebRequest)getRequest()).getCookies();
-			cookies = new HashMap<String, Cookie>(ary.length);
-			for (Cookie c : ary)
-				cookies.put(c.getName(), c);
+			cookies = new HashMap<String, Cookie>(ary == null ? 0 : ary.length);
+			if (ary != null)
+				for (Cookie c : ary)
+					cookies.put(c.getName(), c);
 		}
 		return cookies;
 	}
