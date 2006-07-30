@@ -40,7 +40,8 @@
       &lt;id&gt; databinder-snapshots&lt;/id&gt;
       &lt;name&gt;Databinder snapshot repository&lt;/name&gt;
       &lt;url&gt;http://databinder.net/snapshot&lt;/url&gt;
-    &lt;/repository&gt;  ]]></pre>
+    &lt;/repository&gt;
+  &lt;/repositories&gt;  ]]></pre>
 		<p>Significant new features appearing in the snapshots are noted <a href="http://technically.us/n8/">this Databinder weblog</a> or <a href="/forum">the forum</a>.</p>
       </answer>
     </faq>
