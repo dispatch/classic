@@ -26,29 +26,22 @@
       </question>
       <answer>
         <p>Not at all. Using Databinder to jump-start your program doesn’t prevent you from later writing your own integration to Hibernate or some other database framework.</p>
-	<p>You may decide that your mature application will benefit from configuration and management through <a href="http://springframework.org/">Spring</a>, which does its own Hibernate session (and transaction) management.</p>
       </answer>
     </faq>
     <faq id="uptodate">
       <question>
-	How can I stay up-to-date for both Databinder and Wicket?
+	Where can I get prerelease versions of Databinder?
       </question>
       <answer>
-		<p>The central Maven repository, though we love it, is a high-latency distribution mechanism. It can take days or weeks for a single upload request to be processed. Since none of us can wait that long, both Wicket and Databinder host their own project repositories. To take advantage, be sure the following appears in your <tt>pom.xml</tt>:</p>
+		<p>Snapshot releases of Databinder are available through a special Maven repository. If you would like to use a prerelease version of Databinder in your own project, be sure the following appears in your <tt>pom.xml</tt>:</p>
 		<pre><![CDATA[
   &lt;repositories&gt;
     &lt;repository&gt;
-      &lt;id&gt;databinder&lt;/id&gt;
-      &lt;name&gt;Databinder repository&lt;/name&gt;
-      &lt;url&gt;http://databinder.net/maven&lt;/url&gt;
-    &lt;/repository&gt;
-    &lt;repository&gt;
-      &lt;id&gt;wicket&lt;/id&gt;
-      &lt;name&gt;Wicket repository&lt;/name&gt;
-      &lt;url&gt;http://wicket.sourceforge.net/maven2&lt;/url&gt;
-    &lt;/repository&gt;
-  &lt;/repositories&gt;  ]]></pre>
-		<p>This <tt>pom.xml</tt> setup allows you to specify final releases that haven’t yet appeared at the central repository, as well as snapshot releases you may have heard about on <a href="http://technically.us/n8/">this Databinder weblog</a>.</p>
+      &lt;id&gt; databinder-snapshots&lt;/id&gt;
+      &lt;name&gt;Databinder snapshot repository&lt;/name&gt;
+      &lt;url&gt;http://databinder.net/snapshot&lt;/url&gt;
+    &lt;/repository&gt;  ]]></pre>
+		<p>Significant new features appearing in the snapshots are noted <a href="http://technically.us/n8/">this Databinder weblog</a> or <a href="/forum">the forum</a>.</p>
       </answer>
     </faq>
   </part>
