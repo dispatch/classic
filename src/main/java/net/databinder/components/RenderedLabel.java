@@ -68,6 +68,7 @@ public class RenderedLabel extends Image  {
 	public RenderedLabel(String id) {
 		super(id);
 		setImageResource(resource = new RenderedTextImageResource());
+		setEscapeModelStrings(false);
 	}
 	
 	/**
@@ -78,6 +79,7 @@ public class RenderedLabel extends Image  {
 	public RenderedLabel(String id, IModel model) {
 		super(id, model);
 		setImageResource(resource = new RenderedTextImageResource());
+		setEscapeModelStrings(false);
 	}
 	
 	/** 
@@ -88,7 +90,7 @@ public class RenderedLabel extends Image  {
 	protected void onComponentTag(ComponentTag tag) {
 		super.onComponentTag(tag);
 
-		String text = getText();
+		String text = getModelObjectAsString();
 		if (text != null) {
 			int hash= text.hashCode() ^ font.hashCode() ^ color.hashCode();
 			if (backgroundColor != null)
@@ -107,7 +109,7 @@ public class RenderedLabel extends Image  {
 		tag.put("width", resource.getWidth() );
 		tag.put("height", resource.getHeight() );
 
-		tag.put("alt", getText());
+		tag.put("alt", getModelObjectAsString());
 	}
 	
 	/** Restores  compound model resolution that is disabled in  the Image superclass. */
@@ -141,7 +143,7 @@ public class RenderedLabel extends Image  {
 		/** Renders text into image. */
 		protected boolean render(final Graphics2D graphics)
 		{
-			renderedText = getText(); // get text from outer class model
+			renderedText = getModelObjectAsString(); // get text from outer class model
 			final int width = getWidth(), height = getHeight();
 
 			// draw background if not null, otherwise leave transparent
@@ -230,18 +232,9 @@ public class RenderedLabel extends Image  {
 		}
 	}
 	
-	/** @return String to be rendered */
-	protected String getText() {
-		try {
-			return (String) getModelObject();
-		} catch (ClassCastException e) {
-			throw new WicketRuntimeException("A RenderedLabel's model object MUST be a String.", e);
-		}
-	}
-
 	@Override
 	protected void onBeforeRender() {
-		if (!Strings.isEqual(renderedText,getText()))
+		if (!Strings.isEqual(renderedText,getModelObjectAsString()))
 			resource.invalidate();
 	}
 	
