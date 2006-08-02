@@ -25,7 +25,7 @@ import java.util.Map;
 import net.databinder.DataRequestCycle;
 import net.databinder.auth.AuthDataSession;
 import net.databinder.auth.data.IUser;
-import net.databinder.auth.data.User;
+import net.databinder.auth.data.DataUser;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -94,7 +94,7 @@ public class DataRegisterPanel extends Panel {
 	}
 	
 	protected IUser getNewUser(Credentials creds) {
-		return new User(creds.getUsername(), creds.getPassword());
+		return new DataUser(creds.getUsername(), creds.getPassword());
 	}
 	
 	protected boolean isAvailable(String username) {

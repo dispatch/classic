@@ -21,7 +21,7 @@ package net.databinder.auth;
 import net.databinder.DataApplication;
 import net.databinder.auth.components.DataSignInPage;
 import net.databinder.auth.data.IUser;
-import net.databinder.auth.data.User;
+import net.databinder.auth.data.DataUser;
 
 import org.hibernate.cfg.AnnotationConfiguration;
 
@@ -41,7 +41,7 @@ import wicket.markup.html.WebPage;
  * that implementation, this one supplies a default annotated User class. To use a different IUser class,
  * or a User subclass, override getUserClass(). (This class, whatever it is, will be added to 
  * the Hibernate Annotations configuration automatically.
- * @see User
+ * @see DataUser
  * @see IUser
  * @author Nathan Hamblen
  */
@@ -103,7 +103,7 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 	 * @return class to be used for signed in users
 	 */
 	public Class< ? extends IUser> getUserClass() {
-		return User.class;
+		return DataUser.class;
 	}
 
 	/**

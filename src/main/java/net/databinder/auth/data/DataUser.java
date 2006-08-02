@@ -27,16 +27,16 @@ import wicket.util.crypt.Base64;
  * @author Nathan Hamblen
  */
 @Entity
-public class User implements IUser.CookieAuth, Serializable {
+public class DataUser implements IUser.CookieAuth, Serializable {
 	private Integer id;
 	private String passwordHash;
 	private String username;
 	private Set<String> roles;
 	
-	public User() {
+	public DataUser() {
 	}
 	
-	public User(String username, String password) {
+	public DataUser(String username, String password) {
 		this.username = username;
 		this.passwordHash = getHash(password);
 		roles = new HashSet<String>(1);
