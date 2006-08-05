@@ -66,6 +66,6 @@ default-table-type=InnoDB
 
 	When you add annotated classes to your Hibernate configuration, tables to hold them and their mapped properties will be automatically created as your application is starting up. Tables and columns will never be deleted, so drop them or the entire database yourself whenever you want a fresh start.
 
-	If you run into trouble with Hibernate, check the {{{http://www.hibernate.org/329.html} Annotations FAQ}} for some sneaky traps they’ve lain. And if you need to do something complicated, it’s probably outlined somewhere in the {{{ http://www.hibernate.org/hib_docs/annotations/reference/en/html/}annotations}} or {{{http://www.hibernate.org/5.html#A3}core}} documentation.
+	If you run into trouble with Hibernate, check the {{{http://www.hibernate.org/329.html} Annotations FAQ}} for some sneaky traps they’ve lain. And if you need to do something complicated, it’s probably outlined somewhere in the {{{ http://www.hibernate.org/hib_docs/annotations/reference/en/html/}annotations}} or {{{http://www.hibernate.org/hib_docs/v3/reference/en/html/}core}} documentation.
 
 	Now go pop a wheelie. If you skin your knees, we’ll help you out on the {{{/forum}forum}}.
