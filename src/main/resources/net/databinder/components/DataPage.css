@@ -45,3 +45,44 @@ tr.a {
 a img {
 	border: none;
 }
+
+/* DataView */
+
+tr.navigation a, tr.navigation em {
+	font-size: 125%;
+	padding: .2em;
+}
+
+tr.navigation a {
+	text-decoration: none;
+}
+
+tr.navigation a:hover {
+	background-color: #DFDFFF;
+}
+
+tr.headers th {
+	background-position: right; 
+	background-repeat: no-repeat;
+	padding: .2em 13px;
+}
+
+tr.headers th.wicket_orderDown 
+{
+	background-color: #DFDFFF;
+	background-image: url(arrow_up.png); 
+}
+
+tr.headers th.wicket_orderUp 
+{
+	background-color: #DFDFFF;
+	background-image: url(arrow_down.png); 
+}
+
+tr.navigation em span {
+	font-size: 150%;
+}
+
+tr.navigation td {
+	margin: 3em;
+}
