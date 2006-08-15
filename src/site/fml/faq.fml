@@ -33,7 +33,7 @@
       	Is Maven required to use this toolkit?
       </question>
       <answer>
-        <p>No. You’re free to link to the Databinder JAR in any way you see fit. However, the server bandwidth required to distribute “quickstart” projects containing all dependencies is unavailable to Databinder; using Maven is the only option for this convenience. You’ll likely make up the time spent installing Maven just in running the <a href="examples.html">examples</a>.</p>
+        <p>No. You’re free to link to the Databinder JAR in any way you see fit. However, the server bandwidth required to distribute “quickstart” projects containing all dependencies is unavailable to Databinder; using Maven is the only option for this convenience. You’ll likely make up the time spent installing Maven 2 just in running the <a href="examples.html">examples</a>.</p>
 	<p>And after working through those examples, you may find that you like Maven enough to use it in your own projects. If not, you can always raid the JARs in <tt>~/.m2/repository/</tt>.</p>
       </answer>
     </faq>
