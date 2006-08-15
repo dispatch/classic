@@ -66,6 +66,12 @@ Recipe book example application
 
 	If you’re {{{setup-guide.html} set up}} for Databinder, {{{/releases/recipe-0.6.tar.gz} download and run}} this at home.
 
+*Projects for the reader
+
+	[[1]] Page listing ingredients used in all recipes
+
+	[[2]] Image upload and display
+	
 *Next…
 
 	Show’s over, folks. Time to get started on that baseball card database you’ve always wanted to make.

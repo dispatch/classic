@@ -29,6 +29,13 @@ Graffiti example application
 	[]
 
 	If you’re {{{setup-guide.html} set up }}for Databinder, {{{/releases/graffiti-0.6.tar.gz} download and run}} this at home.
+	
+*Projects for the reader
+
+	[[1]] Disallow empty scrawls
+
+	[[2]] Pen color selection
+	
 
 *Next…
 

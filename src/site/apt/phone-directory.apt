@@ -32,6 +32,13 @@ Phone directory example application
 
 	If you’re {{{setup-guide.html} set up}} for Databinder, {{{/releases/directory-0.6.tar.gz} download and run}} this at home. You will need to add some categories yourself, after Hibernate creates the tables.
 
+*Projects for the reader
+
+	[[1]] Address fields
+
+	[[2]] Search by category
+
+
 *Next…
 
 	Your training is almost complete. But, like Jade Fox in <Crouching Tiger, Hidden Dragon>, Databinder has one last {{{recipe-book.html}lesson}} for you, precocious one.

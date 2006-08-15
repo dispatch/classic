@@ -10,7 +10,7 @@ Bookmarks example application
 
 	This bare-bones Web application manages a list of bookmarks. You can add and delete (with Ajax!), but you can’t change bookmarks after they’ve been added.
 	
-	Bookmarks are displayed in two vertically ordered columns. This arragement is normally a bit of a pain, but here it’s handled neatly with a <<<SublistProjectionModel>>>.
+	Bookmarks are displayed in two vertically ordered columns. This arrangement is normally a bit of a pain, but here it’s handled neatly with a <<<SublistProjectionModel>>>.
 	
 	{{{/bookmark/} Try this application }} and list your own favorite site.
 	
@@ -33,6 +33,12 @@ Bookmarks example application
 	[]
 
 	If you’re {{{setup-guide.html} set up }}for Databinder, {{{/releases/bookmark-0.6.tar.gz} download and run}} this at home.
+
+*Projects for the reader
+
+	[[1]] Ordering toggle for name/date
+
+	[[2]] Click tracker that redirects to the destination
 
 *Next…
 

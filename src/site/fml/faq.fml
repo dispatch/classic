@@ -28,6 +28,15 @@
         <p>Not at all. Using Databinder to jump-start your program doesn’t prevent you from later writing your own integration to Hibernate or some other database framework.</p>
       </answer>
     </faq>
+    <faq id="maven">
+      <question>
+        Why does this project insist on the use of Maven?
+      </question>
+      <answer>
+        <p>It doesn’t. You’re free to link to the Databinder JAR in any way you see fit. However, the server bandwidth required to distribute “quickstart” projects containing all dependencies is unavailable; using Maven or some other dependency management and distribution system is the only option for this convenience.</p>
+	<p>After working through the examples, you may find that you like Maven enough to use in your own projects. If not, you can always raid the JARs in <tt>~/.m2/repo</tt>.</p>
+      </answer>
+    </faq>
     <faq id="uptodate">
       <question>
 	Where can I get prerelease versions of Databinder?
@@ -42,7 +51,7 @@
       &lt;url&gt;http://databinder.net/snapshot&lt;/url&gt;
     &lt;/repository&gt;
   &lt;/repositories&gt;  ]]></pre>
-		<p>Significant new features appearing in the snapshots are noted <a href="http://technically.us/n8/">this Databinder weblog</a> or <a href="/forum">the forum</a>.</p>
+		<p>Significant new features appearing in the snapshots are noted <a href="http://technically.us/n8/">this Databinder weblog</a> or <a href="/forum">the forum</a>. (<tt>mvn -U compile</tt> forces an update, if you think you’re missing out on something.) </p>
       </answer>
     </faq>
   </part>
