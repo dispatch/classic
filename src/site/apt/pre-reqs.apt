@@ -16,7 +16,7 @@ Prerequisites
 
 *Maven
 
-	Download {{{http://maven.apache.org/download.html}Maven 2}} if you haven’t already. (It’s possible to use Databinder without Maven, but these instructions assume you’re too busy to track down a dozen {{{dependencies.html}dependencies}} yourself.)
+	Download {{{http://maven.apache.org/download.html}Maven 2}} if you haven’t already. (While it’s {{{http://databinder.net/faq.html#maven}possible}} to use Databinder without Maven, this guide describes the path of least resistance.)
 	
 	Installation of Maven is not automated on any platform. Instead, extract the files to an appropriate directory (<<</usr/local/>>> is good for Linux and Mac OS X, with a symlink of <<</usr/local/maven>>>) and add its bin directory to your executable search path (<<<~/.bash_profile>>> or other):
 

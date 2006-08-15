@@ -116,7 +116,7 @@
     <snapshotRepository>
       <id>databinder-snapshots</id>
       <name>Databinder snapshot repository</name>
-      <url>file:///var/dbwww/snapshot/</url>
+      <url>file:///var/dbwww/snapshot</url>
     </snapshotRepository>
     <site>
       <id>website</id>
