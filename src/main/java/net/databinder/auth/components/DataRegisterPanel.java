@@ -99,7 +99,7 @@ public class DataRegisterPanel extends Panel {
 	
 	protected boolean isAvailable(String username) {
 		Session session = DataRequestCycle.getHibernateSession();
-		Query q = session.createQuery("from User where username = ?")
+		Query q = session.createQuery("from DataUser where username = ?")
 			.setString(0, username);
 		return q.list().isEmpty();
 	}
