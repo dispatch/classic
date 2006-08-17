@@ -72,6 +72,7 @@ color: #444
 }
 #contentBox h2, h3 {
   font-style: italic;
+  font-weight: normal;
   margin-bottom: 0em;
   background: none;
   border: none;
