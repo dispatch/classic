@@ -23,12 +23,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.databinder.DataRequestCycle;
+import net.databinder.auth.AuthDataApplication;
 import net.databinder.auth.AuthDataSession;
-import net.databinder.auth.data.IUser;
 import net.databinder.auth.data.DataUser;
+import net.databinder.auth.data.IUser;
 
-import org.hibernate.Query;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Property;
 
 import wicket.PageParameters;
 import wicket.markup.html.form.Form;
@@ -65,7 +68,7 @@ public class DataRegisterPanel extends Panel {
 					if (username == null || !isAvailable(username)) {
 						Map<String, String> m = new HashMap<String, String>(1);
 						m.put("username", username);
-						error(formComponent, "usernameTaken", m);
+						error(formComponent,"taken",  m);
 					}
 				}
 			}));
@@ -99,9 +102,10 @@ public class DataRegisterPanel extends Panel {
 	
 	protected boolean isAvailable(String username) {
 		Session session = DataRequestCycle.getHibernateSession();
-		Query q = session.createQuery("from DataUser where username = ?")
-			.setString(0, username);
-		return q.list().isEmpty();
+		Criteria c = session.createCriteria(((AuthDataApplication)getApplication()).getUserClass());
+		c.add(Property.forName("username").eq(username));
+		c.setProjection(Projections.rowCount());
+		return c.uniqueResult().equals(0);
 	}
 	
 	protected static class Credentials implements Serializable {
