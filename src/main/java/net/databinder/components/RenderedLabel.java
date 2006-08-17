@@ -103,7 +103,7 @@ public class RenderedLabel extends Image  {
 			tag.put("src", url);
 		}
 		
-		resource.determineSize();
+		resource.preload();
 		tag.put("width", resource.getWidth() );
 		tag.put("height", resource.getHeight() );
 
@@ -224,9 +224,14 @@ public class RenderedLabel extends Image  {
 			return topWidth;
 		}
 		
-		/** Called when the correct size of this resource is needed before its data. */
-		public void determineSize() {
-			render();
+		/** 
+		 * Normally, image rendering is deferred until the resource is requested, but
+		 * this method allows us to render the image when its markup is rendered. This way
+		 * the model will not need to be reattached when we serve the image, and we can
+		 * use the size information in the IMG tag.
+		 */
+		public void preload() {
+			getImageData();
 		}
 	}
 	
