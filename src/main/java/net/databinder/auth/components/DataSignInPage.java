@@ -97,7 +97,7 @@ public class DataSignInPage extends WebPage {
 	
 	/**
 	 * Override to use subclass of DataRegisterPanel or some other panel.
-	 * @param id
+	 * @param id use this id for your registration panel
 	 * @return panel that appears after user clicks registration link 
 	 */
 	protected Panel getRegisterPanel(String id) {
