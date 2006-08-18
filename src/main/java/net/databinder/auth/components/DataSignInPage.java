@@ -26,6 +26,7 @@ import wicket.WicketRuntimeException;
 import wicket.markup.html.WebMarkupContainer;
 import wicket.markup.html.WebPage;
 import wicket.markup.html.link.Link;
+import wicket.markup.html.panel.Panel;
 
 /**
  * Serves as both a sign in and simple regristration page. To use a differnt sign in page,
@@ -34,7 +35,10 @@ import wicket.markup.html.link.Link;
  */
 public class DataSignInPage extends WebPage {
 	/** state of page, sign in or registration */
-	private boolean isRegister = false;
+	private boolean register = false;
+	
+	/** Registration panel whose visibility is controlled from this class. */
+	private Panel registerPanel;
 
 	/**
 	 * Displays sign in page. Checks that the page being instantiated is of the type returned
@@ -52,47 +56,66 @@ public class DataSignInPage extends WebPage {
 		add(new WebMarkupContainer("gotoRegister"){
 			@Override
 			public boolean isVisible() {
-				return !isRegister;
+				return !register;
 			}
 		}.add(new Link("register") {
 			@Override
 			public void onClick() {
-				isRegister = true;
+				setRegister(true);
 			}
 		}));
 		
 		add(new WebMarkupContainer("gotoSignIn"){
 			@Override
 			public boolean isVisible() {
-				return isRegister;
+				return register;
 			}
 		}.add(new Link("signIn") {
 			@Override
 			public void onClick() {
-				isRegister = false;
+				setRegister(false);
 			}
 		}));
 		
 		add(new DataSignInPanel("signInPanel") {
 			@Override
 			public boolean isVisible() {
-				return !isRegister;
+				return !register;
 			}
 		});
 		
 		addRegisterPanel();
 	}
 	/**
-	 * Add panel that appears after user clicks registration link. Override to use subclass
-	 * or other panel.
+	 * Override <tt>getRegisterPanel(id)</tt> instead of this method.
+	 * @deprecated
 	 */
 	protected void addRegisterPanel() {
-		add(new DataRegisterPanel("registerPanel") {
-			@Override
-			public boolean isVisible() {
-				return isRegister;
-			}
-		});
+		add(registerPanel = getRegisterPanel("registerPanel"));
+		setRegister(register);
+	}
+	
+	/**
+	 * Override to use subclass of DataRegisterPanel or some other panel.
+	 * @param id
+	 * @return panel that appears after user clicks registration link 
+	 */
+	protected Panel getRegisterPanel(String id) {
+		return new DataRegisterPanel(id);
 	}
 
+	/**
+	 * @return true if displaying registration page
+	 */
+	protected boolean isRegister() {
+		return isRegister();
+	}
+	
+	/**
+	 * @param register true to display the registration version of this page
+	 */
+	protected void setRegister(boolean register) {
+		this.register = register;
+		registerPanel.setVisible(register);
+	}
 }
