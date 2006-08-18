@@ -22,7 +22,7 @@ Version 0.6
 
 *Getting started (and getting finished)
 
-	Because Databinder’s priorities are simplicity and speed over flexibility and philosophy, starting a project from scratch is easy. A programming workstation with Java 5 and Maven 2 installed is only few minutes away from serving data-driven pages.
+	Because Databinder’s priorities are simplicity and speed over formality and philosophy, starting a project from scratch is easy. A programming workstation with Java 5 and Maven 2 installed is only few minutes away from serving data-driven pages.
 
 	You won’t need to download Databinder, Wicket, or Hibernate. <<Maven does this for you.>> Head over to the {{{setup-guide.html}setup guide}} for detailed, step-by-step instructions.
 
