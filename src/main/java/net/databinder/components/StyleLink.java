@@ -19,52 +19,28 @@
 package net.databinder.components;
 
 import wicket.markup.ComponentTag;
-import wicket.markup.MarkupStream;
-import wicket.markup.html.PackageResourceReference;
-import wicket.markup.html.WebMarkupContainer;
-import wicket.model.IModel;
-import wicket.model.Model;
+import wicket.markup.html.resources.PackagedResourceReference;
 
 /**
  * Component for a stylesheet link. The stylesheet is expected to be named
- * &lt;ClassName&gt;.css for the class specified in the constructor or via a
- * compound model, and be located in the same package as that class.
+ * &lt;ClassName&gt;.css for the class specified in the constructor and be located in 
+ * the same package as that class.
  * @author Nathan Hamblen
  */
-public class StyleLink extends WebMarkupContainer {
+public class StyleLink extends PackagedResourceReference {
 	
 	/** Builds a StyleLinkbased on the given class. */
 	public StyleLink(String id, Class pageClass) {
-		this(id, new Model(pageClass));
-	}
-	
-	/** Builds a StyleLink from a compound property model. */
-	public StyleLink(String id) {
-		super(id);
-	}
-	
-	/** Builds a StyleLink based on a class in an IModel. */
-	public StyleLink(String id, IModel model) {
-		super(id, model);
-	}
-	
-	/** Ensures that this is a "link" HTML element. */
-	@Override
-	protected void onComponentTagBody(MarkupStream markupStream, ComponentTag openTag) {
-		checkComponentTag(openTag, "link");
-		super.onComponentTagBody(markupStream, openTag);
+		super(id, pageClass, pageClass.getSimpleName() + ".css", "href");
 	}
 	
 	/** Sets appropriate href, type, and rel values for the stylesheet. */
 	@Override
 	protected void onComponentTag(ComponentTag tag) {
-		Class pageClass = (Class) getModelObject();
-		tag.put("href", getPage().urlFor(new PackageResourceReference(pageClass, 
-				pageClass.getSimpleName() + ".css")));
-		// ensure valid css attributes
+		// ensure valid css tag
+		checkComponentTag(tag, "link");
 		tag.put("type", "text/css");
 		tag.put("rel", "stylesheet");
 		super.onComponentTag(tag);
 	}
-	
 }
