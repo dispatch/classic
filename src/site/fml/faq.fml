@@ -46,7 +46,7 @@
 		<pre><![CDATA[
   &lt;repositories&gt;
     &lt;repository&gt;
-      &lt;id&gt; databinder-snapshots&lt;/id&gt;
+      &lt;id&gt;databinder-snapshots&lt;/id&gt;
       &lt;name&gt;Databinder snapshot repository&lt;/name&gt;
       &lt;url&gt;http://databinder.net/snapshot&lt;/url&gt;
     &lt;/repository&gt;
