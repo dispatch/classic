@@ -22,6 +22,20 @@ Releases
 	
 	<<<PageStyleLink>>> and <<<PropertyListModel>>>, which have been deprecated for some time, are now out of the library. Their replacements,{{{/javadoc/net/databinder/components/StyleLink.html}StyleLink}} and {{{/javadoc/net/databinder/components/ScriptLink.html}ScriptLink}}, have been reorganized to fall under the {{{http://wicket.sourceforge.net/apidocs/wicket/markup/html/resources/PackagedResourceReference.html}PackagedResourceReference}} component, requiring the removal of their constructors that took the Class object as an IModel. Please use these components with a simple Class object.
 
+	{{{/releases/databinder-0.7.tar.gz}Datbinder library & source}}
+	
+	{{{/releases/data-app-0.7.tar.gz}Data-app archetype}}
+
+	{{{/releases/graffiti-0.7.tar.gz}Graffiti example}}
+
+	{{{/releases/bookmark-0.7.tar.gz}Bookmark example}}
+	
+	{{{/releases/directory-0.7.tar.gz}Phone directory example}}
+
+	{{{/releases/recipe-0.7.tar.gz}Recipe book example}}
+
+	{{{/releases/baseball-0.7.tar.gz}Baseball players example}}
+
 *Version 0.6
 
 	This version adds integration with the <<wicket-auth-roles>> package via the {{{http://databinder.net/javadoc/net/databinder/auth/AuthDataApplication.html}AuthDataApplication}} superclass. Default implementation classes for {{{http://databinder.net/javadoc/net/databinder/auth/data/User.html}users}} and roles are built in, along with basic {{{http://databinder.net/javadoc/net/databinder/auth/components/DataSignInPage.html}sign in}}, {{{http://databinder.net/javadoc/net/databinder/auth/components/DataRegisterPanel.html}registration}}, and remember-me functionality. The {{{recipe-book.html}recipe book example}} demonstrates selective authentication for data {{{http://databinder.net/javadoc/net/databinder/auth/components/DataRegisterPanel.html}editing}}.
