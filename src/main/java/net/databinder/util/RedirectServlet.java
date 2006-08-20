@@ -27,7 +27,12 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Used to send browsers from the context root (where there is nothing of
- * interest) to the Wicket servlet.
+ * interest) to the Wicket servlet. Because it is not possible to configure servlets 
+ * to match only requests to the context root, use of this servlet will block access to
+ * static content under the web root. This class has been deprecated and RedirectFilter is 
+ * offered as a replacement.
+ * 
+ * @deprecated
  * @author Nathan Hamblen
  */
 
