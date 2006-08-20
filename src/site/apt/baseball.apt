@@ -8,68 +8,32 @@ Baseball players example application
 
 *Description
 
-	This is how we work with large datasets.
-	
-	The DataView classes, in wicket-extensions but headed for core in a future Wicket release, are adept at slicing and dicing long tables for efficient display. Note that Databinder does not depend on wicket-extensions and therefore can’t reference DataView directly. Instead it supplies a “data provider” that happens to conform to the IDataProvider interface. As seen in this example, the combination makes 
+	The DataView classes are efficient at slicing and dicing long tables. Note that Databinder does not depend on wicket-extensions and therefore can’t reference DataView directly. Instead it supplies a DatabinderProvider that conforms to the IDataProvider interface. As seen in this example, that's all you need to make the connection.
 
 	{{{/baseball/app} Try this application}} and find your favorite player.
 
 *Source files
 
-	Click through to the sources below to see how the recipe book ticks.
+	* {{{/wsvn/Databinder/recipe/r0.7/src/main/java/example/BaseballApplication.java?op=file} BaseballApplication.java}}
 
-	* {{{/wsvn/Databinder/recipe/r0.6/src/main/java/example/RecipeApplication.java?op=file} RecipeApplication.java}}
+	* {{{/wsvn/Databinder/recipe/r0.7/src/main/java/example/Player.java?op=file} Player.java}} — <annotated data class>
 
-	* {{{/wsvn/Databinder/recipe/r0.6/src/main/java/example/Recipe.java?op=file} Recipe.java}} — <main data class>
+	* {{{/wsvn/Databinder/recipe/r0.7/src/main/resources/example/Pager.properties?op=file} Pager.properties}} — <distinct county query>
 
-	* {{{/wsvn/Databinder/recipe/r0.6/src/main/java/example/Ingredient.java?op=file} Ingredient.java}} — <embedded in Recipe.ingredients>
+	* {{{/wsvn/Databinder/recipe/r0.7/src/main/resources/example/Pager.html?op=file} Pager.html}} — <page template>
 
-	* {{{/wsvn/Databinder/recipe/r0.6/src/main/resources/example/RecipeBook.html?op=file}RecipeBook.html}} — <template for all pages>
-
-	* {{{/wsvn/Databinder/recipe/r0.6/src/main/resources/example/RecipeBook.css?op=file} RecipeBook.css}}
-
-	* {{{/wsvn/Databinder/recipe/r0.6/src/main/resources/example/RecipeBook.properties?op=file} RecipeBook.properties}} — <query store>
-
-	* {{{/wsvn/Databinder/recipe/r0.6/src/main/java/example/RecipeBook.java?op=file} RecipeBook.java}}
-
-	* {{{/wsvn/Databinder/recipe/r0.6/src/main/resources/example/ShowRecipe.properties?op=file} ShowRecipe.properties}} — <query store>
-
-	* {{{/wsvn/Databinder/recipe/r0.6/src/main/resources/example/ShowRecipe.html?op=file} ShowRecipe.html}} — <panel for recipe display>
-
-	* {{{/wsvn/Databinder/recipe/r0.6/src/main/java/example/ShowRecipe.java?op=file} ShowRecipe.java}}
-
-	* {{{/wsvn/Databinder/recipe/r0.6/src/main/resources/example/EditRecipe.html?op=file} EditRecipe.html}} — <panel for editing recipe>
-
-	* {{{/wsvn/Databinder/recipe/r0.6/src/main/resources/example/EditRecipe.css?op=file} EditRecipe.css}} — <styles specific to the edit panel>
-
-	* {{{/wsvn/Databinder/recipe/r0.6/src/main/resources/example/EditRecipe.js?op=file} EditRecipe.js}} — <field focusing function used on edit page>
-
-	* {{{/wsvn/Databinder/recipe/r0.6/src/main/java/example/EditRecipe.java?op=file} EditRecipe.java}}
-
-	* trash.png — 
-
-[images/trash.png]
-
-	* up-arrow.png — 
+	* {{{/wsvn/Databinder/recipe/r0.7/src/main/java/example/Pager.java?op=file} Pager.java}} — <page subclass>
 	
-[images/up-arrow.png]
-
-	* down-arrow.png — 
-	
-[images/down-arrow.png]
-
-	* gentium-regular.ttf — <open source typeface, makes nice recipe titles>
-
 	[]
 
-	If you’re {{{setup-guide.html} set up}} for Databinder, {{{/releases/recipe-0.6.tar.gz} download and run}} this at home.
+	If you’re {{{setup-guide.html} set up}} for Databinder, {{{/releases/baseball-0.7.tar.gz} download and run}} this at home. Baseball data available from the {{{http://www.baseball1.com/statistics/}baseball archive}}.
 
 *Projects for the reader
 
-	[[1]] Listing of ingredients used in all recipes
+	[[1]] List statistics from joined tables
 
-	[[2]] Image upload and display
+	[[2]] Add details page, edit functionality
 	
 *Next…
 
-	Show’s over, folks. Time to get started on that baseball card database you’ve always wanted to make.
+	Show’s over, folks. Time to get {{{setup-guide.html}started}} on that social-networking / collaborative-weblog / hotel-review / nano-payment / attack-hovercraft software you've always wanted to make.

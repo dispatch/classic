@@ -48,7 +48,7 @@ curl http://databinder.net/releases/settings.xml > ~/.m2/settings.xml
 
 -----------------------------------------------------
 mvn archetype:create -DarchetypeGroupId=net.databinder \
-  -DarchetypeArtifactId=data-app -DarchetypeVersion=0.6 \
+  -DarchetypeArtifactId=data-app -DarchetypeVersion=0.7 \
   -DgroupId=example -DartifactId=myExample
 -----------------------------------------------------
 

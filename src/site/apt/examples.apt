@@ -8,12 +8,14 @@ Example applications
 
 		Databinder has four example applications demonstrating common tasks. A good way to learn the toolkit is to read through these examples, then download and enhance them yourself. (Some improvements are suggested to get you started.)
 		
-		The examples, in order of increasing complexity:
+		The examples, ordered pedagogically:
 		
-		[[1]] {{{graffiti.html}Graffiti}}
+		[[1]] {{{graffiti.html}Graffiti}} — <adding to a table, with a twist>
 		
-		[[2]] {{{bookmarks.html}Bookmarks}}
+		[[2]] {{{bookmarks.html}Bookmarks}} — <colmunar listing>
 		
-		[[3]] {{{phone-directory.html}Phone directory}}
+		[[3]] {{{phone-directory.html}Phone directory}} — <does everything but dial the phone>
 		
-		[[4]] {{{recipe-book.html}Recipe book}}
+		[[4]] {{{recipe-book.html}Recipe book}} — <you could call it a CMS, but we’d have to kill you>
+		
+		[[5]] {{{baseball.html}Baseball players}} — <long dataset pagination>

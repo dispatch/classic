@@ -17,6 +17,7 @@
         <item name="Bookmarks" href="bookmarks.html"/>
         <item name="Phone directory" href="phone-directory.html"/>
         <item name="Recipe book" href="recipe-book.html"/>
+        <item name="Baseball players" href="baseball.html"/>
       </item>
       <item name="Setup guide" href="setup-guide.html" collapse="false">
         <item name="Prequisites" href="pre-reqs.html"/>
