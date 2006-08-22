@@ -20,11 +20,11 @@ Phone directory example application
 
 	* {{{/wsvn/Databinder/directory/r0.7/src/main/java/example/Contact.java?op=file}Contact.java}} — <annotated data class>
 
-	* {{{/wsvn/Databinder/directory/r0.7/src/main/resources/example/ListAndEdit.html?op=file}ListAndEdit.html}} — <page template>
+	* {{{/wsvn/Databinder/directory/r0.7/src/main/java/example/ListAndEdit.html?op=file}ListAndEdit.html}} — <page template>
 
-	* {{{/wsvn/Databinder/directory/r0.7/src/main/resources/example/ListAndEdit.css?op=file}ListAndEdit.css}}
+	* {{{/wsvn/Databinder/directory/r0.7/src/main/java/example/ListAndEdit.css?op=file}ListAndEdit.css}}
 
-	* {{{/wsvn/Databinder/directory/r0.7/src/main/resources/example/ListAndEdit.properties?op=file}ListAndEdit.properties}} — <query store>
+	* {{{/wsvn/Databinder/directory/r0.7/src/main/java/example/ListAndEdit.properties?op=file}ListAndEdit.properties}} — <query store>
 
 	* {{{/wsvn/Databinder/directory/r0.7/src/main/java/example/ListAndEdit.java?op=file}ListAndEdit.java}} — <page subclass>
 
