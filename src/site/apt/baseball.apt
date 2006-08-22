@@ -8,7 +8,7 @@ Baseball players example application
 
 *Description
 
-	The DataView classes are efficient at slicing and dicing long tables. Note that Databinder does not depend on wicket-extensions and therefore can’t reference DataView directly. Instead it supplies a {{{/javadoc/net/databinder/models/DatabinderProvider.html}DatabinderProvider} that conforms to the IDataProvider interface. As seen in this example, that's all you need to make the connection.
+	The DataView classes are efficient at slicing and dicing long tables. Note that Databinder does not depend on wicket-extensions and therefore can’t reference DataView directly. Instead it supplies a {{{/javadoc/net/databinder/models/DatabinderProvider.html}DatabinderProvider}} that conforms to the IDataProvider interface. As seen in this example, that's all you need to make the connection.
 
 	{{{/baseball/app} Try this application}} and find your favorite player.
 
