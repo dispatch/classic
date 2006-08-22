@@ -16,11 +16,11 @@ Version 0.7
 
 	A Databinder application feeds annotated data classes to the toolkit, then renders the data in view class and HTML templates. Everything happens in Java and HTML—if you're looking for fussy XML configuration, you’ll have to look elsewhere.
 
-*Example applications
+*Examples
 
 	To get a better idea of how Databinder applications come together, check out the source code and live demos of the {{{examples.html}example applications}}. And all three are loaded with enough <<Wicket-powered Ajax>> to keep you from dozing off.
 
-*Getting started (and getting finished)
+*Pre-flight
 
 	Because Databinder’s priorities are simplicity and speed over formality and philosophy, starting a project from scratch is easy. A programming workstation with Java 5 and Maven 2 installed is only few minutes away from serving data-driven pages.
 
