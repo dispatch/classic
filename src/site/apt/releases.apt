@@ -14,9 +14,9 @@ Releases
 
 	Wicket DataView support arrives in this version. Though it has always been possible to write your own <<<IDataProvider>>>, Databinder now includes one for you. See the {{{baseball.html}baseball players}} example.
 	
-	The provided <<<User>>> class has been renamed DataUser to avoid that reserved table name in some databases. You will need to update any code referring to this class. Subclassing of {{{/javadoc/net/databinder/auth/components/DataSignInPage.html}DataSignInPage}} has been streamlined.
+	The provided <<<User>>> class has been renamed {{{/javadoc/net/databinder/auth/data/DataUser.html}DataUser}} to avoid that reserved table name in some databases. You will need to update any code referring to this class. Subclassing of {{{/javadoc/net/databinder/auth/components/DataSignInPage.html}DataSignInPage}} has been streamlined.
 	
-	The data-app archetype now includes a sample entity. In <<<web.xml>>>, it uses the new RedirectFilter class to send context-root requests to the Wicket servlet. All Databinder projects using the now-deprecated <<<RedirectServlet>>> are <<encouraged to switch to RedirectFilter>> as it permits static content under the context-root.
+	The data-app archetype now includes a sample entity. In <<<web.xml>>>, it uses the new {{{/javadoc/net/databinder/util/RedirectFilter.html}RedirectFilter}} class to send context-root requests to the Wicket servlet. All Databinder projects using the now-deprecated <<<RedirectServlet>>> are <<encouraged to switch to RedirectFilter>> as it permits static content under the context-root.
 	
 	{{{/javadoc/net/databinder/components/RenderedLabel.html}RenderedLabel}} now loads its image when its markup is rendered, so that serving the image when it is later requested will not require a model to be reattached.
 	
