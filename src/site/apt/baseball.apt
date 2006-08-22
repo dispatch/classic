@@ -14,15 +14,15 @@ Baseball players example application
 
 *Source files
 
-	* {{{/wsvn/Databinder/recipe/r0.7/src/main/java/example/BaseballApplication.java?op=file} BaseballApplication.java}}
+	* {{{/wsvn/Databinder/baseball/r0.7/src/main/java/example/BaseballApplication.java?op=file} BaseballApplication.java}}
 
-	* {{{/wsvn/Databinder/recipe/r0.7/src/main/java/example/Player.java?op=file} Player.java}} — <annotated data class>
+	* {{{/wsvn/Databinder/baseball/r0.7/src/main/java/example/Player.java?op=file} Player.java}} — <annotated data class>
 
-	* {{{/wsvn/Databinder/recipe/r0.7/src/main/resources/example/Pager.properties?op=file} Pager.properties}} — <distinct county query>
+	* {{{/wsvn/Databinder/baseball/r0.7/src/main/resources/example/Pager.properties?op=file} Pager.properties}} — <distinct county query>
 
-	* {{{/wsvn/Databinder/recipe/r0.7/src/main/resources/example/Pager.html?op=file} Pager.html}} — <page template>
+	* {{{/wsvn/Databinder/baseball/r0.7/src/main/resources/example/Pager.html?op=file} Pager.html}} — <page template>
 
-	* {{{/wsvn/Databinder/recipe/r0.7/src/main/java/example/Pager.java?op=file} Pager.java}} — <page subclass>
+	* {{{/wsvn/Databinder/baseball/r0.7/src/main/java/example/Pager.java?op=file} Pager.java}} — <page subclass>
 	
 	[]
 
