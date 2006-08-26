@@ -6,12 +6,15 @@
     <href>http://databinder.net/</href>
     <alt>Databinder: a simple bridge from Wicket to Hibernate</alt>
   </bannerLeft>
-  <publishDate position="left" format="EEE d MMM HH:mm:ss z yyyy"/>
+  <publishDate position="left" format="EEEE, MMMM d, yyyy"/>
   <body>
 
 
     <menu name="Databinder">
       <item name="Overview" href="index.html"/>
+      <item name="Screencasts" href="screencast/index.html" collapse="false">
+        <item name="Graffiti" href="screencast/graffiti.html"/>
+      </item>
       <item name="Examples" href="examples.html" collapse="false" >
         <item name="Graffiti" href="graffiti.html"/>
         <item name="Bookmarks" href="bookmarks.html"/>

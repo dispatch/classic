@@ -8,9 +8,9 @@ Graffiti example application
 
 *Description
 
-	This first example takes the text you enter and displays it on a virtual wall. While the data is retained indefinitely, only the five most recent tags are displayed.
+	This first example takes the text you enter and displays it on a virtual wall. While the data is retained indefinitely, only the five most recent tags are displayed. 
 	
-	Oh, one more thing—while the persisted data is textual, it’s rendered into an image for display. With a live preview.
+	As in the {{{/screencast/graffiti.html}screencast}}, text is rendered into an image using a packaged typeface. In this version we’ve added a live preview.
 	
 	{{{/graffiti/} Try this application }} and make your mark.
 	

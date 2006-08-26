@@ -16,6 +16,10 @@ Version 0.7
 
 	A Databinder application feeds annotated data classes to the toolkit, then renders the data in view class and HTML templates. Everything happens in Java and HTML—if you're looking for fussy XML configuration, you’ll have to look elsewhere.
 
+*Screencasts
+
+	Everyone has a screencast now. Your refrigerator has a screencast. {{{screencast/index.html}So do we}}.
+
 *Examples
 
 	To get a better idea of how Databinder applications come together, check out the source code and live demos of the {{{examples.html}example applications}}. And all three are loaded with enough <<Wicket-powered Ajax>> to keep you from dozing off.
@@ -28,4 +32,4 @@ Version 0.7
 
 *Still got questions?
 
-	Please see the {{{faq.html}FAQ}}. That’s <foire aux questions> to you, Jacques.
+	Please see the {{{faq.html}FAQ}}. If you don’t find help there, try the {{{/forum/}forum}}.
