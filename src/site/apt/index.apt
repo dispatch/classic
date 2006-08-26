@@ -8,7 +8,7 @@ Version 0.7
 
 *What it is
 
-	<<Databinder>> is a {{{http://java.sun.com/}Java}} programming toolkit for database driven Web applications using {{{http://wicket.sourceforge.net/}Wicket}} and {{{http://hibernate.org}Hibernate}}. It melds the world’s best Web and database technologies, then gets out of the way.
+	<<Databinder>> is a {{{http://java.sun.com/}Java}} programming toolkit for database–driven Web applications using {{{http://wicket.sourceforge.net/}Wicket}} and {{{http://hibernate.org}Hibernate}}. It melds the world’s best Web and database technologies, then gets out of the way.
 
 *How it works
 

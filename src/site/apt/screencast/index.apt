@@ -6,10 +6,8 @@
 
 Screencasts
 
-		Want to see a Databinder application written in real time? You’ve come to the right place.
+	Want to see a Databinder application written in real time? You’ve come to the right place.
+		
+	<<Note:>> This was recorded on a low-end, Ubuntu-running PC that cost only $350 to assemble in 2005. So don’t judge.
 				
-		[[1]] {{{graffiti.html}Making graffiti}} — <tagging without tears>
-		
-		[]
-		
-		<<Note:>> This was recorded on a low-end, Ubuntu-running PC that cost only $350 to assemble in 2005. So don’t judge.
+	{{{graffiti.html}Making graffiti}}
