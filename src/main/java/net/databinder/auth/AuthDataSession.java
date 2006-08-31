@@ -19,8 +19,12 @@
 package net.databinder.auth;
 
 /**
- * Holds IUser instance for signed in users. Expects IUser implementation to be an annotated
- * class where with a unique username property.
+ * Holds IUser instance for signed in users. Remembering the user with a browser cookie
+ * allows that user to bypass login for the length of time specified in getSignInCookieMaxAge().
+ * <p> In general the sematics here expect users to have a username and password, though the 
+ * IUser interface itself does not require it. In most cases it should not be necessary to
+ * subclass the session; use your <tt>AuthDataApplication</tt> subclass to specify
+ * a user class and criteria builder as needed.</p>
  */
 import javax.servlet.http.Cookie;
 
@@ -28,11 +32,8 @@ import net.databinder.DataRequestCycle;
 import net.databinder.DataSession;
 import net.databinder.auth.data.IUser;
 import net.databinder.models.HibernateObjectModel;
-import net.databinder.models.ICriteriaBuilder;
 
-import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
-import org.hibernate.criterion.Restrictions;
 
 import wicket.Application;
 import wicket.RequestCycle;
@@ -85,56 +86,26 @@ public class AuthDataSession extends DataSession {
 	/**
 	 * @return true if signed in, false if credentials incorrect
 	 */
-	public boolean signIn(final String username, final String password, boolean setCookie) {
-		if (!signIn(username, password))
-			return false;
-
-		if (setCookie && cookieSignInSupported()) {
-			IUser.CookieAuth cookieUser = (IUser.CookieAuth) user.getObject(null);
-			WebResponse resp = (WebResponse) RequestCycle.get().getResponse();
-			
-			int  maxAge = (int) getSignInCookieMaxAge().seconds();
-			
-			Cookie name = new Cookie(USERNAME_COOKIE, username),
-				auth = new Cookie(AUTH_COOKIE, cookieUser.getToken());
-			
-			name.setMaxAge(maxAge);
-			auth.setMaxAge(maxAge);
-			
-			resp.addCookie(name);
-			resp.addCookie(auth);
-		}
-		return true;
-	}
-	
-	/**
-	 * @param username
-	 * @return user object from persistent storage
-	 */
-	protected IModel getUser(final String username) {
-		try {
-			IModel user = new HibernateObjectModel(userClass,new ICriteriaBuilder() {
-				public void build(Criteria criteria) {
-					criteria.add(Restrictions.eq("username", username));
-				}
-			});
-			if (user.getObject(null) != null)
-				return user;
-			return null;	// no results
-		} catch (HibernateException e){
-			throw new WicketRuntimeException("Multiple users returned for query", e); 
-		}
-	}
-	
-	/**
-	 * @return true if signed in, false if credentials incorrect
-	 */
 	public boolean signIn(String username, String password) {
 		IModel potential = getUser(username);
 		if (potential != null && ((IUser)potential.getObject(null)).checkPassword(password))
 			user =  potential;
 		
 		return user != null;
+	}
+	
+	/**
+	 * @param setCookie if true, sets cookie to remember user
+	 * @return true if signed in, false if credentials incorrect
+	 */
+	public boolean signIn(final String username, final String password, boolean setCookie) {
+		if (!signIn(username, password))
+			return false;
+
+		if (setCookie) {
+			setCookie(username);
+		}
+		return true;
 	}
 	
 	/**
@@ -154,6 +125,54 @@ public class AuthDataSession extends DataSession {
 			}
 		}
 		return user != null;
+	}
+	
+	/**
+	 * Looks for a persisted IUser object matching the given username. Uses the user class
+	 * and criteria builder returned from the application subclass.
+	 * @param username
+	 * @return user object from persistent storage
+	 * @see AuthDataApplication
+	 */
+	protected IModel getUser(final String username) {
+		try {
+			IModel user = new HibernateObjectModel(userClass, 
+					((AuthDataApplication)getApplication()).getUserCriteriaBuilder(username)); 
+			if (user.getObject(null) != null)
+				return user;
+			return null;	// no results
+		} catch (HibernateException e){
+			throw new WicketRuntimeException("Multiple users returned for query", e); 
+		}
+	}
+	
+	/**
+	 * Sets cookie to remember the currently signed-in user. If using the 
+	 * signIn(username, password, true) method, it is not necessary
+	 * to call this method as the cookie has already been set. Exceptions will
+	 * be thrown if there is no signed-in user or if the user class does not support
+	 * cookie sign in.
+	 * @param username (as it is unavailable via the IUser interface)
+	 */
+	public void setCookie(String username) {
+		if (user == null)
+			throw new WicketRuntimeException("User must be signed in when calling this method");
+		if (!cookieSignInSupported())
+			throw new UnsupportedOperationException("Must use an implementation of IUser.CookieAuth");
+		
+		IUser.CookieAuth cookieUser = (IUser.CookieAuth) user.getObject(null);
+		WebResponse resp = (WebResponse) RequestCycle.get().getResponse();
+		
+		int  maxAge = (int) getSignInCookieMaxAge().seconds();
+		
+		Cookie name = new Cookie(USERNAME_COOKIE, username),
+			auth = new Cookie(AUTH_COOKIE, cookieUser.getToken());
+		
+		name.setMaxAge(maxAge);
+		auth.setMaxAge(maxAge);
+		
+		resp.addCookie(name);
+		resp.addCookie(auth);
 	}
 	
 	/** Detach user from session */

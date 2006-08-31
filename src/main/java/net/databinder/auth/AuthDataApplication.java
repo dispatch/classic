@@ -20,10 +20,13 @@ package net.databinder.auth;
 
 import net.databinder.DataApplication;
 import net.databinder.auth.components.DataSignInPage;
-import net.databinder.auth.data.IUser;
 import net.databinder.auth.data.DataUser;
+import net.databinder.auth.data.IUser;
+import net.databinder.models.ICriteriaBuilder;
 
+import org.hibernate.Criteria;
 import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.criterion.Restrictions;
 
 import wicket.Component;
 import wicket.RestartResponseAtInterceptPageException;
@@ -99,11 +102,28 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 	}
 
 	/**
-	 * Override to use your own IUser implementation. 
+	 * Override to use your own IUser implementation.
 	 * @return class to be used for signed in users
 	 */
 	public Class< ? extends IUser> getUserClass() {
 		return DataUser.class;
+	}
+	
+	/**
+	 * A criteria builder to find users by username, needed for retrieving users in 
+	 * 	<tt>AuthDataSession</tt>. The default implementation matches on a
+	 * "username" property. Override to match on an e-mail address or other 
+	 * property name.
+	 * @param username username to look up
+	 * @return builder to match on the username
+	 * @see AuthDataSession
+	 */
+	public ICriteriaBuilder getUserCriteriaBuilder(final String username) {
+		return new ICriteriaBuilder() {
+			public void build(Criteria criteria) {
+				criteria.add(Restrictions.eq("username", username));
+			}
+		};
 	}
 
 	/**
