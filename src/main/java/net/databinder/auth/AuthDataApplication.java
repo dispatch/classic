@@ -109,8 +109,16 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 		return DataUser.class;
 	}
 	
+	/** Default user criteria builder, bunds to "username" property. */
+	private static class UsernameCriteriaBuilder implements ICriteriaBuilder {
+		private String username;
+		public UsernameCriteriaBuilder(String username) { this.username = username; }
+		public void build(Criteria criteria) {
+			criteria.add(Restrictions.eq("username", username));
+		}
+	}
 	/**
-	 * A criteria builder to find users by username, needed for retrieving users in 
+	 * Get a criteria builder to find users by username, needed for retrieving users in 
 	 * 	<tt>AuthDataSession</tt>. The default implementation matches on a
 	 * "username" property. Override to match on an e-mail address or other 
 	 * property name.
@@ -118,12 +126,8 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 	 * @return builder to match on the username
 	 * @see AuthDataSession
 	 */
-	public ICriteriaBuilder getUserCriteriaBuilder(final String username) {
-		return new ICriteriaBuilder() {
-			public void build(Criteria criteria) {
-				criteria.add(Restrictions.eq("username", username));
-			}
-		};
+	public ICriteriaBuilder getUserCriteriaBuilder(String username) {
+		return new UsernameCriteriaBuilder(username);
 	}
 
 	/**
