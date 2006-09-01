@@ -16,6 +16,11 @@ public interface IUser {
 	 * Sub-interface for user classes supporting cookie authentication.
 	 */
 	public interface CookieAuth extends IUser {
+		/**
+		 * @return value used to identify user; may be e-mail or other identifier.
+		 */
+		public String getUsername();
+
 		/** 
 		 * @return unique value for this user and password that can not be externally determined
 		 */

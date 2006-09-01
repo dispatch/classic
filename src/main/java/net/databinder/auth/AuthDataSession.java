@@ -56,6 +56,14 @@ public class AuthDataSession extends DataSession {
 	}
 	
 	/**
+	 * @return current session casted to AuthDataSession
+	 * @throws ClassCastException if available session is not of this class
+	 */
+	public static AuthDataSession get() {
+		return (AuthDataSession) DataSession.get();
+	}
+	
+	/**
 	 * @return IUser object for current user, or null if none signed in.
 	 */
 	public IUser getUser() {
@@ -103,11 +111,22 @@ public class AuthDataSession extends DataSession {
 			return false;
 
 		if (setCookie) {
-			setCookie(username);
+			setCookie();
 		}
 		return true;
 	}
-	
+
+	/**
+	 * Sign in a user whose credentials have been validated elsewhere. The user object must exist,
+	 * and already have been saved, in the current request's Hibernate session.
+	 * @param user validated and persisted user, must be in current Hibernate session
+	 * @param setCookie if true, sets cookie to remember user
+	 */
+	public void signIn(IUser user, boolean setCookie) {
+		this.user = new HibernateObjectModel (user);
+		if (setCookie)
+			setCookie();
+	}
 	/**
 	 * @return true if signed in, false if credentials incorrect or unavailable
 	 */
@@ -147,14 +166,9 @@ public class AuthDataSession extends DataSession {
 	}
 	
 	/**
-	 * Sets cookie to remember the currently signed-in user. If using the 
-	 * signIn(username, password, true) method, it is not necessary
-	 * to call this method as the cookie has already been set. Exceptions will
-	 * be thrown if there is no signed-in user or if the user class does not support
-	 * cookie sign in.
-	 * @param username (as it is unavailable via the IUser interface)
+	 * Sets cookie to remember the currently signed-in user.
 	 */
-	public void setCookie(String username) {
+	protected void setCookie() {
 		if (user == null)
 			throw new WicketRuntimeException("User must be signed in when calling this method");
 		if (!cookieSignInSupported())
@@ -165,7 +179,7 @@ public class AuthDataSession extends DataSession {
 		
 		int  maxAge = (int) getSignInCookieMaxAge().seconds();
 		
-		Cookie name = new Cookie(USERNAME_COOKIE, username),
+		Cookie name = new Cookie(USERNAME_COOKIE, cookieUser.getUsername()),
 			auth = new Cookie(AUTH_COOKIE, cookieUser.getToken());
 		
 		name.setMaxAge(maxAge);

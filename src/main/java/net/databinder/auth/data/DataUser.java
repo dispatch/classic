@@ -68,7 +68,7 @@ public class DataUser implements IUser.CookieAuth, Serializable {
 	 * @param password to encode
 	 * @return base64 encoded SHA hash, 28 characters 
 	 */
-	protected String getHash(String password) {
+	public static String getHash(String password) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("SHA");
 			md.update(((AuthDataApplication)Application.get()).getSalt());
