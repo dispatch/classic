@@ -82,7 +82,7 @@ public class DataForm extends Form {
 				new HibernateObjectModel(modelClass, persistentObjectId)));
 	}
 	
-	protected HibernateObjectModel getPersistentObjectModel() {
+	public HibernateObjectModel getPersistentObjectModel() {
 		try {
 			return (HibernateObjectModel) getModel().getNestedModel();
 		} catch (ClassCastException c) {

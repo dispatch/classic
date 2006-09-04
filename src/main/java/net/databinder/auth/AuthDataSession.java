@@ -71,6 +71,13 @@ public class AuthDataSession extends DataSession {
 	}
 	
 	/**
+	 * @return model for current user
+	 */
+	public IModel getUserModel() {
+		return isSignedIn() ? user : null;
+	}
+	
+	/**
 	 * @return length of time sign-in cookie should persist, defined here as one month
 	 */
 	protected Duration getSignInCookieMaxAge() {

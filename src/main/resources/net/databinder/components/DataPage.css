@@ -24,13 +24,17 @@ h4 {
 pre, table, td { 
 	font-family : 'MS Trebuchet', 'Verdana', Arial, Helvetica; font-size : 10pt; line-height:1.2em;
 }
-label {
-	float: left;
-	clear: left;
-	width: 9em;
+form.labelAbove label {
+	display: block;
+}
+form.labelAbove div.row {
+	margin: .75em 0;
 }
 .feedback ul {
-	border: solid 2px #E9601A;
+	background: #FFD39F;
+	padding: .5em;
+	list-style-type: none;
+	border: dashed 1px #E9601A;
 	width: 35em;
 	color: black;
 }

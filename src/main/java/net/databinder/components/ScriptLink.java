@@ -18,6 +18,7 @@
  */
 package net.databinder.components;
 
+import wicket.behavior.HeaderContributor;
 import wicket.markup.html.resources.JavaScriptReference;
 
 /**
@@ -27,9 +28,21 @@ import wicket.markup.html.resources.JavaScriptReference;
  * @author Nathan Hamblen
  */
 public class ScriptLink extends JavaScriptReference {
+	private static String EXT = ".js";
 	
 	/** Builds a ScriptLink based on the given class. */
-	public ScriptLink(String id, Class pageClass) {
-		super(id, pageClass, pageClass.getSimpleName() + ".js");
+	public ScriptLink(String id, Class componentClass) {
+		super(id, componentClass, componentClass.getSimpleName() + EXT);
+	}
+	
+	/**
+	 * Get a [classname].js header contriubtor that can be added to a component without any reference in
+	 * its markup. Useful for subclasses that do not have their own templates.
+	 * @param componentClass javascript file should be in same package and have same base name
+	 * @return contributor to add to component
+	 */
+	public static HeaderContributor headerContributor(Class componentClass) {
+		return new HeaderContributor(new HeaderContributor.JavaScriptReferenceHeaderContributor(
+				componentClass, componentClass.getSimpleName() + EXT));
 	}
 }
