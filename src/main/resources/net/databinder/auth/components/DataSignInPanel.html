@@ -1,6 +1,6 @@
 <html>
 <head>
-	<link wicket:id="dataStylesheet" rel="stylesheet" type="text/css" href="DataPage.css" />
+	<link wicket:id="dataStylesheet" rel="stylesheet" type="text/css" href="../../components/DataPage.css" />
 </head>
 <body>
 <wicket:panel>
@@ -8,20 +8,22 @@
 <div class="feedback" wicket:id="feedback">
 </div>
 
-<form wicket:id="signInForm">
+<form wicket:id="signInForm" class="labelAbove">
 
-	<p>
-		Username
+	<div class="row">
+		<label>Username</label>
 		<input wicket:id="username" type="text" value="foo@goo.moo" />
-	</p>
-	<p>
-		Password
+	</div>
+	<div class="row">
+		<label>Password</label>
 		<input wicket:id="password" type="password" value="password" />
-	</p>
-	<p wicket:id="rememberMeRow">
-		<input wicket:id="rememberMe" id="rememberMe"type="checkbox" />
-		<label style="float: none" for="rememberMe">Remember Me </label>
-	</p>
+	</div>
+	<div class="row" wicket:id="rememberMeRow">
+		<label style="float: none" for="rememberMe">
+			<input wicket:id="rememberMe" id="rememberMe"type="checkbox" />
+			Remember Me 
+		</label>
+	</div>
 	<p> <input type="submit" name="submit" value="Sign in"/> </p>
 
 </form>
