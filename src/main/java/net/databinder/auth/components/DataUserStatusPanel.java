@@ -27,21 +27,42 @@ public class DataUserStatusPanel extends Panel {
 			}
 		}.add(new Label("username", new Model() {
 			public Object getObject(wicket.Component component) {
-				return getAuthSession().getUser().toString();
+				return getUsername();
 			}
 		})).add(new Link("signOut") {
 			@Override
 			public void onClick() {
-				getAuthSession().signOut();
+				signOut();
 			}
 		}));
 		
-		add(new PageLink("signIn", ((AuthDataApplication)getApplication()).getSignInPageClass()) {
+		add(getSignInLink("signIn"));
+	}
+	
+	/** Signs out from session; override for other behavior.	 */
+	protected void signOut() {
+		getAuthSession().signOut();
+	}
+	
+	/** 
+	 * Returns link to sign-in page from <tt>AuthDataApplication</tt> subclass. Override
+	 * for other behavior.	 
+	 */
+	protected Link getSignInLink(String id) {
+		return new PageLink(id, ((AuthDataApplication)getApplication()).getSignInPageClass()) {
 			@Override
 			public boolean isVisible() {
 				return !getAuthSession().isSignedIn();
 			}
-		});
+		};
+	}
+	
+	/**
+	 * Returns user.toString() on IUser from the session. Override for other behavior.
+	 * @return text (name) to display adjacent to sing out link.
+	 */
+	protected String getUsername() {
+		return getAuthSession().getUser().toString();
 	}
 	
 	/** @return casted web session*/
