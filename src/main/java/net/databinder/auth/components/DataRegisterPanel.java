@@ -38,7 +38,7 @@ import wicket.markup.html.form.Form;
 import wicket.markup.html.form.FormComponent;
 import wicket.markup.html.form.PasswordTextField;
 import wicket.markup.html.form.RequiredTextField;
-import wicket.markup.html.form.validation.EqualInputValidator;
+import wicket.markup.html.form.validation.EqualPasswordInputValidator;
 import wicket.markup.html.form.validation.StringValidator;
 import wicket.markup.html.panel.FeedbackPanel;
 import wicket.markup.html.panel.Panel;
@@ -74,7 +74,7 @@ public class DataRegisterPanel extends Panel {
 			}));
 			add(password = new PasswordTextField("password"));
 			add(passwordConfirm = new PasswordTextField("passwordConfirm", new Model("")));
-			add(new EqualInputValidator(password, passwordConfirm));
+			add(new EqualPasswordInputValidator(password, passwordConfirm));
 		}
 		
 		@Override
