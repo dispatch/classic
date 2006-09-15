@@ -34,7 +34,9 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 
 import wicket.Application;
+import wicket.RequestCycle;
 import wicket.Response;
+import wicket.WicketRuntimeException;
 import wicket.protocol.http.WebRequest;
 import wicket.protocol.http.WebRequestCycle;
 import wicket.protocol.http.WebResponse;
@@ -80,7 +82,10 @@ public class DataRequestCycle extends WebRequestCycle {
 	 * @return the open Hibernate session for the current request cycle.
 	 */
 	public static Session getHibernateSession() {
-		return ((DataRequestCycle)get()).getCycleHibernateSession();
+		RequestCycle cycle = get();
+		if (!(cycle instanceof DataRequestCycle))
+			throw new WicketRuntimeException("Current request cycle not managed by Databinder; have you overridden DataApplication.init() without calling super() ?");
+		return ((DataRequestCycle)cycle).getCycleHibernateSession();
 	}
 	
 	/**
