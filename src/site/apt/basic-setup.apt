@@ -16,15 +16,7 @@ mvn install:install-file -DgroupId=javax.transaction \
   -Dfile=jta-1_0_1B-classes.zip
 -----------------------------------------------------
 
-	(Or use jta.jar from the Hibernate 3.1.1 distribution, if you have that already — just change the <<<-Dfile=>>> parameter above.)
-
-	For the {EJB} 3.0 <public final draft> dependency, you’ll need to download {{{http://prdownloads.sourceforge.net/hibernate/hibernate-annotations-3.2.0.CR1.tar.gz?download}Hibernate Annotations}}, expand the archive, change to its lib directory, then:
-
------------------------------------------------------
-mvn install:install-file -DgroupId=javax.persistence \
-  -DartifactId=ejb -Dversion=3.0-public-draft-20060502 \
-  -Dpackaging=jar -Dfile=ejb3-persistence.jar
------------------------------------------------------
+	(Or use jta.jar from the Hibernate distribution, if you have that already — just change the <<<-Dfile=>>> parameter above.)
 
 *Maven repository mirrors
 
