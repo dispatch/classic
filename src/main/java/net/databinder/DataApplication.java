@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.databinder.components.PageExpiredCookieless;
 import net.databinder.util.URLConverter;
 
+import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 
 import wicket.ISessionFactory;
@@ -48,6 +49,8 @@ public abstract class DataApplication extends WebApplication {
 	
 	/** true if cookieless use is supported through URL rewriting(defaults to true). */
 	private boolean cookielessSupported = true;
+	
+	private  SessionFactory hibernateSessionFactory;
 	
 	/**
 	 * Configures this application for development or production, turns off 
@@ -86,7 +89,28 @@ public abstract class DataApplication extends WebApplication {
 				return newDataSession();
 			}
 		});
-		initDataRequestCycle();
+		initHibernate();
+	}
+	
+	/**
+	 * Init our Hibernate session factory, triggering a general Hibernate
+	 * initialization. Override if you have a custom session factory.
+	 */
+	protected void initHibernate() {
+		try {
+			AnnotationConfiguration config = new AnnotationConfiguration();
+			configureHibernate(config);
+			hibernateSessionFactory = config.buildSessionFactory();
+		} catch (Throwable ex) {
+				throw new ExceptionInInitializerError(ex);
+		}
+	}
+	
+	/**
+	 * @return Hibernate session factory configured for this application.
+	 */
+	protected  SessionFactory getHibernateSessionFactory() {
+		return hibernateSessionFactory;
 	}
 		
 	/**
@@ -96,16 +120,6 @@ public abstract class DataApplication extends WebApplication {
 	 */
 	protected DataSession newDataSession() {
 		return new DataSession(DataApplication.this);
-	}
-	
-	/**
-	 * Statically initializes DataRequestCycle or subclass, generally 
-	 * initializing the Hibernate configuration inside it. Override if you use 
-	 * a DataRequestCycle subclass with a custom session factory.
-	 * @see DataRequestCycle
-	 */
-	protected void initDataRequestCycle() {
-		DataRequestCycle.initHibernate(); // don't wait for first request
 	}
 	
 	/**

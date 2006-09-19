@@ -30,10 +30,7 @@ import javax.servlet.http.Cookie;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.AnnotationConfiguration;
 
-import wicket.Application;
 import wicket.RequestCycle;
 import wicket.Response;
 import wicket.WicketRuntimeException;
@@ -54,24 +51,9 @@ import wicket.protocol.http.WebSession;
  */
 public class DataRequestCycle extends WebRequestCycle {
 	private Session hibernateSession;
-	private static SessionFactory hibernateSessionFactory;
 	/** cache of cookies from request */ 
 	private Map<String, Cookie> cookies;
 
-	/**
-	 * Init our static Hibernate session factory, triggering a general Hibernate
-	 * initialization.
-	 */
-	protected static void initHibernate() {
-		try {
-			AnnotationConfiguration config = new AnnotationConfiguration();
-			DataApplication app = ((DataApplication)Application.get());
-			app.configureHibernate(config);
-				hibernateSessionFactory = config.buildSessionFactory();
-		} catch (Throwable ex) {
-				throw new ExceptionInInitializerError(ex);
-		}
-  }
 	
 	public DataRequestCycle(final WebSession session, final WebRequest request, final Response response) {
 		super(session, request, response);
@@ -106,9 +88,9 @@ public class DataRequestCycle extends WebRequestCycle {
 	 */
     protected Session openSession()
             throws HibernateException {
-    	return hibernateSessionFactory.openSession();
+    	return ((DataApplication)getApplication()).getHibernateSessionFactory().openSession();
     }
-	
+
     /**
      * Closes the Hibernate session, if one was open for this request. Hibernate will
      * try to rollback any uncommited transactions.
