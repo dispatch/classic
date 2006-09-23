@@ -13,7 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 
-import net.databinder.auth.AuthDataApplication;
+import net.databinder.auth.IAuthSettings;
 
 import org.hibernate.annotations.CollectionOfElements;
 
@@ -72,7 +72,7 @@ public class DataUser implements IUser.CookieAuth, Serializable {
 	public static String getHash(String password) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("SHA");
-			md.update(((AuthDataApplication)Application.get()).getSalt());
+			md.update(((IAuthSettings)Application.get()).getSalt());
 			byte[] hash = md.digest(password.getBytes());
 			// using a Base64 string for the hash because butting a 
 			// byte[] into a blob isn't working consistently.
@@ -127,7 +127,7 @@ public class DataUser implements IUser.CookieAuth, Serializable {
 	public String getToken() {
 		try {
 			MessageDigest md = MessageDigest.getInstance("SHA");
-			md.update(((AuthDataApplication)Application.get()).getSalt());
+			md.update(((IAuthSettings)Application.get()).getSalt());
 			md.update(passwordHash.getBytes());
 			byte[] hash = md.digest(username.getBytes());
 			return new String(Base64.encodeBase64(hash));

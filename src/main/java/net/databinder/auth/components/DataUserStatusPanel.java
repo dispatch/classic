@@ -1,7 +1,7 @@
 package net.databinder.auth.components;
 
-import net.databinder.auth.AuthDataApplication;
 import net.databinder.auth.AuthDataSession;
+import net.databinder.auth.IAuthSettings;
 import wicket.markup.html.WebMarkupContainer;
 import wicket.markup.html.basic.Label;
 import wicket.markup.html.link.Link;
@@ -49,7 +49,7 @@ public class DataUserStatusPanel extends Panel {
 	 * for other behavior.	 
 	 */
 	protected Link getSignInLink(String id) {
-		return new PageLink(id, ((AuthDataApplication)getApplication()).getSignInPageClass()) {
+		return new PageLink(id, ((IAuthSettings)getApplication()).getSignInPageClass()) {
 			@Override
 			public boolean isVisible() {
 				return !getAuthSession().isSignedIn();

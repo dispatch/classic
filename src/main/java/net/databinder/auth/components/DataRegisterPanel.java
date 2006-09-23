@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.databinder.DataRequestCycle;
-import net.databinder.auth.AuthDataApplication;
 import net.databinder.auth.AuthDataSession;
+import net.databinder.auth.IAuthSettings;
 import net.databinder.auth.data.DataUser;
 import net.databinder.auth.data.IUser;
 
@@ -102,7 +102,7 @@ public class DataRegisterPanel extends Panel {
 	
 	protected boolean isAvailable(String username) {
 		Session session = DataRequestCycle.getHibernateSession();
-		Criteria c = session.createCriteria(((AuthDataApplication)getApplication()).getUserClass());
+		Criteria c = session.createCriteria(((IAuthSettings)getApplication()).getUserClass());
 		c.add(Property.forName("username").eq(username));
 		c.setProjection(Projections.rowCount());
 		return c.uniqueResult().equals(0);

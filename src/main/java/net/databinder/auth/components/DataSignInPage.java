@@ -18,7 +18,7 @@
  */
 package net.databinder.auth.components;
 
-import net.databinder.auth.AuthDataApplication;
+import net.databinder.auth.IAuthSettings;
 import net.databinder.components.DataPage;
 import net.databinder.components.StyleLink;
 import wicket.Application;
@@ -47,7 +47,7 @@ public class DataSignInPage extends WebPage {
 	public DataSignInPage() {
 		// make sure nothing funny is going on, since this page has a default
 		// constructor and is bookmarkable
-		if (!((AuthDataApplication)Application.get()).getSignInPageClass().equals(getClass()))
+		if (!((IAuthSettings)Application.get()).getSignInPageClass().equals(getClass()))
 			throw new WicketRuntimeException("The sign in page requested does not match that defined in the AuthDataApplication subclass.");
 		
 		add(new StyleLink("dataStylesheet", DataPage.class));

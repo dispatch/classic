@@ -26,21 +26,21 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.databinder.components.PageExpiredCookieless;
 import net.databinder.util.URLConverter;
+import net.databinder.web.NorewriteWebResponse;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 
-import wicket.ISessionFactory;
-import wicket.Session;
 import wicket.markup.html.pages.PageExpiredErrorPage;
-import wicket.protocol.http.BufferedWebResponse;
 import wicket.protocol.http.WebApplication;
 import wicket.protocol.http.WebResponse;
 import wicket.util.convert.Converter;
 import wicket.util.convert.IConverterFactory;
 
 /**
- * Databinder Application subclass for request cycle hooks and a basic configuration.
+ * Databinder WebApplication subclass for configuration and session management. Use 
+ * of this base class is not obligatory, but it is recommended. Independent WebApplication 
+ * subclasses will need to establish both Wicket and Hibernate session factories.
  * @author Nathan Hamblen
  */
 public abstract class DataApplication extends WebApplication {
@@ -52,11 +52,12 @@ public abstract class DataApplication extends WebApplication {
 	
 	/**
 	 * Configures this application for development or production, turns off 
-	 * default page versioning, and establishes a DataSession factory, and 
-	 * initializes Hibernate. Development mode is the default; set a JVM property of
-	 * wicket.configuration=deployment for production. (The context and init params
-	 * in wicket.protocol.http.WebApplication are not supported here). Override 
-	 * this method for further customization.
+	 * default page versioning, and <strong>initializes Hibernate session factory</strong>. 
+	 * Development mode is the default; set a JVM property of wicket.configuration=deployment 
+	 * for production. (The context and init params in wicket.protocol.http.WebApplication 
+	 * are not supported here). If you override this method, be sure to call super() or 
+	 * initialize the Hibernate session factory yourself.
+	 * @see DataStaticService 
 	 */
 	@Override
 	protected void init() {
@@ -66,12 +67,15 @@ public abstract class DataApplication extends WebApplication {
 		if (configuration != null)
 			configure(configuration);
 		else
+			// when using wicket.configuration, calling configure() is unnecessary
 			configuration = System.getProperty("wicket." + CONFIGURATION, DEVELOPMENT);
-		// (if using wicket.configuration, calling configure() is unnecessary)
+		
 		development = configuration.equalsIgnoreCase(DEVELOPMENT);
-		// versioning doesn't do so much for database driven pages 
+		
+		// we find versioning less useful for simple, data-driven pages
 		getPageSettings().setVersionPagesByDefault(false);
 
+		// register URL converter
 		getApplicationSettings().setConverterFactory(new IConverterFactory() {
 			/** Registers URLConverter in addition to the Wicket defaults. */
 			public wicket.util.convert.IConverter newConverter(Locale locale) {
@@ -80,21 +84,15 @@ public abstract class DataApplication extends WebApplication {
 				return conv;
 			}
 		});
-		
-		setSessionFactory(new ISessionFactory() {
-			public Session newSession()
-			{
-				return newDataSession();
-			}
-		});
-		DataStaticService.init(this);
+
+		DataStaticService.setSessionFactory(buildHibernateSessionFactory());
 	}
 	
 	/**
 	 * Create  our Hibernate session factory, triggering a general Hibernate
 	 * initialization. Override if you have a custom session factory.
 	 */
-	protected SessionFactory createHibernateSessionFactory() {
+	public SessionFactory buildHibernateSessionFactory() {
 		try {
 			AnnotationConfiguration config = new AnnotationConfiguration();
 			configureHibernate(config);
@@ -102,25 +100,6 @@ public abstract class DataApplication extends WebApplication {
 		} catch (Throwable ex) {
 				throw new ExceptionInInitializerError(ex);
 		}
-	}
-	
-	/**
-	 * Returns a new instance of a DataSession. Override if your application uses
-	 * its own DataSession subclass. 
-	 * @return new instance of DataSession
-	 */
-	protected DataSession newDataSession() {
-		return new DataSession(DataApplication.this);
-	}
-	
-	/**
-	 * Reports if the program is running in a development environment, as determined by the
-	 * "wicket.configuration" environment variable. If that variable is unset or set to 
-	 * "development", the app is considered to be running in development.  
-	 * @return true if running in a development environment
-	 */
-	protected boolean isDevelopment() {
-		return development;
 	}
 	
 	/**
@@ -143,6 +122,26 @@ public abstract class DataApplication extends WebApplication {
 	}
 	
 	/**
+	 * Returns a new instance of a DataSession. Override if your application uses
+	 * its own DataSession subclass. 
+	 * @return new instance of DataSession
+	 */
+	@Override
+	public DataSession newSession() {
+		return new DataSession(DataApplication.this);
+	}
+	
+	/**
+	 * Reports if the program is running in a development environment, as determined by the
+	 * "wicket.configuration" environment variable. If that variable is unset or set to 
+	 * "development", the app is considered to be running in development.  
+	 * @return true if running in a development environment
+	 */
+	protected boolean isDevelopment() {
+		return development;
+	}
+	
+	/**
 	 * If <code>isCookielessSupported()</code> returns false, this method returns
 	 * a custom WebResponse that disables URL rewriting.
 	 */
@@ -151,20 +150,7 @@ public abstract class DataApplication extends WebApplication {
 	{
 		if (isCookielessSupported())
 			return super.newWebResponse(servletResponse);
-		if (getRequestCycleSettings().getBufferResponse())
-			return new BufferedWebResponse(servletResponse) {
-				@Override
-				public CharSequence encodeURL(CharSequence url) {
-					return url;
-				}
-			};
-		else
-			return (new WebResponse(servletResponse) {
-				@Override
-				public CharSequence encodeURL(CharSequence url) {
-					return url;
-				}
-			});
+		return NorewriteWebResponse.getNew(this, servletResponse);
 	}
 
 	/**

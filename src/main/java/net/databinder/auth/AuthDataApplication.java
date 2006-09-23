@@ -43,12 +43,15 @@ import wicket.markup.html.WebPage;
  * of Wicket's AuthenticatedWebApplication brought into the DataApplication hierarchy. Unlike
  * that implementation, this one supplies a default annotated User class. To use a different IUser class,
  * or a User subclass, override getUserClass(). (This class, whatever it is, will be added to 
- * the Hibernate Annotations configuration automatically.
+ * the Hibernate Annotations configuration automatically. It is also possible to use Databinder
+ * authentication without extending this base class by implementing IAuthSettings. 
  * @see DataUser
+ * @see IAuthSettings
  * @see IUser
  * @author Nathan Hamblen
  */
-public abstract class AuthDataApplication extends DataApplication implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy {
+public abstract class AuthDataApplication extends DataApplication 
+implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, IAuthSettings {
 
 	/**
 	 * Calls configuration in super-implementation, then sets Wicket's security strategy for role
@@ -63,12 +66,11 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 	}
 
 	/**
-	 * Overrides to return an AuthDataSession. You may override to return an AuthDataSession
-	 * subclass.
+	 * @return new AuthDataSession
 	 * @see AuthDataSession
 	 */
 	@Override
-	protected AuthDataSession newDataSession() {
+	public AuthDataSession newSession() {
 		return new AuthDataSession(this);
 	}
 	
@@ -109,7 +111,7 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 		return DataUser.class;
 	}
 	
-	/** Default user criteria builder, bunds to "username" property. */
+	/** Default user criteria builder, binds to "username" property. */
 	private static class UsernameCriteriaBuilder implements ICriteriaBuilder {
 		private String username;
 		public UsernameCriteriaBuilder(String username) { this.username = username; }
@@ -143,4 +145,5 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 	 * a salt value (!), return null.
 	 * @return
 	 */
-	public abstract byte[] getSalt();}
+	public abstract byte[] getSalt();
+}

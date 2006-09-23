@@ -24,6 +24,7 @@ import wicket.Request;
 import wicket.RequestCycle;
 import wicket.Response;
 import wicket.Session;
+import wicket.protocol.http.WebApplication;
 import wicket.protocol.http.WebRequest;
 import wicket.protocol.http.WebResponse;
 import wicket.protocol.http.WebSession;
@@ -37,7 +38,7 @@ import wicket.protocol.http.WebSession;
  */
 public class DataSession extends WebSession {
 
-	protected DataSession(DataApplication application) {
+	protected DataSession(WebApplication application) {
 		super(application);
 	}
 

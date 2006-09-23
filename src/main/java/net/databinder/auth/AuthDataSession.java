@@ -39,6 +39,7 @@ import wicket.Application;
 import wicket.RequestCycle;
 import wicket.WicketRuntimeException;
 import wicket.model.IModel;
+import wicket.protocol.http.WebApplication;
 import wicket.protocol.http.WebResponse;
 import wicket.util.time.Duration;
 
@@ -49,9 +50,11 @@ public class AuthDataSession extends DataSession {
 	
 	/**
 	 * Initialize new session. Retains user class from AuthDataApplication instance.
+	 * @param application must be WebApplication subclass
+	 * @see WebApplication
 	 */
-	protected AuthDataSession(AuthDataApplication application) {
-		super(application);
+	protected AuthDataSession(IAuthSettings application) {
+		super((WebApplication)application);
 		userClass = application.getUserClass();
 	}
 	
@@ -95,7 +98,7 @@ public class AuthDataSession extends DataSession {
 	 * @return true if application's user class implements <tt>IUser.CookieAuthentication</tt>.  
 	 */
 	protected boolean cookieSignInSupported() {
-		return IUser.CookieAuth.class.isAssignableFrom(((AuthDataApplication)Application.get()).getUserClass());
+		return IUser.CookieAuth.class.isAssignableFrom(((IAuthSettings)Application.get()).getUserClass());
 	}
 
 	/**
@@ -155,15 +158,15 @@ public class AuthDataSession extends DataSession {
 	
 	/**
 	 * Looks for a persisted IUser object matching the given username. Uses the user class
-	 * and criteria builder returned from the application subclass.
+	 * and criteria builder returned from the application subclass implementing IAuthSettings.
 	 * @param username
 	 * @return user object from persistent storage
-	 * @see AuthDataApplication
+	 * @see IAuthSettings
 	 */
 	protected IModel getUser(final String username) {
 		try {
 			IModel user = new HibernateObjectModel(userClass, 
-					((AuthDataApplication)getApplication()).getUserCriteriaBuilder(username)); 
+					((IAuthSettings)getApplication()).getUserCriteriaBuilder(username)); 
 			if (user.getObject(null) != null)
 				return user;
 			return null;	// no results
