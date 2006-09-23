@@ -88,7 +88,7 @@ public class DataRequestCycle extends WebRequestCycle {
 	 */
     protected Session openSession()
             throws HibernateException {
-    	return ((DataApplication)getApplication()).getHibernateSessionFactory().openSession();
+    	return DataStaticService.getHibernateSessionFactory().openSession();
     }
 
     /**

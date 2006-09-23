@@ -50,8 +50,6 @@ public abstract class DataApplication extends WebApplication {
 	/** true if cookieless use is supported through URL rewriting(defaults to true). */
 	private boolean cookielessSupported = true;
 	
-	private  SessionFactory hibernateSessionFactory;
-	
 	/**
 	 * Configures this application for development or production, turns off 
 	 * default page versioning, and establishes a DataSession factory, and 
@@ -89,30 +87,23 @@ public abstract class DataApplication extends WebApplication {
 				return newDataSession();
 			}
 		});
-		initHibernate();
+		DataStaticService.init(this);
 	}
 	
 	/**
-	 * Init our Hibernate session factory, triggering a general Hibernate
+	 * Create  our Hibernate session factory, triggering a general Hibernate
 	 * initialization. Override if you have a custom session factory.
 	 */
-	protected void initHibernate() {
+	protected SessionFactory createHibernateSessionFactory() {
 		try {
 			AnnotationConfiguration config = new AnnotationConfiguration();
 			configureHibernate(config);
-			hibernateSessionFactory = config.buildSessionFactory();
+			return config.buildSessionFactory();
 		} catch (Throwable ex) {
 				throw new ExceptionInInitializerError(ex);
 		}
 	}
 	
-	/**
-	 * @return Hibernate session factory configured for this application.
-	 */
-	protected  SessionFactory getHibernateSessionFactory() {
-		return hibernateSessionFactory;
-	}
-		
 	/**
 	 * Returns a new instance of a DataSession. Override if your application uses
 	 * its own DataSession subclass. 
