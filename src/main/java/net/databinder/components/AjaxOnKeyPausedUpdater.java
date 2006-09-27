@@ -44,12 +44,12 @@ public abstract class AjaxOnKeyPausedUpdater extends AjaxFormComponentUpdatingBe
 	}
 	
 	/**
-	 * Adds JavaScript listeners for onkeypress and onblur.
+	 * Adds JavaScript listeners for onkeyup and onblur.
 	 */
 	@Override
 	protected void onComponentTag(ComponentTag tag) {
 		super.onComponentTag(tag);
-        tag.put("onkeypress", "AjaxOnKeyPausedTimerReset(this);");
+        tag.put("onkeyup", "AjaxOnKeyPausedTimerReset(this);");
         tag.put("onblur", "AjaxOnKeyPausedTimerCancel();");
 	}
 
