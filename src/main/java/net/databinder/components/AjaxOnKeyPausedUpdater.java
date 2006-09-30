@@ -57,8 +57,8 @@ public abstract class AjaxOnKeyPausedUpdater extends AjaxFormComponentUpdatingBe
 	 * Adds needed JavaScript to header.
 	 */
 	@Override
-	protected void onRenderHeadInitContribution(Response response) {
-		super.onRenderHeadInitContribution(response);
+	protected void onRenderHeadContribution(Response response) {
+		super.onRenderHeadContribution(response);
 		writeJsReference(response, JAVASCRIPT);
 	}
 }
