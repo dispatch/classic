@@ -32,7 +32,7 @@ import org.hibernate.criterion.Projections;
  * to wicket-extensions, this class does not declare its implementation of IDataProvider.
  * However, it implements all methods of that interface and should make a task-specific
  * IDataProvider implementation considerably easier to build. Internal subclasses
- * are provider for both standard and criteria queries.
+ * are providers for both standard and criteria queries.
  * @see wicket.extensions.markup.html.repeater.data.IDataProvider  
  * @author Nathan Hamblen
  */
