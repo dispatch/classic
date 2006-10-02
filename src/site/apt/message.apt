@@ -12,7 +12,7 @@ Message floater example application
 
 	The applet is written in the {{{http://processing.org/} Processing}} environment, and is based on its {{{http://processing.org/learning/examples/kinetictype.html}KineticType}} example.
 	
-	{{{/message/} Try this application }} and leave a message for the ages.
+	{{{/message/} Try this application }} and leave a message for the ages. (The applet takes about a half minute to load.)
 	
 *Web source files
 
