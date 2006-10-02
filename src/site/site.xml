@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="databinder">
+<project name="Databinder">
   <bannerLeft>
     <name>Databinder</name>
     <src>/images/logo.png</src>
@@ -8,8 +8,6 @@
   </bannerLeft>
   <publishDate position="left" format="EEEE, MMMM d, yyyy"/>
   <body>
-
-
     <menu name="Databinder">
       <item name="Overview" href="index.html"/>
       <item name="Screencasts" href="screencast/index.html" collapse="false">
@@ -21,6 +19,7 @@
         <item name="Phone directory" href="phone-directory.html"/>
         <item name="Recipe book" href="recipe-book.html"/>
         <item name="Baseball players" href="baseball.html"/>
+        <item name="Message floater" href="message.html"/>
       </item>
       <item name="Setup guide" href="setup-guide.html" collapse="false">
         <item name="Prequisites" href="pre-reqs.html"/>

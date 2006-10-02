@@ -1,12 +1,12 @@
 		------------------
-		Databinder: Example applications
+		Example applications
 		-----------------
 		Nathan Hamblen
 		------------------
 
 Example applications
 
-		Databinder has five example applications demonstrating common tasks. A good way to learn the toolkit is to read through these examples, and then download and enhance them yourself. (Some improvements are suggested to get you started.)
+		The Databinder example applications perform common database tasks (though we’ve spiced them up a bit to keep it interesting). A good way to learn the toolkit is to read through these examples, and then download and enhance them yourself. (Some improvements are suggested to get you started.)
 		
 		The examples, ordered pedagogically:
 		
@@ -19,3 +19,5 @@ Example applications
 		[[4]] {{{recipe-book.html}Recipe book}} — <you could call it a CMS, but we’d have to kill you>
 		
 		[[5]] {{{baseball.html}Baseball players}} — <long dataset pagination>
+
+		[[6]] {{{message.html}Message floater}} — <Web service feeding data to an applet>
