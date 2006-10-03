@@ -5,7 +5,7 @@
   <name>Databinder</name>
   <version>0.8-SNAPSHOT</version>
   <description>A simple bridge from Wicket to Hibernate</description>
-  <url>http://databinder.net</url>
+  <url>http://databinder.net/</url>
   <inceptionYear>2005</inceptionYear>
   <licenses>
     <license>
