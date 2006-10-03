@@ -1,10 +1,40 @@
 Databinder: a simple bridge from Wicket to Hibernate
 
-Please see the Web site for documentation and usage examples:
-http://databinder.net
+Please see the Databinder Web site for documentation and usage examples:
+http://databinder.net/
 
 
 Version History
+
+0.8	This release contains a hodgepodge of fixes and improvements. 
+	Many base classes in the toolkit have been refactored to be more 
+	flexible, including DataApplication, AuthDataApplication, 
+	DataRequestCycle, and AuthDataRequestCycle. Existing applications 
+	that override default functionality in base classes may need to 
+	make minor changes to compile against this version.
+
+	The Hibernate session factory is now easily accessible from
+	outside a Wicket request cycle, in DatabinderStaticService. An
+	exception is thrown if the session factory is not initialized,
+	provoked by the common error of overriding DataApplication.init()
+	without calling its super-implementation.
+	
+	The focusable text field from the recipe book example is now a
+	toolkit component, FocusableTextField. SearchPanel now has a 
+	submit button for better compatibility with older browsers (and 
+	users). AjaxOnKeyPause handles backspace correctly with IE, 
+	and it doesn't need to be the first Ajax behavior on a page.
+	DataRegistrationPanel uses a PasswordInputValidator to avoid 
+	exposing passwords.
+
+	The JavaScript and stylesheet link components now extend 
+	appropriate resource reference classes in the Wicket hierarchy. 
+	DataPage's default stylesheet has been improved to follow form 
+	label guidelines, and feedback messages have a new appearance.
+
+	Wicket and Hibernate Annotations dependencies have been updated to
+	1.2.2 and 3.2.0 RC2 respectively. MySQL connector (in data-app and
+	examples) is at version 5.0.3.
 
 0.7	Wicket DataView support arrives in this version. Though it has 
 	always been possible to write your own IDataProvider, Databinder
@@ -15,8 +45,8 @@ Version History
 	any code referring to this class. Subclassing of DataSignInPage
 	has been streamlined.
 
-	The data-app archetype now includes a sample entity. In web.xml,
-	 it uses the new RedirectFilter class to send context-root 
+	The data-app archetype now includes a sample entity. In web.xml
+	it uses the new RedirectFilter class to send context-root 
 	requests to the Wicket servlet. All Databinder projects using 
 	the now-deprecated RedirectServlet are encouraged to switch to 
 	RedirectFilter as it permits static content under the 
