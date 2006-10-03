@@ -82,6 +82,7 @@ Version History
 	alongside Java sources by default. Incremented versions of
 	several dependencies, including Wicket to 1.2.1 which now
 	enforces that session-stored objects be Serializable by default. 
+
 0.5	Trimming and meshing for Wicket 1.2, including deprecation of
 	PropertyListView and removal of application.properties from
 	the data-app archetype. Recognition of the wicket.configuration
