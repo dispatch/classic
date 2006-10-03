@@ -6,8 +6,7 @@ http://databinder.net/
 
 Version History
 
-0.8	This release contains a hodgepodge of fixes and improvements. 
-	Many base classes in the toolkit have been refactored to be more 
+0.8	Many base classes in the toolkit have been refactored to be more 
 	flexible, including DataApplication, AuthDataApplication, 
 	DataRequestCycle, and AuthDataRequestCycle. Existing applications 
 	that override default functionality in base classes may need to 
@@ -19,11 +18,11 @@ Version History
 	provoked by the common error of overriding DataApplication.init()
 	without calling its super-implementation.
 	
-	The focusable text field from the recipe book example is now a
+	The focusable form input from the recipe book example is now a
 	toolkit component, FocusableTextField. SearchPanel now has a 
 	submit button for better compatibility with older browsers (and 
 	users). AjaxOnKeyPause handles backspace correctly with IE, 
-	and it doesn't need to be the first Ajax behavior on a page.
+	and it no longer needs to be the first Ajax behavior on a page.
 	DataRegistrationPanel uses a PasswordInputValidator to avoid 
 	exposing passwords.
 
