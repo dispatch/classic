@@ -10,9 +10,9 @@ Message floater example application
 
 	Message floater is a another take on the store and display function of the {{{graffiti.html} graffiti}} example, this time rendering the data even more unconventionally. New text is submitted through an Ajax form and persisted on the server. An applet running on the same page fetches messages through {{{http://en.wikipedia.org/wiki/XML-RPC} XML-RPC}} on start-up and when notified of updates by JavaScript.
 
-	The applet is written in the {{{http://processing.org/} Processing}} environment, and is based on its {{{http://processing.org/learning/examples/kinetictype.html}KineticType}} example.
+	The applet is written in the {{{http://processing.org/} Processing}} environment, based on its {{{http://processing.org/learning/examples/kinetictype.html}KineticType}} example.
 	
-	{{{/message/} Try this application }} and leave a message for the ages. (The applet takes about a half minute to load.)
+	{{{/message/} Try this application }} and leave a message for the ages. (The applet may take half a minute to load.)
 	
 *Web source files
 

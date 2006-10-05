@@ -26,7 +26,11 @@ mvn -Declipse.workspace=/home/me/workspace eclipse:add-maven-repo
 mvn -Declipse.downloadSources=true eclipse:eclipse
 -----------------------------------------------------
 
-	Import the project to your Eclipse workspace. Its dependencies, source, and target directories will be ready to go.
+	Import the project to your Eclipse workspace. Its dependencies, source, and target directories will be ready to go. When you upgrade to a new version of Databinder or add other dependencies to your <<<pom.xml>>>, you’ll need to rebuild the Eclipse project:
+
+-----------------------------------------------------
+mvn -Declipse.downloadSources=true eclipse:clean eclipse:eclipse
+-----------------------------------------------------
 	
 *Eclipse plugins
 
@@ -65,7 +69,5 @@ default-table-type=InnoDB
 	With your IDE tweaked-out and ready to go, it’s time to stop configuring and start programming. Read through the {{{examples.html}examples}} if you haven’t already, and try running them locally. Each one uses a different database, as described in its <<<hibernate.properties>>>.
 
 	When you add annotated classes to your Hibernate configuration, tables to hold them and their mapped properties will be automatically created as your application is starting up. Tables and columns will never be deleted, so drop them or the entire database yourself whenever you want a fresh start.
-
-	If you run into trouble with Hibernate, check the {{{http://www.hibernate.org/329.html} Annotations FAQ}} for some sneaky traps they’ve lain. And if you need to do something complicated, it’s probably outlined somewhere in the {{{ http://www.hibernate.org/hib_docs/annotations/reference/en/html/}annotations}} or {{{http://www.hibernate.org/hib_docs/v3/reference/en/html/}core}} documentation.
 
 	Now go pop a wheelie. If you skin your knees, we’ll help you out on the {{{/forum}forum}}.

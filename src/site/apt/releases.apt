@@ -8,7 +8,35 @@ Releases
 
 *Downloading
 
-	Though it’s possible to download Databinder from the links below (and its {{{dependencies.html}dependencies}} from all over the Web), it’s not recommended. Please see the {{{setup-guide.html}setup guide}} for detailed start-to-finish instructions using Maven 2. If you’re upgrading, just increment the Databinder version number in your <<<pom.xml>>>.
+	Though it’s possible to download Databinder from the links below (and its {{{dependencies.html}dependencies}} from all over the Web), it’s not recommended. Please see the {{{setup-guide.html}setup guide}} for detailed start-to-finish instructions using Maven 2. For upgrading, see the {{{faq.html#upgrade}FAQ}}.
+
+*Version 0.8
+
+	Many base classes in the toolkit have been refactored to be more flexible, including DataApplication, AuthDataApplication, DataRequestCycle, and AuthDataRequestCycle. Existing applications that override default functionality in base classes may need to make minor changes to compile against this version.
+
+	The Hibernate session factory is now easily accessible from outside a Wicket request cycle, in DatabinderStaticService. An exception is thrown if the session factory is not initialized, provoked by the common error of overriding DataApplication.init() without calling its super-implementation.
+	
+	The focusable form input from the recipe book example is now a toolkit component, FocusableTextField. SearchPanel now has a  submit button for better compatibility with older browsers (and  users). AjaxOnKeyPause handles backspace correctly with IE,  and it no longer needs to be the first Ajax behavior on a page. DataRegistrationPanel uses a PasswordInputValidator to avoid exposing passwords.
+
+	The JavaScript and stylesheet link components now extend appropriate resource reference classes in the Wicket hierarchy. DataPage's default stylesheet has been improved to follow form label guidelines, and feedback messages have a new appearance.
+
+	Wicket and Hibernate Annotations dependencies have been updated to 1.2.2 and 3.2.0 RC2 respectively. MySQL connector (in data-app and examples) is at version 5.0.3.
+
+	{{{/releases/databinder-0.8.tar.gz}Datbinder library & source}}
+	
+	{{{/releases/data-app-0.8.tar.gz}Data-app archetype}}
+
+	{{{/releases/graffiti-0.8.tar.gz}Graffiti example}}
+
+	{{{/releases/bookmark-0.8.tar.gz}Bookmark example}}
+	
+	{{{/releases/directory-0.8.tar.gz}Phone directory example}}
+
+	{{{/releases/recipe-0.8.tar.gz}Recipe book example}}
+
+	{{{/releases/baseball-0.8.tar.gz}Baseball players example}}
+
+	{{{/releases/message-0.8.tar.gz}Message floater example}}
 
 *Version 0.7
 
@@ -57,7 +85,6 @@ Releases
 	{{{/releases/directory-0.6.tar.gz}Phone directory example}}
 
 	{{{/releases/recipe-0.6.tar.gz}Recipe book example}}
-
 
 *Version 0.5
 

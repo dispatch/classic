@@ -37,25 +37,78 @@
 	<p>And after working through those examples, you may find that you like Maven enough to use it in your own projects. If not, you can always raid the JARs in <tt>~/.m2/repository/</tt>.</p>
       </answer>
     </faq>
+  </part>
+  
+
+  <part>
+    <title>Updates</title>
+    <faq id="upgrade">
+      <question>
+      	How do I upgrade to a new version?
+      </question>
+      <answer>
+        <p>Increment the Databinder version number in your <tt>pom.xml</tt>. Then run <tt>mvn clean compile</tt>, and be sure to update your <a href="workspace.html">workspace dependencies</a> if necessary.</p>
+      </answer>
+    </faq>
     <faq id="uptodate">
       <question>
 	Where can I get prerelease versions of Databinder?
       </question>
       <answer>
-		<p>Snapshot releases of Databinder are available through a special Maven repository. If you would like to use a prerelease version of Databinder in your own project, be sure the following appears in your <tt>pom.xml</tt>:</p>
-		<pre><![CDATA[
-  &lt;repositories&gt;
-    &lt;repository&gt;
-      &lt;id&gt;databinder-snapshots&lt;/id&gt;
-      &lt;name&gt;Databinder snapshot repository&lt;/name&gt;
-      &lt;url&gt;http://databinder.net/snapshot&lt;/url&gt;
-    &lt;/repository&gt;
-  &lt;/repositories&gt;  ]]></pre>
-		<p>Significant new features appearing in the snapshots are noted <a href="http://technically.us/n8/">this Databinder weblog</a> or <a href="/forum">the forum</a>. (<tt>mvn -U compile</tt> forces an update, if you think you’re missing out on something.) </p>
+		<p>Snapshot releases of Databinder are available through a special Maven repository. If you would like to use a prerelease version of Databinder in your own project, specify the version as x.x-SNAPSHOT and be sure the following appears in your <tt>pom.xml</tt>:</p>
+
+<source>
+  <repositories>
+    <repository>
+      <id>databinder-snapshots</id>
+      <name>Databinder snapshot repository</name>
+      <url>http://databinder.net/snapshot</url>
+     </repository>
+   </repositories>
+</source>
+		<p>Significant new features of the snapshots are noted <a href="http://technically.us/n8/">this Databinder weblog</a> or <a href="/forum">the forum</a>. (<tt>mvn -U compile</tt> forces an update, if you think you’re missing out on something.) </p>
+      </answer>
+    </faq>
+    <faq id="maven-plugins">
+      <question>
+      	Will my Maven plugins update themselves?
+      </question>
+      <answer>
+        <p>Not always. If you think that a Maven plugin (like Jetty’s) is out of date, run the relevant command with a <tt>-U</tt> appended to check for new versions.</p>
       </answer>
     </faq>
   </part>
   
+
+  <part>
+    <title>Trouble</title>
+    <faq id="unmapped">
+      <question>
+      	Why am I getting an unmapped entity exception?
+      </question>
+      <answer>
+        <p>You’re adding the entity in your application’s <tt>configureHibernate</tt> method, we assume? Make sure you’re using <tt>javax.persistence.Entity</tt> in your entity, as the one in Hibernate’s package fails silently.</p>
+      </answer>
+    </faq>
+    <faq id="unmapped">
+      <question>
+      	What about other Hibernate problems?
+      </question>
+      <answer>
+        <p>If you’re in a hurry, start with the <a href="http://www.hibernate.org/329.html">Annotations FAQ</a>, which covers tricky spots like that of the previous question.</p>
+	<p>For concise documentation, see the <a href="http://www.hibernate.org/hib_docs/annotations/reference/en/html/">Annotations Guide</a> for things specific to Annotations and the <a href="http://www.hibernate.org/hib_docs/v3/reference/en/html/">Hibernate Guide</a> for everything else.</p>
+      </answer>
+    </faq>
+    <faq id="unanswered">
+      <question>
+      	Yeah, um, still having trouble here…
+      </question>
+      <answer>
+        <p>Don’t be shy—hit up the <a href="/forum/">forum</a>.</p>
+      </answer>
+    </faq>
+  </part>
+
 
   <part>
     <title>Suitability</title>

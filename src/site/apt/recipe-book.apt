@@ -18,33 +18,33 @@ Recipe book example application
 
 *Source files
 
-	* {{{/wsvn/Databinder/recipe/r0.7/src/main/java/example/RecipeApplication.java?op=file} RecipeApplication.java}}
+	* {{{/wsvn/Databinder/recipe/r0.8/src/main/java/example/RecipeApplication.java?op=file} RecipeApplication.java}}
 
-	* {{{/wsvn/Databinder/recipe/r0.7/src/main/java/example/Recipe.java?op=file} Recipe.java}} — <main data class>
+	* {{{/wsvn/Databinder/recipe/r0.8/src/main/java/example/Recipe.java?op=file} Recipe.java}} — <main data class>
 
-	* {{{/wsvn/Databinder/recipe/r0.7/src/main/java/example/Ingredient.java?op=file} Ingredient.java}} — <embedded in Recipe.ingredients>
+	* {{{/wsvn/Databinder/recipe/r0.8/src/main/java/example/Ingredient.java?op=file} Ingredient.java}} — <embedded in Recipe.ingredients>
 
-	* {{{/wsvn/Databinder/recipe/r0.7/src/main/resources/example/RecipeBook.html?op=file}RecipeBook.html}} — <template for all pages>
+	* {{{/wsvn/Databinder/recipe/r0.8/src/main/resources/example/RecipeBook.html?op=file}RecipeBook.html}} — <template for all pages>
 
-	* {{{/wsvn/Databinder/recipe/r0.7/src/main/resources/example/RecipeBook.css?op=file} RecipeBook.css}}
+	* {{{/wsvn/Databinder/recipe/r0.8/src/main/resources/example/RecipeBook.css?op=file} RecipeBook.css}}
 
-	* {{{/wsvn/Databinder/recipe/r0.7/src/main/resources/example/RecipeBook.properties?op=file} RecipeBook.properties}} — <query store>
+	* {{{/wsvn/Databinder/recipe/r0.8/src/main/resources/example/RecipeBook.properties?op=file} RecipeBook.properties}} — <query store>
 
-	* {{{/wsvn/Databinder/recipe/r0.7/src/main/java/example/RecipeBook.java?op=file} RecipeBook.java}}
+	* {{{/wsvn/Databinder/recipe/r0.8/src/main/java/example/RecipeBook.java?op=file} RecipeBook.java}}
 
-	* {{{/wsvn/Databinder/recipe/r0.7/src/main/resources/example/ShowRecipe.properties?op=file} ShowRecipe.properties}} — <query store>
+	* {{{/wsvn/Databinder/recipe/r0.8/src/main/resources/example/ShowRecipe.properties?op=file} ShowRecipe.properties}} — <query store>
 
-	* {{{/wsvn/Databinder/recipe/r0.7/src/main/resources/example/ShowRecipe.html?op=file} ShowRecipe.html}} — <panel for recipe display>
+	* {{{/wsvn/Databinder/recipe/r0.8/src/main/resources/example/ShowRecipe.html?op=file} ShowRecipe.html}} — <panel for recipe display>
 
-	* {{{/wsvn/Databinder/recipe/r0.7/src/main/java/example/ShowRecipe.java?op=file} ShowRecipe.java}}
+	* {{{/wsvn/Databinder/recipe/r0.8/src/main/java/example/ShowRecipe.java?op=file} ShowRecipe.java}}
 
-	* {{{/wsvn/Databinder/recipe/r0.7/src/main/resources/example/EditRecipe.html?op=file} EditRecipe.html}} — <panel for editing recipe>
+	* {{{/wsvn/Databinder/recipe/r0.8/src/main/resources/example/EditRecipe.html?op=file} EditRecipe.html}} — <panel for editing recipe>
 
-	* {{{/wsvn/Databinder/recipe/r0.7/src/main/resources/example/EditRecipe.css?op=file} EditRecipe.css}} — <styles specific to the edit panel>
+	* {{{/wsvn/Databinder/recipe/r0.8/src/main/resources/example/EditRecipe.css?op=file} EditRecipe.css}} — <styles specific to the edit panel>
 
-	* {{{/wsvn/Databinder/recipe/r0.7/src/main/resources/example/EditRecipe.js?op=file} EditRecipe.js}} — <field focusing function used on edit page>
+	* {{{/wsvn/Databinder/recipe/r0.8/src/main/resources/example/EditRecipe.js?op=file} EditRecipe.js}} — <field focusing function used on edit page>
 
-	* {{{/wsvn/Databinder/recipe/r0.7/src/main/java/example/EditRecipe.java?op=file} EditRecipe.java}}
+	* {{{/wsvn/Databinder/recipe/r0.8/src/main/java/example/EditRecipe.java?op=file} EditRecipe.java}}
 
 	* trash.png — 
 
@@ -62,7 +62,7 @@ Recipe book example application
 
 	[]
 
-	If you’re {{{setup-guide.html} set up}} for Databinder, {{{/releases/recipe-0.7.tar.gz} download and run}} this at home.
+	If you’re {{{setup-guide.html} set up}} for Databinder, {{{/releases/recipe-0.8.tar.gz} download and run}} this at home.
 
 *Projects for the reader
 

@@ -22,7 +22,7 @@ Version 0.8
 
 *Examples
 
-	To get a better idea of how Databinder applications come together, check out the source code and live demos of the {{{examples.html}example applications}}. And all three are loaded with enough <<Wicket-powered Ajax>> to keep you from dozing off.
+	To get a better idea of how Databinder applications come together, check out the source code and live demos in the {{{examples.html}example applications}}. They implement practical database functionality, but throw in some unconventional features for fun.
 
 *Pre-flight
 
