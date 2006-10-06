@@ -8,7 +8,7 @@ Releases
 
 *Downloading
 
-	Though it’s possible to download Databinder from the links below (and its {{{dependencies.html}dependencies}} from all over the Web), it’s not recommended. Please see the {{{setup-guide.html}setup guide}} for detailed start-to-finish instructions using Maven 2. For upgrading, see the {{{faq.html#upgrade}FAQ}}.
+	Though it’s possible to download Databinder from the links below (and its {{{dependencies.html}dependencies}} from their own sites), we don’t recommend it. Please see the {{{setup-guide.html}setup guide}} for detailed start-to-finish instructions using Maven 2. For upgrading, see the {{{faq.html#upgrade}FAQ}}.
 
 *Version 0.8
 
