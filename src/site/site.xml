@@ -3,7 +3,7 @@
   <bannerLeft>
     <name>Databinder</name>
     <src>/images/logo.png</src>
-    <href>index.html</href>
+    <href>/index.html</href>
     <alt>Databinder: a simple bridge from Wicket to Hibernate</alt>
   </bannerLeft>
   <publishDate position="left" format="EEEE, MMMM d, yyyy"/>
