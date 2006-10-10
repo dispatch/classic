@@ -8,7 +8,7 @@ Basic setup
 
 *Special dependencies
 
-	Most of the dependencies you need will be automatically downloaded by Maven from a remote repository, but two by Sun can’t be held there. Go to {{{http://java.sun.com/products/jta/}this page}} to get the JTA interfaces from the Download link next to “Class Files 1.0.1B,” then paste the following into a shell in your download directory:
+	Most of the dependencies you need will be automatically downloaded by Maven from a remote repository, but one by Sun can’t be held there. Go to {{{http://java.sun.com/products/jta/}this page}} to get the JTA interfaces from the Download link next to “Class Files 1.0.1B,” then paste the following into a shell in your download directory:
 
 -----------------------------------------------------
 mvn install:install-file -DgroupId=javax.transaction \

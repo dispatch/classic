@@ -144,7 +144,9 @@ public class DataForm extends Form {
 	 * Checks that the version number, if present, is the last known version number.
 	 * If it does not match, validation fails and will continue to fail until the form is
 	 * reloaded with the updated data and version number. This allows the user to
-	 * preserve her unsaved changes while preventing overwrites.   
+	 * preserve her unsaved changes while preventing overwrites. <p> <b>Note:</b> although
+	 * timestamp versions are supported, beware of rounding errors. equals() must return true 
+	 * when comparing the retained version object to the one loaded from persistent storage. 
 	 */
 	@Override
 	protected void validate() {
