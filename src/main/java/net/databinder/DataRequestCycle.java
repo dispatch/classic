@@ -31,6 +31,7 @@ import javax.servlet.http.Cookie;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
+import wicket.Page;
 import wicket.RequestCycle;
 import wicket.Response;
 import wicket.WicketRuntimeException;
@@ -106,6 +107,26 @@ public class DataRequestCycle extends WebRequestCycle {
 		} finally {
 			hibernateSession = null;
 		}
+	}
+	
+	/**
+	 * Rolls back transaction if one is open, and closes session.
+	 */
+	@Override
+	public Page onRuntimeException(Page page, RuntimeException e) {
+		if (hibernateSession != null) {
+			try {
+				hibernateSession.getTransaction().rollback();
+			} finally {
+				try {
+					hibernateSession.close();
+				} finally {
+					// no one can say we didn't try
+					hibernateSession = null;
+				}
+			}
+		}
+		return null;
 	}
 	
 	/**
