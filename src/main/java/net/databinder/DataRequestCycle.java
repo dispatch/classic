@@ -94,38 +94,36 @@ public class DataRequestCycle extends WebRequestCycle {
     	return DataStaticService.getHibernateSessionFactory().openSession();
     }
 
-    /**
-     * Closes the Hibernate session, if one was open for this request. Hibernate will
-     * try to rollback any uncommited transactions.
-     * @see net.databinder.components.DataForm#onSubmit()
-     */
-	@Override
-	protected void onEndRequest() {
-		try {
-			if (hibernateSession != null)
-				hibernateSession.close();
-		} finally {
-			hibernateSession = null;
-		}
-	}
-	
-	/**
-	 * Rolls back transaction if one is open, and closes session.
-	 */
-	@Override
-	public Page onRuntimeException(Page page, RuntimeException e) {
+	/** Roll back active transactions and close session. */
+	protected void closeSession() {
 		if (hibernateSession != null) {
 			try {
-				hibernateSession.getTransaction().rollback();
+				if (hibernateSession.getTransaction().isActive())
+					hibernateSession.getTransaction().rollback();
 			} finally {
 				try {
 					hibernateSession.close();
 				} finally {
-					// no one can say we didn't try
 					hibernateSession = null;
 				}
 			}
 		}
+	}
+	
+    /**
+     * Closes the Hibernate session, if one was open for this request. If a transaction has
+     * not been committed, it will be rolled back before cloing the session.
+     * @see net.databinder.components.DataForm#onSubmit()
+     */
+	@Override
+	protected void onEndRequest() {
+		closeSession();
+	}
+	
+	/** Roll back active transactions and close session. */
+	@Override
+	public Page onRuntimeException(Page page, RuntimeException e) {
+		closeSession();	// close session; another one will open if models load themselves
 		return null;
 	}
 	
