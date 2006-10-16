@@ -40,7 +40,7 @@ Message floater example application
 
 	[]
 
-	If you’re {{{setup-guide.html} set up }}for Databinder, {{{/releases/message-0.8.1.tar.gz} download and run}} this at home. The setup of this (limit pushing) applet has some extra steps. See its {{{/wsvn/Databinder/message/r0.8.1/README.txt}README.txt}}.
+	If you’re {{{setup-guide.html} set up }}for Databinder, {{{/releases/message-0.8.1.tar.gz} download and run}} this at home. The setup of this (limit pushing) applet has some extra steps. See its {{{/wsvn/Databinder/message/r0.8.1/README.txt?op=file}README.txt}}.
 	
 *Projects for the reader
 
