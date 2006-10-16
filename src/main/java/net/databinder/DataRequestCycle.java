@@ -55,11 +55,11 @@ public class DataRequestCycle extends WebRequestCycle {
 	/** cache of cookies from request */ 
 	private Map<String, Cookie> cookies;
 
-	
+
 	public DataRequestCycle(final WebSession session, final WebRequest request, final Response response) {
 		super(session, request, response);
 	}
-	
+
 	/**
 	 * Will open a session if one is not already open for this request.
 	 * @return the open Hibernate session for the current request cycle.
@@ -69,10 +69,10 @@ public class DataRequestCycle extends WebRequestCycle {
 		if (!(cycle instanceof DataRequestCycle))
 			throw new WicketRuntimeException("Current request cycle not managed by Databinder. " +
 					"Your application session factory must return a DataSession or some other session " +
-					"that produces DataRequestCycle.");
+			"that produces DataRequestCycle.");
 		return ((DataRequestCycle)cycle).getCycleHibernateSession();
 	}
-	
+
 	/**
 	 * Opens a session and a transaction if a session is not already associated with
 	 * this request cycle.
@@ -85,14 +85,14 @@ public class DataRequestCycle extends WebRequestCycle {
 		}
 		return hibernateSession;
 	}
-	
+
 	/**
 	 * @return a newly opened session
 	 */
-    protected Session openSession()
-            throws HibernateException {
-    	return DataStaticService.getHibernateSessionFactory().openSession();
-    }
+	protected Session openSession()
+	throws HibernateException {
+		return DataStaticService.getHibernateSessionFactory().openSession();
+	}
 
 	/** Roll back active transactions and close session. */
 	protected void closeSession() {
@@ -109,24 +109,24 @@ public class DataRequestCycle extends WebRequestCycle {
 			}
 		}
 	}
-	
-    /**
-     * Closes the Hibernate session, if one was open for this request. If a transaction has
-     * not been committed, it will be rolled back before cloing the session.
-     * @see net.databinder.components.DataForm#onSubmit()
-     */
+
+	/**
+	 * Closes the Hibernate session, if one was open for this request. If a transaction has
+	 * not been committed, it will be rolled back before cloing the session.
+	 * @see net.databinder.components.DataForm#onSubmit()
+	 */
 	@Override
 	protected void onEndRequest() {
 		closeSession();
 	}
-	
+
 	/** Roll back active transactions and close session. */
 	@Override
 	public Page onRuntimeException(Page page, RuntimeException e) {
 		closeSession();	// close session; another one will open if models load themselves
 		return null;
 	}
-	
+
 	/**
 	 * Return or build cache of cookies cookies from request.
 	 */
@@ -140,7 +140,7 @@ public class DataRequestCycle extends WebRequestCycle {
 		}
 		return cookies;
 	}
-	
+
 	/**
 	 * Retrieve cookie from request, so long as it hasn't been cleared. Cookies  cleared by
 	 * clearCookie() are still contained in the current request's cookie array, but this method
@@ -151,7 +151,7 @@ public class DataRequestCycle extends WebRequestCycle {
 	public Cookie getCookie(String name) {
 		return getCookies().get(name);
 	}
-	
+
 	/**
 	 * Sets a new a cookie with an expiration time of zero to an clear an old one from the 
 	 * browser, and removes any copy from this request's cookie cache. Subsequent calls to 
