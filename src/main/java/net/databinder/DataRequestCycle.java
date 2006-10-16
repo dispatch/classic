@@ -68,8 +68,8 @@ public class DataRequestCycle extends WebRequestCycle {
 		RequestCycle cycle = get();
 		if (!(cycle instanceof DataRequestCycle))
 			throw new WicketRuntimeException("Current request cycle not managed by Databinder. " +
-					"Your application session factory must return a DataSession or some other session " +
-			"that produces DataRequestCycle.");
+				"Your application session factory must return a DataSession or some other session " +
+				"that produces DataRequestCycle.");
 		return ((DataRequestCycle)cycle).getCycleHibernateSession();
 	}
 
