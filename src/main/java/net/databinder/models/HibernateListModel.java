@@ -23,6 +23,7 @@ import net.databinder.DataRequestCycle;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.Session;
 
 import wicket.model.LoadableDetachableModel;
 
@@ -33,6 +34,7 @@ import wicket.model.LoadableDetachableModel;
 public class HibernateListModel extends LoadableDetachableModel {
 	private String queryString;
 	private IQueryBinder queryBinder;
+	private IQueryBuilder queryBuilder;
 	private Class objectClass;
 	private ICriteriaBuilder criteriaBuilder;
 	
@@ -72,19 +74,31 @@ public class HibernateListModel extends LoadableDetachableModel {
 		this.objectClass = objectClass;
 		this.criteriaBuilder = criteriaBuilder;
 	}
+	
+	/**
+	 * Constructor for a custom query that is built by the calling application.
+	 * @param queryBuilder builder to create and bind query object
+	 */
+	public HibernateListModel(IQueryBuilder queryBuilder) {
+		this.queryBuilder = queryBuilder;
+	}
 
 	/**
 	 * Load the object List through Hibernate, binding query parameters if available.
 	 */
 	@Override
 	protected Object load() {
+		Session session = DataRequestCycle.getHibernateSession();
 		if (queryString != null) {
-			Query query = DataRequestCycle.getHibernateSession().createQuery(queryString);
+			Query query = session.createQuery(queryString);
 			if (queryBinder != null)
 				queryBinder.bind(query);
 			return query.list();
 		}
-		Criteria criteria = DataRequestCycle.getHibernateSession().createCriteria(objectClass);
+		if (queryBuilder != null) {
+			return queryBuilder.build(session).list();
+		}
+		Criteria criteria = session.createCriteria(objectClass);
 		if (criteriaBuilder != null)
 			criteriaBuilder.build(criteria);
 		return criteria.list();

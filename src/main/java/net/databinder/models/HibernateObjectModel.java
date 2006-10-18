@@ -48,6 +48,7 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 	private Serializable objectId;
 	private String queryString;
 	private IQueryBinder queryBinder;
+	private IQueryBuilder queryBuilder;
 	private ICriteriaBuilder criteriaBuilder;
 	/** May store unsaved objects between requests. */
 	private Serializable retainedObject;
@@ -107,6 +108,7 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 	 * return more than one result will produce exceptions.
 	 * @param objectClass class of object for root criteria
 	 * @param criteriaBuilder builder to apply criteria restrictions
+	 * @throws org.hibernate.HibernateException on load error
 	 */
 	public HibernateObjectModel(Class objectClass, ICriteriaBuilder criteriaBuilder) {
 		this.objectClass = objectClass;
@@ -114,6 +116,17 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 		getObject(null);	// loads & retains object
 	}
 	
+	/**
+	 * Construct with a query builder that returns exactly one result, used for custom query
+	 * objects. Queries that return more than one result will produce exceptions.
+	 * @param queryBuilder builder to create and bind query object
+	 * @throws org.hibernate.HibernateException on load error
+	 */
+	public HibernateObjectModel(IQueryBuilder queryBuilder) {
+		this.queryBuilder = queryBuilder;
+		getObject(null);	// loads & retains object
+	}
+
 	/**
 	 * Change the persistent object contained in this model. By using this method instead of
 	 * replacing the model itself, you avoid accidentally referencing the old model. 
@@ -144,6 +157,7 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 		entityName = null;
 		objectId = null;
 		queryBinder = null; 
+		queryBuilder = null;
 		queryString = null;
 		criteriaBuilder = null;
 		retainedObject = null;
@@ -159,10 +173,10 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 	 */
 	@Override
 	protected Object load() {
-		if (objectClass == null && entityName == null && queryString == null)
+		if (objectClass == null && entityName == null && queryString == null && queryBuilder == null)
 			return null;	// can't load without one of these
 		try {
-			if (objectId == null && queryString == null && criteriaBuilder == null) {
+			if (objectId == null && queryString == null && criteriaBuilder == null && queryBuilder == null) {
 				if (retainUnsaved && retainedObject != null)
 					return retainedObject;
 				else if (retainUnsaved)
@@ -187,6 +201,9 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 			criteriaBuilder.build(criteria);
 			return criteria.uniqueResult();
 		}
+		
+		if (queryBuilder != null)
+			return queryBuilder.build(sess).uniqueResult();
 		
 		Query query = sess.createQuery(queryString);
 		// if querybinder was null in constructor, that's weird, but continue
