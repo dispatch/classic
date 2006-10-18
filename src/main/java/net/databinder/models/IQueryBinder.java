@@ -24,7 +24,7 @@ import java.io.Serializable;
 import org.hibernate.Query;
 
 /**
- * Inteface for object that binds Hibernate query parameters to values.
+ * Interface for object that binds Hibernate query parameters to values.
  * @author Nathan Hamblen
  */
 public interface IQueryBinder extends Serializable {
