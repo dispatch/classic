@@ -81,7 +81,7 @@ public class DataPanel extends Panel {
 	 * @return this panel, for chaining
 	 */
 	public DataPanel setPersistentObject(Object object) {
-		getPersistentObjectModel().setPersistentObject(object);
+		getPersistentObjectModel().setObject(null, object);
 		setModel(getModel());		// informs child components
 		return this;
 	}

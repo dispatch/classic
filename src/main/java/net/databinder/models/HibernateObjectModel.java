@@ -33,14 +33,13 @@ import org.hibernate.QueryException;
 import org.hibernate.Session;
 import org.hibernate.proxy.HibernateProxy;
 
-import wicket.model.LoadableDetachableModel;
+import wicket.Component;
 
 /**
  * Model persisted by Hibernate.
  * @author Nathan Hamblen
  */
-
-public class HibernateObjectModel extends LoadableDetachableModel {
+public class HibernateObjectModel extends LoadableWritableModel {
 	/** Used preferentially in loading objects. */
 	private String entityName;
 	/** Used if entityName unavailable, or for new objects. */
@@ -128,17 +127,34 @@ public class HibernateObjectModel extends LoadableDetachableModel {
 	}
 
 	/**
-	 * Change the persistent object contained in this model. By using this method instead of
-	 * replacing the model itself, you avoid accidentally referencing the old model. 
+	 * Construct with no object. Will return null for getObject().
+	 */
+	public HibernateObjectModel() {
+	}
+	
+	/**
+	 * Change the persistent object contained in this model.
 	 * Because this method establishes a persistent object ID, queries and binders
 	 * are removed if present.
 	 */
+	public void setObject(Component component, Object object) {
+		clearPersistentObject();	// clear everything but objectClass
+		
+		if (object == null)
+			// clear out completely
+			objectClass = null;
+		else {
+			Session sess = DataRequestCycle.getHibernateSession();
+			objectId = sess.getIdentifier(object);
+			// the entityName, rather than the objectClass, will be used to load
+			entityName = sess.getEntityName(object);
+		}
+	}
+	
+	/** Please use setObject(null, object) instead of this method. */
+	@Deprecated
 	public void setPersistentObject(Object persistentObject) {
-		clearPersistentObject();
-		Session sess = DataRequestCycle.getHibernateSession();
-		objectId = sess.getIdentifier(persistentObject);
-		// the entityName, rather than the objectClass, will be used to load
-		entityName = sess.getEntityName(persistentObject);
+		setObject(null, persistentObject);
 	}
 	
 	/**

@@ -96,7 +96,7 @@ public class DataForm extends Form {
 	 * @return this form, for chaining
 	 */
 	public DataForm setPersistentObject(Object object) {
-		getPersistentObjectModel().setPersistentObject(object);
+		getPersistentObjectModel().setObject(null, object);
 		setModel(getModel());		// informs child components
 		version = getPersistentObjectModel().getVersion();
 		return this;
