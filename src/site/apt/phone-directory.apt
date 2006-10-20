@@ -10,9 +10,9 @@ Phone directory example application
 
 	This small step up from the {{{bookmarks.html} bookmarks example}} manages a list of names and phone numbers. It features a live Ajax search by the {{{/javadoc/net/databinder/components/SearchPanel.html}SearchPanel}} Databinder component. Categories are stored in the database because it’s just easier that way. (This is, you know, Databinder.)
 	
-	If you want to see automatic data versioning in action, open two browsers and edit the same entry in each one. Hibernate’s optimistic locking will allow the first change and reject the second.
+	If you want to see automatic data versioning in action, open two browser windows and change the same entry in each one. Hibernate’s optimistic locking will allow the first change and reject the second.
 
-	{{{/directory/} Try this application }} and enter your own (pretend) phone number.
+	{{{/directory/app?wicket:bookmarkablePage=wicket:example.ListAndEdit} Try this application }} and enter your own (pretend) phone number.
 
 *Source files
 	
