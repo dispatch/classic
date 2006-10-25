@@ -2,10 +2,10 @@ package net.databinder.auth.components;
 
 import net.databinder.auth.AuthDataSession;
 import net.databinder.auth.IAuthSettings;
+import wicket.WicketRuntimeException;
 import wicket.markup.html.WebMarkupContainer;
 import wicket.markup.html.basic.Label;
 import wicket.markup.html.link.Link;
-import wicket.markup.html.link.PageLink;
 import wicket.markup.html.panel.Panel;
 import wicket.model.Model;
 
@@ -45,11 +45,21 @@ public class DataUserStatusPanel extends Panel {
 	}
 	
 	/** 
-	 * Returns link to sign-in page from <tt>AuthDataApplication</tt> subclass. Override
+	 * Returns link to sign-in page from <tt>AuthDataApplication</tt> subclass. Uses redirect
+	 * to intercept page so that user will return to current page once signed in. Override
 	 * for other behavior.	 
 	 */
 	protected Link getSignInLink(String id) {
-		return new PageLink(id, ((IAuthSettings)getApplication()).getSignInPageClass()) {
+		return new Link(id) {
+			@Override
+			public void onClick() {
+				try {
+					redirectToInterceptPage(getPageFactory().newPage(
+							((IAuthSettings)getApplication()).getSignInPageClass()));
+				} catch (Exception e) {
+					throw new WicketRuntimeException("Unable to instatiate sign in page", e);
+				}
+			}
 			@Override
 			public boolean isVisible() {
 				return !getAuthSession().isSignedIn();
