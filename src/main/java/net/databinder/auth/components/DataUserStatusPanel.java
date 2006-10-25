@@ -2,7 +2,6 @@ package net.databinder.auth.components;
 
 import net.databinder.auth.AuthDataSession;
 import net.databinder.auth.IAuthSettings;
-import wicket.WicketRuntimeException;
 import wicket.markup.html.WebMarkupContainer;
 import wicket.markup.html.basic.Label;
 import wicket.markup.html.link.Link;
@@ -53,12 +52,8 @@ public class DataUserStatusPanel extends Panel {
 		return new Link(id) {
 			@Override
 			public void onClick() {
-				try {
-					redirectToInterceptPage(getPageFactory().newPage(
-							((IAuthSettings)getApplication()).getSignInPageClass()));
-				} catch (Exception e) {
-					throw new WicketRuntimeException("Unable to instatiate sign in page", e);
-				}
+				redirectToInterceptPage(getPageFactory().newPage(
+						((IAuthSettings)getApplication()).getSignInPageClass()));
 			}
 			@Override
 			public boolean isVisible() {
