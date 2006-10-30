@@ -18,7 +18,6 @@ import wicket.markup.html.image.Image;
 import wicket.markup.html.image.resource.RenderedDynamicImageResource;
 import wicket.model.ICompoundModel;
 import wicket.model.IModel;
-import wicket.util.string.Strings;
 
 /*
  * Databinder: a simple bridge from Wicket to Hibernate
@@ -56,7 +55,10 @@ public class RenderedLabel extends Image  {
 	private Color color = Color.BLACK;
 	private Font font = new Font("sans", Font.PLAIN, 14);
 	private Integer maxWidth;
-	private String renderedText; 
+	
+	//private boolean isShared = true;
+	/** Hash of the most recently displayed label attributes. */
+	int labelHash = 0;
 	
 	private RenderedTextImageResource resource;
 	
@@ -88,26 +90,30 @@ public class RenderedLabel extends Image  {
 	protected void onComponentTag(ComponentTag tag) {
 		super.onComponentTag(tag);
 
-		String text = getText();
-		if (text != null) {
-			int hash= text.hashCode() ^ font.hashCode() ^ color.hashCode();
-			if (backgroundColor != null)
-				hash ^= backgroundColor.hashCode();
-			if (maxWidth != null)
-				hash ^= maxWidth.hashCode();
-			
-			String url = tag.getAttributes().getString("src");
-			url = url + ((url.indexOf("?") >= 0) ? "&" : "?");
-			url = url + "wicket:antiCache=" + hash;
-
-			tag.put("src", url);
-		}
-		
 		resource.preload();
+
+		String url = tag.getAttributes().getString("src");
+		url = url + ((url.indexOf("?") >= 0) ? "&" : "?");
+		url = url + "wicket:antiCache=" + labelHash;
+
+		tag.put("src", url);
+		
 		tag.put("width", resource.getWidth() );
 		tag.put("height", resource.getHeight() );
 
 		tag.put("alt", getText());
+	}
+	
+	protected int getLabelHash() {
+		String text = getText();
+		if (text == null) return 0;
+		
+		int hash= text.hashCode() ^ font.hashCode() ^ color.hashCode();
+		if (backgroundColor != null)
+			hash ^= backgroundColor.hashCode();
+		if (maxWidth != null)
+			hash ^= maxWidth.hashCode();
+		return hash;
 	}
 	
 	/** Restores  compound model resolution that is disabled in  the Image superclass. */
@@ -141,7 +147,7 @@ public class RenderedLabel extends Image  {
 		/** Renders text into image. */
 		protected boolean render(final Graphics2D graphics)
 		{
-			renderedText = getText(); // get text from outer class model
+			String renderedText = getText(); // get text from outer class model
 			final int width = getWidth(), height = getHeight();
 
 			// draw background if not null, otherwise leave transparent
@@ -189,6 +195,7 @@ public class RenderedLabel extends Image  {
 				graphics.drawString(line, 0, baseline);
 				baseline += lineHeight;
 			}
+			labelHash = getLabelHash();
 			return true;
 		}
 
@@ -246,7 +253,7 @@ public class RenderedLabel extends Image  {
 
 	@Override
 	protected void onBeforeRender() {
-		if (!Strings.isEqual(renderedText,getText()))
+		if (labelHash != getLabelHash())
 			resource.invalidate();
 	}
 	
