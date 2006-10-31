@@ -12,6 +12,8 @@ import java.util.List;
 
 import wicket.Component;
 import wicket.Resource;
+import wicket.ResourceReference;
+import wicket.SharedResources;
 import wicket.WicketRuntimeException;
 import wicket.markup.ComponentTag;
 import wicket.markup.html.image.Image;
@@ -56,11 +58,12 @@ public class RenderedLabel extends Image  {
 	private Font font = new Font("sans", Font.PLAIN, 14);
 	private Integer maxWidth;
 	
-	//private boolean isShared = true;
-	/** Hash of the most recently displayed label attributes. */
-	int labelHash = 0;
+	/** If true, resource is shared across application with a permanent URL. */
+	private boolean isShared = false;
+	/** Hash of the most recently displayed label attributes. -1 is initial value, 0 for blank labels. */
+	int labelHash = -1;
 	
-	private RenderedTextImageResource resource;
+	RenderedTextImageResource resource;
 	
 	/**
 	 * Constructor to be used if model is derived from a compound property model. The 
@@ -69,7 +72,11 @@ public class RenderedLabel extends Image  {
 	 */
 	public RenderedLabel(String id) {
 		super(id);
-		setImageResource(resource = new RenderedTextImageResource());
+	}
+	
+	public RenderedLabel(String id, boolean shareResource) {
+		this(id);
+		this.isShared = shareResource;
 	}
 	
 	/**
@@ -79,9 +86,36 @@ public class RenderedLabel extends Image  {
 	 */
 	public RenderedLabel(String id, IModel model) {
 		super(id, model);
-		setImageResource(resource = new RenderedTextImageResource());
 	}
 	
+	public RenderedLabel(String id, IModel model, boolean shareResource) {
+		this(id, model);
+		this.isShared = shareResource;
+	}
+	
+	@Override
+	protected void onBeforeRender() {
+		int curHash = getLabelHash();
+		if (isShared) {
+			if (labelHash != curHash) {
+				String hash = Integer.toHexString(curHash);
+				SharedResources shared = getApplication().getSharedResources(); 
+				resource = (RenderedTextImageResource) shared.get(RenderedLabel.class, hash, null, hash, false);
+				if (resource == null)
+					shared.add(RenderedLabel.class, hash, null, null, 
+							resource = new RenderedTextImageResource(this, true));
+				setImageResourceReference(new ResourceReference(RenderedLabel.class, hash));
+			}
+		} else {
+			if (resource == null)
+				setImageResource(resource = new RenderedTextImageResource(this, false));
+			else if (labelHash != curHash)
+				resource.setState(this);
+		}
+		resource.setCacheable(isShared);
+		labelHash = getLabelHash();
+	}
+
 	/** 
 	 * Adds image-specific attributes including width, height, and alternate text. A hash is appended
 	 * to the source URL to trigger a reload whenever drawing attributes change. 
@@ -90,14 +124,15 @@ public class RenderedLabel extends Image  {
 	protected void onComponentTag(ComponentTag tag) {
 		super.onComponentTag(tag);
 
+		if (!isShared) {
+			String url = tag.getAttributes().getString("src");
+			url = url + ((url.indexOf("?") >= 0) ? "&" : "?");
+			url = url + "wicket:antiCache=" + labelHash;
+
+			tag.put("src", url);
+		}
 		resource.preload();
 
-		String url = tag.getAttributes().getString("src");
-		url = url + ((url.indexOf("?") >= 0) ? "&" : "?");
-		url = url + "wicket:antiCache=" + labelHash;
-
-		tag.put("src", url);
-		
 		tag.put("width", resource.getWidth() );
 		tag.put("height", resource.getHeight() );
 
@@ -136,18 +171,35 @@ public class RenderedLabel extends Image  {
 	 * Inner class that renders the model text into an image  resource.
 	 * @see wicket.markup.html.image.resource.DefaultButtonImageResource
 	 */
-	protected class RenderedTextImageResource extends RenderedDynamicImageResource
+	protected static class RenderedTextImageResource extends RenderedDynamicImageResource
 	{
-		public RenderedTextImageResource()
+		private Color backgroundColor;
+		private Color color;
+		private Font font;
+		private Integer maxWidth;
+		private String renderedText;
+
+		public RenderedTextImageResource(RenderedLabel label, boolean isShared)
 		{
 			super(1, 1,"png");	// tiny default that will resize to fit text
 			setType(BufferedImage.TYPE_INT_ARGB); // allow alpha transparency
+			
+			setCacheable(isShared);
+			setState(label);
+		}
+		
+		protected void setState(RenderedLabel label) {
+			backgroundColor = label.getBackgroundColor();
+			color = label.getColor();
+			font = label.getFont();
+			maxWidth = label.getMaxWidth();
+			renderedText = label.getText();
+			invalidate();
 		}
 		
 		/** Renders text into image. */
 		protected boolean render(final Graphics2D graphics)
 		{
-			String renderedText = getText(); // get text from outer class model
 			final int width = getWidth(), height = getHeight();
 
 			// draw background if not null, otherwise leave transparent
@@ -195,7 +247,6 @@ public class RenderedLabel extends Image  {
 				graphics.drawString(line, 0, baseline);
 				baseline += lineHeight;
 			}
-			labelHash = getLabelHash();
 			return true;
 		}
 
@@ -251,12 +302,6 @@ public class RenderedLabel extends Image  {
 		}
 	}
 
-	@Override
-	protected void onBeforeRender() {
-		if (labelHash != getLabelHash())
-			resource.invalidate();
-	}
-	
 	public Color getBackgroundColor() {
 		return backgroundColor;
 	}
@@ -269,7 +314,6 @@ public class RenderedLabel extends Image  {
 	 */
 	public RenderedLabel setBackgroundColor(Color backgroundColor) {
 		this.backgroundColor = backgroundColor;
-		resource.invalidate();
 		return this;
 	}
 
@@ -280,7 +324,6 @@ public class RenderedLabel extends Image  {
 	/** @param color Color to print text */
 	public RenderedLabel setColor(Color color) {
 		this.color = color;
-		resource.invalidate();
 		return this;
 	}
 
@@ -290,7 +333,6 @@ public class RenderedLabel extends Image  {
 
 	public RenderedLabel setFont(Font font) {
 		this.font = font;
-		resource.invalidate();
 		return this;
 	}
 	
@@ -306,7 +348,6 @@ public class RenderedLabel extends Image  {
 	 */
 	public RenderedLabel setMaxWidth(Integer maxWidth) {
 		this.maxWidth = maxWidth;
-		resource.invalidate();
 		return this;
 	}
 
