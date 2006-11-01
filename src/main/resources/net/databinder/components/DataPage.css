@@ -53,6 +53,10 @@ a img {
 
 /* DataView */
 
+tr.navigation div {
+	height: 2em; /* for IE 6 */
+}
+
 tr.navigation a, tr.navigation em {
 	font-size: 125%;
 	padding: .2em;
@@ -64,6 +68,14 @@ tr.navigation a {
 
 tr.navigation a:hover {
 	background-color: #DFDFFF;
+}
+
+tr.navigation em span {
+	font-size: 150%;
+}
+
+tr.navigation td {
+	margin: 3em;
 }
 
 tr.headers th {
@@ -82,12 +94,4 @@ tr.headers th.wicket_orderUp
 {
 	background-color: #DFDFFF;
 	background-image: url(arrow_down.png); 
-}
-
-tr.navigation em span {
-	font-size: 150%;
-}
-
-tr.navigation td {
-	margin: 3em;
 }
