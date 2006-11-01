@@ -36,7 +36,9 @@ import org.hibernate.proxy.HibernateProxy;
 import wicket.Component;
 
 /**
- * Model persisted by Hibernate.
+ * Model loaded and persisted by Hibernate. This central Databinder class can be initialized with an
+ * entity ID, different types of queries, or an existing persistent object. As a writable Wicket model,
+ * the object it contains may be swapped at any time for a different persistent object or null.
  * @author Nathan Hamblen
  */
 public class HibernateObjectModel extends LoadableWritableModel {
@@ -84,7 +86,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	 * @param persistentObject must already be contained in the Hibernate session
 	 */
 	public HibernateObjectModel(Object persistentObject) {
-		setPersistentObject(persistentObject);
+		setObject(null, persistentObject);
 	}
 
 	/**
