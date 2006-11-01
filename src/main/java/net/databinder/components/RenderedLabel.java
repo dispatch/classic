@@ -20,6 +20,7 @@ import wicket.markup.html.image.Image;
 import wicket.markup.html.image.resource.RenderedDynamicImageResource;
 import wicket.model.ICompoundModel;
 import wicket.model.IModel;
+import wicket.util.string.Strings;
 
 /*
  * Databinder: a simple bridge from Wicket to Hibernate
@@ -43,12 +44,18 @@ import wicket.model.IModel;
 /**
  * Renders its model text into a PNG, using any typeface available to the JVM. The size of 
  * the image is determined by the model text and the characteristics of font selected. The
- * default font is 14pt sans, plain black on a white background. Background may be set
- * to null for alpha transparency, depending on browser support. The image's alt attribute
- * will be set to the model text, and width and height attributes will be set appropriately.
- * <p>This class is inspired by, and draws code from, Wicket's DefaultButtonImageResource. </p>
+ * default font is 14pt sans, plain black on a white background. The background may be set
+ * to null for alpha transparency, which will appear gray in outdated browsers. The image's 
+ * alt attribute will be set to the model text, and width and height attributes will be 
+ * set appropriately. 
+ * <p> If told to use a shared image resource, RenderedLabel will add its image
+ * to the application's shared resources and reference it from a permanent, unique, 
+ * browser-chacheable URL. (Shared resources are incompatible with some clustering 
+ * configurations.)
+ * <p> This class is inspired by, and draws code from, Wicket's DefaultButtonImageResource. </p>
  * @author Nathan Hamblen
  * @see wicket.markup.html.image.resource.DefaultButtonImageResource
+ * @see SharedResources
  */
 public class RenderedLabel extends Image  {
 	private static final long serialVersionUID = 1L;
@@ -66,31 +73,50 @@ public class RenderedLabel extends Image  {
 	RenderedTextImageResource resource;
 	
 	/**
-	 * Constructor to be used if model is derived from a compound property model. The 
-	 * model object <b>must</b> be a string.
-	 * @param id
+	 * Constructor to be used if model is derived from a compound property model.
+	 * @param id Wicket id
 	 */
 	public RenderedLabel(String id) {
 		super(id);
-	}
-	
-	public RenderedLabel(String id, boolean shareResource) {
-		this(id);
-		this.isShared = shareResource;
+		init();
 	}
 	
 	/**
-	 * Constructor with explicit model. The model object <b>must</b> be a string.
+	 * Constructor for compound property model and shared resource pool.
+	 * @param id Wicket id
+	 * @param shareResource true to add to shared resource pool
+	 */
+	public RenderedLabel(String id, boolean shareResource) {
+		this(id);
+		this.isShared = shareResource;
+		init();
+	}
+	
+	/**
+	 * Constructor with explicit model.
 	 * @param id Wicket id
 	 * @param model model for 
 	 */
 	public RenderedLabel(String id, IModel model) {
 		super(id, model);
+		init();
 	}
-	
+
+	/**
+	 * Constructor with explicit model.
+	 * @param id Wicket id
+	 * @param model model for 
+	 * @param shareResource true to add to shared resource pool
+	 */
 	public RenderedLabel(String id, IModel model, boolean shareResource) {
 		this(id, model);
 		this.isShared = shareResource;
+		init();
+	}
+	
+	/** Perform generic initialization. */
+	protected void init() {
+		setEscapeModelStrings(false);
 	}
 	
 	@Override
@@ -295,11 +321,8 @@ public class RenderedLabel extends Image  {
 	
 	/** @return String to be rendered */
 	protected String getText() {
-		try {
-			return (String) getModelObject();
-		} catch (ClassCastException e) {
-			throw new WicketRuntimeException("A RenderedLabel's model object MUST be a String.", e);
-		}
+		String text = getModelObjectAsString();
+		return Strings.isEmpty(text) ? null : text;
 	}
 
 	public Color getBackgroundColor() {
