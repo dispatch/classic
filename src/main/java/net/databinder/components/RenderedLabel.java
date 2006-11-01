@@ -153,7 +153,7 @@ public class RenderedLabel extends Image  {
 		if (!isShared) {
 			String url = tag.getAttributes().getString("src");
 			url = url + ((url.indexOf("?") >= 0) ? "&" : "?");
-			url = url + "wicket:antiCache=" + labelHash;
+			url = url + "wicket:antiCache=" + Integer.toHexString(labelHash);
 
 			tag.put("src", url);
 		}
