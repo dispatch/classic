@@ -108,7 +108,7 @@ public class DataSignInPage extends WebPage {
 	 * @return true if displaying registration page
 	 */
 	protected boolean isRegister() {
-		return isRegister();
+		return register;
 	}
 	
 	/**
