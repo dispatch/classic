@@ -1,8 +1,13 @@
+body {
+	text-align: center;
+}
+
 div#box {
 	border: thin dotted #6F6F6F; 
 	padding: 0 1em; 
-	float: left; 
-	margin: 10em 0 0 15em;
+	margin: 10em auto;
+	width: 25em;
+	text-align: left;
 }
 .feedback ul {
 	width: 20em;

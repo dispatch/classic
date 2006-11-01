@@ -33,6 +33,7 @@ form.labelAbove div.row {
 .feedback ul {
 	background: #FFD39F;
 	padding: .5em;
+	margin: 0 0 .5em 0;
 	list-style-type: none;
 	border: dashed 1px #E9601A;
 	width: 35em;
