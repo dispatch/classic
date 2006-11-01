@@ -1,9 +1,9 @@
 package net.databinder.components;
 
+import wicket.ResourceReference;
 import wicket.Response;
 import wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import wicket.markup.ComponentTag;
-import wicket.markup.html.PackageResourceReference;
 
 /*
  * Databinder: a simple bridge from Wicket to Hibernate
@@ -33,7 +33,7 @@ import wicket.markup.html.PackageResourceReference;
  */
 public abstract class AjaxOnKeyPausedUpdater extends AjaxFormComponentUpdatingBehavior {
 
-	private static final PackageResourceReference JAVASCRIPT = new PackageResourceReference(
+	private static final ResourceReference JAVASCRIPT = new ResourceReference(
 			AjaxOnKeyPausedUpdater.class, "AjaxOnKeyPausedUpdater.js");
 
 	/**

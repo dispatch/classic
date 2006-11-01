@@ -4,9 +4,9 @@ import net.databinder.models.IQueryBinder;
 
 import org.hibernate.Query;
 
+import wicket.ResourceReference;
 import wicket.ajax.AjaxRequestTarget;
 import wicket.ajax.markup.html.AjaxLink;
-import wicket.markup.html.PackageResourceReference;
 import wicket.markup.html.form.Form;
 import wicket.markup.html.form.TextField;
 import wicket.markup.html.image.Image;
@@ -86,7 +86,7 @@ public abstract class SearchPanel extends Panel {
 			};
 			clearLink.setOutputMarkupId(true);
 			clearLink.add( new Image("clear", 
-					new PackageResourceReference(this.getClass(), "clear.png")));
+					new ResourceReference(this.getClass(), "clear.png")));
 			clearWrap.add(clearLink);
 
 			// triggered when user pauses or tabs out
