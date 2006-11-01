@@ -141,6 +141,14 @@ public class RenderedLabel extends Image  {
 		resource.setCacheable(isShared);
 		labelHash = getLabelHash();
 	}
+	
+	/**
+	 * @return false if model string is empty.
+	 */
+	@Override
+	public boolean isVisible() {
+		return getText() != null;
+	}
 
 	/** 
 	 * Adds image-specific attributes including width, height, and alternate text. A hash is appended
