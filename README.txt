@@ -6,6 +6,28 @@ http://databinder.net/
 
 Version History
 
+0.9	Improved transaction handling now rolls back any uncommitted 
+	transactions before closing a Hibernate session. Unhandled 
+	runtime exceptions will trigger an immediate rollback and 
+	session closure.
+
+	The new IQueryBuilder interface allows applications to construct 
+	their own Hibernate (named/SQL) queries for Hibernate object 
+	and list models. HibernateObjectModel is now writable, 
+	facilitating use with DropDownChoice components needing 
+	independent models.
+
+	RenderedLabel has a shared resource setting that caches common 
+	renderings within the application at a permanent URL. Empty 
+	labels (with no text or blank text) are no longer rendered as 
+	IMG tags at all. There are several improvements in the 
+	authentication defaults, including a sign in link that remembers 
+	the current page and centered sign in and registration screens.
+
+	In examples, the message floater has a Cajo version of its 
+	applet, and phone directory add dropdown category filtering 
+	(using a writable HiberanetObjectModel).
+
 0.8	Many base classes in the toolkit have been refactored to be more 
 	flexible, including DataApplication, AuthDataApplication, 
 	DataRequestCycle, and AuthDataRequestCycle. Existing applications 
