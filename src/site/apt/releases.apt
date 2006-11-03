@@ -20,6 +20,22 @@ Releases
 
 	In examples, the {{{message.html}message floater}} has a Cajo version of its applet, and {{{phone-directory.html}phone directory}} adds dropdown category filtering (using a writable {{{/javadoc/net/databinder/models/HibernateObjectModel.html} HibernateObjectModel}}).
 
+	{{{/releases/databinder-0.9.tar.gz}Datbinder library & source}}
+	
+	{{{/releases/data-app-0.9.tar.gz}Data-app archetype}}
+
+	{{{/releases/graffiti-0.9.tar.gz}Graffiti example}}
+
+	{{{/releases/bookmark-0.9.tar.gz}Bookmark example}}
+	
+	{{{/releases/directory-0.9.tar.gz}Phone directory example}}
+
+	{{{/releases/recipe-0.9.tar.gz}Recipe book example}}
+
+	{{{/releases/baseball-0.9.tar.gz}Baseball players example}}
+
+	{{{/releases/message-0.9.tar.gz}Message floater example}}
+
 *Version 0.8
 
 	Many base classes in the toolkit have been refactored to be more flexible, including {{{/javadoc/net/databinder/DataApplication.html}DataApplication}}, {{{/javadoc/net/databinder/auth/AuthDataApplication.html}AuthDataApplication}}, {{{/javadoc/net/databinder/DataRequestCycle.html}DataRequestCycle}}, and {{{/javadoc/net/databinder/auth/AuthDataSession.html}AuthDataSession}}. Existing applications that override default functionality in base classes may need to make minor changes to compile against this version.
