@@ -25,8 +25,8 @@ Version History
 	the current page and centered sign in and registration screens.
 
 	In examples, the message floater has a Cajo version of its 
-	applet, and phone directory add dropdown category filtering 
-	(using a writable HiberanetObjectModel).
+	applet, and phone directory adds dropdown category filtering 
+	(using a writable HibernateObjectModel).
 
 0.8	Many base classes in the toolkit have been refactored to be more 
 	flexible, including DataApplication, AuthDataApplication, 

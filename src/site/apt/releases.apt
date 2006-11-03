@@ -10,6 +10,16 @@ Releases
 
 	Though it’s possible to download Databinder from the links below (and its {{{dependencies.html}dependencies}} from their own sites), we don’t recommend it. Please see the {{{setup-guide.html}setup guide}} for detailed start-to-finish instructions using Maven 2. For upgrading, see the {{{faq.html#upgrade}FAQ}}.
 
+*Version 0.9
+
+	Improved transaction handling now rolls back any uncommitted transactions before closing a Hibernate session. Unhandled runtime exceptions will trigger an immediate rollback and session closure.
+
+	The new IQueryBuilder interface allows applications to construct their own Hibernate (named/SQL) queries for Hibernate object and list models. {{{/javadoc/net/databinder/models/HibernateObjectModel.html} HibernateObjectModel}} is now writable, facilitating use with DropDownChoice components needing independent models.
+
+	{{{/javadoc/net/databinder/components/RenderedLabel.html}RenderedLabel}} has a shared resource setting that caches common renderings within the application at a permanent URL. Empty labels (with no text or blank text) are no longer rendered as IMG tags at all. There are several improvements in the authentication defaults, including a sign in link that remembers the current page and centered sign in and registration screens.
+
+	In examples, the {{{message.html}message floater}} has a Cajo version of its applet, and {{{phone-directory.html}phone directory}} adds dropdown category filtering (using a writable {{{/javadoc/net/databinder/models/HibernateObjectModel.html} HibernateObjectModel}}).
+
 *Version 0.8
 
 	Many base classes in the toolkit have been refactored to be more flexible, including {{{/javadoc/net/databinder/DataApplication.html}DataApplication}}, {{{/javadoc/net/databinder/auth/AuthDataApplication.html}AuthDataApplication}}, {{{/javadoc/net/databinder/DataRequestCycle.html}DataRequestCycle}}, and {{{/javadoc/net/databinder/auth/AuthDataSession.html}AuthDataSession}}. Existing applications that override default functionality in base classes may need to make minor changes to compile against this version.

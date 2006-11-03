@@ -4,7 +4,7 @@
 		Nathan Hamblen
 		------------------
 
-Version 0.8
+Version 0.9
 
 *What it is
 
@@ -18,11 +18,11 @@ Version 0.8
 
 *Screencasts
 
-	Everyone has a screencast now. Your refrigerator has a screencast. {{{screencast/index.html}So do we}}.
+	Tune in to the {{{screencast/index.html}Databinder screencast}} to see a data-driven webapp written from the ground up.
 
 *Examples
 
-	To get a better idea of how Databinder applications come together, check out the source code and live demos in the {{{examples.html}example applications}}. They implement practical database functionality, but throw in some unconventional features for fun.
+	To demonstrate how Databinder applications come together (and give you plenty of code to crib from), we provide a number of {{{examples.html}example applications}} with source code and live demos. They implement practical database functionality, with some unconventional (fun) features.
 
 *Pre-flight
 

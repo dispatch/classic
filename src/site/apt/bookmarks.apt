@@ -16,23 +16,23 @@ Bookmarks example application
 	
 *Source files
 
-	* {{{/wsvn/Databinder/bookmark/r0.8/src/main/java/example/BookmarkApplication.java?op=file}BookmarksApplication.java}} — <application configuration>
+	* {{{/wsvn/Databinder/bookmark/r0.9/src/main/java/example/BookmarkApplication.java?op=file}BookmarksApplication.java}} — <application configuration>
 
-	* {{{/wsvn/Databinder/bookmark/r0.8/src/main/java/example/Bookmark.java?op=file} Bookmark.java}} — <annotated data class>
+	* {{{/wsvn/Databinder/bookmark/r0.9/src/main/java/example/Bookmark.java?op=file} Bookmark.java}} — <annotated data class>
 
-	* {{{/wsvn/Databinder/bookmark/r0.8/src/main/resources/example/ListAndAdd.html?op=file} ListAndAdd.html}} — <page template>
+	* {{{/wsvn/Databinder/bookmark/r0.9/src/main/resources/example/ListAndAdd.html?op=file} ListAndAdd.html}} — <page template>
 
-	* {{{/wsvn/Databinder/bookmark/r0.8/src/main/resources/example/ListAndAdd.css?op=file}ListAndAdd.css}}
+	* {{{/wsvn/Databinder/bookmark/r0.9/src/main/resources/example/ListAndAdd.css?op=file}ListAndAdd.css}}
 
 	* trash.png — 
 
 [images/trash.png]
 
-	* {{{/wsvn/Databinder/bookmark/r0.8/src/main/java/example/ListAndAdd.java?op=file} ListAndAdd.java}} — <page subclass>
+	* {{{/wsvn/Databinder/bookmark/r0.9/src/main/java/example/ListAndAdd.java?op=file} ListAndAdd.java}} — <page subclass>
 
 	[]
 
-	If you’re {{{setup-guide.html} set up }}for Databinder, {{{/releases/bookmark-0.8.tar.gz} download and run}} this at home.
+	If you’re {{{setup-guide.html} set up }}for Databinder, {{{/releases/bookmark-0.9.tar.gz} download and run}} this at home.
 
 *Projects for the reader
 
