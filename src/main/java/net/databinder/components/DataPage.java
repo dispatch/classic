@@ -29,7 +29,7 @@ import wicket.model.Model;
 
 /**
  *  Simple page with a default stylesheet, page title, and feedback component in its 
- *  HTML template. Will not likely serve as a base for complicated layouts.
+ *  HTML template. This is an optional, starter class that may not be useful in larger applications.
  *  @author Nathan Hamblen
  */
 public abstract class DataPage extends WebPage {

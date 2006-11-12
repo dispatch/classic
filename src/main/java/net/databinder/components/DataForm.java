@@ -32,7 +32,7 @@ import wicket.model.BoundCompoundPropertyModel;
 /**
  * Form for a persistant model object nested in a BoundCompoundPropertyModel. 
  * Saves the model object to persistent storage when a valid form is submitted. This 
- * form can be a child to any Wicket page (not necessarily a net.databinder.DataPage).
+ * form can be a child component of any Wicket page.
  * @author Nathan Hamblen
  */
 public class DataForm extends Form {
