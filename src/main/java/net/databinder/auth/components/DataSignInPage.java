@@ -84,13 +84,6 @@ public class DataSignInPage extends WebPage {
 			}
 		});
 		
-		addRegisterPanel();
-	}
-	/**
-	 * Override <tt>getRegisterPanel(id)</tt> instead of this method.
-	 * @deprecated
-	 */
-	protected void addRegisterPanel() {
 		add(registerPanel = getRegisterPanel("registerPanel"));
 		setRegister(register);
 	}

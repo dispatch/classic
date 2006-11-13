@@ -23,7 +23,7 @@ package net.databinder.auth;
  * allows that user to bypass login for the length of time specified in getSignInCookieMaxAge().
  * <p> In general the sematics here expect users to have a username and password, though the 
  * IUser interface itself does not require it. In most cases it should not be necessary to
- * subclass the session; use your <tt>AuthDataApplication</tt> subclass to specify
+ * subclass AuthDataSession; use your <tt>AuthDataApplication</tt> subclass to specify
  * a user class and criteria builder as needed.</p>
  */
 import javax.servlet.http.Cookie;

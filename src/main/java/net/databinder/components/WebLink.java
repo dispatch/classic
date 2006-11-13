@@ -28,7 +28,7 @@ import wicket.util.string.Strings;
  * Component for an anchor linking outside of Wicket. Similar to 
  * wicket.markup.html.link.ExternaLink, but uses an IModel for the href attribute
  * value and will not replace its body. (Use a span with wicket.markup.html.basic.Label 
- * if your link body text is variable.)
+ * for variable link body text.)
  * @author Nathan Hamblen
  */
 public class WebLink extends WebMarkupContainer {

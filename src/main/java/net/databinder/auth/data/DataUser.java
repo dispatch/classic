@@ -74,7 +74,7 @@ public class DataUser implements IUser.CookieAuth, Serializable {
 			MessageDigest md = MessageDigest.getInstance("SHA");
 			md.update(((IAuthSettings)Application.get()).getSalt());
 			byte[] hash = md.digest(password.getBytes());
-			// using a Base64 string for the hash because butting a 
+			// using a Base64 string for the hash because putting a 
 			// byte[] into a blob isn't working consistently.
 			return new String(Base64.encodeBase64(hash));
 		} catch (NoSuchAlgorithmException e) {

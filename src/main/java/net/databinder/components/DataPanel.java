@@ -25,10 +25,9 @@ import wicket.markup.html.panel.Panel;
 import wicket.model.BoundCompoundPropertyModel;
 
 /**
- * Panel subclass that displays information about a persistent object. Similar to 
+ * Panel subclass to be tied to a single persistent object. Similar to 
  * DataForm, this component wraps its model in a BoundCompoundProperty model 
- * and provides access methods to the nested model. It doesn't do too much
- * thinking, but it can save some typing. 
+ * and provides access methods to the nested model.
  * @see DataForm
  * @author Nathan Hamblen
  */

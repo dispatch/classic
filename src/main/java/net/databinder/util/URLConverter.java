@@ -27,9 +27,7 @@ import wicket.util.convert.ConversionException;
 import wicket.util.convert.converters.AbstractConverter;
 
 /**
- * Convert an object to a java.net.URL. Will be deprecated if a similar converter is
- * ever built into Wicket.
- * 
+ * Convert an object to a java.net.URL.
  * @author Nathan Hamblen
  */
 public class URLConverter extends AbstractConverter {

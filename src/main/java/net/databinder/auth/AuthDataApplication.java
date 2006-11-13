@@ -39,9 +39,9 @@ import wicket.authorization.strategies.role.Roles;
 import wicket.markup.html.WebPage;
 
 /**
- * Adds basic authentication fuctionality to DataApplication. This class is largely a derivative
- * of Wicket's AuthenticatedWebApplication brought into the DataApplication hierarchy. Unlike
- * that implementation, this one supplies a default annotated User class. To use a different IUser class,
+ * Adds basic authentication fuctionality to DataApplication. This class is a derivative
+ * of Wicket's AuthenticatedWebApplication, brought into the DataApplication hierarchy. Unlike
+ * that implementation, this one supplies a default User entity.. To use a different IUser class,
  * or a User subclass, override getUserClass(). (This class, whatever it is, will be added to 
  * the Hibernate Annotations configuration automatically. It is also possible to use Databinder
  * authentication without extending this base class by implementing IAuthSettings. 

@@ -3,7 +3,7 @@ package net.databinder.auth.data;
 import wicket.authorization.strategies.role.Roles;
 
 /**
- * Lowest common denominator user interface.
+ * Base user interface.
  * @author Nathan Hamblen
  */
 public interface IUser {

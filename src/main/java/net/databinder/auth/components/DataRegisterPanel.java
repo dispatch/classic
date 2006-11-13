@@ -96,10 +96,12 @@ public class DataRegisterPanel extends Panel {
 		}
 	}
 	
+	/** @return new user object with given credentials */ 
 	protected IUser getNewUser(Credentials creds) {
 		return new DataUser(creds.getUsername(), creds.getPassword());
 	}
 	
+	/** @return true if the given username has not been taken */
 	protected boolean isAvailable(String username) {
 		Session session = DataRequestCycle.getHibernateSession();
 		Criteria c = session.createCriteria(((IAuthSettings)getApplication()).getUserClass());

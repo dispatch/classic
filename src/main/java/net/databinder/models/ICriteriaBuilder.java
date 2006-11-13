@@ -23,6 +23,12 @@ import java.io.Serializable;
 
 import org.hibernate.Criteria;
 
+/**
+ * Interface for callback that sets parameters for a Hibernate Creteria object and 
+ * any necessary sub-criteria.
+ * @author Nathan Hamblen
+ */
 public interface ICriteriaBuilder extends Serializable {
+	/** Add properties, set projections, etc.  */
 	void build(Criteria criteria);
 }

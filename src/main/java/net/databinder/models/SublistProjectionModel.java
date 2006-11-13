@@ -8,12 +8,12 @@ import wicket.model.IModel;
 import wicket.model.LoadableDetachableModel;
 
 /**
- * Projects a single list into a multiple, arbitrarily transformed sublists without replicating
- *  the list data. A parent list containing sublists is the object wrapped in this model,
+ * Projects a single list into multiple, arbitrarily transformed sublists without replicating
+ *  the list structure. A parent list containing sublists is the object wrapped in this model,
  *  while the master list model passed in is held and used internally.
  *  <p>If you need to detach the master list, detach this model and the command will be 
- *  passed to the contained master list. Any other action that changes the size of the master 
- *  list must also detach this model so it can recalculate the sublists.
+ *  passed to the contained master list. Any action that changes the size of the master 
+ *  list must also detach this model so it can recalculate the sublist count.
  *  
  * @author Nathan Hamblen
  */
