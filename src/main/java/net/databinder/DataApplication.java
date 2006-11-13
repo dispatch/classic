@@ -89,7 +89,7 @@ public abstract class DataApplication extends WebApplication {
 	}
 	
 	/**
-	 * Create  our Hibernate session factory, triggering a general Hibernate
+	 * Called by init to create  Hibernate session factory, triggering a general Hibernate
 	 * initialization. Override if using a custom session factory.
 	 */
 	public SessionFactory buildHibernateSessionFactory() {
