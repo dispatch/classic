@@ -30,6 +30,10 @@ import wicket.WicketRuntimeException;
 public class DataStaticService {
 	private static SessionFactory hibernateSessionFactory;
 	
+	/**
+	 * @return session factory, as configured by the application
+	 * @throws WicketRuntimeException if session factory was not previously set 
+	 */
 	public static SessionFactory getHibernateSessionFactory() {
 		if (hibernateSessionFactory == null)
 			throw new WicketRuntimeException("The Hibernate session factory has not been " +
@@ -37,6 +41,9 @@ public class DataStaticService {
 		return hibernateSessionFactory;
 	}
 	
+	/**
+	 * @param sessionFactory to use for this application
+	 */
 	public static void setSessionFactory(SessionFactory sessionFactory) {
 		hibernateSessionFactory = sessionFactory;
 	}
