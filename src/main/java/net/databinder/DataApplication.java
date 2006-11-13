@@ -38,9 +38,9 @@ import wicket.util.convert.Converter;
 import wicket.util.convert.IConverterFactory;
 
 /**
- * Databinder WebApplication subclass for configuration and session management. Use 
- * of this base class is not obligatory, but it is recommended. Independent WebApplication 
- * subclasses will need to establish both Wicket and Hibernate session factories.
+ * Optional Databinder base Application class for configuration and session management. 
+ * Independent WebApplication subclasses will need to establish both Wicket and 
+ * Hibernate session factories.
  * @author Nathan Hamblen
  */
 public abstract class DataApplication extends WebApplication {
@@ -90,7 +90,7 @@ public abstract class DataApplication extends WebApplication {
 	
 	/**
 	 * Create  our Hibernate session factory, triggering a general Hibernate
-	 * initialization. Override if you have a custom session factory.
+	 * initialization. Override if using a custom session factory.
 	 */
 	public SessionFactory buildHibernateSessionFactory() {
 		try {
@@ -105,7 +105,7 @@ public abstract class DataApplication extends WebApplication {
 	/**
 	 * Override to add annotated classes for persistent storage by Hibernate, but don't forget
 	 * to call this super-implementation. If running in a development environment,
-	 * the session factory is set for hbm2ddl auto updating to create and add columns to tables 
+	 * the session factory is set for hbm2ddl auto-updating to create and add columns to tables 
 	 * as required. Otherwise, it is configured for C3P0 connection pooling. (At present the two
 	 * seem to be incompatible.) If you don't want this behaviour, don't call the 
 	 * super-implementation.
