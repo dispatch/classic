@@ -39,12 +39,13 @@ form.labelAbove div.row {
 	width: 35em;
 	color: black;
 }
-tr.b {
-	background: #F5F5F5;
+
+tr.a, tr.even {
+	background: #E6E6E5;
 }
 
-tr.a {
-	background: #E6E6E5;
+tr.b, tr.odd {
+	background: #F5F5F5;
 }
 
 a img {
