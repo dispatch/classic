@@ -44,19 +44,15 @@ import wicket.util.convert.IConverterFactory;
  * @author Nathan Hamblen
  */
 public abstract class DataApplication extends WebApplication {
-	/** true if in development mode, false if deployment */
-	private boolean development;
-	
 	/** true if cookieless use is supported through URL rewriting(defaults to true). */
 	private boolean cookielessSupported = true;
 	
 	/**
 	 * Configures this application for development or production, turns off 
 	 * default page versioning, and <strong>initializes Hibernate session factory</strong>. 
-	 * Development mode is the default; set a JVM property of wicket.configuration=deployment 
-	 * for production. (The context and init params in wicket.protocol.http.WebApplication 
-	 * are not supported here). If you override this method, be sure to call super() or 
-	 * initialize the Hibernate session factory yourself.
+	 * Development mode is the default; set a JVM property or context/init parameter of 
+	 * wicket.configuration=deployment to enable production defaults. If you override this 
+	 * method, be sure to call super() or initialize the Hibernate session factory yourself.
 	 * @see DataStaticService 
 	 */
 	@Override
@@ -66,11 +62,6 @@ public abstract class DataApplication extends WebApplication {
 		String configuration = System.getProperty("net.databinder.configuration");
 		if (configuration != null)
 			configure(configuration);
-		else
-			// when using wicket.configuration, calling configure() is unnecessary
-			configuration = System.getProperty("wicket." + CONFIGURATION, DEVELOPMENT);
-		
-		development = configuration.equalsIgnoreCase(DEVELOPMENT);
 		
 		// we find versioning less useful for simple, data-driven pages
 		getPageSettings().setVersionPagesByDefault(false);
@@ -133,12 +124,12 @@ public abstract class DataApplication extends WebApplication {
 	
 	/**
 	 * Reports if the program is running in a development environment, as determined by the
-	 * "wicket.configuration" environment variable. If that variable is unset or set to 
-	 * "development", the app is considered to be running in development.  
+	 * "wicket.configuration" environment variable or context/init parameter. If that variable 
+	 * is unset or set to "development", the app is considered to be running in development.  
 	 * @return true if running in a development environment
 	 */
 	protected boolean isDevelopment() {
-		return development;
+		return  getConfigurationType().equalsIgnoreCase(DEVELOPMENT);
 	}
 	
 	/**
