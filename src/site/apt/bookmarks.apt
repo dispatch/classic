@@ -12,7 +12,7 @@ Bookmarks example application
 	
 	Bookmarks are displayed in two vertically ordered columns. This arrangement is normally a bit of a pain, but here it’s handled neatly with a <<<SublistProjectionModel>>>.
 	
-*Demonstration
+**Demonstration
 
 	{{{/bookmark/} Try this application }} and list your own favorite site.
 	

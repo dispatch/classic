@@ -88,7 +88,7 @@ p + p {
    text-indent:1.5em;
    margin-top:0;
 }
-#contentBox h1, h2, h3 {
+#contentBox h1, h2, h3, h4 {
   font-weight: normal;
   margin-bottom: 0em;
   background: none;
@@ -98,14 +98,18 @@ p + p {
   font-weight: normal;
 }
 #contentBox h1 {
+  font-size: 218%;
+}
+#contentBox h2 {
   font-size: 164%;
 }
-
-#contentBox h2 {
-  font-size: 145%;
-}
 #contentBox h3 {
+  font-size: 145%;
+  margin: 1em 0;
+}
+#contentBox h4 {
   font-size: 118%;
+  margin: 1em 0;
 }
 dl {
   border: none;

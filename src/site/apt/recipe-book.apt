@@ -14,7 +14,7 @@ Recipe book example application
 
 	URL rewriting is disabled in this example. Doing so guarantees that Internet search engines will refer to its pages with clean URLs, but prevents cookieless users from editing recipes. (We suppose that cookie-haters aren’t the most enthusiastic cooks.)
 
-*Demonstration
+**Demonstration
 
 	{{{/recipe/app} Try this application}} and add an heirloom recipe. Someone's already beaten you to the <Currywurst>, but there’s always asparagus with potatoes.
 

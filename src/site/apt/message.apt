@@ -12,11 +12,10 @@ Message floater example application
 
 	New text is submitted through an Ajax form and persisted on the server. A display applet running on the same page fetches messages on start-up and when notified of updates by JavaScript. There are two versions of the applet: the default (and smaller download) applet transports over {{{https://cajo.dev.java.net/}Cajo}}, the other over {{{http://en.wikipedia.org/wiki/XML-RPC}XML-RPC}}.
 
-*Demonstration
+**Demonstration
 
-	The applets are written in the {{{http://processing.org/} Processing}} environment, based on its {{{http://processing.org/learning/examples/kinetictype.html}KineticType}} example.
+	{{{/message/} Try this application }} and leave a message for the ages. (The display may take half a minute to load.) The applets are written in the {{{http://processing.org/} Processing}} environment, based on its {{{http://processing.org/learning/examples/kinetictype.html}KineticType}} example.
 	
-	{{{/message/} Try this application }} and leave a message for the ages. (The display may take half a minute to load.)
 	
 *Web source files
 

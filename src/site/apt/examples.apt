@@ -8,7 +8,7 @@ Example applications
 
 		The Databinder example applications perform common database tasks (though we’ve spiced them up a bit to keep it interesting). A good way to learn the toolkit is to read through these examples, and then download and enhance them yourself. (Some improvements are suggested to get you started.)
 		
-*The examples, ordered pedagogically
+*Examples, ordered pedagogically
 		
 		[[1]] {{{graffiti.html}Graffiti}} — <adding to a table, with a twist>
 		
