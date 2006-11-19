@@ -12,7 +12,9 @@ Phone directory example application
 	
 	If you want to see automatic data versioning in action, open two browser windows and change the same entry in each one. Hibernate’s optimistic locking will allow the first change and reject the second.
 
-	{{{/directory/} Try this application }} and enter your own (pretend) phone number.
+*Demonstration
+
+	{{{/directory/} Try this application }} and enter your own false phone number.
 
 *Source files
 	

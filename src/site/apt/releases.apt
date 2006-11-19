@@ -20,21 +20,21 @@ Releases
 
 	In examples, the {{{message.html}message floater}} has a Cajo version of its applet, and {{{phone-directory.html}phone directory}} adds dropdown category filtering (using a writable {{{/javadoc/net/databinder/models/HibernateObjectModel.html} HibernateObjectModel}}).
 
-	{{{/releases/databinder-0.9.tar.gz}Datbinder library & source}}
+	* {{{/releases/databinder-0.9.tar.gz}Datbinder library & source}}
 	
-	{{{/releases/data-app-0.9.tar.gz}Data-app archetype}}
+	*{{{/releases/data-app-0.9.tar.gz}Data-app archetype}}
 
-	{{{/releases/graffiti-0.9.tar.gz}Graffiti example}}
+	*{{{/releases/graffiti-0.9.tar.gz}Graffiti example}}
 
-	{{{/releases/bookmark-0.9.tar.gz}Bookmark example}}
-	
-	{{{/releases/directory-0.9.tar.gz}Phone directory example}}
+	*{{{/releases/bookmark-0.9.tar.gz}Bookmark example}}
 
-	{{{/releases/recipe-0.9.tar.gz}Recipe book example}}
+	*{{{/releases/directory-0.9.tar.gz}Phone directory example}}
 
-	{{{/releases/baseball-0.9.tar.gz}Baseball players example}}
+	*{{{/releases/recipe-0.9.tar.gz}Recipe book example}}
 
-	{{{/releases/message-0.9.tar.gz}Message floater example}}
+	*{{{/releases/baseball-0.9.tar.gz}Baseball players example}}
+
+	*{{{/releases/message-0.9.tar.gz}Message floater example}}
 
 *Version 0.8
 
@@ -48,21 +48,21 @@ Releases
 
 	Wicket and Hibernate Annotations dependencies have been updated to 1.2.2 and 3.2.0 RC2 respectively. MySQL connector (in data-app and examples) is at version 5.0.3.
 
-	{{{/releases/databinder-0.8.tar.gz}Datbinder library & source}}
-	
-	{{{/releases/data-app-0.8.tar.gz}Data-app archetype}}
+	*{{{/releases/databinder-0.8.tar.gz}Datbinder library & source}}
 
-	{{{/releases/graffiti-0.8.tar.gz}Graffiti example}}
+	*{{{/releases/data-app-0.8.tar.gz}Data-app archetype}}
 
-	{{{/releases/bookmark-0.8.tar.gz}Bookmark example}}
-	
-	{{{/releases/directory-0.8.tar.gz}Phone directory example}}
+	*{{{/releases/graffiti-0.8.tar.gz}Graffiti example}}
 
-	{{{/releases/recipe-0.8.tar.gz}Recipe book example}}
+	*{{{/releases/bookmark-0.8.tar.gz}Bookmark example}}
 
-	{{{/releases/baseball-0.8.tar.gz}Baseball players example}}
+	*{{{/releases/directory-0.8.tar.gz}Phone directory example}}
 
-	{{{/releases/message-0.8.tar.gz}Message floater example}}
+	*{{{/releases/recipe-0.8.tar.gz}Recipe book example}}
+
+	*{{{/releases/baseball-0.8.tar.gz}Baseball players example}}
+
+	*{{{/releases/message-0.8.tar.gz}Message floater example}}
 
 *Version 0.7
 
@@ -76,19 +76,19 @@ Releases
 	
 	<<<PageStyleLink>>> and <<<PropertyListModel>>>, which have been deprecated for some time, are now out of the library. Their replacements,{{{/javadoc/net/databinder/components/StyleLink.html}StyleLink}} and {{{/javadoc/net/databinder/components/ScriptLink.html}ScriptLink}}, have been reorganized to fall under the {{{http://wicket.sourceforge.net/apidocs/wicket/markup/html/resources/PackagedResourceReference.html}PackagedResourceReference}} component, requiring the removal of their constructors that took the Class object as an IModel. Please use these components with a simple Class object.
 
-	{{{/releases/databinder-0.7.tar.gz}Datbinder library & source}}
-	
-	{{{/releases/data-app-0.7.tar.gz}Data-app archetype}}
+	*{{{/releases/databinder-0.7.tar.gz}Datbinder library & source}}
 
-	{{{/releases/graffiti-0.7.tar.gz}Graffiti example}}
+	*{{{/releases/data-app-0.7.tar.gz}Data-app archetype}}
 
-	{{{/releases/bookmark-0.7.tar.gz}Bookmark example}}
-	
-	{{{/releases/directory-0.7.tar.gz}Phone directory example}}
+	*{{{/releases/graffiti-0.7.tar.gz}Graffiti example}}
 
-	{{{/releases/recipe-0.7.tar.gz}Recipe book example}}
+	*{{{/releases/bookmark-0.7.tar.gz}Bookmark example}}
 
-	{{{/releases/baseball-0.7.tar.gz}Baseball players example}}
+	*{{{/releases/directory-0.7.tar.gz}Phone directory example}}
+
+	*{{{/releases/recipe-0.7.tar.gz}Recipe book example}}
+
+	*{{{/releases/baseball-0.7.tar.gz}Baseball players example}}
 
 *Version 0.6
 
@@ -100,17 +100,17 @@ Releases
 	
 	Changed structure of data-app archetype to be compatible with Maven 2.0.4. HTML and property resources are now stored alongside Java sources by default. Incremented versions of several dependencies, including {{{http://wicketframework.org/}Wicket}} to 1.2.1 which now checks that session-stored objects are <<<Serializable>>> by {{{http://www.wicket-wiki.org.uk/wiki/index.php/FAQs#I_get_.27Internal_error_cloning_object.27_errors}default}}. (Expect a few migration hiccups.)
 
-	{{{/releases/databinder-0.6.tar.gz}Datbinder library & source}}
-	
-	{{{/releases/data-app-0.6.tar.gz}Data-app archetype}}
+	*{{{/releases/databinder-0.6.tar.gz}Datbinder library & source}}
 
-	{{{/releases/graffiti-0.6.tar.gz}Graffiti example}}
+	*{{{/releases/data-app-0.6.tar.gz}Data-app archetype}}
 
-	{{{/releases/bookmark-0.6.tar.gz}Bookmark example}}
-	
-	{{{/releases/directory-0.6.tar.gz}Phone directory example}}
+	*{{{/releases/graffiti-0.6.tar.gz}Graffiti example}}
 
-	{{{/releases/recipe-0.6.tar.gz}Recipe book example}}
+	*{{{/releases/bookmark-0.6.tar.gz}Bookmark example}}
+
+	*{{{/releases/directory-0.6.tar.gz}Phone directory example}}
+
+	*{{{/releases/recipe-0.6.tar.gz}Recipe book example}}
 
 *Version 0.5
 
@@ -122,15 +122,15 @@ Releases
 
 	{{{/javadoc/net/databinder/util/RedirectServlet.html}RedirectServlet}} provided for easily sending requests from the Web root to WicketServlet. Added configuration for this, as well as the <<<databinder.net>>> repository, to the data-app archetype.
 
-	{{{/releases/databinder-0.5.tar.gz}Datbinder library & source}}
-	
-	{{{/releases/data-app-0.5.tar.gz}Data-app archetype}}
+	*{{{/releases/databinder-0.5.tar.gz}Datbinder library & source}}
 
-	{{{/releases/bookmark-0.5.tar.gz}Bookmark example}}
-	
-	{{{/releases/directory-0.5.tar.gz}Phone directory example}}
+	*{{{/releases/data-app-0.5.tar.gz}Data-app archetype}}
 
-	{{{/releases/recipe-0.5.tar.gz}Recipe book example}}
+	*{{{/releases/bookmark-0.5.tar.gz}Bookmark example}}
+
+	*{{{/releases/directory-0.5.tar.gz}Phone directory example}}
+
+	*{{{/releases/recipe-0.5.tar.gz}Recipe book example}}
 
 *Version 0.4
 
@@ -140,15 +140,15 @@ Releases
 
 	In existing Databinder applications, subclasses of {{{/javadoc/net/databinder/DataApplication.html}DataApplication}} must <<change the visibility of getHomePage()>> from protected to public, as Wicket has added exactly that method to its base Application class. Other changes to your applications may be necessary; see Wicket's {{{http://wicket-wiki.org.uk/wiki/index.php/Migrate-1.2}1.2 migration guide}} for more information.
 
-	{{{/releases/databinder-0.4.tar.gz}Datbinder library & source}}
-	
-	{{{/releases/data-app-0.4.tar.gz}Data-app archetype}}
+	*{{{/releases/databinder-0.4.tar.gz}Datbinder library & source}}
 
-	{{{/releases/bookmark-0.4.tar.gz}Bookmark example}}
-	
-	{{{/releases/directory-0.4.tar.gz}Phone directory example}}
+	*{{{/releases/data-app-0.4.tar.gz}Data-app archetype}}
 
-	{{{/releases/recipe-0.4.tar.gz}Recipe book example}}
+	*{{{/releases/bookmark-0.4.tar.gz}Bookmark example}}
+
+	*{{{/releases/directory-0.4.tar.gz}Phone directory example}}
+
+	*{{{/releases/recipe-0.4.tar.gz}Recipe book example}}
 
 *Version 0.3
 
@@ -157,16 +157,16 @@ Releases
 	Transparent version awareness added to DataForm, following a method {{{http://jroller.com/page/dashorst?entry=wicket_goodie_hibernate_versioned_form}suggested}} in Martijn Dashorst’s weblog. Attempting to overwrite another user’s unseen changes to an object now results in a validation error.
 
 	Dependencies have been updated to Hibernate 3.1.2 for the library, and jetty6beta9 in the archetype. Fixed a bug in the <<<DataForm(id, model)>>> constructor; it now wraps the model in a compound model as indicated in the comments. PageStyleLink has 	been renamed StyleLink to reflect its applicability to any component, and a new ScriptLink component helps attach JavaScript.
-	
-	{{{/releases/databinder-0.3.tar.gz}Datbinder library & source}}
-	
-	{{{/releases/data-app-0.3.tar.gz}Data-app archetype}}
 
-	{{{/releases/bookmark-0.3.tar.gz}Bookmark example}}
-	
-	{{{/releases/directory-0.3.tar.gz}Phone directory example}}
+	*{{{/releases/databinder-0.3.tar.gz}Datbinder library & source}}
 
-	{{{/releases/recipe-0.3.tar.gz}Recipe book example}}
+	*{{{/releases/data-app-0.3.tar.gz}Data-app archetype}}
+
+	*{{{/releases/bookmark-0.3.tar.gz}Bookmark example}}
+
+	*{{{/releases/directory-0.3.tar.gz}Phone directory example}}
+
+	*{{{/releases/recipe-0.3.tar.gz}Recipe book example}}
 	
 *Version 0.2
 
@@ -178,22 +178,20 @@ Releases
 
 	Improved Phone directory example applies optimistic locking, and its ListAndEdit page uses a compact SearchFilter implementation. New Bookmark example application is very short, simple, and intended for Wicket novices.
 
-	{{{/releases/databinder-0.2.tar.gz}Datbinder library & source}}
-	
-	{{{/releases/data-app-0.2.tar.gz}Data-app archetype}}
+	*{{{/releases/databinder-0.2.tar.gz}Datbinder library & source}}
 
-	{{{/releases/bookmark-0.2.tar.gz}Bookmark example}}
-	
-	{{{/releases/directory-0.2.tar.gz}Phone directory example}}
+	*{{{/releases/data-app-0.2.tar.gz}Data-app archetype}}
+
+	*{{{/releases/bookmark-0.2.tar.gz}Bookmark example}}
+
+	*{{{/releases/directory-0.2.tar.gz}Phone directory example}}
 
 *Version 0.1
 
 	Support for Hibernate 3.1, Hibernate Annotations 3.1beta7, and Wicket 1.1. This is the first public release of Databinder. All that is known for sure is that it can support the small {{{phone-directory.html}Phone directory}} example application.
-	
-	{{{/releases/databinder-0.1.tar.gz}Datbinder library & source}}
-	
-	{{{/releases/data-app-0.1.tar.gz}Data-app archetype}}
-	
-	{{{/releases/directory-0.1.tar.gz}Phone directory example}}
-	
-	
+
+	*{{{/releases/databinder-0.1.tar.gz}Datbinder library & source}}
+
+	*{{{/releases/data-app-0.1.tar.gz}Data-app archetype}}
+
+	*{{{/releases/directory-0.1.tar.gz}Phone directory example}}

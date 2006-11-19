@@ -26,6 +26,7 @@
         <item name="Basic setup" href="basic-setup.html"/>
         <item name="Workspace" href="workspace.html"/>
       </item>
+      <item name="Databinder 101" href="/manual/" />
       <item name="Javadoc" href="javadoc/"/>
       <item name="Releases" href="releases.html"/>
       <item name="License" href="license.html" />

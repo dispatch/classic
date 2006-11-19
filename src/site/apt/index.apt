@@ -4,11 +4,9 @@
 		Nathan Hamblen
 		------------------
 
-Version 0.9
+Databinder Overview
 
-*What it is
-
-	<<Databinder>> is a {{{http://java.sun.com/}Java}} programming toolkit for database–driven Web applications using {{{http://wicket.sourceforge.net/}Wicket}} and {{{http://hibernate.org}Hibernate}}. It melds the world’s best Web and database technologies, then gets out of the way.
+	Databinder is a {{{http://java.sun.com/}Java}} programming toolkit for database–driven Web applications using {{{http://wicket.sourceforge.net/}Wicket}} and {{{http://hibernate.org}Hibernate}}. It melds the world’s best Web and database technologies, then gets out of the way.
 
 *How it works
 
@@ -28,7 +26,7 @@ Version 0.9
 
 	Because Databinder’s priorities are simplicity and speed over formality and philosophy, starting a project from scratch is easy. A programming workstation with Java 5 and Maven 2 installed is only few minutes away from serving data-driven pages.
 
-	You won’t need to download Databinder, Wicket, or Hibernate. <<Maven does this for you.>> Head over to the {{{setup-guide.html}setup guide}} for detailed, step-by-step instructions.
+	You won’t need to download Databinder, Wicket, or Hibernate. Maven does this for you. Head over to the {{{setup-guide.html}setup guide}} for detailed, step-by-step instructions.
 
 *Still got questions?
 

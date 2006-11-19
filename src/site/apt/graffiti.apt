@@ -12,6 +12,8 @@ Graffiti example application
 	
 	As in the {{{/screencast/graffiti.html}screencast}}, text is rendered into an image using a packaged typeface. In this version we’ve added a live preview.
 	
+*Demonstration
+
 	{{{/graffiti/} Try this application }} and make your mark.
 	
 *Source files
