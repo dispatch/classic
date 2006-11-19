@@ -5,7 +5,7 @@ body, td, th, select, input, li {
   font-family: 'Lucida Bright', 'lucidabright', 'Lucida Serif', Georgia, serif;
 }
 #banner {
-  margin: 10px;
+  padding: 10px;
 }
 #breadcrumbs {
   background: white;
@@ -35,7 +35,7 @@ body, td, th, select, input, li {
 #navcolumn li.expanded {
   background-image: none;
 }
-#navcolumn li a, #navcolumn li a:visited {
+#leftColumn a, #leftColumn a:visited {
   border: none;
 }
 #navcolumn li.expanded a, #navcolumn li.none a {
@@ -55,16 +55,18 @@ a:visited  {
   padding: .2em 0 0 0;
   border-bottom: solid 1px #bbb;
 }
-a:hover, #navcolumn li a:hover {
+#contentBox a:hover, #navcolumn li a:hover {
   background-color: #D5EFD1;
   border-bottom: solid 1px #159800;
 }
 .section {
   padding: 0;
 }
-#contentBox {
+#contentBox, #contentBox p {
   color: #444;
   font-size: 10pt;
+}
+#contentBox p {
   line-height: 1.5em;
 }
 #contentBox ul, #contentBox ol {
