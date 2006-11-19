@@ -18,19 +18,19 @@ Graffiti example application
 	
 *Source files
 
-	* {{{/wsvn/Databinder/graffiti/r0.9/src/main/java/example/GraffitiApplication.java?op=file} GraffitiApplication.java}} — <application configuration>
+	* {{{/wsvn/Databinder/graffiti/r1.0/src/main/java/example/GraffitiApplication.java?op=file} GraffitiApplication.java}} — <application configuration>
 
-	* {{{/wsvn/Databinder/graffiti/r0.9/src/main/java/example/Graffito.java?op=file} Graffito.java}} — <annotated data class>
+	* {{{/wsvn/Databinder/graffiti/r1.0/src/main/java/example/Graffito.java?op=file} Graffito.java}} — <annotated data class>
 
-	* {{{/wsvn/Databinder/graffiti/r0.9/src/main/java/example/TheWall.html?op=file} TheWall.html}} — <page template>
+	* {{{/wsvn/Databinder/graffiti/r1.0/src/main/java/example/TheWall.html?op=file} TheWall.html}} — <page template>
 
-	* {{{/wsvn/Databinder/graffiti/r0.9/src/main/java/example/TheWall.java?op=file} TheWall.java}} — <page subclass>
+	* {{{/wsvn/Databinder/graffiti/r1.0/src/main/java/example/TheWall.java?op=file} TheWall.java}} — <page subclass>
 
 	* spidershank.ttf — <a free typeface>
 
 	[]
 
-	If you’re {{{setup-guide.html} set up }}for Databinder, {{{/releases/graffiti-0.9.tar.gz} download and run}} this at home.
+	If you’re {{{setup-guide.html} set up }}for Databinder, {{{/releases/graffiti-1.0.tar.gz} download and run}} this at home.
 	
 *Projects for the reader
 

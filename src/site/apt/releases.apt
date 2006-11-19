@@ -10,6 +10,14 @@ Releases
 
 	Though it’s possible to download Databinder from the links below (and its {{{dependencies.html}dependencies}} from their own sites), we don’t recommend it. Please see the {{{setup-guide.html}setup guide}} for detailed start-to-finish instructions using Maven 2. For upgrading, see the {{{faq.html#upgrade}FAQ}}.
 
+*Version 1.0
+
+	Uses Wicket’s {{{http://wicketframework.org/apidocs/wicket/Application.html#getConfigurationType()}Application.getConfigurationType()}} rather than tracking configuration independently, to gain compatibility with other methods of specifying wicket.configuration.
+
+	Removed deprecated <<<addRegisterPanel>>> method of {{{/javadoc/net/databinder/auth/components/DataSignInPage.html}DataSignInPage}} and deprecated RedirectServlet.  Added odd/even style definitions to DataPage.css to simplify DataTable use.
+
+	Improved HTML validity of example application pages, and changed delete link of {{{/bookmarks.html}bookmark application}} to a form button.
+
 *Version 0.9
 
 	Improved transaction handling now rolls back any uncommitted transactions before closing a Hibernate session. Unhandled runtime exceptions will trigger an immediate rollback and session closure.

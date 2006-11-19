@@ -16,19 +16,19 @@ Baseball players example application
 
 *Source files
 
-	* {{{/wsvn/Databinder/baseball/r0.9/src/main/java/example/BaseballApplication.java?op=file} BaseballApplication.java}}
+	* {{{/wsvn/Databinder/baseball/r1.0/src/main/java/example/BaseballApplication.java?op=file} BaseballApplication.java}}
 
-	* {{{/wsvn/Databinder/baseball/r0.9/src/main/java/example/Player.java?op=file} Player.java}} — <annotated data class>
+	* {{{/wsvn/Databinder/baseball/r1.0/src/main/java/example/Player.java?op=file} Player.java}} — <annotated data class>
 
-	* {{{/wsvn/Databinder/baseball/r0.9/src/main/java/example/Pager.properties?op=file} Pager.properties}} — <distinct county query>
+	* {{{/wsvn/Databinder/baseball/r1.0/src/main/java/example/Pager.properties?op=file} Pager.properties}} — <distinct county query>
 
-	* {{{/wsvn/Databinder/baseball/r0.9/src/main/java/example/Pager.html?op=file} Pager.html}} — <page template>
+	* {{{/wsvn/Databinder/baseball/r1.0/src/main/java/example/Pager.html?op=file} Pager.html}} — <page template>
 
-	* {{{/wsvn/Databinder/baseball/r0.9/src/main/java/example/Pager.java?op=file} Pager.java}} — <page subclass>
+	* {{{/wsvn/Databinder/baseball/r1.0/src/main/java/example/Pager.java?op=file} Pager.java}} — <page subclass>
 	
 	[]
 
-	If you’re {{{setup-guide.html} set up}} for Databinder, {{{/releases/baseball-0.9.tar.gz} download and run}} this at home. Baseball data available from the {{{http://www.baseball1.com/statistics/}baseball archive}}.
+	If you’re {{{setup-guide.html} set up}} for Databinder, {{{/releases/baseball-1.0.tar.gz} download and run}} this at home. Baseball data available from the {{{http://www.baseball1.com/statistics/}baseball archive}}.
 
 *Projects for the reader
 
