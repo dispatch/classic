@@ -18,6 +18,23 @@ Releases
 
 	Improved HTML validity of example application pages, and changed delete link of {{{/bookmarks.html}bookmark application}} to a form button.
 
+
+	* {{{/releases/databinder-1.0.tar.gz}Datbinder library & source}}
+	
+	*{{{/releases/data-app-1.0.tar.gz}Data-app archetype}}
+
+	*{{{/releases/graffiti-1.0.tar.gz}Graffiti example}}
+
+	*{{{/releases/bookmark-1.0.tar.gz}Bookmark example}}
+
+	*{{{/releases/directory-1.0.tar.gz}Phone directory example}}
+
+	*{{{/releases/recipe-1.0.tar.gz}Recipe book example}}
+
+	*{{{/releases/baseball-1.0.tar.gz}Baseball players example}}
+
+	*{{{/releases/message-1.0.tar.gz}Message floater example}}
+
 *Version 0.9
 
 	Improved transaction handling now rolls back any uncommitted transactions before closing a Hibernate session. Unhandled runtime exceptions will trigger an immediate rollback and session closure.
