@@ -3,7 +3,7 @@
   <groupId>net.databinder</groupId>
   <artifactId>databinder</artifactId>
   <name>Databinder</name>
-  <version>1.0</version>
+  <version>1.1-SNAPSHOT</version>
   <description>A simple bridge from Wicket to Hibernate</description>
   <url>http://databinder.net/</url>
   <inceptionYear>2005</inceptionYear>
@@ -15,8 +15,8 @@
     </license>
   </licenses>
   <scm>
-    <connection>scm:svn:svn://localhost/databinder/r1.0</connection>
-    <developerConnection>scm:svn:svn://localhost/databinder/r1.0</developerConnection>
+    <connection>scm:svn:svn://localhost/databinder/trunk</connection>
+    <developerConnection>scm:svn:svn://localhost/databinder/trunk</developerConnection>
   </scm>
   <organization>
     <name>Nathan Hamblen</name>
