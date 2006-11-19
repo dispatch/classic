@@ -6,6 +6,17 @@ http://databinder.net/
 
 Version History
 
+1.0	Uses Wicket's Application.getConfigurationType() rather than 
+	tracking configuration independently, to gain compatibility with 
+	other methods of specifying wicket.configuration.
+
+	Removed deprecated addRegisterPanel method of DataSignInPage and 
+	deprecated RedirectServlet.  Added odd/even style definitions to 
+	DataPage.css to simplify DataTable use.
+
+	Improved HTML validity of example application pages, and changed 
+	delete link of bookmark application to a form button.
+
 0.9	Improved transaction handling now rolls back any uncommitted 
 	transactions before closing a Hibernate session. Unhandled 
 	runtime exceptions will trigger an immediate rollback and 
