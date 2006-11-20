@@ -23,14 +23,14 @@ body, td, th, select, input, li {
   margin-left: 13em;
 }
 #navcolumn {
-  padding-top: 1.3em;
+  padding-top: 1.2em;
 }
 #navcolumn h5 {
   display: none;
 }
 #navcolumn li {
   font-size: 8pt;
-  line-height: 2em;
+  line-height: 2;
 }
 #navcolumn li.expanded {
   background-image: none;
@@ -48,7 +48,7 @@ body, td, th, select, input, li {
 a:link {
   color: #333;
   padding: .2em 0 0 0;
-  border-bottom: solid 1px #A0BF9B;
+  border-bottom: solid 1px #C7DFC3;
 }
 a:visited  {
   color: #666;
@@ -62,10 +62,10 @@ a:visited  {
 .section {
   padding: 0;
 }
-#contentBox, #contentBox p {
+#contentBox, #contentBox p, #contentBox li {
   color: #444;
   font-size: 10pt;
-  line-height: 1.5em;
+  line-height: 1.5;
 }
 #contentBox ul, #contentBox ol {
   margin-left: 0;
@@ -75,16 +75,14 @@ a:visited  {
   list-style: decimal inside;
 }
 #contentBox li {
-  line-height: 1.3em;
-  margin-top: .6em;
+  line-height: 1.5;
 }
 #contentBox p {
-  line-height: inherit;
-  font-size: inherit;
   width: 31em;
-  margin-bottom: 0;
+  margin: 1.5em 0 0 0;
+
 }
-p + p {
+#contentBox p + p {
    text-indent:1.5em;
    margin-top:0;
 }
@@ -102,14 +100,18 @@ p + p {
 }
 #contentBox h2 {
   font-size: 164%;
+  line-height: .91;
+  margin: .91em 0;
 }
 #contentBox h3 {
   font-size: 145%;
-  margin: 1em 0;
+  line-height: 1.03;
+  margin: 1.03em 0;
 }
 #contentBox h4 {
   font-size: 118%;
-  margin: 1em 0;
+  margin: 1.27em 0;
+  line-height: 1.27;
 }
 dl {
   border: none;

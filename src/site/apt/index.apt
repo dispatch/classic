@@ -10,7 +10,7 @@ Databinder Overview
 
 *How it works
 
-	Databinder provides you with {{{/javadoc/net/databinder/models/HibernateObjectModel.html}singular}} and {{{/javadoc/net/databinder/models/HibernateListModel.html}plural}} Wicket {{{http://www.wicket-wiki.org.uk/wiki/index.php/Models}model classes}} that populate themselves using a lightly managed Hibernate session. Included view classes bind to these models automatically.
+	Databinder provides you with Wicket {{{/manual/}model classes}} that populate themselves using a lightly managed Hibernate session. Included form and panel classes bind to these models automatically.
 
 	A Databinder application feeds annotated data classes to the toolkit, then renders the data in view class and HTML templates. Everything happens in Java and HTML—if you're looking for fussy XML configuration, you’ll have to look elsewhere.
 
