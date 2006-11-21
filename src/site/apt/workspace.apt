@@ -64,10 +64,12 @@ default-table-type=InnoDB
 
 	<<Warning:>> Some applications (often in PHP) assume the standard MySQL defaults are in place and will fail otherwise. As always, be careful when making changes to an active Web server.
 
-*Ok, <<now>> make an application
+*Any lasts requests?
 
 	With your IDE tweaked-out and ready to go, it’s time to stop configuring and start programming. Read through the {{{examples.html}examples}} if you haven’t already, and try running them locally. Each one uses a different database, as described in its <<<hibernate.properties>>>.
 
 	When you add annotated classes to your Hibernate configuration, tables to hold them and their mapped properties will be automatically created as your application is starting up. Tables and columns will never be deleted, so drop them or the entire database yourself whenever you want a fresh start.
+
+	As soon as your own application goes outside the conceptual bounds of the examples, you’ll probably run right into some <transient object> and <property not found> exceptions. Take a pit stop at {{{/manual/}Databinder 101}} and call us in the morning.
 
 	Now go pop a wheelie. If you skin your knees, we’ll help you out on the {{{/forum}forum}}.
