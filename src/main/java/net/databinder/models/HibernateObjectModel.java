@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
 
 import javax.persistence.Version;
 
-import net.databinder.DataRequestCycle;
+import net.databinder.DataStaticService;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -146,19 +146,13 @@ public class HibernateObjectModel extends LoadableWritableModel {
 			// clear out completely
 			objectClass = null;
 		else {
-			Session sess = DataRequestCycle.getHibernateSession();
+			Session sess = DataStaticService.getHibernateSession();
 			objectId = sess.getIdentifier(object);
 			// the entityName, rather than the objectClass, will be used to load
 			entityName = sess.getEntityName(object);
 		}
 	}
-	
-	/** Please use setObject(null, object) instead of this method. */
-	@Deprecated
-	public void setPersistentObject(Object persistentObject) {
-		setObject(null, persistentObject);
-	}
-	
+		
 	/**
 	 * Disassociates this object from any persitant object, but retains the class
 	 * for contructing a blank copy if requested.
@@ -207,7 +201,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 		} catch (Throwable e) {
 			throw new RuntimeException("Unable to instantiate object. Does it have a default constructor?", e);
 		}
-		Session sess = DataRequestCycle.getHibernateSession();
+		Session sess = DataStaticService.getHibernateSession();
 		if (objectId != null) {
 			if (entityName != null)
 				return sess.load(entityName, objectId);

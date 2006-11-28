@@ -28,13 +28,11 @@ import java.util.Map;
 
 import javax.servlet.http.Cookie;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.context.ManagedSessionContext;
 
 import wicket.Page;
-import wicket.RequestCycle;
 import wicket.Response;
-import wicket.WicketRuntimeException;
 import wicket.protocol.http.WebRequest;
 import wicket.protocol.http.WebRequestCycle;
 import wicket.protocol.http.WebResponse;
@@ -48,7 +46,6 @@ import wicket.protocol.http.WebSession;
  * @author Nathan Hamblen
  */
 public class DataRequestCycle extends WebRequestCycle {
-	private Session hibernateSession;
 	/** cache of cookies from request */ 
 	private Map<String, Cookie> cookies;
 
@@ -60,61 +57,41 @@ public class DataRequestCycle extends WebRequestCycle {
 	/**
 	 * Will open a session if one is not already open for this request.
 	 * @return the open Hibernate session for the current request cycle.
+	 * @deprecated
 	 */
 	public static Session getHibernateSession() {
-		RequestCycle cycle = get();
-		if (!(cycle instanceof DataRequestCycle))
-			throw new WicketRuntimeException("Current request cycle not managed by Databinder. " +
-				"Your application session factory must return a DataSession or some other session " +
-				"that produces DataRequestCycle.");
-		return ((DataRequestCycle)cycle).getCycleHibernateSession();
+		return DataStaticService.getHibernateSession();
 	}
-
-	/**
-	 * Opens a session and a transaction if a session is not already associated with
-	 * this request cycle.
-	 * @return the open Hibernate session for this request cycle.
-	 */
-	protected Session getCycleHibernateSession() {
-		if(hibernateSession == null) {
-			hibernateSession = openSession();
-			hibernateSession.beginTransaction();
-		}
-		return hibernateSession;
-	}
-
-	/**
-	 * @return a newly opened session
-	 */
-	protected Session openSession()
-	throws HibernateException {
-		return DataStaticService.getHibernateSessionFactory().openSession();
-	}
-
+	
 	/** Roll back active transactions and close session. */
 	protected void closeSession() {
-		if (hibernateSession != null) {
+		Session sess = DataStaticService.getHibernateSession();
+		
+		if (sess.isOpen())
 			try {
-				if (hibernateSession.getTransaction().isActive())
-					hibernateSession.getTransaction().rollback();
+				if (sess.getTransaction().isActive())
+					sess.getTransaction().rollback();
 			} finally {
-				try {
-					hibernateSession.close();
-				} finally {
-					hibernateSession = null;
-				}
+				sess.close();
 			}
-		}
+	}
+
+	@Override
+	protected void onBeginRequest() {
+		org.hibernate.classic.Session sess = DataStaticService.getHibernateSessionFactory().openSession();
+		sess.beginTransaction();
+		ManagedSessionContext.bind(sess);
 	}
 
 	/**
 	 * Closes the Hibernate session, if one was open for this request. If a transaction has
-	 * not been committed, it will be rolled back before cloing the session.
+	 * not been committed, it will be rolled back before closing the session.
 	 * @see net.databinder.components.DataForm#onSubmit()
 	 */
 	@Override
 	protected void onEndRequest() {
 		closeSession();
+		ManagedSessionContext.unbind(DataStaticService.getHibernateSessionFactory());
 	}
 
 	/** Roll back active transactions and close session. */

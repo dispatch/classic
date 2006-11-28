@@ -21,7 +21,7 @@ package net.databinder.components;
 
 import java.io.Serializable;
 
-import net.databinder.DataRequestCycle;
+import net.databinder.DataStaticService;
 import net.databinder.models.HibernateObjectModel;
 
 import org.hibernate.Session;
@@ -128,7 +128,7 @@ public class DataForm extends Form {
 	@Override
 	protected void onSubmit() {
 		Object modelObject = getModelObject();
-		Session session = DataRequestCycle.getHibernateSession();
+		Session session = DataStaticService.getHibernateSession();
 		if (!session.contains(modelObject)) {
 			session.save(modelObject);
 			setPersistentObject(modelObject);	// tell model this object is now bound
@@ -165,7 +165,7 @@ public class DataForm extends Form {
 	 * @return true if the object was deleted, false if it did not exist
 	 */
 	protected boolean deletePersistentObject() {
-		Session session = DataRequestCycle.getHibernateSession();
+		Session session = DataStaticService.getHibernateSession();
 		Object modelObject = getModelObject();
 		if (!session.contains(modelObject))
 			return false;

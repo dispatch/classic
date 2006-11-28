@@ -22,7 +22,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.databinder.DataRequestCycle;
+import net.databinder.DataStaticService;
 import net.databinder.auth.AuthDataSession;
 import net.databinder.auth.IAuthSettings;
 import net.databinder.auth.data.DataUser;
@@ -82,7 +82,7 @@ public class DataRegisterPanel extends Panel {
 			Credentials creds = (Credentials) getModelObject();
 
 			IUser user = getNewUser(creds);
-			Session session = DataRequestCycle.getHibernateSession();
+			Session session = DataStaticService.getHibernateSession();
 			session.save(user);
 			session.getTransaction().commit();
 
@@ -103,7 +103,7 @@ public class DataRegisterPanel extends Panel {
 	
 	/** @return true if the given username has not been taken */
 	protected boolean isAvailable(String username) {
-		Session session = DataRequestCycle.getHibernateSession();
+		Session session = DataStaticService.getHibernateSession();
 		Criteria c = session.createCriteria(((IAuthSettings)getApplication()).getUserClass());
 		c.add(Property.forName("username").eq(username));
 		c.setProjection(Projections.rowCount());

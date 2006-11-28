@@ -1,9 +1,9 @@
 package net.databinder.components;
 
 import wicket.ResourceReference;
-import wicket.Response;
 import wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import wicket.markup.ComponentTag;
+import wicket.markup.html.IHeaderResponse;
 
 /*
  * Databinder: a simple bridge from Wicket to Hibernate
@@ -42,7 +42,16 @@ public abstract class AjaxOnKeyPausedUpdater extends AjaxFormComponentUpdatingBe
 	public AjaxOnKeyPausedUpdater() {
 		super("onchange");
 	}
-	
+
+	/**
+	 * Adds needed JavaScript to header.
+	 */
+	@Override
+	public void renderHead(IHeaderResponse response) {
+		super.renderHead(response);
+		response.renderJavascriptReference(JAVASCRIPT);
+	}
+
 	/**
 	 * Adds JavaScript listeners for onkeyup and onblur.
 	 */
@@ -51,14 +60,5 @@ public abstract class AjaxOnKeyPausedUpdater extends AjaxFormComponentUpdatingBe
 		super.onComponentTag(tag);
         tag.put("onkeyup", "AjaxOnKeyPausedTimerReset(this);");
         tag.put("onblur", "AjaxOnKeyPausedTimerCancel();");
-	}
-
-	/**
-	 * Adds needed JavaScript to header.
-	 */
-	@Override
-	protected void onRenderHeadContribution(Response response) {
-		super.onRenderHeadContribution(response);
-		writeJsReference(response, JAVASCRIPT);
 	}
 }

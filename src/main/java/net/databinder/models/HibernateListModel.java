@@ -19,7 +19,7 @@
 
 package net.databinder.models;
 
-import net.databinder.DataRequestCycle;
+import net.databinder.DataStaticService;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -89,7 +89,7 @@ public class HibernateListModel extends LoadableDetachableModel {
 	 */
 	@Override
 	protected Object load() {
-		Session session = DataRequestCycle.getHibernateSession();
+		Session session = DataStaticService.getHibernateSession();
 		if (queryString != null) {
 			Query query = session.createQuery(queryString);
 			if (queryBinder != null)

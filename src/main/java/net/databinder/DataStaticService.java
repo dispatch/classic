@@ -19,6 +19,7 @@
 
 package net.databinder;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import wicket.WicketRuntimeException;
@@ -39,6 +40,10 @@ public class DataStaticService {
 			throw new WicketRuntimeException("The Hibernate session factory has not been " +
 					"initialized. This is normally done in DataApplication.init().");
 		return hibernateSessionFactory;
+	}
+	
+	public static Session getHibernateSession() {
+		return hibernateSessionFactory.getCurrentSession();
 	}
 	
 	/**

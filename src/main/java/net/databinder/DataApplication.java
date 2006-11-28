@@ -31,6 +31,7 @@ import net.databinder.web.NorewriteWebResponse;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 
+import wicket.Session;
 import wicket.markup.html.pages.PageExpiredErrorPage;
 import wicket.protocol.http.WebApplication;
 import wicket.protocol.http.WebResponse;
@@ -103,6 +104,8 @@ public abstract class DataApplication extends WebApplication {
 	 * @param config used to build Hibernate session factory
 	 */
 	protected  void configureHibernate(AnnotationConfiguration config) {
+		config.setProperty("hibernate.current_session_context_class","managed");
+
     	if (isDevelopment())
     		config.setProperty("hibernate.hbm2ddl.auto", "update");
     	else {
@@ -118,7 +121,7 @@ public abstract class DataApplication extends WebApplication {
 	 * @return new instance of DataSession
 	 */
 	@Override
-	public DataSession newSession() {
+	public Session newSession() {
 		return new DataSession(DataApplication.this);
 	}
 	

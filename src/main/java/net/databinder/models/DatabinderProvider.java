@@ -20,7 +20,7 @@ package net.databinder.models;
 
 import java.util.Iterator;
 
-import net.databinder.DataRequestCycle;
+import net.databinder.DataStaticService;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -64,7 +64,7 @@ public abstract class DatabinderProvider  {
 		 *  See the sort() method for sortable providers.
 		 */
 		public final Iterator iterator(int first, int count) {
-			Session sess =  DataRequestCycle.getHibernateSession();
+			Session sess =  DataStaticService.getHibernateSession();
 			
 			Criteria crit = sess.createCriteria(objectClass);
 			build(crit);
@@ -79,7 +79,7 @@ public abstract class DatabinderProvider  {
 		 * It should not be necessary to override (or call) this default implementation.
 		 */
 		public final int size() {
-			Session sess =  DataRequestCycle.getHibernateSession();
+			Session sess =  DataStaticService.getHibernateSession();
 	
 			Criteria crit = sess.createCriteria(objectClass);
 			build(crit);
@@ -115,7 +115,7 @@ public abstract class DatabinderProvider  {
 		 *  See the sort() method for sortable providers.
 		 */
 		public final Iterator iterator(int first, int count) {
-			Session sess =  DataRequestCycle.getHibernateSession();
+			Session sess =  DataStaticService.getHibernateSession();
 			
 			Query query = sess.createQuery(sort(queryString));
 			bind(query);
@@ -129,7 +129,7 @@ public abstract class DatabinderProvider  {
 		 * It should not be necessary to override (or call) this default implementation.
 		 */
 		public final int size() {
-			Session sess =  DataRequestCycle.getHibernateSession();
+			Session sess =  DataStaticService.getHibernateSession();
 	
 			Query query = sess.createQuery(count(queryString));
 			bind(query);

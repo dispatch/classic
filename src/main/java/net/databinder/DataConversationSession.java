@@ -19,6 +19,8 @@
 
 package net.databinder;
 
+import org.hibernate.FlushMode;
+
 import wicket.IRequestCycleFactory;
 import wicket.Request;
 import wicket.RequestCycle;
@@ -29,27 +31,41 @@ import wicket.protocol.http.WebRequest;
 import wicket.protocol.http.WebResponse;
 import wicket.protocol.http.WebSession;
 
-/**
- * WebSession subclass whose request cycle factory instantiates DataRequestCycle
- * objects.
- *
- * @author Nathan Hamblen
- * @author Timothy Bennett
- */
-public class DataSession extends WebSession {
-	public DataSession(WebApplication application) {
+public class DataConversationSession extends WebSession {
+	private org.hibernate.classic.Session conversationSession;
+	
+	public DataConversationSession(WebApplication application) {
 		super(application);
 	}
 
-	/**
-	 * Factory for DataRequestCycle objects.
-	 */
 	@Override
 	protected IRequestCycleFactory getRequestCycleFactory() {
 		return new IRequestCycleFactory() {
 			public RequestCycle newRequestCycle(Session session, Request request, Response response) {
-			    return new DataRequestCycle((WebSession)session, (WebRequest)request, (WebResponse)response);
+			    return new DataConversationRequestCycle((WebSession)session, (WebRequest)request, (WebResponse)response);
 			};
 		};
+	}
+
+	protected org.hibernate.classic.Session getConversataionSession() {
+		return conversationSession;
+	}
+
+	protected org.hibernate.classic.Session openConversationSession() {
+		closeConversationSession();
+		conversationSession = DataStaticService.getHibernateSessionFactory().openSession();
+		conversationSession.setFlushMode(FlushMode.MANUAL);
+		return conversationSession;
+	}
+	protected void closeConversationSession() {
+		if (conversationSession == null)
+			return;
+		if (conversationSession.isOpen()) {
+			if (conversationSession.getTransaction().isActive())
+				conversationSession.getTransaction().rollback();
+
+			conversationSession.close();
+		}
+		conversationSession = null;
 	}
 }
