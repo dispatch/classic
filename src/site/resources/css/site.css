@@ -78,15 +78,14 @@ a:visited  {
   line-height: 1.5;
 }
 #contentBox p {
-  width: 31em;
   margin: 1.5em 0 0 0;
-
+  width: 31em;
 }
 #contentBox p + p {
    text-indent:1.5em;
    margin-top:0;
 }
-#contentBox h1, h2, h3, h4 {
+#contentBox h1, h2, h3, h4, dt {
   font-weight: normal;
   margin-bottom: 0em;
   background: none;
@@ -108,25 +107,28 @@ a:visited  {
   line-height: 1.03;
   margin: 1.03em 0;
 }
-#contentBox h4 {
+#contentBox h4, dt a{
   font-size: 118%;
   margin: 1.27em 0;
   line-height: 1.27;
 }
-dl {
+dl, dt {
   border: none;
   background: none;
+  padding: 0;
+  margin: 0
+}
+#contentBox dl dt a:hover {
+  background-color: transparent;
+  border: none;
+  color: #555;
 }
 dl hr {
   display: none;
 }
-dt {
-  color: black;
-  font-size: 1.1em;
-  font-style: italic;
-}
 dd {
-  margin-bottom: .8em;
+  padding: 0;
+  margin: 0;
 }
 .source {
   border: none;
@@ -148,3 +150,4 @@ tt {
   font-size: 7pt;
   color: #888;
 }
+
