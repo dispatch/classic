@@ -94,10 +94,14 @@ public class DataRequestCycle extends WebRequestCycle {
 		ManagedSessionContext.unbind(DataStaticService.getHibernateSessionFactory());
 	}
 
-	/** Roll back active transactions and close session. */
+	/** 
+	 * Closes and reopens session for this request cycle. Unrelated models may try to load 
+	 * themselves after this point. 
+	 */
 	@Override
 	public Page onRuntimeException(Page page, RuntimeException e) {
-		closeSession();	// close session; another one will open if models load themselves
+		onEndRequest();
+		onBeginRequest();
 		return null;
 	}
 

@@ -133,7 +133,7 @@ public class DataForm extends Form {
 			session.save(modelObject);
 			setPersistentObject(modelObject);	// tell model this object is now bound
 		}
-		session.flush();
+		session.flush(); // needed for conv. sessions, harmless otherwise
 		session.getTransaction().commit();
 		// if version is present it should have changed
 		if (version != null) {

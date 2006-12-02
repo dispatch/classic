@@ -32,9 +32,19 @@ import wicket.protocol.http.WebRequest;
 import wicket.protocol.http.WebSession;
 
 public class DataConversationRequestCycle extends DataRequestCycle {
+	private boolean closeHibernateAtRequestEnd = false;
 
 	public DataConversationRequestCycle(final WebSession session, final WebRequest request, final Response response) {
 		super(session, request, response);
+	}
+	
+	public static void endHibernateSession() {
+		((DataConversationRequestCycle)get()).closeHibernateAtRequestEnd();
+	}
+	
+	protected void closeHibernateAtRequestEnd()
+	{
+		closeHibernateAtRequestEnd = true;
 	}
 
 	@Override
@@ -51,10 +61,14 @@ public class DataConversationRequestCycle extends DataRequestCycle {
 
 	@Override
 	protected void onEndRequest() {
-		Session sess = DataStaticService.getHibernateSession();
-		if (sess.getTransaction().isActive())
-			sess.getTransaction().rollback();
-		ManagedSessionContext.unbind(DataStaticService.getHibernateSessionFactory());
+		if (closeHibernateAtRequestEnd)
+			closeSession();
+		else {
+			Session sess = DataStaticService.getHibernateSession();
+			if (sess.getTransaction().isActive())
+				sess.getTransaction().rollback();
+			ManagedSessionContext.unbind(DataStaticService.getHibernateSessionFactory());
+		}
 	}
 	
 	@Override
@@ -62,10 +76,15 @@ public class DataConversationRequestCycle extends DataRequestCycle {
 		((DataConversationSession)getSession()).closeConversationSession();
 	}
 
-	/** Roll back active transactions and close session. */
+	/** 
+	 * Closes and reopens Hibernate session for this Web session. Unrelated models may try to load 
+	 * themselves after this point. 
+	 */
 	@Override
 	public Page onRuntimeException(Page page, RuntimeException e) {
-		closeSession();	// close session; another one will open if models load themselves
+		endHibernateSession();
+		onEndRequest();
+		onBeginRequest();
 		return null;
 	}
 
