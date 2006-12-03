@@ -93,6 +93,13 @@ public class DataUser implements IUser.CookieAuth, Serializable {
 	}
 	
 	/**
+	 * @param password new password for user
+	 */
+	public void setPassword(String password) {
+		passwordHash = getHash(password);
+	}
+
+	/**
 	 * Performs hash on given password and compares it to the correct hash.
 	 * @true if hashed password is correct
 	 */
