@@ -34,6 +34,7 @@ import org.hibernate.Session;
 import org.hibernate.proxy.HibernateProxy;
 
 import wicket.Component;
+import wicket.WicketRuntimeException;
 
 /**
  * Model loaded and persisted by Hibernate. This central Databinder class can be initialized with an
@@ -54,7 +55,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	/** May store unsaved objects between requests. */
 	private Serializable retainedObject;
 	/** Enable retaining unsaved objects between requests. */
-	private boolean retainUnsaved = false;
+	private boolean retainUnsaved = true;
 	
 	/**
 	 * @param objectClass class to be loaded and stored by Hibernate
@@ -69,12 +70,10 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	}
 	
 	/**
-	 * Constructor for a model with no existing persistent object. The model object
-	 * will NOT be persisted in any way until it is replaced by a call to 
-	 * setPersistentObject(Object persistent Object). Instead, it is newly constructed and 
-	 * empty after any call to detach().  Form components themselves will hold any entered 
-	 * data until the object can be saved for the first time, usually after the first successful 
-	 * form submittal. 
+	 * Constructor for a model with no existing persistent object. This class should be
+	 * Serializable so that the new object can be stored in the session until it is persisted.
+	 * If serialization is impossible, call setRetainUnsaved(false) and the object will be discarded
+	 * and recreated with each request.
 	 * @param objectClass class to be loaded and stored by Hibernate
 	 */
 	public HibernateObjectModel(Class objectClass) {
@@ -82,8 +81,8 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	}
 	
 	/**
-	 * Construct with a Hibernate persistent object.
-	 * @param persistentObject must already be contained in the Hibernate session
+	 * Construct with an entity.
+	 * @param persistentObject should be previously persisted or Serializable for temp storage.
 	 */
 	public HibernateObjectModel(Object persistentObject) {
 		setObject(null, persistentObject);
@@ -191,8 +190,11 @@ public class HibernateObjectModel extends LoadableWritableModel {
 			if (objectId == null && queryString == null && criteriaBuilder == null && queryBuilder == null) {
 				if (retainUnsaved && retainedObject != null)
 					return retainedObject;
-				else if (retainUnsaved)
+				else if (retainUnsaved) try {
 					return retainedObject = (Serializable) objectClass.newInstance();
+				} catch (ClassCastException e) {
+					throw new WicketRuntimeException("Unsaved entity must be Serializable or retainUnsaved set to false; see HibernateObjectModel javadocs.");
+				}
 				else
 					return objectClass.newInstance();
 			}

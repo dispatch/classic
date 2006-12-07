@@ -61,13 +61,8 @@ public class DataForm extends Form {
 		super(id, new BoundCompoundPropertyModel(new HibernateObjectModel(modelClass)));
 	}
 	
-	/**
-	 * Tells the form's persistant model to retain objects in the session unil they are saved to
-	 * persistant storage.
-	 * @return this, for chaining
-	 */
+	/** @deprecated retain unsaved is now the default behavior; this method does nothing */
 	public DataForm retainUnsaved() {
-		getPersistentObjectModel().setRetainUnsaved(true);
 		return this;
 	}
 	
