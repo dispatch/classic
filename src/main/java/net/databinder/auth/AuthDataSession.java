@@ -45,7 +45,6 @@ import wicket.util.time.Duration;
 
 public class AuthDataSession extends DataSession {
 	private IModel user;
-	private Class userClass;
 	public static final String AUTH_COOKIE = "AUTH", USERNAME_COOKIE = "USER";
 	
 	/**
@@ -55,7 +54,6 @@ public class AuthDataSession extends DataSession {
 	 */
 	protected AuthDataSession(IAuthSettings application) {
 		super((WebApplication)application);
-		userClass = application.getUserClass();
 	}
 	
 	/**
@@ -165,8 +163,9 @@ public class AuthDataSession extends DataSession {
 	 */
 	protected IModel getUser(final String username) {
 		try {
-			IModel user = new HibernateObjectModel(userClass, 
-					((IAuthSettings)getApplication()).getUserCriteriaBuilder(username)); 
+			IAuthSettings app = (IAuthSettings)getApplication();
+			IModel user = new HibernateObjectModel(app.getUserClass(), 
+					app.getUserCriteriaBuilder(username)); 
 			if (user.getObject(null) != null)
 				return user;
 			return null;	// no results
