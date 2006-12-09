@@ -36,13 +36,11 @@ body, td, th, select, input, li {
 #navcolumn li.expanded {
   background-image: none;
 }
-#navcolumn li a, #navcolumn li span.group {
+#navcolumn li a, #navcolumn li.group {
   font-weight:normal;
 }
-#navcolumn li span.group {
-}
 #navcolumn li.grouped {
-  margin-left: .5em;
+  margin-left: .6em;
 }
 #leftColumn a, #leftColumn a:visited {
   border: none;
@@ -55,7 +53,7 @@ body, td, th, select, input, li {
   margin-top: 30px;
 }
 a:link {
-  color: #315F29;
+  color: #4F7F47;
   padding: .2em 0 0 0;
   border-bottom: solid 1px #C7DFC3;
 }
@@ -144,14 +142,9 @@ dd {
   padding:0;
   margin-left: 0;
 }
-.source pre, tt {
+.source pre, pre, tt {
   font-family: 'Lucida Sans Typewriter', monospace;
-}
-tt {
- 	font-size: 9pt;
-}
-.source pre {
- 	font-size: 8pt;
+  font-size: 85%;
 }
 #footer {
   padding-top: 2em;
