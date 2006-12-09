@@ -31,9 +31,18 @@ body, td, th, select, input, li {
 #navcolumn li {
   font-size: 8pt;
   line-height: 2;
+  font-weight:bold;
 }
 #navcolumn li.expanded {
   background-image: none;
+}
+#navcolumn li a, #navcolumn li span.group {
+  font-weight:normal;
+}
+#navcolumn li span.group {
+}
+#navcolumn li.grouped {
+  margin-left: .5em;
 }
 #leftColumn a, #leftColumn a:visited {
   border: none;
@@ -46,7 +55,7 @@ body, td, th, select, input, li {
   margin-top: 30px;
 }
 a:link {
-  color: #333;
+  color: #315F29;
   padding: .2em 0 0 0;
   border-bottom: solid 1px #C7DFC3;
 }
@@ -56,7 +65,7 @@ a:visited  {
   border-bottom: solid 1px #bbb;
 }
 #contentBox a:hover, #navcolumn li a:hover {
-  background-color: #D5EFD1;
+  color: #159800;
   border-bottom: solid 1px #159800;
 }
 .section {
@@ -150,4 +159,3 @@ tt {
   font-size: 7pt;
   color: #888;
 }
-
