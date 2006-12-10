@@ -38,6 +38,7 @@ public class HibernateListModel extends LoadableDetachableModel {
 	private IQueryBuilder queryBuilder;
 	private Class objectClass;
 	private ICriteriaBuilder criteriaBuilder;
+	private boolean cacheable = false;
 	
 	/**
 	 * Contructor for a simple query.
@@ -45,6 +46,16 @@ public class HibernateListModel extends LoadableDetachableModel {
 	 */
 	public HibernateListModel(String queryString) {
 		this.queryString = queryString;
+	}
+	
+	/**
+	 * Contructor for a simple query.
+	 * @param queryString query with no parameters
+	 * @param cacheable sets query to cacheable if true 
+	 */
+	public HibernateListModel(String queryString, boolean cacheable) {
+		this(queryString);
+		this.cacheable = cacheable;
 	}
 	
 	/**
@@ -94,6 +105,8 @@ public class HibernateListModel extends LoadableDetachableModel {
 			Query query = session.createQuery(queryString);
 			if (queryBinder != null)
 				queryBinder.bind(query);
+			else if (cacheable)
+				query.setCacheable(true);
 			return query.list();
 		}
 		if (queryBuilder != null) {
