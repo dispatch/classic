@@ -49,7 +49,7 @@ public class DataConversationRequestCycle extends DataRequestCycle {
 
 	@Override
 	protected void onBeginRequest() {
-		DataConversationSession webSession = (DataConversationSession)getSession();
+		DataSession webSession = (DataSession)getSession();
 		
 		org.hibernate.classic.Session sess = webSession.getConversationSession();
 		if (sess == null)
@@ -73,7 +73,7 @@ public class DataConversationRequestCycle extends DataRequestCycle {
 	
 	@Override
 	protected void closeSession() {
-		((DataConversationSession)getSession()).closeConversationSession();
+		((DataSession)getSession()).closeConversationSession();
 	}
 
 	/** 

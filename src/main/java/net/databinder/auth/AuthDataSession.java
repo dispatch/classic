@@ -46,7 +46,7 @@ import wicket.util.time.Duration;
 public class AuthDataSession extends DataSession {
 	private IModel user;
 	public static final String AUTH_COOKIE = "AUTH", USERNAME_COOKIE = "USER";
-	
+
 	/**
 	 * Initialize new session. Retains user class from AuthDataApplication instance.
 	 * @param application must be WebApplication subclass
@@ -54,6 +54,10 @@ public class AuthDataSession extends DataSession {
 	 */
 	protected AuthDataSession(IAuthSettings application) {
 		super((WebApplication)application);
+	}
+	
+	protected AuthDataSession(IAuthSettings application, boolean useConversationSession) {
+		super((WebApplication)application, useConversationSession);
 	}
 	
 	/**
