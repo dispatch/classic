@@ -51,7 +51,7 @@ public class DataConversationRequestCycle extends DataRequestCycle {
 	protected void onBeginRequest() {
 		DataConversationSession webSession = (DataConversationSession)getSession();
 		
-		org.hibernate.classic.Session sess = webSession.getConversataionSession();
+		org.hibernate.classic.Session sess = webSession.getConversationSession();
 		if (sess == null)
 			sess = webSession.openConversationSession();
 		

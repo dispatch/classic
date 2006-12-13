@@ -47,7 +47,7 @@ public class DataConversationSession extends WebSession {
 		};
 	}
 
-	protected org.hibernate.classic.Session getConversataionSession() {
+	protected org.hibernate.classic.Session getConversationSession() {
 		return conversationSession;
 	}
 
