@@ -19,7 +19,6 @@
 
 package net.databinder;
 
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import wicket.WicketRuntimeException;
@@ -42,7 +41,7 @@ public class DataStaticService {
 		return hibernateSessionFactory;
 	}
 	
-	public static Session getHibernateSession() {
+	public static org.hibernate.classic.Session getHibernateSession() {
 		return hibernateSessionFactory.getCurrentSession();
 	}
 	

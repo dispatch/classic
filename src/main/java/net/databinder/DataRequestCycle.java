@@ -78,9 +78,14 @@ public class DataRequestCycle extends WebRequestCycle {
 
 	@Override
 	protected void onBeginRequest() {
+		openHibernateSession();
+	}
+	
+	protected org.hibernate.classic.Session openHibernateSession() {
 		org.hibernate.classic.Session sess = DataStaticService.getHibernateSessionFactory().openSession();
 		sess.beginTransaction();
 		ManagedSessionContext.bind(sess);
+		return sess;
 	}
 
 	/**

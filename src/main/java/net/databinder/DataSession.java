@@ -19,8 +19,7 @@
 
 package net.databinder;
 
-import org.hibernate.FlushMode;
-
+import net.databinder.conv.DataConversationRequestCycle;
 import wicket.IRequestCycleFactory;
 import wicket.Request;
 import wicket.RequestCycle;
@@ -39,17 +38,15 @@ import wicket.protocol.http.WebSession;
  * @author Timothy Bennett
  */
 public class DataSession extends WebSession {
-	/** Always null unless conversation sessions are enabled. */
-	private org.hibernate.classic.Session conversationSession;
-	private boolean useConversationSesison = false;
+	private boolean supportConversationSession = false;
 
 	public DataSession(WebApplication application) {
 		super(application);
 	}
 
-	public DataSession(WebApplication application, boolean useConversationSession) {
+	public DataSession(WebApplication application, boolean supportConversationSession) {
 		super(application);
-		this.useConversationSesison = useConversationSession;
+		this.supportConversationSession = supportConversationSession;
 	}
 
 	/**
@@ -59,40 +56,11 @@ public class DataSession extends WebSession {
 	public IRequestCycleFactory getRequestCycleFactory() {
 		return new IRequestCycleFactory() {
 			public RequestCycle newRequestCycle(Session session, Request request, Response response) {
-				if (useConversationSesison)
+				if (supportConversationSession)
 				    return new DataConversationRequestCycle((WebSession)session, (WebRequest)request, (WebResponse)response);
 				else
 					return new DataRequestCycle((WebSession)session, (WebRequest)request, (WebResponse)response);
 			};
 		};
-	}
-
-	protected org.hibernate.classic.Session getConversationSession() {
-		if (!useConversationSesison)
-			throw new UnsupportedOperationException("Web session not initialized for long Hibernate sessions");
-		return conversationSession;
-	}
-
-	protected org.hibernate.classic.Session openConversationSession() {
-		if (!useConversationSesison)
-			throw new UnsupportedOperationException("Web session not initialized for long Hibernate sessions");
-		closeConversationSession();
-		conversationSession = DataStaticService.getHibernateSessionFactory().openSession();
-		conversationSession.setFlushMode(FlushMode.MANUAL);
-		return conversationSession;
-	}
-	
-	protected void closeConversationSession() {
-		if (!useConversationSesison)
-			throw new UnsupportedOperationException("Web session not initialized for long Hibernate sessions");
-		if (conversationSession == null)
-			return;
-		if (conversationSession.isOpen()) {
-			if (conversationSession.getTransaction().isActive())
-				conversationSession.getTransaction().rollback();
-
-			conversationSession.close();
-		}
-		conversationSession = null;
 	}
 }
