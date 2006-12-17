@@ -26,7 +26,6 @@ import net.databinder.models.HibernateObjectModel;
 
 import org.hibernate.Session;
 
-import wicket.markup.html.form.Form;
 import wicket.model.BoundCompoundPropertyModel;
 
 /**
@@ -35,7 +34,7 @@ import wicket.model.BoundCompoundPropertyModel;
  * form can be a child component of any Wicket page.
  * @author Nathan Hamblen
  */
-public class DataForm extends Form {
+public class DataForm extends DataFormBase {
 	private Serializable version;
 	
 	/**
@@ -128,8 +127,7 @@ public class DataForm extends Form {
 			session.save(modelObject);
 			setPersistentObject(modelObject);	// tell model this object is now bound
 		}
-		session.flush(); // needed for conv. sessions, harmless otherwise
-		session.getTransaction().commit();
+		super.onSubmit();	// flush and commit session
 		// if version is present it should have changed
 		if (version != null) {
 			version = getPersistentObjectModel().getVersion();
@@ -157,7 +155,9 @@ public class DataForm extends Form {
 	}
 	
 	/**
-	 * Deletes the form's model object from persistent storage.
+	 * Deletes the form's model object from persistent storage. Flushes change so that
+	 * queries executed in the same request (e.g., in a HibernateListModel) will not return 
+	 * this object.
 	 * @return true if the object was deleted, false if it did not exist
 	 */
 	protected boolean deletePersistentObject() {

@@ -5,6 +5,7 @@ body {
 	font-size: 9pt;
 	line-height: 1.3em;
 	color: #6F6F6F;
+	padding: 0 .5em;
 }
 h1,h2,h3,h4,h5,h6,h7,h8 {
 	color: #E9601A;
@@ -95,4 +96,11 @@ tr.headers th.wicket_orderUp
 {
 	background-color: #DFDFFF;
 	background-image: url(arrow_down.png); 
+}
+
+/* Modal Windows */
+
+div.wicket-modal div.w_content_2 div.w_content_3 {
+	border: none;
+	padding: 0 1.5em;
 }
