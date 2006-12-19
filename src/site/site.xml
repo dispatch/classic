@@ -3,35 +3,13 @@
   <bannerLeft>
     <name>Databinder</name>
     <src>/images/logo.png</src>
-    <href>/index.html</href>
+    <href>/site/show/overview</href>
     <alt>Databinder: a simple bridge from Wicket to Hibernate</alt>
   </bannerLeft>
   <publishDate position="left" format="EEEE, MMMM d, yyyy"/>
   <body>
     <menu name="Databinder">
-      <item name="Overview" href="index.html"/>
-      <item name="Screencasts" href="screencast/index.html" collapse="false">
-        <item name="Graffiti" href="screencast/graffiti.html"/>
-      </item>
-      <item name="Examples" href="examples.html" collapse="false" >
-        <item name="Graffiti" href="graffiti.html"/>
-        <item name="Bookmarks" href="bookmarks.html"/>
-        <item name="Phone directory" href="phone-directory.html"/>
-        <item name="Recipe book" href="recipe-book.html"/>
-        <item name="Baseball players" href="baseball.html"/>
-        <item name="Message floater" href="message.html"/>
-      </item>
-      <item name="Setup guide" href="setup-guide.html" collapse="false">
-        <item name="Prequisites" href="pre-reqs.html"/>
-        <item name="Basic setup" href="basic-setup.html"/>
-        <item name="Workspace" href="workspace.html"/>
-      </item>
-      <item name="Databinder 101" href="/manual/" />
-      <item name="Javadoc" href="javadoc/"/>
-      <item name="Releases" href="releases.html"/>
-      <item name="License" href="license.html" />
-      <item name="Forum" href="forum/"/>
-      <item name="FAQ" href="faq.html"/>
+      <item name="Main site" href="/site/show/overview"/>
     </menu>
   </body>
 </project>
