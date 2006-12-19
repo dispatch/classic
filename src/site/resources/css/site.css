@@ -21,6 +21,7 @@ body, td, th, select, input, li {
 }
 #bodyColumn{
   margin-left: 13em;
+  width: 45em;
 }
 #navcolumn {
   padding-top: 1.2em;
@@ -28,7 +29,13 @@ body, td, th, select, input, li {
 #navcolumn h5 {
   display: none;
 }
-#navcolumn li {
+#section-nav {
+  position: fixed;
+  bottom: 1.5em;
+  left: 55em;
+}
+#navcolumn li, #section-nav li {
+  list-style-type: none;
   font-size: 8pt;
   line-height: 2;
   font-weight:bold;
@@ -36,13 +43,13 @@ body, td, th, select, input, li {
 #navcolumn li.expanded {
   background-image: none;
 }
-#navcolumn li a, #navcolumn li.group {
+#navcolumn li a, #navcolumn li.group, #section-nav li a {
   font-weight:normal;
 }
 #navcolumn li.grouped {
   margin-left: .6em;
 }
-#leftColumn a, #leftColumn a:visited {
+#leftColumn a, #leftColumn a:visited, #section-nav li a {
   border: none;
 }
 #navcolumn li.expanded a, #navcolumn li.none a {
@@ -62,7 +69,7 @@ a:visited  {
   padding: .2em 0 0 0;
   border-bottom: solid 1px #bbb;
 }
-#contentBox a:hover, #navcolumn li a:hover {
+#contentBox a:hover, #navcolumn li a:hover, #section-nav li a:hover {
   color: #159800;
   border-bottom: solid 1px #159800;
 }
