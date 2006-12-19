@@ -26,8 +26,9 @@ package net.databinder.auth;
  * subclass AuthDataSession; use your <tt>AuthDataApplication</tt> subclass to specify
  * a user class and criteria builder as needed.</p>
  */
-import javax.persistence.NonUniqueResultException;
 import javax.servlet.http.Cookie;
+
+import org.hibernate.NonUniqueResultException;
 
 import net.databinder.DataRequestCycle;
 import net.databinder.DataSession;
