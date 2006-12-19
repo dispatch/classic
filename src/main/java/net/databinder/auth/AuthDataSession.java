@@ -26,15 +26,13 @@ package net.databinder.auth;
  * subclass AuthDataSession; use your <tt>AuthDataApplication</tt> subclass to specify
  * a user class and criteria builder as needed.</p>
  */
+import javax.persistence.NonUniqueResultException;
 import javax.servlet.http.Cookie;
 
 import net.databinder.DataRequestCycle;
 import net.databinder.DataSession;
 import net.databinder.auth.data.IUser;
 import net.databinder.models.HibernateObjectModel;
-
-import org.hibernate.HibernateException;
-
 import wicket.Application;
 import wicket.RequestCycle;
 import wicket.WicketRuntimeException;
@@ -173,7 +171,7 @@ public class AuthDataSession extends DataSession {
 			if (user.getObject(null) != null)
 				return user;
 			return null;	// no results
-		} catch (HibernateException e){
+		} catch (NonUniqueResultException e){
 			throw new WicketRuntimeException("Multiple users returned for query", e); 
 		}
 	}
