@@ -31,7 +31,7 @@ body, td, th, select, input, li {
 }
 #section-nav {
   position: fixed;
-  bottom: 1.5em;
+  bottom: 0.5em;
   left: 55em;
 }
 #navcolumn li, #section-nav li {
