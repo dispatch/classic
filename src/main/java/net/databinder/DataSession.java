@@ -32,25 +32,37 @@ import wicket.protocol.http.WebSession;
 
 /**
  * WebSession subclass whose request cycle factory instantiates DataRequestCycle
- * objects.
+ * objects, or if requested, DataConversationRequestCycle objects.
  *
+ *@see DataRequestCycle
+ *@see DataConversationRequestCycle
  * @author Nathan Hamblen
  * @author Timothy Bennett
  */
 public class DataSession extends WebSession {
 	private boolean supportConversationSession = false;
 
+	/**
+	 * Constructor for standard Hibernate request cycle binding.
+	 * @param application the application this applies to
+	 */
 	public DataSession(WebApplication application) {
 		super(application);
 	}
 
+	/**
+	 * Constructor for conversational Hibernate request cycle binding.
+	 * @param application the application this applies to
+	 * @param supportConversationSession if true, enable conversational binding
+	 */
 	public DataSession(WebApplication application, boolean supportConversationSession) {
 		super(application);
 		this.supportConversationSession = supportConversationSession;
 	}
 
 	/**
-	 * Factory for DataRequestCycle objects.
+	 * Factory for DataRequestCycle or DataConversationRequestCycle objects, depending
+	 * on how this DataSession was constructed.
 	 */
 	@Override
 	public IRequestCycleFactory getRequestCycleFactory() {
