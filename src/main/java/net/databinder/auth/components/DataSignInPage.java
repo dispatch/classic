@@ -40,6 +40,9 @@ public class DataSignInPage extends WebPage {
 	/** Registration panel whose visibility is controlled from this class. */
 	private Panel registerPanel;
 
+	/** Sign-in panel whose visibility is controlled from this class. */
+	private Panel signInPanel;
+
 	/**
 	 * Displays sign in page. Checks that the page being instantiated is of the type returned
 	 * by AuthDataApplication.getSignInPageClass().
@@ -77,15 +80,18 @@ public class DataSignInPage extends WebPage {
 			}
 		}));
 		
-		add(new DataSignInPanel("signInPanel") {
-			@Override
-			public boolean isVisible() {
-				return !register;
-			}
-		});
-		
+		add(signInPanel = getSignInPanel("signInPanel"));
 		add(registerPanel = getRegisterPanel("registerPanel"));
 		setRegister(register);
+	}
+	
+	/**
+	 * Override to use subclass of DataSignInPanel or some other panel.
+	 * @param id use this id for your registration panel
+	 * @return panel that appears for signing in 
+	 */
+	protected Panel getSignInPanel(String id) {
+		return new DataSignInPanel(id);
 	}
 	
 	/**
@@ -110,5 +116,6 @@ public class DataSignInPage extends WebPage {
 	protected void setRegister(boolean register) {
 		this.register = register;
 		registerPanel.setVisible(register);
+		signInPanel.setVisible(!register);
 	}
 }
