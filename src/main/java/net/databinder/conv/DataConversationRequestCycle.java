@@ -39,16 +39,29 @@ import wicket.protocol.http.WebSession;
 import wicket.request.target.component.IBookmarkablePageRequestTarget;
 import wicket.request.target.component.listener.AbstractListenerInterfaceRequestTarget;
 
+/**
+ * Supports extended Hibernate sessions for long conversations. This is useful for a page or
+ * a series of pages where changes are made to an entity that can not be immediately
+ * committed. Using a "conversation" session, HibernateObjectModels are used normally, but
+ * until the session is flushed the changes are not made to persistent storage.   
+ * @author Nathan Hamblen
+ */
 public class DataConversationRequestCycle extends DataRequestCycle {
 	public DataConversationRequestCycle(final WebSession session, final WebRequest request, final Response response) {
 		super(session, request, response);
 	}
 	
+	/**
+	 * Does nothing; The session is open or retreived only when the request target is known.
+	 */
 	@Override
 	protected void onBeginRequest() {
-		// do nothing, we have to wait until the target is determined
 	}
 	
+	/**
+	 * Opens or retreives a session for the given request target.
+	 * @param target (e.g. clicked item) for this request
+	 */
 	@SuppressWarnings("unchecked")
 	public void openSessionFor(IRequestTarget target) {
 		if (target instanceof AbstractListenerInterfaceRequestTarget) {
@@ -81,6 +94,10 @@ public class DataConversationRequestCycle extends DataRequestCycle {
 		}
 	}
 	
+	/**
+	 * Inspects responding page to determine if current Hibernate session should be closed
+	 * or left open and stored in the page.
+	 */
 	@Override
 	protected void onEndRequest() {
 		org.hibernate.classic.Session sess = DataStaticService.getHibernateSession();
