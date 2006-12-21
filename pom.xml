@@ -72,13 +72,13 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-annotations</artifactId>
-      <version>3.2.0.ga</version>
+      <version>3.2.1.ga</version>
     </dependency>
-    <dependency>
+<!--    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate</artifactId>
       <version>3.2.1.ga</version>
-    </dependency>
+    </dependency> -->
     <dependency>
       <groupId>org.apache.wicket</groupId>
       <artifactId>wicket-auth-roles</artifactId>
