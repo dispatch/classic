@@ -27,6 +27,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 
+import wicket.markup.repeater.data.IDataProvider;
+
 /**
  * Provides base functionality for DataView IDataProvider. Because Databinder does not link
  * to wicket-extensions, this class does not declare its implementation of IDataProvider.
@@ -36,7 +38,7 @@ import org.hibernate.criterion.Projections;
  * @see wicket.extensions.markup.html.repeater.data.IDataProvider  
  * @author Nathan Hamblen
  */
-public abstract class DatabinderProvider  {
+public abstract class DatabinderProvider implements IDataProvider  {
 	/**
 	 * @param object object DataView would like to wrap
 	 * @return object wrapped in a HibernateObjectModel
