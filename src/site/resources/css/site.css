@@ -72,6 +72,7 @@ a:visited  {
 }
 #contentBox ul, #contentBox ol {
   margin-left: 0;
+  margin-top: 1.5em;
   padding-left: 0em;
 }
 #contentBox ol li {
@@ -98,7 +99,7 @@ a:visited  {
   font-weight: normal;
 }
 #contentBox h1 {
-  font-size: 100%;
+  font-size: 164%;
   margin: 12px 0 0 0;
 }
 #contentBox h1 img {
@@ -114,7 +115,11 @@ a:visited  {
 #contentBox h3 {
   font-size: 145%;
   line-height: 1.03;
-  margin: 1.03em 0;
+  margin: .8em 0 0 0;
+}
+#contentBox h3 img{
+  position: relative;
+  left: -2px;
 }
 #contentBox h4, dt a{
   font-size: 118%;
