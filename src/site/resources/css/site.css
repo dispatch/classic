@@ -100,11 +100,11 @@ a:visited  {
 }
 #contentBox h1 {
   font-size: 164%;
-  margin: 12px 0 0 0;
+  margin: 15px 0 0 0;
 }
 #contentBox h1 img {
   position: relative;
-  top: 6px;
+  top: 3px;
   left: -3px;
 }
 #contentBox h2 {
@@ -115,10 +115,11 @@ a:visited  {
 #contentBox h3 {
   font-size: 145%;
   line-height: 1.03;
-  margin: .8em 0 0 0;
+  margin: .7em 0 0 0;
 }
 #contentBox h3 img{
   position: relative;
+  top: 2px;
   left: -2px;
 }
 #contentBox h4, dt a{
