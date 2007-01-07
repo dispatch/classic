@@ -20,6 +20,7 @@
 package net.databinder;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.context.ManagedSessionContext;
 
 import wicket.WicketRuntimeException;
 
@@ -42,7 +43,7 @@ public class DataStaticService {
 	}
 	
 	public static org.hibernate.classic.Session getHibernateSession() {
-		return hibernateSessionFactory.getCurrentSession();
+		return getHibernateSessionFactory().getCurrentSession();
 	}
 	
 	/**
@@ -50,5 +51,42 @@ public class DataStaticService {
 	 */
 	public static void setSessionFactory(SessionFactory sessionFactory) {
 		hibernateSessionFactory = sessionFactory;
+	}
+	
+	/**
+	 * Wraps callback in new a Hibernate session and transaction that are closed after the callback
+	 * returns. This is to be used only when a thread-bound session is not available, such as
+	 * application init or an external Web service request. Uncommited transactions 
+	 * are rolled back, as with DataRequestCycle. Be careful of returning detached Hibernate 
+	 * objects that may not be fully loaded with data; consider using projections / scalar
+	 * queries instead.
+	 * @param callback
+	 */
+	public static Object wrapInHibernateSession(Callback callback) {
+		SessionFactory sf = getHibernateSessionFactory();
+		if (ManagedSessionContext.hasBind(hibernateSessionFactory))
+			throw new WicketRuntimeException("This thread is already bound to a Hibernate session.");
+		org.hibernate.classic.Session sess = sf.openSession();
+		try {
+			sess.beginTransaction();
+			ManagedSessionContext.bind(sess);
+			return callback.call();
+		} finally {
+			try {
+				if (sess.getTransaction().isActive())
+					sess.getTransaction().rollback();
+			} finally {
+				sess.close();
+				ManagedSessionContext.unbind(sf);
+			}
+		}
+	}
+	
+	/**
+	 * Callback for wrapInHibernateSession().
+	 */
+	public interface Callback {
+		/** Within call, session is available from DataStaticService.getHibernateSession().  */
+		Object call(); 
 	}
 }
