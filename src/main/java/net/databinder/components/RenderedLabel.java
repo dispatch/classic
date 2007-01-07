@@ -125,8 +125,12 @@ public class RenderedLabel extends Image  {
 		if (isShared) {
 			if (labelHash != curHash) {
 				String hash = Integer.toHexString(curHash);
-				SharedResources shared = getApplication().getSharedResources(); 
-				resource = (RenderedTextImageResource) shared.get(RenderedLabel.class, hash, null, hash, false);
+				SharedResources shared = getApplication().getSharedResources();
+				try { resource = (RenderedTextImageResource) shared.get(RenderedLabel.class, hash, null, null, false); }
+				catch (ClassCastException e) {
+					 // was placeholder for missing PackageResourceReference
+					shared.remove(shared.resourceKey(RenderedLabel.class, hash, null, null));
+				}
 				if (resource == null)
 					shared.add(RenderedLabel.class, hash, null, null, 
 							resource = new RenderedTextImageResource(this, true));
