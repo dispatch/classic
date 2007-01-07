@@ -60,9 +60,13 @@ import wicket.util.string.Strings;
 public class RenderedLabel extends Image  {
 	private static final long serialVersionUID = 1L;
 
-	private Color backgroundColor = Color.WHITE;
-	private Color color = Color.BLACK;
-	private Font font = new Font("sans", Font.PLAIN, 14);
+	private static Font defaultFont =  new Font("sans", Font.PLAIN, 14);
+	private static Color defaultColor = Color.BLACK;
+	private static Color defaultBackgroundColor = Color.WHITE;
+	
+	private Font font = defaultFont;
+	private Color color = defaultColor;
+	private Color backgroundColor = defaultBackgroundColor;
 	private Integer maxWidth;
 	
 	/** If true, resource is shared across application with a permanent URL. */
@@ -176,9 +180,12 @@ public class RenderedLabel extends Image  {
 
 		tag.put("alt", getText());
 	}
-	
+
 	protected int getLabelHash() {
-		String text = getText();
+		return getLabelHash(getText(), font, color, backgroundColor, maxWidth);
+	}
+
+	protected static int getLabelHash(String text, Font font, Color color, Color backgroundColor, Integer maxWidth) {
 		if (text == null) return 0;
 		
 		int hash= text.hashCode() ^ font.hashCode() ^ color.hashCode();
@@ -206,6 +213,28 @@ public class RenderedLabel extends Image  {
 	}
 	
 	/**
+	 * Load shared resource into pool so it will be available even before a page using the
+	 * rendered label is first rendered. May be needed if a page is cachable and the context 
+	 * is restarted, for example.
+	 * @param text
+	 * @param font uses default if null
+	 * @param color uses default if null
+	 * @param backgroundColor uses default if null
+	 * @param maxWidth
+	 */
+	public static void loadSharedResources(String text, Font font, Color color, Color backgroundColor, Integer maxWidth) {
+		if (font == null) font = defaultFont;
+		if (color == null) color = defaultColor;
+		if (backgroundColor == null) backgroundColor = defaultBackgroundColor;
+		
+		String hash = Integer.toHexString(getLabelHash(text, font, color, backgroundColor, maxWidth));
+		SharedResources shared = wicket.Application.get().getSharedResources();
+
+		shared.add(RenderedLabel.class, hash, null, null, 
+				new RenderedTextImageResource(text, font, color, backgroundColor, maxWidth));
+	}
+	
+	/**
 	 * Inner class that renders the model text into an image  resource.
 	 * @see wicket.markup.html.image.resource.DefaultButtonImageResource
 	 */
@@ -217,15 +246,29 @@ public class RenderedLabel extends Image  {
 		private Integer maxWidth;
 		private String renderedText;
 
-		public RenderedTextImageResource(RenderedLabel label, boolean isShared)
-		{
+		private RenderedTextImageResource() {
 			super(1, 1,"png");	// tiny default that will resize to fit text
 			setType(BufferedImage.TYPE_INT_ARGB); // allow alpha transparency
-			
+		}
+		
+		public RenderedTextImageResource(RenderedLabel label, boolean isShared)
+		{
+			this();
 			setCacheable(isShared);
 			setState(label);
 		}
+
+		public RenderedTextImageResource(String text, Font font, Color color, Color backgroundColor, Integer maxWidth) {
+			this();
+			setCacheable(true);
+			this.backgroundColor = backgroundColor;
+			this.color = color;
+			this.font = font;
+			this.maxWidth = maxWidth;
+			renderedText = text;
+		}
 		
+
 		protected void setState(RenderedLabel label) {
 			backgroundColor = label.getBackgroundColor();
 			color = label.getColor();
