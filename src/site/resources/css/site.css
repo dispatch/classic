@@ -105,7 +105,7 @@ a:visited  {
 #contentBox h1 img {
   position: relative;
   top: 3px;
-  left: -3px;
+  left: -2px;
 }
 #contentBox h2 {
   font-size: 164%;
@@ -120,7 +120,7 @@ a:visited  {
 #contentBox h3 img{
   position: relative;
   top: 2px;
-  left: -2px;
+  left: -1px;
 }
 #contentBox h4, dt a{
   font-size: 118%;
