@@ -101,8 +101,11 @@ public class DataConversationRequestCycle extends DataRequestCycle {
 	@Override
 	protected void onEndRequest() {
 		org.hibernate.classic.Session sess = DataStaticService.getHibernateSession();
+		boolean transactionComitted = false;
 		if (sess.getTransaction().isActive())
 			sess.getTransaction().rollback();
+		else
+			transactionComitted = true;
 		
 		Page page = getResponsePage() ;
 		
@@ -111,7 +114,7 @@ public class DataConversationRequestCycle extends DataRequestCycle {
 			if (page instanceof IConversationPage) {
 				IConversationPage convPage = (IConversationPage)page;
 				// close if not dirty contains no changes
-				if (!sess.isDirty()) {
+				if (transactionComitted && !sess.isDirty()) {
 					sess.close();
 					sess = null;
 				}
