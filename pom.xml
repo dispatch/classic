@@ -17,6 +17,7 @@
   <packaging>pom</packaging>
   <modules>
     <module>databinder</module>
+    <module>databinder-dispatch</module>
   </modules>
   <scm>
     <connection>scm:svn:svn://localhost/databinder/trunk</connection>
