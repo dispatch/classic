@@ -72,9 +72,9 @@ public class RenderedLabel extends Image  {
 	/** If true, resource is shared across application with a permanent URL. */
 	private boolean isShared = false;
 	/** Hash of the most recently displayed label attributes. -1 is initial value, 0 for blank labels. */
-	int labelHash = -1;
+	private int labelHash = -1;
 	
-	RenderedTextImageResource resource;
+	private RenderedTextImageResource resource;
 	
 	/**
 	 * Constructor to be used if model is derived from a compound property model.
