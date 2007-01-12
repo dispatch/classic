@@ -1,0 +1,46 @@
+		------------------
+		Phone directory example application
+		-----------------
+		Nathan Hamblen
+		------------------
+
+Phone directory example application
+
+*Description
+
+	This small step up from the {{{bookmarks.html} bookmarks example}} manages a list of names and phone numbers. It features a live Ajax search using the {{{/javadoc/net/databinder/components/SearchPanel.html}SearchPanel}} component supplemented by a custom category filter. Categories are stored in the database because it’s just easier that way.
+	
+	If you want to see automatic data versioning in action, open two browser windows and change the same entry in each one. Hibernate’s optimistic locking will allow the first change and reject the second.
+
+**Demonstration
+
+	{{{/directory/} Try this application }} and enter your own false phone number.
+
+*Source files
+	
+	* {{{/wsvn/Databinder/directory/r1.0/src/main/java/example/DirectoryApplication.java?op=file}DirectoryApplication.java}} — <application configuration>
+
+	* {{{/wsvn/Databinder/directory/r1.0/src/main/java/example/Contact.java?op=file}Contact.java}} — <annotated data class>
+
+	* {{{/wsvn/Databinder/directory/r1.0/src/main/java/example/ListAndEdit.html?op=file}ListAndEdit.html}} — <page template>
+
+	* {{{/wsvn/Databinder/directory/r1.0/src/main/java/example/ListAndEdit.css?op=file}ListAndEdit.css}}
+
+	* {{{/wsvn/Databinder/directory/r1.0/src/main/java/example/ListAndEdit.properties?op=file}ListAndEdit.properties}} — <query store>
+
+	* {{{/wsvn/Databinder/directory/r1.0/src/main/java/example/ListAndEdit.java?op=file}ListAndEdit.java}} — <page subclass>
+
+	[]
+
+	If you’re {{{setup-guide.html} set up}} for Databinder, {{{/releases/directory-1.0.tar.gz} download and run}} this at home. You will need to add some categories yourself, after Hibernate creates the tables.
+
+*Projects for the reader
+
+	[[1]] Address fields
+
+	[[2]] Search by category
+
+
+*Next…
+
+	So now you can create, delete, and even update. But what about using panels, authentication, Textile processing, and one-to-many editing? Yeah, that’s what I thought. You’d better have a look at the next code {{{recipe-book.html}cook book}}.

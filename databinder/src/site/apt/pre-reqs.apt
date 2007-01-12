@@ -1,0 +1,31 @@
+		------------------
+		Prerequisites
+		-----------------
+		Nathan Hamblen
+		------------------
+
+Prerequisites
+
+*Java
+
+	Databinder requires a {{{http://java.sun.com/j2se/1.5.0/download.jsp}J2SE Development Kit (JDK) 5.0}} supporting Java 1.5.
+	
+	For Windows, download and execute an installer from Sun’s site. On Mac you’ll need OS 10.4 and the latest Java available through Software Update. For Linux, the Sun JDK is now included in the non-free sections of some distributions ({{{https://jdk-distros.dev.java.net/ubuntu.html}Ubuntu Dapper}}). Otherwise, there are package-wrappers and scripts available for Sun’s installer.
+
+	When running <<<java -version>>> on a command line returns at least 1.5, you’re ready for Maven.
+
+*Maven
+
+	Download {{{http://maven.apache.org/download.html}Maven 2}} if you haven’t already. (While it’s {{{faq.html#maven}possible}} to use Databinder without Maven, this guide describes the path of least resistance.)
+	
+	Installation of Maven is not automated on any platform. Instead, extract the files to an appropriate directory (<<</usr/local/>>> is good for Linux and Mac OS X, with a symlink of <<</usr/local/maven>>>) and add its bin directory to your executable search path (<<<~/.bash_profile>>> or other):
+
+-----------------------------------------------------
+export PATH=/usr/local/maven/bin:$PATH
+-----------------------------------------------------
+
+	When that's all said and done, <<<mvn -v>>> should work, and report a version number of at least 2.0.4.
+
+*Next…
+
+	Start pulling down jars for a {{{basic-setup.html}basic setup}}.

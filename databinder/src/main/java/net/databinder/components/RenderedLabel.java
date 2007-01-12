@@ -50,9 +50,8 @@ import wicket.util.string.Strings;
  * set appropriately. 
  * <p> If told to use a shared image resource, RenderedLabel will add its image
  * to the application's shared resources and reference it from a permanent, unique, 
- * browser-chacheable URL. Note that if users might request a shared resource before a
- * page containing it has rendered (after a context reload, for example) you should load
- * that resource using loadSharedResources() as the application is starting up.
+ * browser-chacheable URL. (Shared resources are incompatible with some clustering 
+ * configurations.)
  * <p> This class is inspired by, and draws code from, Wicket's DefaultButtonImageResource. </p>
  * @author Nathan Hamblen
  * @see wicket.markup.html.image.resource.DefaultButtonImageResource
@@ -73,9 +72,9 @@ public class RenderedLabel extends Image  {
 	/** If true, resource is shared across application with a permanent URL. */
 	private boolean isShared = false;
 	/** Hash of the most recently displayed label attributes. -1 is initial value, 0 for blank labels. */
-	private int labelHash = -1;
+	int labelHash = -1;
 	
-	private RenderedTextImageResource resource;
+	RenderedTextImageResource resource;
 	
 	/**
 	 * Constructor to be used if model is derived from a compound property model.

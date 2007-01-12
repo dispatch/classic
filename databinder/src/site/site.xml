@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Databinder">
+  <bannerLeft>
+    <name>Databinder</name>
+    <src>/images/logo.png</src>
+    <href>/site/show/overview</href>
+    <alt>Databinder: a simple bridge from Wicket to Hibernate</alt>
+  </bannerLeft>
+  <publishDate position="left" format="EEEE, MMMM d, yyyy"/>
+  <body>
+    <menu name="Databinder">
+      <item name="Main site" href="/site/show/overview"/>
+    </menu>
+  </body>
+</project>

@@ -1,0 +1,77 @@
+		------------------
+		Basic setup
+		-----------------
+		Nathan Hamblen
+		------------------
+
+Basic setup
+
+*Special dependencies
+
+	Most of the dependencies you need will be automatically downloaded by Maven from a remote repository, but one by Sun can’t be held there. Go to {{{http://java.sun.com/products/jta/}this page}} to get the JTA interfaces from the Download link next to “Class Files 1.0.1B,” then paste the following into a shell in your download directory:
+
+-----------------------------------------------------
+mvn install:install-file -DgroupId=javax.transaction \
+  -DartifactId=jta -Dversion=1.0.1B -Dpackaging=jar \
+  -Dfile=jta-1_0_1B-classes.zip
+-----------------------------------------------------
+
+	(Or use jta.jar from the Hibernate distribution, if you have that already — just change the <<<-Dfile=>>> parameter above.)
+
+*Maven repository mirrors
+
+	If Maven has been downloading dependencies at an acceptable speed then <<skip this step>>. Otherwise, you might benefit from one of the Maven repository mirrors.
+
+	Mirrors are defined in either the global or user-specific <<<settings.xml>>>. Unix-y people can run the commands below to download a  mirror settings file to the correct directory:
+
+-----------------------------------------------------
+curl http://databinder.net/releases/settings.xml > ~/.m2/settings.xml
+-----------------------------------------------------
+
+	Windows users, download the {{{http://databinder.net/releases/settings.xml }same file}} and put it in <<<\\Documents and Settings\\USERNAME\\.m2\\>>> 
+
+	This settings file is pulled from Maven’s {{{http://maven.apache.org/guides/mini/guide-mirror-settings.html}guide to mirrors}}, with the Ibiblio repository commented out. The mirror picker seems to like the last repository in the list, though its behavior is undocumented.
+
+*Create a Databinder project
+
+~~~	<<Note:>> The newest version of Databinder and its data-app archetype are not yet available from the central Maven repository. Please download {{{http://databinder.net/releases/myExample.tar.gz}this sample project}}, which is identical to the one that would be created with the following command:
+
+	To get started, tell Maven to create a project based on Databinder’s “data-app” archetype.
+
+-----------------------------------------------------
+mvn archetype:create -DarchetypeGroupId=net.databinder \
+  -DarchetypeArtifactId=data-app -DarchetypeVersion=1.0 \
+  -DgroupId=example -DartifactId=myExample
+-----------------------------------------------------
+
+	A Maven groupId is your company or organization name, “example” is used here and “myExample” is the name of the project. 
+
+*Database configuration
+
+	Your project will have a default database configuration in <<<src/main/resources/hibernate.properties>>>. If you have a MySQL server running on localhost with no root password (Don’t wear a seat belt either, huh?), you don‘t need to change anything.
+
+	This is also your chance to change the database name if you don’t want it to match your artifactId. Create the database if you need to, but don’t worry about creating tables because Hibernate will do that itself.
+
+-----------------------------------------------------
+mysqladmin -uroot create myExample
+-----------------------------------------------------
+
+*Fire it up
+
+	<<Note:>> All <<<mvn>>> commands below should be run from the root directory of your project.
+
+	Your “data-app” based project is configured for the {{{http://jetty.mortbay.org/jetty/maven-plugin/index.html}Jetty Maven plugin}}, so you can start the server in one step:
+
+-----------------------------------------------------
+mvn jetty:run
+-----------------------------------------------------
+
+	More downloading ensues, and eventually Jetty will start up on port 8080. Try connecting to <<<http://localhost:8080/directory/app>>> and you should see your project name in orange.
+
+	The Jetty plugin will poll the classes directory for changes. Leave it running and try editing <<<MyDataPage.java>>> (deep under the src directory) to return a different page name. Run <<<mvn compile>>>, and Jetty will see the change. Reload your browser, click through the session expiration notice, and you should see the new name.
+
+*Next…
+
+	No matter how old-school you are, editing in vi and testing your application without a debugger is not the fastest way to program.
+	
+	Set up a more efficient {{{workspace.html}workspace}} before you get too ambitious.

@@ -1,0 +1,23 @@
+		------------------
+		Example applications
+		-----------------
+		Nathan Hamblen
+		------------------
+
+Example applications
+
+		The Databinder example applications perform common database tasks (though we’ve spiced them up a bit to keep it interesting). A good way to learn the toolkit is to read through these examples, and then download and enhance them yourself. (Some improvements are suggested to get you started.)
+		
+*Examples, ordered pedagogically
+		
+		[[1]] {{{graffiti.html}Graffiti}} — <adding to a table, with a twist>
+		
+		[[2]] {{{bookmarks.html}Bookmarks}} — <colmunar listing>
+		
+		[[3]] {{{phone-directory.html}Phone directory}} — <does everything but dial the phone>
+		
+		[[4]] {{{recipe-book.html}Recipe book}} — <you could call it a CMS, but we’d have to kill you>
+		
+		[[5]] {{{baseball.html}Baseball players}} — <long dataset pagination>
+
+		[[6]] {{{message.html}Message floater}} — <Web service feeding data to an applet>
