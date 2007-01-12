@@ -1,0 +1,34 @@
+<html>
+<head>
+	<link wicket:id="dataStylesheet" rel="stylesheet" type="text/css" href="../../components/DataPage.css" />
+</head>
+<body>
+<wicket:panel>
+
+<div class="feedback" wicket:id="feedback">
+</div>
+
+<form wicket:id="signInForm" class="labelAbove">
+
+	<div class="row">
+		<label>Username</label>
+		<input wicket:id="username" type="text" value="foo@goo.moo" />
+	</div>
+	<div class="row">
+		<label>Password</label>
+		<input wicket:id="password" type="password" value="password" />
+	</div>
+	<div class="row" wicket:id="rememberMeRow">
+		<label style="float: none" for="rememberMe">
+			<input wicket:id="rememberMe" id="rememberMe"type="checkbox" />
+			Remember Me 
+		</label>
+	</div>
+	<p> <input type="submit" name="submit" value="Sign in"/> </p>
+
+</form>
+	
+</wicket:panel>
+</body>
+
+</html>

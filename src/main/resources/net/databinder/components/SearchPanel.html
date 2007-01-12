@@ -1,0 +1,31 @@
+<html>
+<head>
+<!-- apply css in a WYSIWYG editor, if server is running -->
+<link href="http://localhost:8080/directory/app/resources/net.databinder.components.DataPage/DataPage.css"  type="text/css" rel="stylesheet" />
+<wicket:head>
+<link wicket:id="searchStylesheet" href="SearchPanel.css" type="text/css" rel="stylesheet" />
+</wicket:head>
+</head>
+
+<body>
+<wicket:panel>
+
+<form wicket:id="searchForm">
+	<div class="searchPanel">
+		<table><tbody> <!-- a table calms IE's Ajax jumpiness -->
+			<tr>
+				<td><input type="submit" value="Search" /></td>
+				<td><span wicket:id="searchWrap">
+					<input class="searchField" wicket:id="search" id="search" type="text" />
+				</span></td>
+				<td><span wicket:id="clearWrap">
+					<a wicket:id="clearLink" title="Clear Search"><img src="clear.png" wicket:id="clear" /></a>
+				</span></td>
+			</tr>
+		</tbody></table>
+	</div>
+</form>
+
+</wicket:panel>
+</body>
+</html>
