@@ -1,34 +1,35 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>databinder-dispatch</artifactId>
-  <name>Databinder dispatch</name>
-  <description>Calls into services outside the JVM.</description>
-  <parent>
-    <groupId>net.databinder</groupId>
-    <artifactId>databinder-parent</artifactId>
-    <version>1.1-SNAPSHOT</version>
-  </parent>
-  <dependencies>
-    <dependency>
-      <groupId>${pom.groupId}</groupId>
-      <version>${pom.version}</version>
-      <artifactId>databinder</artifactId>
-    </dependency>
-		<dependency>
-			<groupId>org.apache.xmlrpc</groupId>
-			<artifactId>xmlrpc-client</artifactId>
-			<version>3.0</version>
-	    <exclusions>
-	      <exclusion>
-	        <artifactId>log4j</artifactId>
-	        <groupId>log4j</groupId>
-	      </exclusion>
-	    </exclusions>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache</artifactId>
-			<version>1.2.4</version>
-		</dependency>
-  </dependencies>
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ <modelVersion>4.0.0</modelVersion>
+ <artifactId>databinder-dispatch</artifactId>
+ <name>Databinder dispatch</name>
+ <description>Calls into services outside the JVM.</description>
+ <parent>
+  <groupId>net.databinder</groupId>
+  <artifactId>databinder-parent</artifactId>
+  <version>1.1-SNAPSHOT</version>
+ </parent>
+ <dependencies>
+  <dependency>
+   <groupId>${pom.groupId}</groupId>
+   <version>${pom.version}</version>
+   <artifactId>databinder</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.apache.xmlrpc</groupId>
+   <artifactId>xmlrpc-client</artifactId>
+   <version>3.0</version>
+   <exclusions>
+    <exclusion>
+     <artifactId>log4j</artifactId>
+     <groupId>log4j</groupId>
+    </exclusion>
+   </exclusions>
+  </dependency>
+  <dependency>
+   <groupId>net.sf.ehcache</groupId>
+   <artifactId>ehcache</artifactId>
+   <version>1.2.4</version>
+  </dependency>
+ </dependencies>
 </project>
