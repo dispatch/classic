@@ -1,108 +1,109 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>net.databinder</groupId>
-  <artifactId>databinder-parent</artifactId>
-  <name>Databinder parent</name>
-  <version>1.1-SNAPSHOT</version>
-  <description>A simple bridge from Wicket to Hibernate</description>
-  <url>http://databinder.net/</url>
-  <inceptionYear>2005</inceptionYear>
-  <licenses>
-    <license>
-      <name>GNU Lesser General Public License</name>
-      <url>http://www.gnu.org/copyleft/lesser.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-  <packaging>pom</packaging>
-  <modules>
-    <module>databinder</module>
-    <module>databinder-dispatch</module>
-  </modules>
-  <scm>
-    <connection>scm:svn:svn://localhost/databinder/trunk</connection>
-    <developerConnection>scm:svn:svn://localhost/databinder/trunk</developerConnection>
-  </scm>
-  <organization>
-    <name>Nathan Hamblen</name>
-  </organization>
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-release-plugin</artifactId>
-        <configuration>
-          <tagBase>svn://localhost/databinder/</tagBase>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-source-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-        <inherited>true</inherited>
-      </plugin>
-    </plugins>
-  </build>
-  <repositories>
-    <repository>
-      <id>wicket</id>
-      <name>Wicket repository</name>
-      <url>http://wicket.sourceforge.net/maven2</url>
-    </repository>
-    <repository>
-      <id>databinder-snapshots</id>
-      <name>Databinder snapshot repository</name>
-      <url>http://databinder.net/snapshot</url>
-    </repository>
-  </repositories>
-  <reporting>
-    <plugins>
-      <plugin>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>dependencies</report>
-              <report>license</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-      <plugin>
-        <artifactId>maven-site-plugin</artifactId>
-        <configuration>
-          <inputEncoding>UTF-8</inputEncoding>
-          <outputEncoding>UTF-8</outputEncoding>
-        </configuration>
-      </plugin>
-    </plugins>
-  </reporting>
-  <distributionManagement>
-    <repository>
-      <id>databinder</id>
-      <name>Databinder repository</name>
-      <url>file:///var/dbwww/maven</url>
-    </repository>
-    <snapshotRepository>
-      <id>databinder-snapshots</id>
-      <name>Databinder snapshot repository</name>
-      <url>file:///var/dbwww/snapshot</url>
-    </snapshotRepository>
-    <site>
-      <id>website</id>
-      <url>file:///var/dbwww</url>
-    </site>
-  </distributionManagement>
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ <modelVersion>4.0.0</modelVersion>
+ <groupId>net.databinder</groupId>
+ <artifactId>databinder-parent</artifactId>
+ <name>Databinder parent</name>
+ <version>1.1-SNAPSHOT</version>
+ <description>A simple bridge from Wicket to Hibernate</description>
+ <url>http://databinder.net/</url>
+ <inceptionYear>2005</inceptionYear>
+ <licenses>
+  <license>
+   <name>GNU Lesser General Public License</name>
+   <url>http://www.gnu.org/copyleft/lesser.txt</url>
+   <distribution>repo</distribution>
+  </license>
+ </licenses>
+ <packaging>pom</packaging>
+ <modules>
+  <module>databinder</module>
+  <module>databinder-dispatch</module>
+ </modules>
+ <scm>
+  <connection>scm:svn:svn://localhost/databinder/trunk</connection>
+  <developerConnection>scm:svn:svn://localhost/databinder/trunk</developerConnection>
+ </scm>
+ <organization>
+  <name>Nathan Hamblen</name>
+ </organization>
+ <build>
+  <plugins>
+   <plugin>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <configuration>
+     <source>1.5</source>
+     <target>1.5</target>
+    </configuration>
+   </plugin>
+   <plugin>
+    <artifactId>maven-release-plugin</artifactId>
+    <configuration>
+     <tagBase>svn://localhost/databinder/</tagBase>
+    </configuration>
+   </plugin>
+   <plugin>
+    <artifactId>maven-source-plugin</artifactId>
+    <executions>
+     <execution>
+      <id>attach-sources</id>
+      <goals>
+       <goal>jar</goal>
+      </goals>
+     </execution>
+    </executions>
+    <inherited>true</inherited>
+   </plugin>
+  </plugins>
+ </build>
+ <repositories>
+  <repository>
+   <id>wicket</id>
+   <name>Wicket repository</name>
+   <url>http://wicket.sourceforge.net/maven2</url>
+  </repository>
+  <repository>
+   <id>databinder-snapshots</id>
+   <name>Databinder snapshot repository</name>
+   <url>http://databinder.net/snapshot</url>
+  </repository>
+ </repositories>
+ <reporting>
+  <plugins>
+   <plugin>
+    <artifactId>maven-project-info-reports-plugin</artifactId>
+    <reportSets>
+     <reportSet>
+      <reports>
+       <report>dependencies</report>
+       <report>license</report>
+      </reports>
+     </reportSet>
+    </reportSets>
+   </plugin>
+   <plugin>
+    <artifactId>maven-site-plugin</artifactId>
+    <configuration>
+     <inputEncoding>UTF-8</inputEncoding>
+     <outputEncoding>UTF-8</outputEncoding>
+    </configuration>
+   </plugin>
+  </plugins>
+ </reporting>
+ <distributionManagement>
+  <repository>
+   <id>databinder</id>
+   <name>Databinder repository</name>
+   <url>file:///var/dbwww/maven</url>
+  </repository>
+  <snapshotRepository>
+   <id>databinder-snapshots</id>
+   <name>Databinder snapshot repository</name>
+   <url>file:///var/dbwww/snapshot</url>
+  </snapshotRepository>
+  <site>
+   <id>website</id>
+   <url>file:///var/dbwww</url>
+  </site>
+ </distributionManagement>
 </project>

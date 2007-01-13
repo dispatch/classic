@@ -1,0 +1,82 @@
+"""<?xml version="1.0" encoding="UTF-8" ?>"""
+project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://maven.apache.org/POM/4.0.0",xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"):
+
+	modelVersion: "4.0.0"
+	groupId: "net.databinder"
+	artifactId:"databinder-parent"
+	name: "Databinder parent"
+	version: "1.1-SNAPSHOT"
+	description: "A simple bridge from Wicket to Hibernate"
+	url: "http://databinder.net/"
+	inceptionYear: "2005"
+
+	licenses:
+		license:
+			name: "GNU Lesser General Public License"
+			url: "http://www.gnu.org/copyleft/lesser.txt"
+			distribution: "repo"
+
+	packaging: "pom"
+	modules:
+		module: "databinder"
+		module: "databinder-dispatch"
+	scm:
+		connection: "scm:svn:svn://localhost/databinder/trunk"
+		developerConnection: "scm:svn:svn://localhost/databinder/trunk"
+
+	organization:
+		name: "Nathan Hamblen"
+	build:
+		plugins:
+			plugin:
+				artifactId: "maven-compiler-plugin"
+				configuration:
+					source: "1.5"
+					target: "1.5"
+			plugin:
+				artifactId: "maven-release-plugin"
+				configuration:
+					tagBase: "svn://localhost/databinder/"
+			plugin:
+				artifactId: "maven-source-plugin"
+				executions:
+					execution:
+						id: "attach-sources"
+						goals:
+							goal: "jar"
+				inherited: "true"
+	repositories:
+		repository:
+			id: "wicket"
+			name: "Wicket repository"
+			url: "http://wicket.sourceforge.net/maven2"
+		repository:
+			id: "databinder-snapshots"
+			name: "Databinder snapshot repository"
+			url: "http://databinder.net/snapshot"
+	reporting:
+		plugins:
+			plugin:
+				artifactId: "maven-project-info-reports-plugin"
+				reportSets:
+					reportSet:
+						reports:
+							report: "dependencies"
+							report: "license"
+			plugin:
+				artifactId: "maven-site-plugin"
+				configuration:
+					inputEncoding: "UTF-8"
+					outputEncoding: "UTF-8"
+	distributionManagement:
+		repository:
+			id: "databinder"
+			name: "Databinder repository"
+			url: "file:///var/dbwww/maven"
+		snapshotRepository:
+			id: "databinder-snapshots"
+			name: "Databinder snapshot repository"
+			url: "file:///var/dbwww/snapshot"
+		site:
+			id: "website"
+			url: "file:///var/dbwww"
