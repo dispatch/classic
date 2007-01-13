@@ -1,0 +1,33 @@
+"""<?xml version="1.0" encoding="UTF-8" ?>"""
+project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://maven.apache.org/POM/4.0.0",xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"):
+
+	modelVersion: "4.0.0"
+	artifactId: "databinder-dispatch"
+	name: "Databinder dispatch"""
+	description: "Calls into services outside the JVM."
+
+	parent:
+		groupId: "net.databinder"
+		artifactId: "databinder-parent"
+		version: "1.1-SNAPSHOT"
+
+	dependencies:
+		dependency:
+			groupId: "${pom.groupId}"
+			version: "${pom.version}"
+			artifactId: "databinder"
+
+		dependency:
+			groupId: "org.apache.xmlrpc"
+			artifactId: "xmlrpc-client"
+			version: "3.0"
+			exclusions:
+				exclusion:
+					artifactId: "log4j"
+					groupId: "log4j"
+
+		dependency:
+			groupId: "net.sf.ehcache"
+			artifactId: "ehcache"
+			version: "1.2.4"
+
