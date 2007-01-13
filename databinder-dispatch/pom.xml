@@ -14,5 +14,21 @@
       <version>${pom.version}</version>
       <artifactId>databinder</artifactId>
     </dependency>
+		<dependency>
+			<groupId>org.apache.xmlrpc</groupId>
+			<artifactId>xmlrpc-client</artifactId>
+			<version>3.0</version>
+	    <exclusions>
+	      <exclusion>
+	        <artifactId>log4j</artifactId>
+	        <groupId>log4j</groupId>
+	      </exclusion>
+	    </exclusions>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>1.2.4</version>
+		</dependency>
   </dependencies>
 </project>
