@@ -4,7 +4,7 @@ require 'rubygems'
 require 'xmlrpc/server'
 require 'redcloth'
 
-s = XMLRPC::Server.new(8180, "127.0.0.1") 
+s = XMLRPC::Server.new(8180) 
 
 s.add_handler("redcloth.to_html") do |input|
   r = RedCloth.new input
