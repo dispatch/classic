@@ -22,6 +22,9 @@ h3 {
 h4 {
 	font-size : 1.2em;
 }
+p {
+	width: 35em;
+}
 pre, table, td { 
 	font-family : 'MS Trebuchet', 'Verdana', Arial, Helvetica; font-size : 10pt; line-height:1.2em;
 }
