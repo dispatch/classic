@@ -1,0 +1,30 @@
+<html>
+<head>
+<title>Connection Error Page</title>
+</head>
+<body>
+<!-- nothing outside of this extend renders in Wicket -->
+<wicket:extend>
+
+<h2>XML-RPC Connection Error</h2>
+
+<p wicket:id="error" style="font-style:italic">Error message here.</p>
+
+<p>
+	Sorry, Databinder dispatch is unable to contact the XML-RPC server required for this
+	action. You must be running a script similar to the one below to use XmlRpcLabel 
+	components. Please ensure the external server is running and <a wicket:id="retry" href="#">try again</a>.
+</p>
+
+<h3>databinder-dispatch.rb</h3>
+<pre wicket:id="script" style="border: gray 1px solid; padding: .5em">
+#!/usr/bin/env ruby
+...
+</pre>
+
+<p>To invoke with the default script, you might try the following command:</p>
+<pre>curl <span wicket:id="href">http://localhost/blah</span> | ruby &</pre>
+</wicket:extend>
+
+</body>
+</html>
