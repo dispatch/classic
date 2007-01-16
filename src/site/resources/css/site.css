@@ -132,6 +132,12 @@ a:visited  {
   margin: 1.5em 0;
   line-height: 1.5;
 }
+acronym {
+  cursor: inherit;
+  border: none;
+  font-size: 90%;
+  letter-spacing: .05em;
+}
 div#info{
   font-size: 85%;
   color: #999;
