@@ -1,9 +1,13 @@
 #!/usr/bin/ruby
 
-require 'rubygems'
-# or otherwise obtain redcloth
+# standard libraries
+require 'webrick'
 require 'xmlrpc/server'
+
+require 'rubygems' # or otherwise obtain redcloth
 require 'redcloth'
+
+WEBrick::Daemon.start # forks process
 
 s = XMLRPC::Server.new(8180)
 # listens on localhost only
