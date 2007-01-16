@@ -35,6 +35,7 @@ import net.databinder.DataSession;
 import net.databinder.auth.data.IUser;
 import net.databinder.models.HibernateObjectModel;
 import wicket.Application;
+import wicket.Request;
 import wicket.RequestCycle;
 import wicket.WicketRuntimeException;
 import wicket.model.IModel;
@@ -51,12 +52,12 @@ public class AuthDataSession extends DataSession {
 	 * @param application must be WebApplication subclass
 	 * @see WebApplication
 	 */
-	protected AuthDataSession(IAuthSettings application) {
-		super((WebApplication)application);
+	protected AuthDataSession(IAuthSettings application, Request request) {
+		super((WebApplication)application, request);
 	}
 	
-	protected AuthDataSession(IAuthSettings application, boolean useConversationSession) {
-		super((WebApplication)application, useConversationSession);
+	protected AuthDataSession(IAuthSettings application, Request request, boolean useConversationSession) {
+		super((WebApplication)application, request, useConversationSession);
 	}
 	
 	/**

@@ -46,8 +46,8 @@ public class DataSession extends WebSession {
 	 * Constructor for standard Hibernate request cycle binding.
 	 * @param application the application this applies to
 	 */
-	public DataSession(WebApplication application) {
-		super(application);
+	public DataSession(WebApplication application, Request request) {
+		super(application, request);
 	}
 
 	/**
@@ -55,8 +55,8 @@ public class DataSession extends WebSession {
 	 * @param application the application this applies to
 	 * @param supportConversationSession if true, enable conversational binding
 	 */
-	public DataSession(WebApplication application, boolean supportConversationSession) {
-		super(application);
+	public DataSession(WebApplication application, Request request, boolean supportConversationSession) {
+		super(application, request);
 		this.supportConversationSession = supportConversationSession;
 	}
 

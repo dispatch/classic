@@ -32,6 +32,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 
 import wicket.Session;
+import wicket.Request;
 import wicket.markup.html.pages.PageExpiredErrorPage;
 import wicket.protocol.http.WebApplication;
 import wicket.protocol.http.WebResponse;
@@ -121,8 +122,8 @@ public abstract class DataApplication extends WebApplication {
 	 * @return new instance of DataSession
 	 */
 	@Override
-	public Session newSession() {
-		return new DataSession(DataApplication.this);
+	public Session newSession(Request request) {
+		return new DataSession(DataApplication.this, request);
 	}
 	
 	/**

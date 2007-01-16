@@ -31,6 +31,7 @@ import org.hibernate.criterion.Restrictions;
 import wicket.Component;
 import wicket.RestartResponseAtInterceptPageException;
 import wicket.Session;
+import wicket.Request;
 import wicket.authorization.IUnauthorizedComponentInstantiationListener;
 import wicket.authorization.UnauthorizedInstantiationException;
 import wicket.authorization.strategies.role.IRoleCheckingStrategy;
@@ -70,8 +71,8 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, I
 	 * @see AuthDataSession
 	 */
 	@Override
-	public AuthDataSession newSession() {
-		return new AuthDataSession(this);
+	public AuthDataSession newSession(Request request) {
+		return new AuthDataSession(this, request);
 	}
 	
 	/**
