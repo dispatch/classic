@@ -64,8 +64,9 @@ public class DataStaticService {
 	
 	/**
 	 * Wraps callback in new a Hibernate session and transaction that are closed after the callback
-	 * returns. This is to be used only when a thread-bound session is not available, such as
-	 * application init or an external Web service request. Uncommited transactions 
+	 * returns. This is to be used when a thread-bound session may not be available, such as
+	 * application init or an external Web service request. (If a thread-bound session is found,
+	 * it is used to perform the callback.) Uncommited transactions begun by this method 
 	 * are rolled back, as with DataRequestCycle. Be careful of returning detached Hibernate 
 	 * objects that may not be fully loaded with data; consider using projections / scalar
 	 * queries instead.
@@ -74,7 +75,7 @@ public class DataStaticService {
 	public static Object wrapInHibernateSession(Callback callback) {
 		SessionFactory sf = getHibernateSessionFactory();
 		if (ManagedSessionContext.hasBind(hibernateSessionFactory))
-			throw new WicketRuntimeException("This thread is already bound to a Hibernate session.");
+			return callback.call();
 		org.hibernate.classic.Session sess = sf.openSession();
 		try {
 			sess.beginTransaction();

@@ -31,11 +31,13 @@ import org.hibernate.FlushMode;
 import org.hibernate.classic.Session;
 import org.hibernate.context.ManagedSessionContext;
 
+import wicket.IRequestTarget;
 import wicket.Page;
 import wicket.Response;
 import wicket.WicketRuntimeException;
 import wicket.protocol.http.WebRequest;
 import wicket.protocol.http.WebSession;
+import wicket.request.target.component.IBookmarkablePageRequestTarget;
 
 /**
  * Supports extended Hibernate sessions for long conversations. This is useful for a page or
@@ -61,8 +63,19 @@ public class DataConversationRequestCycle extends DataRequestCycle {
 		Page page = getResponsePage();
 		if (page == null)
 			page = getRequest().getPage();
-		if (page == null)
-			throw new WicketRuntimeException("Tried to load object before before response page is available");
+		
+		if (page == null) {
+			IRequestTarget target = getRequestTarget();
+			if (target instanceof IBookmarkablePageRequestTarget) {
+				openHibernateSession();
+				Class pageClass = ((IBookmarkablePageRequestTarget)target).getPageClass();
+				// set to manual if we are going to a conv. page
+				if (IConversationPage.class.isAssignableFrom(pageClass))
+					DataStaticService.getHibernateSession().setFlushMode(FlushMode.MANUAL);
+				return;
+			}
+			throw new WicketRuntimeException("Trying to load object from conversational session before response page is available.");
+		}
 
 		// if continuing a conversation page
 		if (page instanceof  IConversationPage) {

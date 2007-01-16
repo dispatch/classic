@@ -26,25 +26,32 @@ package net.databinder.auth;
  * subclass AuthDataSession; use your <tt>AuthDataApplication</tt> subclass to specify
  * a user class and criteria builder as needed.</p>
  */
-import javax.servlet.http.Cookie;
+import java.io.Serializable;
 
-import org.hibernate.NonUniqueResultException;
+import javax.servlet.http.Cookie;
 
 import net.databinder.DataRequestCycle;
 import net.databinder.DataSession;
+import net.databinder.DataStaticService;
 import net.databinder.auth.data.IUser;
 import net.databinder.models.HibernateObjectModel;
+
+import org.hibernate.Criteria;
+import org.hibernate.NonUniqueResultException;
+
 import wicket.Application;
 import wicket.Request;
 import wicket.RequestCycle;
 import wicket.WicketRuntimeException;
+import wicket.authorization.strategies.role.Roles;
 import wicket.model.IModel;
 import wicket.protocol.http.WebApplication;
 import wicket.protocol.http.WebResponse;
 import wicket.util.time.Duration;
 
 public class AuthDataSession extends DataSession {
-	private IModel user;
+	/** Effective signed in state. */
+	private Serializable userId;
 	public static final String AUTH_COOKIE = "AUTH", USERNAME_COOKIE = "USER";
 
 	/**
@@ -72,14 +79,23 @@ public class AuthDataSession extends DataSession {
 	 * @return IUser object for current user, or null if none signed in.
 	 */
 	public IUser getUser() {
-		return isSignedIn() ? (IUser) user.getObject(null) : null;
+		return (IUser) DataStaticService.wrapInHibernateSession(new DataStaticService.Callback() {
+			public Object call() {
+				if  (isSignedIn()) {
+					IUser user = getUser(userId);	// don't retain detached object
+					user.hasAnyRole(new Roles(Roles.USER));	// ensure this roles are loaded because obj may detach
+					return user;
+				}
+				return null;
+			}
+		});
 	}
 	
 	/**
 	 * @return model for current user
 	 */
 	public IModel getUserModel() {
-		return isSignedIn() ? user : null;
+		return isSignedIn() ? new HibernateObjectModel(getUser()) : null;
 	}
 	
 	/**
@@ -90,10 +106,19 @@ public class AuthDataSession extends DataSession {
 	}
 	
 	/**
+	 * Determine if user is signed in, or can be via cookie.
 	 * @return true if signed in or cookie sign in is possible and successful
 	 */
 	public boolean isSignedIn() {
-		return user != null || (cookieSignInSupported() && cookieSignIn());
+		if (userId == null && cookieSignInSupported()) {
+			DataStaticService.wrapInHibernateSession(new DataStaticService.Callback() {
+				public Object call() {
+					cookieSignIn();
+					return null;
+				}
+			});
+		}
+		return userId != null; 
 	}
 	
 	/** 
@@ -107,11 +132,7 @@ public class AuthDataSession extends DataSession {
 	 * @return true if signed in, false if credentials incorrect
 	 */
 	public boolean signIn(String username, String password) {
-		IModel potential = getUser(username);
-		if (potential != null && ((IUser)potential.getObject(null)).checkPassword(password))
-			user =  potential;
-		
-		return user != null;
+		return signIn(username, password, false);
 	}
 	
 	/**
@@ -119,13 +140,11 @@ public class AuthDataSession extends DataSession {
 	 * @return true if signed in, false if credentials incorrect
 	 */
 	public boolean signIn(final String username, final String password, boolean setCookie) {
-		if (!signIn(username, password))
-			return false;
-
-		if (setCookie) {
-			setCookie();
-		}
-		return true;
+		IUser potential = getUser(username);
+		if (potential != null && (potential).checkPassword(password))
+			signIn(potential, setCookie);
+		
+		return userId != null;
 	}
 
 	/**
@@ -135,27 +154,29 @@ public class AuthDataSession extends DataSession {
 	 * @param setCookie if true, sets cookie to remember user
 	 */
 	public void signIn(IUser user, boolean setCookie) {
-		this.user = new HibernateObjectModel (user);
+		userId = DataStaticService.getHibernateSession().getIdentifier(user);
 		if (setCookie)
 			setCookie();
 	}
+	
 	/**
+	 * Attempts cookie sign in, which will set usename field but not user.
 	 * @return true if signed in, false if credentials incorrect or unavailable
 	 */
 	protected boolean cookieSignIn() {
 		DataRequestCycle requestCycle = (DataRequestCycle) RequestCycle.get();
-		Cookie username = requestCycle.getCookie(USERNAME_COOKIE),
+		Cookie userCookie = requestCycle.getCookie(USERNAME_COOKIE),
 			token = requestCycle.getCookie(AUTH_COOKIE);
 
-		if (username != null && token != null) {
-			IModel potential = getUser(username.getValue());
-			if (potential != null && potential.getObject(null) instanceof IUser.CookieAuth) {
-				String correctToken = ((IUser.CookieAuth)potential.getObject(null)).getToken();
+		if (userCookie != null && token != null) {
+			IUser potential = getUser(userCookie.getValue());
+			if (potential != null && potential instanceof IUser.CookieAuth) {
+				String correctToken = ((IUser.CookieAuth)potential).getToken();
 				if (correctToken.equals(token.getValue()))
-					user =  potential;
+					signIn(potential, false);
 			}
 		}
-		return user != null;
+		return userId != null;
 	}
 	
 	/**
@@ -165,29 +186,32 @@ public class AuthDataSession extends DataSession {
 	 * @return user object from persistent storage
 	 * @see IAuthSettings
 	 */
-	protected IModel getUser(final String username) {
+	protected IUser getUser(final String username) {
 		try {
 			IAuthSettings app = (IAuthSettings)getApplication();
-			IModel user = new HibernateObjectModel(app.getUserClass(), 
-					app.getUserCriteriaBuilder(username)); 
-			if (user.getObject(null) != null)
-				return user;
-			return null;	// no results
+			Criteria criteria = DataStaticService.getHibernateSession().createCriteria(app.getUserClass());
+			app.getUserCriteriaBuilder(username).build(criteria);
+			return (IUser) criteria.uniqueResult();
 		} catch (NonUniqueResultException e){
 			throw new WicketRuntimeException("Multiple users returned for query", e); 
 		}
 	}
-	
+
+	protected IUser getUser(final Serializable userId) {
+		IAuthSettings app = (IAuthSettings)getApplication();
+		return (IUser) DataStaticService.getHibernateSession().load(app.getUserClass(), userId);
+	}
+
 	/**
 	 * Sets cookie to remember the currently signed-in user.
 	 */
 	protected void setCookie() {
-		if (user == null)
+		if (userId == null)
 			throw new WicketRuntimeException("User must be signed in when calling this method");
 		if (!cookieSignInSupported())
 			throw new UnsupportedOperationException("Must use an implementation of IUser.CookieAuth");
 		
-		IUser.CookieAuth cookieUser = (IUser.CookieAuth) user.getObject(null);
+		IUser.CookieAuth cookieUser = (IUser.CookieAuth) getUser();
 		WebResponse resp = (WebResponse) RequestCycle.get().getResponse();
 		
 		int  maxAge = (int) getSignInCookieMaxAge().seconds();
@@ -204,18 +228,9 @@ public class AuthDataSession extends DataSession {
 	
 	/** Detach user from session */
 	public void signOut() {
-		user = null;
+		userId = null;
 		DataRequestCycle requestCycle = (DataRequestCycle) RequestCycle.get();
 		requestCycle.clearCookie(AUTH_COOKIE);
 		requestCycle.clearCookie(USERNAME_COOKIE);
-	}
-	
-	/**
-	 * Deatch our user model, which would not get the message otherwise.
-	 */
-	@Override
-	protected void detach() {
-		if (user != null) user.detach();
-		super.detach();
 	}
 }
