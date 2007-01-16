@@ -19,9 +19,12 @@
 
 package net.databinder;
 
+import net.databinder.conv.DataConversationRequestCycle;
+
 import org.hibernate.SessionFactory;
 import org.hibernate.context.ManagedSessionContext;
 
+import wicket.RequestCycle;
 import wicket.WicketRuntimeException;
 
 /**
@@ -43,6 +46,12 @@ public class DataStaticService {
 	}
 	
 	public static org.hibernate.classic.Session getHibernateSession() {
+		if (!ManagedSessionContext.hasBind(DataStaticService.getHibernateSessionFactory())) {
+			// if session is unavailable, it could be a late-loaded conversational cycle
+			RequestCycle cycle = RequestCycle.get();
+			if (cycle instanceof DataConversationRequestCycle)
+				((DataConversationRequestCycle)cycle).openHibernateSessionForPage();
+		}
 		return getHibernateSessionFactory().getCurrentSession();
 	}
 	

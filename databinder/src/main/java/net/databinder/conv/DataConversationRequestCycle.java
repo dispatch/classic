@@ -31,13 +31,11 @@ import org.hibernate.FlushMode;
 import org.hibernate.classic.Session;
 import org.hibernate.context.ManagedSessionContext;
 
-import wicket.IRequestTarget;
 import wicket.Page;
 import wicket.Response;
+import wicket.WicketRuntimeException;
 import wicket.protocol.http.WebRequest;
 import wicket.protocol.http.WebSession;
-import wicket.request.target.component.IBookmarkablePageRequestTarget;
-import wicket.request.target.component.listener.AbstractListenerInterfaceRequestTarget;
 
 /**
  * Supports extended Hibernate sessions for long conversations. This is useful for a page or
@@ -58,40 +56,33 @@ public class DataConversationRequestCycle extends DataRequestCycle {
 	protected void onBeginRequest() {
 	}
 	
-	/**
-	 * Opens or retreives a session for the given request target.
-	 * @param target (e.g. clicked item) for this request
-	 */
-	@SuppressWarnings("unchecked")
-	public void openSessionFor(IRequestTarget target) {
-		if (target instanceof AbstractListenerInterfaceRequestTarget) {
-			Page page = ((AbstractListenerInterfaceRequestTarget)target).getPage();
-			// if continuing a conversation page
-			if (page instanceof  IConversationPage) {
-				// look for existing session
-				org.hibernate.classic.Session sess = ((IConversationPage)page).getConversationSession();
+	/** Called by DataStaticService when a session is needed. */
+	public void openHibernateSessionForPage() {
+		Page page = getResponsePage();
+		if (page == null)
+			page = getRequest().getPage();
+		if (page == null)
+			throw new WicketRuntimeException("Tried to load object before before response page is available");
 
-				// if usable session exists, bind and return
-				if (sess != null && sess.isOpen()) {
-						sess.beginTransaction();
-						ManagedSessionContext.bind(sess);
-						return;
-				}
-				// else start new one and set in page
-				sess = openHibernateSession();
-				sess.setFlushMode(FlushMode.MANUAL);
-				((IConversationPage)page).setConversationSession(sess);
-				return;
+		// if continuing a conversation page
+		if (page instanceof  IConversationPage) {
+			// look for existing session
+			org.hibernate.classic.Session sess = ((IConversationPage)page).getConversationSession();
+
+			// if usable session exists, bind and return
+			if (sess != null && sess.isOpen()) {
+					sess.beginTransaction();
+					ManagedSessionContext.bind(sess);
+					return;
 			}
+			// else start new one and set in page
+			sess = openHibernateSession();
+			sess.setFlushMode(FlushMode.MANUAL);
+			((IConversationPage)page).setConversationSession(sess);
+			return;
 		}
 		// start new standard session
 		openHibernateSession();
-		if (target instanceof IBookmarkablePageRequestTarget) {
-			Class pageClass = ((IBookmarkablePageRequestTarget)target).getPageClass();
-			// set to manual if we are going to a conv. page
-			if (IConversationPage.class.isAssignableFrom(pageClass))
-				DataStaticService.getHibernateSession().setFlushMode(FlushMode.MANUAL);
-		}
 	}
 	
 	/**
@@ -100,6 +91,8 @@ public class DataConversationRequestCycle extends DataRequestCycle {
 	 */
 	@Override
 	protected void onEndRequest() {
+		if (!ManagedSessionContext.hasBind(DataStaticService.getHibernateSessionFactory()))
+			return;
 		org.hibernate.classic.Session sess = DataStaticService.getHibernateSession();
 		boolean transactionComitted = false;
 		if (sess.getTransaction().isActive())

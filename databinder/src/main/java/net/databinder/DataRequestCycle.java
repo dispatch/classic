@@ -95,6 +95,8 @@ public class DataRequestCycle extends WebRequestCycle {
 	 */
 	@Override
 	protected void onEndRequest() {
+		if (!ManagedSessionContext.hasBind(DataStaticService.getHibernateSessionFactory()))
+			return;
 		closeSession();
 		ManagedSessionContext.unbind(DataStaticService.getHibernateSessionFactory());
 	}
