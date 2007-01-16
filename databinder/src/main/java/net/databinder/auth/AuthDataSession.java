@@ -52,11 +52,11 @@ public class AuthDataSession extends DataSession {
 	 * @param application must be WebApplication subclass
 	 * @see WebApplication
 	 */
-	protected AuthDataSession(IAuthSettings application, Request request) {
+	public AuthDataSession(IAuthSettings application, Request request) {
 		super((WebApplication)application, request);
 	}
 	
-	protected AuthDataSession(IAuthSettings application, Request request, boolean useConversationSession) {
+	public AuthDataSession(IAuthSettings application, Request request, boolean useConversationSession) {
 		super((WebApplication)application, request, useConversationSession);
 	}
 	
