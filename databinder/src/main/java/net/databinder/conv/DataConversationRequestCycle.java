@@ -58,7 +58,11 @@ public class DataConversationRequestCycle extends DataRequestCycle {
 	protected void onBeginRequest() {
 	}
 	
-	/** Called by DataStaticService when a session is needed. */
+	/**
+	 * Called by DataStaticService when a session is needed. Determines current page
+	 * and retrieves its associated conversation session if appropriate.
+	 * @throws WicketRuntimeException if unable to determine current page  
+	 */
 	public void openHibernateSessionForPage() {
 		Page page = getResponsePage();
 		if (page == null)
