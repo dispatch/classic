@@ -8,12 +8,6 @@ public abstract class DataConversationPage extends DataPage implements IConversa
 
 	private Session conversationSession;
 	
-	@Override
-	protected void onAttach() {
-		// TODO Auto-generated method stub
-		super.onAttach();
-	}
-	
 	public DataConversationPage() {
 	}
 	
