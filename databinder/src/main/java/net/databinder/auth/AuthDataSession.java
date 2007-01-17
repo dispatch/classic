@@ -19,11 +19,10 @@
 package net.databinder.auth;
 
 /**
- * Holds IUser instance for signed in users. Remembering the user with a browser cookie
+ * Holds IUser identifier for signed in users. Remembering the user with a browser cookie
  * allows that user to bypass login for the length of time specified in getSignInCookieMaxAge().
  * <p> In general the sematics here expect users to have a username and password, though the 
- * IUser interface itself does not require it. In most cases it should not be necessary to
- * subclass AuthDataSession; use your <tt>AuthDataApplication</tt> subclass to specify
+ * IUser interface itself does not require it. Use your <tt>AuthDataApplication</tt> subclass to specify
  * a user class and criteria builder as needed.</p>
  */
 import java.io.Serializable;
@@ -63,6 +62,11 @@ public class AuthDataSession extends DataSession {
 		super((WebApplication)application, request);
 	}
 	
+	/**
+	 * Constructor for conversational Hibernate request cycle binding.
+	 * @param application the application this applies to
+	 * @param supportConversationSession if true, enable conversational binding
+	 */
 	public AuthDataSession(IAuthSettings application, Request request, boolean useConversationSession) {
 		super((WebApplication)application, request, useConversationSession);
 	}
@@ -79,11 +83,13 @@ public class AuthDataSession extends DataSession {
 	 * @return IUser object for current user, or null if none signed in.
 	 */
 	public IUser getUser() {
+		// wraps in session if one has not yet been created
+		// (this method can be called very early in request cycle processing)
 		return (IUser) DataStaticService.wrapInHibernateSession(new DataStaticService.Callback() {
 			public Object call() {
 				if  (isSignedIn()) {
-					IUser user = getUser(userId);	// don't retain detached object
-					user.hasAnyRole(new Roles(Roles.USER));	// ensure this roles are loaded because obj may detach
+					IUser user = getUser(userId);
+					user.hasAnyRole(new Roles(Roles.USER));	// ensure the roles are loaded because obj may detach
 					return user;
 				}
 				return null;
@@ -95,7 +101,8 @@ public class AuthDataSession extends DataSession {
 	 * @return model for current user
 	 */
 	public IModel getUserModel() {
-		return isSignedIn() ? new HibernateObjectModel(getUser()) : null;
+		IAuthSettings app = (IAuthSettings)getApplication();
+		return isSignedIn() ? new HibernateObjectModel(app.getUserClass(), userId) : null;
 	}
 	
 	/**
@@ -197,6 +204,10 @@ public class AuthDataSession extends DataSession {
 		}
 	}
 
+	/**
+	 * @param userId Hibernate entity identifier
+	 * @return user with given userId
+	 */
 	protected IUser getUser(final Serializable userId) {
 		IAuthSettings app = (IAuthSettings)getApplication();
 		return (IUser) DataStaticService.getHibernateSession().load(app.getUserClass(), userId);
