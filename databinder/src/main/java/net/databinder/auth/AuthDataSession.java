@@ -36,13 +36,14 @@ import net.databinder.auth.data.IUser;
 import net.databinder.models.HibernateObjectModel;
 
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.NonUniqueResultException;
+import org.hibernate.criterion.Restrictions;
 
 import wicket.Application;
 import wicket.Request;
 import wicket.RequestCycle;
 import wicket.WicketRuntimeException;
-import wicket.authorization.strategies.role.Roles;
 import wicket.model.IModel;
 import wicket.protocol.http.WebApplication;
 import wicket.protocol.http.WebResponse;
@@ -89,7 +90,6 @@ public class AuthDataSession extends DataSession {
 			public Object call() {
 				if  (isSignedIn()) {
 					IUser user = getUser(userId);
-					user.hasAnyRole(new Roles(Roles.USER));	// ensure the roles are loaded because obj may detach
 					return user;
 				}
 				return null;
@@ -210,7 +210,22 @@ public class AuthDataSession extends DataSession {
 	 */
 	protected IUser getUser(final Serializable userId) {
 		IAuthSettings app = (IAuthSettings)getApplication();
-		return (IUser) DataStaticService.getHibernateSession().load(app.getUserClass(), userId);
+		return (IUser) 
+			fetchJoinRoles(
+				DataStaticService.getHibernateSession().createCriteria(app.getUserClass())
+				.add(Restrictions.idEq(userId))
+			).uniqueResult();
+	}
+	
+	/**
+	 * Adds fetch join to critera for user roles. This is needed for conversational sessions,
+	 * where the roles may be queried against a deatched user object. The default
+	 * implementation specifies a "roles" property for the join. Override if your IUser
+	 * implementation stores roles differently.
+	 * @return criteria with roll added
+	 */
+	protected Criteria  fetchJoinRoles(Criteria criteria) {
+		return criteria.setFetchMode("roles", FetchMode.JOIN);
 	}
 
 	/**

@@ -34,7 +34,6 @@ import org.hibernate.context.ManagedSessionContext;
 import wicket.IRequestTarget;
 import wicket.Page;
 import wicket.Response;
-import wicket.WicketRuntimeException;
 import wicket.protocol.http.WebRequest;
 import wicket.protocol.http.WebSession;
 import wicket.request.target.component.IBookmarkablePageRequestTarget;
@@ -60,8 +59,8 @@ public class DataConversationRequestCycle extends DataRequestCycle {
 	
 	/**
 	 * Called by DataStaticService when a session is needed. Determines current page
-	 * and retrieves its associated conversation session if appropriate.
-	 * @throws WicketRuntimeException if unable to determine current page  
+	 * and retrieves its associated conversation session if appropriate. Does nothing
+	 * if current page is not yet available.
 	 */
 	public void openHibernateSessionForPage() {
 		Page page = getResponsePage();
@@ -76,9 +75,8 @@ public class DataConversationRequestCycle extends DataRequestCycle {
 				// set to manual if we are going to a conv. page
 				if (IConversationPage.class.isAssignableFrom(pageClass))
 					DataStaticService.getHibernateSession().setFlushMode(FlushMode.MANUAL);
-				return;
 			}
-			throw new WicketRuntimeException("Trying to load object from conversational session before response page is available.");
+			return;
 		}
 
 		// if continuing a conversation page

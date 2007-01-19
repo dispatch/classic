@@ -45,15 +45,27 @@ public class DataStaticService {
 		return hibernateSessionFactory;
 	}
 	
+	/**
+	 * @return Hibernate session bound to current thread
+	 */
 	public static org.hibernate.classic.Session getHibernateSession() {
+		checkConversationalSession();
+		return getHibernateSessionFactory().getCurrentSession();
+	}
+	
+	/**
+	 * Checks if current request cycle is for conversational sessions and notifies it that a
+	 * session is requested if appropriate.
+	 */
+	protected static void checkConversationalSession() {
 		if (!ManagedSessionContext.hasBind(DataStaticService.getHibernateSessionFactory())) {
 			// if session is unavailable, it could be a late-loaded conversational cycle
 			RequestCycle cycle = RequestCycle.get();
 			if (cycle instanceof DataConversationRequestCycle)
 				((DataConversationRequestCycle)cycle).openHibernateSessionForPage();
 		}
-		return getHibernateSessionFactory().getCurrentSession();
 	}
+
 	
 	/**
 	 * @param sessionFactory to use for this application
@@ -73,6 +85,7 @@ public class DataStaticService {
 	 * @param callback
 	 */
 	public static Object wrapInHibernateSession(Callback callback) {
+		checkConversationalSession();
 		SessionFactory sf = getHibernateSessionFactory();
 		if (ManagedSessionContext.hasBind(hibernateSessionFactory))
 			return callback.call();
