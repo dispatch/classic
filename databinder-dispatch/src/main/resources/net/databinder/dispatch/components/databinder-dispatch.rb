@@ -14,33 +14,33 @@ s = XMLRPC::Server.new(8180)
 
 s.add_handler("redcloth.to_html") do |input|
 	require 'redcloth'
-  RedCloth.new(input).to_html
+	RedCloth.new(input).to_html
 end
 
 s.add_handler("maruku.to_html") do |input|
 	require 'maruku'
-  Maruku.new(input).to_html
+	Maruku.new(input).to_html
 end
 
 s.add_handler("bluecloth.to_html") do |input|
 	require 'bluecloth'
-  BlueCloth.new(input).to_html
+	BlueCloth.new(input).to_html
 end
 
 s.add_handler("rubypants.to_html") do |input|
 	require 'rubypants'
-  RubyPants.new(input).to_html
+	RubyPants.new(input).to_html
 end
 
 s.add_handler("bluecloth.rubypants.to_html") do |input|
 	require 'bluecloth'
 	require 'rubypants'
-  RubyPants.new(BlueCloth.new(input).to_html).to_html
+	RubyPants.new(BlueCloth.new(input).to_html).to_html
 end
 
 s.set_default_handler do |name, *args|
-  raise XMLRPC::FaultException.new(-99, "Method #{name} missing" +
-                                   " or wrong number of parameters")
+	raise XMLRPC::FaultException.new(-99, "Method #{name} missing" +
+																	 " or wrong number of parameters")
 end
 
 s.serve
