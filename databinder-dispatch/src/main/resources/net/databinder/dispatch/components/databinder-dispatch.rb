@@ -17,6 +17,11 @@ s.add_handler("redcloth.to_html") do |input|
   RedCloth.new(input).to_html
 end
 
+s.add_handler("maruku.to_html") do |input|
+	require 'maruku'
+  Maruku.new(input).to_html
+end
+
 s.add_handler("bluecloth.to_html") do |input|
 	require 'bluecloth'
   BlueCloth.new(input).to_html
