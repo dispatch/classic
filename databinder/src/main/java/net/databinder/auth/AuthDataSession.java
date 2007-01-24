@@ -36,9 +36,7 @@ import net.databinder.auth.data.IUser;
 import net.databinder.models.HibernateObjectModel;
 
 import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
 import org.hibernate.NonUniqueResultException;
-import org.hibernate.criterion.Restrictions;
 
 import wicket.Application;
 import wicket.Request;
@@ -84,17 +82,11 @@ public class AuthDataSession extends DataSession {
 	 * @return IUser object for current user, or null if none signed in.
 	 */
 	public IUser getUser() {
-		// wraps in session if one has not yet been created
-		// (this method can be called very early in request cycle processing)
-		return (IUser) DataStaticService.wrapInHibernateSession(new DataStaticService.Callback() {
-			public Object call() {
-				if  (isSignedIn()) {
-					IUser user = getUser(userId);
-					return user;
-				}
-				return null;
-			}
-		});
+		if  (isSignedIn()) {
+			IUser user = getUser(userId);
+			return user;
+		}
+		return null;
 	}
 	
 	/**
@@ -117,14 +109,8 @@ public class AuthDataSession extends DataSession {
 	 * @return true if signed in or cookie sign in is possible and successful
 	 */
 	public boolean isSignedIn() {
-		if (userId == null && cookieSignInSupported()) {
-			DataStaticService.wrapInHibernateSession(new DataStaticService.Callback() {
-				public Object call() {
-					cookieSignIn();
-					return null;
-				}
-			});
-		}
+		if (userId == null && cookieSignInSupported())
+			cookieSignIn();
 		return userId != null; 
 	}
 	
@@ -210,22 +196,7 @@ public class AuthDataSession extends DataSession {
 	 */
 	protected IUser getUser(final Serializable userId) {
 		IAuthSettings app = (IAuthSettings)getApplication();
-		return (IUser) 
-			fetchJoinRoles(
-				DataStaticService.getHibernateSession().createCriteria(app.getUserClass())
-				.add(Restrictions.idEq(userId))
-			).uniqueResult();
-	}
-	
-	/**
-	 * Adds fetch join to critera for user roles. This is needed for conversational sessions,
-	 * where the roles may be queried against a deatched user object. The default
-	 * implementation specifies a "roles" property for the join. Override if your IUser
-	 * implementation stores roles differently.
-	 * @return criteria with roll added
-	 */
-	protected Criteria  fetchJoinRoles(Criteria criteria) {
-		return criteria.setFetchMode("roles", FetchMode.JOIN);
+		return (IUser) DataStaticService.getHibernateSession().load(app.getUserClass(), userId);
 	}
 
 	/**
