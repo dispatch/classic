@@ -160,4 +160,9 @@ public abstract class DatabinderProvider implements IDataProvider  {
 		protected String sort(String queryString) {
 			return queryString;
 		}
-	}}
+	}
+	/** This class has nothing to detach. */
+	public void detach() {
+		
+	}
+}
