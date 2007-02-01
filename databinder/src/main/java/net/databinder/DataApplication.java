@@ -19,20 +19,22 @@
 
 package net.databinder;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
 
 import net.databinder.components.PageExpiredCookieless;
+import net.databinder.util.URIConverter;
 import net.databinder.util.URLConverter;
 import net.databinder.web.NorewriteWebResponse;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 
-import wicket.Session;
 import wicket.Request;
+import wicket.Session;
 import wicket.markup.html.pages.PageExpiredErrorPage;
 import wicket.protocol.http.WebApplication;
 import wicket.protocol.http.WebResponse;
@@ -68,12 +70,13 @@ public abstract class DataApplication extends WebApplication {
 		// we find versioning less useful for simple, data-driven pages
 		getPageSettings().setVersionPagesByDefault(false);
 
-		// register URL converter
+		// register URL converters
 		getApplicationSettings().setConverterFactory(new IConverterFactory() {
-			/** Registers URLConverter in addition to the Wicket defaults. */
+			/** Registers URLConverter and URIConverter in addition to the Wicket defaults. */
 			public wicket.util.convert.IConverter newConverter(Locale locale) {
 				Converter conv = new Converter(locale);
 				conv.set(URL.class, new URLConverter());
+				conv.set(URI.class, new URIConverter());
 				return conv;
 			}
 		});
