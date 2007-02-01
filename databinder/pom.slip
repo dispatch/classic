@@ -13,8 +13,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		dependency:
 			groupId: "javax.servlet"
 			artifactId: "servlet-api"
-			version: "2.5"
-			scope: "provided"
+			version: "2.3"
 
 		dependency:
 			groupId: "org.hibernate"
