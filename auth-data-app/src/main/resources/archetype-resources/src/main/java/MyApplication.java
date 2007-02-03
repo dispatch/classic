@@ -1,10 +1,10 @@
 package $package;
 
-import net.databinder.DataApplication;
+import net.databinder.auth.AuthDataApplication;
 
 import org.hibernate.cfg.AnnotationConfiguration;
 
-public class MyApplication extends DataApplication {
+public class MyApplication extends AuthDataApplication {
 
 	/**
 	 * @return Page to display when no specific page is requested
@@ -12,6 +12,17 @@ public class MyApplication extends DataApplication {
 	@Override
 	public Class getHomePage() {
 		return MyDataPage.class;
+	}
+
+	
+	@Override
+	public Class<DataUser> getUserClass() {
+		return DataUser.class;
+	}
+	
+	@Override
+	public Class<SignInPage> getSignInPageClass() {
+		return SignInPage.class;
 	}
 	
 	/**
@@ -22,6 +33,11 @@ public class MyApplication extends DataApplication {
 	protected void configureHibernate(AnnotationConfiguration config) {
 		super.configureHibernate(config);
 		//config.addAnnotatedClass(MyItem.class);
+	}
+
+	@Override
+	public byte[] getSalt() {
+		return "${archetypeId}".getBytes(); // TODO: change to something more random
 	}
 
 }
