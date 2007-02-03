@@ -41,7 +41,7 @@
 	</build>
 	<packaging>war</packaging>
 	<version>${version}</version>
-	<name>Databinder Application</name>
+	<name>Databinder authenticated application</name>
 	<dependencies>
 		<dependency>
 			<groupId>net.databinder</groupId>

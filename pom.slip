@@ -21,6 +21,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		module: "databinder"
 		module: "databinder-dispatch"
 		module: "data-app"
+		module: "auth-data-app"
 	scm:
 		connection: "scm:svn:svn://localhost/databinder/trunk"
 		developerConnection: "scm:svn:svn://localhost/databinder/trunk"

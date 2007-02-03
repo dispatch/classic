@@ -20,6 +20,7 @@
   <module>databinder</module>
   <module>databinder-dispatch</module>
   <module>data-app</module>
+  <module>auth-data-app</module>
  </modules>
  <scm>
   <connection>scm:svn:svn://localhost/databinder/trunk</connection>
