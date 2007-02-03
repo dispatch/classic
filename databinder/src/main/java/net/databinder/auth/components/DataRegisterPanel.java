@@ -48,6 +48,7 @@ import wicket.model.Model;
 /**
  * Registration with username, password, and password confirmation.
  * @author Nathan Hamblen
+ * @deprecated
  */
 public class DataRegisterPanel extends Panel {
 

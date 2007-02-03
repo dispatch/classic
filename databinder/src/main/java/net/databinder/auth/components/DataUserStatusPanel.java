@@ -11,6 +11,7 @@ import wicket.model.Model;
 /**
  * Displays sign in and out links, as well as current user if any. 
  * @author Nathan Hamblen
+ * @deprecated
  */
 public class DataUserStatusPanel extends Panel {
 	/**

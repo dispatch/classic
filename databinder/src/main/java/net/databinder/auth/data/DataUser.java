@@ -24,7 +24,9 @@ import wicket.util.crypt.Base64;
 /**
  * Basic implementation of IUser.CookieAuth. Stores no passwords in memory or persistent
  * storage, only a hash. Subclass as needed, uses default inheritance strategy of single 
- * table per class hierarchy.
+ * table per class hierarchy. Please use your own IUser implementation.  An updated version of
+ * this class is available in the auth-data-app Maven archetype.
+ * @deprecated
  * @author Nathan Hamblen
  */
 @Entity

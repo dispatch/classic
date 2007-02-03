@@ -33,6 +33,7 @@ import wicket.model.Model;
 /**
  * Displays username and password fields, along with optional "remember me" checkbox.
  * Queries the AuthDataSession upon a login attempt.
+ * @deprecated
  * @see AuthDataSession
  */
 public class DataSignInPanel extends Panel {

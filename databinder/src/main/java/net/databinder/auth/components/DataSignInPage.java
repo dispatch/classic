@@ -29,8 +29,10 @@ import wicket.markup.html.link.Link;
 import wicket.markup.html.panel.Panel;
 
 /**
- * Serves as both a sign in and simple regristration page. To use a differnt sign in page,
- * override AuthDataApplication's getSignInPageClass() method.
+ * Serves as both a sign in and simple regristration page. Please use a differnt sign in page;
+ * override AuthDataApplication's getSignInPageClass() method. An updated version of
+ * this page and its panels are available in the auth-data-app Maven archetype.
+ * @deprecated
  * @author Nathan Hamblen
  */
 public class DataSignInPage extends WebPage {

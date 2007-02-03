@@ -29,9 +29,9 @@ import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.criterion.Restrictions;
 
 import wicket.Component;
+import wicket.Request;
 import wicket.RestartResponseAtInterceptPageException;
 import wicket.Session;
-import wicket.Request;
 import wicket.authorization.IUnauthorizedComponentInstantiationListener;
 import wicket.authorization.UnauthorizedInstantiationException;
 import wicket.authorization.strategies.role.IRoleCheckingStrategy;
@@ -105,7 +105,8 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, I
 	}
 
 	/**
-	 * Override to use your own IUser implementation.
+	 * Please override to use your own IUser implementation. This base implementation 
+	 * will be removed in a future version.
 	 * @return class to be used for signed in users
 	 */
 	public Class< ? extends IUser> getUserClass() {
@@ -134,6 +135,8 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, I
 	}
 
 	/**
+	 * Please override to return your own sign in page. This implementation will be removed
+	 * in a future version.
 	 * @return page to sign in users
 	 */
 	public Class< ? extends WebPage> getSignInPageClass() {
