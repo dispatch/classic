@@ -1,0 +1,15 @@
+<archetype>
+  <id>data-app</id>
+  <sources>
+    <source>src/main/java/MyApplication.java</source>
+    <source>src/main/java/MyDataPage.java</source>
+    <source>src/main/java/MyDataPage.html</source>
+    <source>src/main/java/MyItem.java</source>
+  </sources>
+  <resources>
+    <resource>src/main/java/hibernate.properties</resource>
+    <resource>src/main/webapp/WEB-INF/web.xml</resource>
+    <resource>src/main/webapp/data-app.css</resource>
+  </resources>
+</archetype>
+
