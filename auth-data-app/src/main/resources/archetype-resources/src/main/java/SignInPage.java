@@ -5,8 +5,6 @@ import wicket.markup.html.WebMarkupContainer;
 import wicket.markup.html.WebPage;
 import wicket.markup.html.link.Link;
 import wicket.markup.html.panel.Panel;
-import example.RegisterPanel;
-import example.SignInPanel;
 
 /**
  * Serves as both a sign in and simple regristration page. 

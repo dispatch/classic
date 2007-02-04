@@ -37,7 +37,7 @@ public class MyApplication extends AuthDataApplication {
 
 	@Override
 	public byte[] getSalt() {
-		return "${archetypeId}".getBytes(); // TODO: change to something more random
+		return "${artifactId}".getBytes(); // TODO: change to something more random
 	}
 
 }
