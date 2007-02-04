@@ -25,7 +25,6 @@ import wicket.markup.html.panel.FeedbackPanel;
 import wicket.markup.html.panel.Panel;
 import wicket.model.CompoundPropertyModel;
 import wicket.model.Model;
-import example.DataUser;
 
 /**
  * Registration with username, password, and password confirmation.
