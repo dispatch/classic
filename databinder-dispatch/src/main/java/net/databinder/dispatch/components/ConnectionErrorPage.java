@@ -67,7 +67,7 @@ public class ConnectionErrorPage extends DataPage {
 		}));
 		
 		HttpServletRequest req =  ((WebRequest)getRequest()).getHttpServletRequest();
-		String base = "http://" + req.getServerName() + ":" + req.getServerPort();
+		String base = "http://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath() + "/";
 		
 		add(new Label("href", new Model(base + urlFor(XmlRpcLabel.scriptFile))).setRenderBodyOnly(true));
 	}
