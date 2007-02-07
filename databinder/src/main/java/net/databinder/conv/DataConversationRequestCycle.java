@@ -140,8 +140,12 @@ public class DataConversationRequestCycle extends DataRequestCycle {
 	@Override
 	public Page onRuntimeException(Page page, RuntimeException e) {
 		Session sess = DataStaticService.getHibernateSession();
-		sess.getTransaction().rollback();
-		sess.close();
+		try {
+			if (sess.getTransaction().isActive())
+				sess.getTransaction().rollback();
+		} finally {
+			sess.close();
+		}
 		openHibernateSession();
 		return null;
 	}
