@@ -10,29 +10,11 @@
 			<param-name>applicationClassName</param-name>
 			<param-value>${groupId}.MyApplication</param-value>
 		</init-param>
-		<init-param>
-			<param-name>filterPath</param-name>
-			<param-value>app</param-value>
-		</init-param>
 	</filter>
 	
-	<filter>
-		<filter-name>RedirectFilter</filter-name>
-		<filter-class>net.databinder.util.RedirectFilter</filter-class>
-		<init-param>
-				<param-name>redirectUrl</param-name>
-				<param-value>app</param-value>
-		</init-param>
-	</filter>
-
 	<filter-mapping>
 		<filter-name>Application</filter-name>
 		<url-pattern>/*</url-pattern>
-	</filter-mapping>
-
-	<filter-mapping>
-		<filter-name>RedirectFilter</filter-name>
-		<url-pattern>/</url-pattern>
 	</filter-mapping>
 
 </web-app>
