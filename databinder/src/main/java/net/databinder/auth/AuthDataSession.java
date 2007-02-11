@@ -133,6 +133,7 @@ public class AuthDataSession extends DataSession {
 	 * @return true if signed in, false if credentials incorrect
 	 */
 	public boolean signIn(final String username, final String password, boolean setCookie) {
+		signOut();
 		IUser potential = getUser(username);
 		if (potential != null && (potential).checkPassword(password))
 			signIn(potential, setCookie);
@@ -147,6 +148,7 @@ public class AuthDataSession extends DataSession {
 	 * @param setCookie if true, sets cookie to remember user
 	 */
 	public void signIn(IUser user, boolean setCookie) {
+		signOut();
 		userId = DataStaticService.getHibernateSession().getIdentifier(user);
 		if (setCookie)
 			setCookie();
