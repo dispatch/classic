@@ -1,10 +1,11 @@
-/* Basic application-wide style consistent with Wicket's default error pages. */
+/* Appearance consistent with Wicket's default error pages. */
 
 body {
 	font-family: 'Lucida Grande', 'Lucida Sans', 'Helvetica', sans-serif;
 	font-size: 9pt;
-	line-height: 1.8em;
+	line-height: 1.3em;
 	color: #6F6F6F;
+	padding: 0 .5em;
 }
 h1,h2,h3,h4,h5,h6,h7,h8 {
 	color: #E9601A;
@@ -42,19 +43,20 @@ form.labelAbove div.row {
 	width: 35em;
 	color: black;
 }
-tr.b, tr.odd {
-	background: #F5F5F5;
-}
 
 tr.a, tr.even {
 	background: #E6E6E5;
+}
+
+tr.b, tr.odd {
+	background: #F5F5F5;
 }
 
 a img {
 	border: none;
 }
 
-/* DataTable (wicket-extensions) styles */
+/* DataView */
 
 tr.navigation div {
 	height: 2em; /* for IE 6 */
@@ -97,4 +99,11 @@ tr.headers th.wicket_orderUp
 {
 	background-color: #DFDFFF;
 	background-image: url(arrow_down.png); 
+}
+
+/* Modal Windows */
+
+div.wicket-modal div.w_content_2 div.w_content_3 {
+	border: none;
+	padding: 0 1.5em;
 }
