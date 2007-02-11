@@ -26,6 +26,9 @@ package net.databinder.auth;
  * a user class and criteria builder as needed.</p>
  */
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 import javax.servlet.http.Cookie;
 
@@ -50,6 +53,7 @@ import wicket.util.time.Duration;
 public class AuthDataSession extends DataSession {
 	/** Effective signed in state. */
 	private Serializable userId;
+	private static final String CHARACTER_ENCODING = "UTF-8";
 
 	/**
 	 * Initialize new session. Retains user class from AuthDataApplication instance.
@@ -162,7 +166,12 @@ public class AuthDataSession extends DataSession {
 			token = requestCycle.getCookie(getAuthCookieName());
 
 		if (userCookie != null && token != null) {
-			IUser potential = getUser(userCookie.getValue());
+			IUser potential;
+			try {
+				potential = getUser(URLDecoder.decode(userCookie.getValue(), CHARACTER_ENCODING));
+			} catch (UnsupportedEncodingException e) {
+				throw new WicketRuntimeException(e);
+			}
 			if (potential != null && potential instanceof IUser.CookieAuth) {
 				String correctToken = ((IUser.CookieAuth)potential).getToken();
 				if (correctToken.equals(token.getValue()))
@@ -221,8 +230,14 @@ public class AuthDataSession extends DataSession {
 		
 		int  maxAge = (int) getSignInCookieMaxAge().seconds();
 		
-		Cookie name = new Cookie(getUserCookieName(), cookieUser.getUsername()),
+		Cookie name, auth;
+		try {
+			name = new Cookie(getUserCookieName(), 
+					URLEncoder.encode(cookieUser.getUsername(), CHARACTER_ENCODING));
 			auth = new Cookie(getAuthCookieName(), cookieUser.getToken());
+		} catch (UnsupportedEncodingException e) {
+			throw new WicketRuntimeException(e);
+		}
 		
 		name.setPath("/");
 		auth.setPath("/");

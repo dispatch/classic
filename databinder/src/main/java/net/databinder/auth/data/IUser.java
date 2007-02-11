@@ -22,7 +22,7 @@ public interface IUser {
 		public String getUsername();
 
 		/** 
-		 * @return unique value for this user and password that can not be externally determined
+		 * @return URL-safe unique value for this user and password that can not be externally determined
 		 */
 		public String getToken();
 	}
