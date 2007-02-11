@@ -50,7 +50,6 @@ import wicket.util.time.Duration;
 public class AuthDataSession extends DataSession {
 	/** Effective signed in state. */
 	private Serializable userId;
-	public static final String AUTH_COOKIE = "AUTH", USERNAME_COOKIE = "USER";
 
 	/**
 	 * Initialize new session. Retains user class from AuthDataApplication instance.
@@ -159,8 +158,8 @@ public class AuthDataSession extends DataSession {
 	 */
 	protected boolean cookieSignIn() {
 		DataRequestCycle requestCycle = (DataRequestCycle) RequestCycle.get();
-		Cookie userCookie = requestCycle.getCookie(USERNAME_COOKIE),
-			token = requestCycle.getCookie(AUTH_COOKIE);
+		Cookie userCookie = requestCycle.getCookie(getUserCookieName()),
+			token = requestCycle.getCookie(getAuthCookieName());
 
 		if (userCookie != null && token != null) {
 			IUser potential = getUser(userCookie.getValue());
@@ -199,6 +198,14 @@ public class AuthDataSession extends DataSession {
 		IAuthSettings app = (IAuthSettings)getApplication();
 		return (IUser) DataStaticService.getHibernateSession().load(app.getUserClass(), userId);
 	}
+	
+	public static String getUserCookieName() {
+		return Application.get().getClass().getSimpleName() + "_USER";
+	}
+	
+	public static String getAuthCookieName() {
+		return Application.get().getClass().getSimpleName() + "_AUTH";
+	}
 
 	/**
 	 * Sets cookie to remember the currently signed-in user.
@@ -214,9 +221,12 @@ public class AuthDataSession extends DataSession {
 		
 		int  maxAge = (int) getSignInCookieMaxAge().seconds();
 		
-		Cookie name = new Cookie(USERNAME_COOKIE, cookieUser.getUsername()),
-			auth = new Cookie(AUTH_COOKIE, cookieUser.getToken());
+		Cookie name = new Cookie(getUserCookieName(), cookieUser.getUsername()),
+			auth = new Cookie(getAuthCookieName(), cookieUser.getToken());
 		
+		name.setPath("/");
+		auth.setPath("/");
+
 		name.setMaxAge(maxAge);
 		auth.setMaxAge(maxAge);
 		
@@ -228,7 +238,7 @@ public class AuthDataSession extends DataSession {
 	public void signOut() {
 		userId = null;
 		DataRequestCycle requestCycle = (DataRequestCycle) RequestCycle.get();
-		requestCycle.clearCookie(AUTH_COOKIE);
-		requestCycle.clearCookie(USERNAME_COOKIE);
+		requestCycle.clearCookie(getUserCookieName());
+		requestCycle.clearCookie(getAuthCookieName());
 	}
 }

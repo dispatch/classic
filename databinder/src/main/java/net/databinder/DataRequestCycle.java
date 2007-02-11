@@ -144,6 +144,8 @@ public class DataRequestCycle extends WebRequestCycle {
 	 */
 	public void clearCookie(String name) {
 		getCookies().remove(name);
-		getWebResponse().clearCookie(new Cookie(name, ""));
+		Cookie empty = new Cookie(name, "");
+		empty.setPath("/");
+		getWebResponse().clearCookie(empty);
 	}
 }
