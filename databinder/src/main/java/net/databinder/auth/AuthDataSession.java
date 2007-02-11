@@ -148,7 +148,6 @@ public class AuthDataSession extends DataSession {
 	 * @param setCookie if true, sets cookie to remember user
 	 */
 	public void signIn(IUser user, boolean setCookie) {
-		signOut();
 		userId = DataStaticService.getHibernateSession().getIdentifier(user);
 		if (setCookie)
 			setCookie();

@@ -35,7 +35,6 @@ import wicket.Page;
 import wicket.Response;
 import wicket.protocol.http.WebRequest;
 import wicket.protocol.http.WebRequestCycle;
-import wicket.protocol.http.WebResponse;
 import wicket.protocol.http.WebSession;
 
 /**
@@ -145,6 +144,6 @@ public class DataRequestCycle extends WebRequestCycle {
 	 */
 	public void clearCookie(String name) {
 		getCookies().remove(name);
-		((WebResponse)getResponse()).clearCookie(new Cookie(name, ""));
+		getWebResponse().clearCookie(new Cookie(name, ""));
 	}
 }
