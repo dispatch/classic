@@ -69,6 +69,11 @@
    <name>Databinder snapshot repository</name>
    <url>http://databinder.net/snapshot</url>
   </repository>
+  <repository>
+   <id>wicket-snapshots</id>
+   <name>Wicket snapshot repository</name>
+   <url>http://wicketstuff.org/maven/repository/</url>
+  </repository>
  </repositories>
  <reporting>
   <plugins>
