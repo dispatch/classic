@@ -5,6 +5,7 @@ import wicket.markup.html.WebMarkupContainer;
 import wicket.markup.html.WebPage;
 import wicket.markup.html.link.Link;
 import wicket.markup.html.panel.Panel;
+import wicket.markup.html.resources.StyleSheetReference;
 
 /**
  * Serves as both a sign in and simple regristration page. 
@@ -25,6 +26,7 @@ public class SignInPage extends WebPage {
 	 */
 	public SignInPage() {
 		add(new StyleLink("signinStylesheet", SignInPage.class));
+		add(new StyleSheetReference("data-app", SignInPage.class, "data-app.css"));
 		
 		add(new WebMarkupContainer("gotoRegister"){
 			@Override
