@@ -18,11 +18,11 @@
     <source>src/main/java/SignInPanel.html</source>
     <source>src/main/java/UserStatusPanel.java</source>
     <source>src/main/java/UserStatusPanel.html</source>
+    <source>src/main/java/data-app.css</source>
   </sources>
   <resources>
     <resource>src/main/java/hibernate.properties</resource>
     <resource>src/main/webapp/WEB-INF/web.xml</resource>
-    <resource>src/main/webapp/data-app.css</resource>
   </resources>
 </archetype>
 

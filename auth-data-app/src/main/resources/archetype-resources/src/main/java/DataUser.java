@@ -21,6 +21,7 @@ import org.hibernate.annotations.CollectionOfElements;
 import wicket.Application;
 import wicket.authorization.strategies.role.Roles;
 import wicket.util.crypt.Base64;
+import wicket.util.crypt.Base64UrlSafe;
 
 /**
  * Basic implementation of IUser.CookieAuth. Stores no passwords in memory or persistent
@@ -136,7 +137,7 @@ public class DataUser implements IUser.CookieAuth, Serializable {
 			md.update(((IAuthSettings)Application.get()).getSalt());
 			md.update(passwordHash.getBytes());
 			byte[] hash = md.digest(username.getBytes());
-			return new String(Base64.encodeBase64(hash));
+			return new String(Base64UrlSafe.encodeBase64(hash));
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException(
 					"SHA Hash algorithm not found. Make available, or override this method.", e);
