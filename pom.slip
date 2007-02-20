@@ -53,10 +53,6 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 			name: "Wicket repository"
 			url: "http://wicket.sourceforge.net/maven2"
 		repository:
-			id: "databinder-snapshots"
-			name: "Databinder snapshot repository"
-			url: "http://databinder.net/snapshot"
-		repository:
 			id: "wicket-snapshots"
 			name: "Wicket snapshot repository"
 			url: "http://wicketstuff.org/maven/repository/"

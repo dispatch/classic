@@ -65,11 +65,6 @@
    <url>http://wicket.sourceforge.net/maven2</url>
   </repository>
   <repository>
-   <id>databinder-snapshots</id>
-   <name>Databinder snapshot repository</name>
-   <url>http://databinder.net/snapshot</url>
-  </repository>
-  <repository>
    <id>wicket-snapshots</id>
    <name>Wicket snapshot repository</name>
    <url>http://wicketstuff.org/maven/repository/</url>
