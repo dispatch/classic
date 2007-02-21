@@ -39,7 +39,8 @@ import wicket.WicketRuntimeException;
 /**
  * Model loaded and persisted by Hibernate. This central Databinder class can be initialized with an
  * entity ID, different types of queries, or an existing persistent object. As a writable Wicket model,
- * the object it contains may be swapped at any time for a different persistent object or null.
+ * the object it contains may be swapped at any time for a different persistent object, a Serializable
+ * object, or null.
  * @author Nathan Hamblen
  */
 public class HibernateObjectModel extends LoadableWritableModel {
@@ -137,7 +138,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	 * Change the persistent object contained in this model.
 	 * Because this method establishes a persistent object ID, queries and binders
 	 * are removed if present.
-	 * @param object must be an entity contained in the current Hibernate session, or null
+	 * @param object must be an entity contained in the current Hibernate session, Serializable, or null
 	 */
 	public void setObject(Component component, Object object) {
 		clearPersistentObject();	// clear everything but objectClass
@@ -147,9 +148,15 @@ public class HibernateObjectModel extends LoadableWritableModel {
 			objectClass = null;
 		else {
 			Session sess = DataStaticService.getHibernateSession();
-			objectId = sess.getIdentifier(object);
-			// the entityName, rather than the objectClass, will be used to load
-			entityName = sess.getEntityName(object);
+			if (sess.contains(object)) {
+				objectId = sess.getIdentifier(object);
+				// the entityName, rather than the objectClass, will be used to load
+				entityName = sess.getEntityName(object);
+			} else {
+				if (retainUnsaved)
+					retainedObject = objectId;
+			}
+			setTempModelObject(object);	// skip calling load later
 		}
 	}
 		
@@ -188,7 +195,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 		if (objectClass == null && entityName == null && queryString == null && queryBuilder == null)
 			return null;	// can't load without one of these
 		try {
-			if (objectId == null && queryString == null && criteriaBuilder == null && queryBuilder == null) {
+			if (isBound()) {
 				if (retainUnsaved && retainedObject != null)
 					return retainedObject;
 				else if (retainUnsaved) try {
@@ -260,8 +267,21 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	public void setEntityName(String entityName) {
 		this.entityName = entityName;
 	}
+	
+	/**
+	 * When "bound," this model discards its temporary model object at the end of every
+	 * request cycle and reloads it via Hiberanate when needed again. When "unbound," its 
+	 * behavior is dictated by the value of retanUnsaved.
+	 * @return true if information needed to load from Hibernate (identifier, query, or criteria) is present
+	 */
+	public boolean isBound() {
+		return objectId != null || queryString != null || criteriaBuilder != null || queryBuilder != null;
+	}
 
 	/**
+	 * When retainUnsaved is true (the default) and the model is not bound,
+	 * the model object must be Serializable as it is retained in the Web session between
+	 * requests. See isBound() for more information.
 	 * @return true if unsaved objects should be retained between requests.
 	 */
 	public boolean getRetainUnsaved() {

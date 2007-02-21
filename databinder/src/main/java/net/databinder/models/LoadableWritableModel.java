@@ -55,6 +55,16 @@ public abstract class LoadableWritableModel extends AbstractModel {
 	public final boolean isAttached() {
 		return attached;
 	}
+	
+	/**
+	 * Called by subclass when the model object is readily available. Saves a later
+	 * (possibly expensive) call to load().
+	 * @param object
+	 */
+	protected void setTempModelObject(Object object) {
+		attached = true;
+		tempModelObject = object;
+	}
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer(super.toString());
