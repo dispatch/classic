@@ -195,7 +195,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 		if (objectClass == null && entityName == null && queryString == null && queryBuilder == null)
 			return null;	// can't load without one of these
 		try {
-			if (isBound()) {
+			if (!isBound()) {
 				if (retainUnsaved && retainedObject != null)
 					return retainedObject;
 				else if (retainUnsaved) try {
