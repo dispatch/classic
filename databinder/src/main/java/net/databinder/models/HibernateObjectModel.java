@@ -138,7 +138,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	 * Change the persistent object contained in this model.
 	 * Because this method establishes a persistent object ID, queries and binders
 	 * are removed if present.
-	 * @param object must be an entity contained in the current Hibernate session, Serializable, or null
+	 * @param object must be an entity contained in the current Hibernate session, or Serializable, or null
 	 */
 	public void setObject(Component component, Object object) {
 		clearPersistentObject();	// clear everything but objectClass
@@ -154,7 +154,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 				entityName = sess.getEntityName(object);
 			} else {
 				if (retainUnsaved)
-					retainedObject = objectId;
+					retainedObject = (Serializable) object;
 			}
 			setTempModelObject(object);	// skip calling load later
 		}
