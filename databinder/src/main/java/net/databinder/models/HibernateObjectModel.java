@@ -153,6 +153,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 				// the entityName, rather than the objectClass, will be used to load
 				entityName = sess.getEntityName(object);
 			} else {
+				objectClass = object.getClass();
 				if (retainUnsaved)
 					retainedObject = (Serializable) object;
 			}
