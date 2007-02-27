@@ -20,24 +20,24 @@ package net.databinder.components;
 
 import java.io.IOException;
 
-import wicket.WicketRuntimeException;
+import org.hibernate.Hibernate;
+
 import wicket.markup.html.form.upload.FileUploadField;
 import wicket.model.IModel;
 
 /**
- * Extension of FileUploadField optimized for Blob resources having a stream getter and setter.
- * This upload field can be bound to such an object with a compound property model. Whenever
- * a form is submitted with content for this field, the setter on the bound object with be called
- * with the InputStream of the submitted file. (The getter should always return null.) This 
- * allows for file uploads with no specific code for each upload component.
+ * Extension of FileUploadField optimized for blob resources. This upload field can be 
+ * bound to an object with a compound property model where the property corresponds
+ * to the destination blob setter. This allows for file uploads with no specific code for each 
+ * upload component.
  * @author Nathan Hamblen
  */
-public class StreamUploadField extends FileUploadField {
+public class BlobUploadField extends FileUploadField {
 	/**
 	 * Costructor to be used with compound property model.
 	 * @param id component id, should resolve to a stream property
 	 */
-	public StreamUploadField(String id) {
+	public BlobUploadField(String id) {
 		super(id);
 	}
 
@@ -46,20 +46,23 @@ public class StreamUploadField extends FileUploadField {
 	 * @param id component id
 	 * @param model should resolve to a stream setter
 	 */
-	public StreamUploadField(String id, IModel model) {
+	public BlobUploadField(String id, IModel model) {
 		super(id, model);
 	}
 
 	/**
-	 * Sets the uploads inputstream to the resolved model object.
+	 * Converts the upload's inputstream to the resolved blob setter.
 	 */
 	@Override
 	public void updateModel() {
 		try {
-			if (getFileUpload() != null)
-				setModelObject(getFileUpload().getInputStream());
+			if (getFileUpload() != null) {
+				setModelObject(Hibernate.createBlob(getFileUpload().getInputStream()));
+				onUpdated();
+			}
 		} catch (IOException e) {
-			throw new WicketRuntimeException("Error saving stream to object:", e);
+			throw new RuntimeException(e);
 		}
 	}
+	protected void onUpdated() { }
 }
