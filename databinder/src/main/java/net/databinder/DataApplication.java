@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.databinder.components.PageExpiredCookieless;
 import net.databinder.util.ColorConverter;
+import net.databinder.util.ColorToStringConverter;
 import net.databinder.util.URIConverter;
 import net.databinder.util.URLConverter;
 import net.databinder.web.NorewriteWebResponse;
@@ -42,6 +43,7 @@ import wicket.protocol.http.WebApplication;
 import wicket.protocol.http.WebResponse;
 import wicket.util.convert.Converter;
 import wicket.util.convert.IConverterFactory;
+import wicket.util.convert.converters.StringConverter;
 
 /**
  * Optional Databinder base Application class for configuration and session management. 
@@ -72,7 +74,7 @@ public abstract class DataApplication extends WebApplication {
 		// we find versioning less useful for simple, data-driven pages
 		getPageSettings().setVersionPagesByDefault(false);
 
-		// register URL converters
+		// register converters
 		getApplicationSettings().setConverterFactory(new IConverterFactory() {
 			/** Supplements the Wicket default converters. */
 			public wicket.util.convert.IConverter newConverter(Locale locale) {
@@ -80,6 +82,7 @@ public abstract class DataApplication extends WebApplication {
 				conv.set(URL.class, new URLConverter());
 				conv.set(URI.class, new URIConverter());
 				conv.set(Color.class, new ColorConverter());
+				((StringConverter)conv.get(String.class)).set(Color.class, new ColorToStringConverter());
 				return conv;
 			}
 		});
