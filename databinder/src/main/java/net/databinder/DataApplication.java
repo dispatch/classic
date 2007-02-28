@@ -19,6 +19,7 @@
 
 package net.databinder;
 
+import java.awt.Color;
 import java.net.URI;
 import java.net.URL;
 import java.util.Locale;
@@ -26,6 +27,7 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletResponse;
 
 import net.databinder.components.PageExpiredCookieless;
+import net.databinder.util.ColorConverter;
 import net.databinder.util.URIConverter;
 import net.databinder.util.URLConverter;
 import net.databinder.web.NorewriteWebResponse;
@@ -77,6 +79,7 @@ public abstract class DataApplication extends WebApplication {
 				Converter conv = new Converter(locale);
 				conv.set(URL.class, new URLConverter());
 				conv.set(URI.class, new URIConverter());
+				conv.set(Color.class, new ColorConverter());
 				return conv;
 			}
 		});
