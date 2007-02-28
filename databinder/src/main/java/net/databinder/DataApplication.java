@@ -74,7 +74,7 @@ public abstract class DataApplication extends WebApplication {
 
 		// register URL converters
 		getApplicationSettings().setConverterFactory(new IConverterFactory() {
-			/** Registers URLConverter and URIConverter in addition to the Wicket defaults. */
+			/** Supplements the Wicket default converters. */
 			public wicket.util.convert.IConverter newConverter(Locale locale) {
 				Converter conv = new Converter(locale);
 				conv.set(URL.class, new URLConverter());
