@@ -38,6 +38,10 @@ public class DateLabel extends CustomLabel {
 		super(id, new DateConverter(new SimpleDateFormat(formatString)));
 	}
 
+	public DateLabel(String id, DateFormat format) {
+		super(id, new DateConverter(format));
+	}
+
 	/**
 	 * @param id Wicket id
 	 * @param model source model (must be a Date)
@@ -48,6 +52,10 @@ public class DateLabel extends CustomLabel {
 		super(id, model, new DateConverter(new SimpleDateFormat(formatString)));
 	}
 
+	public DateLabel(String id, IModel model, DateFormat dateFormat) {
+		super(id, model, new DateConverter(dateFormat));
+		
+	}
 	/**
 	 * Format Date as a String determined by its configuration. 
 	 */
