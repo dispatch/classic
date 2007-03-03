@@ -1,0 +1,30 @@
+"""<?xml version="1.0" encoding="UTF-8" ?>"""
+project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://maven.apache.org/POM/4.0.0",xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"):
+
+	modelVersion: "4.0.0"
+	artifactId: "databinder-draw"
+	name: "Databinder draw"
+	description: "Leverage rendering libaries for server-side graphics."
+
+	parent:
+		groupId: "net.databinder"
+		artifactId: "databinder-parent"
+		version: "1.1-SNAPSHOT"
+
+	dependencies:
+		dependency:
+			groupId: "${pom.groupId}"
+			version: "${pom.version}"
+			artifactId: "databinder"
+
+		dependency:
+			groupId: "org.apache.batik"
+			artifactId: "batik-gvt"
+			version: "1.7-SNAPSHOT"
+
+		dependency:
+			groupId: "org.apache.batik"
+			artifactId: "batik-awt-util"
+			version: "1.7-SNAPSHOT"
+~                                                                                              
+
