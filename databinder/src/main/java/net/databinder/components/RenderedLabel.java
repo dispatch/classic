@@ -138,12 +138,12 @@ public class RenderedLabel extends Image  {
 				}
 				if (resource == null)
 					shared.add(RenderedLabel.class, hash, null, null, 
-							resource = new RenderedTextImageResource(this, true));
+							resource = newRenderedTextImageResource(true));
 				setImageResourceReference(new ResourceReference(RenderedLabel.class, hash));
 			}
 		} else {
 			if (resource == null)
-				setImageResource(resource = new RenderedTextImageResource(this, false));
+				setImageResource(resource = newRenderedTextImageResource(false));
 			else if (labelHash != curHash)
 				resource.setState(this);
 		}
@@ -224,6 +224,20 @@ public class RenderedLabel extends Image  {
 	 * @param maxWidth
 	 */
 	public static void loadSharedResources(String text, Font font, Color color, Color backgroundColor, Integer maxWidth) {
+		loadSharedResources(new RenderedTextImageResource(), text, font, color, backgroundColor, maxWidth);
+	}
+	
+	/**
+	 * Utility method to load a specific instance of a the rendering shared resource.
+	 */
+	protected static void loadSharedResources(RenderedTextImageResource res, String text, Font font, Color color, Color backgroundColor, Integer maxWidth) {
+		res.setCacheable(true);
+		res.backgroundColor = backgroundColor;
+		res.color = color;
+		res.font = font;
+		res.maxWidth = maxWidth;
+		res.renderedText = text;
+
 		if (font == null) font = defaultFont;
 		if (color == null) color = defaultColor;
 		if (backgroundColor == null) backgroundColor = defaultBackgroundColor;
@@ -231,8 +245,20 @@ public class RenderedLabel extends Image  {
 		String hash = Integer.toHexString(getLabelHash(text, font, color, backgroundColor, maxWidth));
 		SharedResources shared = wicket.Application.get().getSharedResources();
 
-		shared.add(RenderedLabel.class, hash, null, null, 
-				new RenderedTextImageResource(text, font, color, backgroundColor, maxWidth));
+		shared.add(RenderedLabel.class, hash, null, null, res);
+	}	
+
+	/**
+	 * Create a new image resource to render this label. Override in a subclass to use a different
+	 * renderer.
+	 * @param isShared is a shared, cacheable resource
+	 * @return new instance of RenderedTextImageResource or subclass
+	 */
+	protected RenderedTextImageResource newRenderedTextImageResource(boolean isShared) {
+		RenderedTextImageResource res = new RenderedTextImageResource();
+		res.setCacheable(isShared);
+		res.setState(this);
+		return res;
 	}
 	
 	/**
@@ -241,35 +267,17 @@ public class RenderedLabel extends Image  {
 	 */
 	protected static class RenderedTextImageResource extends RenderedDynamicImageResource
 	{
-		private Color backgroundColor;
-		private Color color;
-		private Font font;
-		private Integer maxWidth;
-		private String renderedText;
+		protected Color backgroundColor;
+		protected Color color;
+		protected Font font;
+		protected Integer maxWidth;
+		protected String renderedText;
 
-		private RenderedTextImageResource() {
+		protected RenderedTextImageResource() {
 			super(1, 1,"png");	// tiny default that will resize to fit text
 			setType(BufferedImage.TYPE_INT_ARGB); // allow alpha transparency
 		}
 		
-		public RenderedTextImageResource(RenderedLabel label, boolean isShared)
-		{
-			this();
-			setCacheable(isShared);
-			setState(label);
-		}
-
-		public RenderedTextImageResource(String text, Font font, Color color, Color backgroundColor, Integer maxWidth) {
-			this();
-			setCacheable(true);
-			this.backgroundColor = backgroundColor;
-			this.color = color;
-			this.font = font;
-			this.maxWidth = maxWidth;
-			renderedText = text;
-		}
-		
-
 		protected void setState(RenderedLabel label) {
 			backgroundColor = label.getBackgroundColor();
 			color = label.getColor();
