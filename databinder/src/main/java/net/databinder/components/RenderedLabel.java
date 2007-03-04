@@ -232,16 +232,12 @@ public class RenderedLabel extends Image  {
 	 */
 	protected static void loadSharedResources(RenderedTextImageResource res, String text, Font font, Color color, Color backgroundColor, Integer maxWidth) {
 		res.setCacheable(true);
-		res.backgroundColor = backgroundColor;
-		res.color = color;
-		res.font = font;
+		res.backgroundColor = backgroundColor == null ? defaultBackgroundColor : backgroundColor;
+		res.color = color == null ? defaultColor : color;
+		res.font = font == null ? defaultFont : font;
 		res.maxWidth = maxWidth;
 		res.renderedText = text;
 
-		if (font == null) font = defaultFont;
-		if (color == null) color = defaultColor;
-		if (backgroundColor == null) backgroundColor = defaultBackgroundColor;
-		
 		String hash = Integer.toHexString(getLabelHash(text, font, color, backgroundColor, maxWidth));
 		SharedResources shared = wicket.Application.get().getSharedResources();
 
