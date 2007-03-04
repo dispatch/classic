@@ -94,9 +94,7 @@ public class BatikRenderedLabel extends RenderedLabel {
 			
 			TextPaintInfo tpi = new TextPaintInfo();
 			tpi.visible = true;
-	        tpi.fillPaint = color;
-//	        tpi.strokeStroke = new BasicStroke();
-//	        tpi.strokePaint = color;
+			tpi.fillPaint = color;
 	        
 			ats.addAttribute(StrokingTextPainter.PAINT_INFO, tpi);
 			
