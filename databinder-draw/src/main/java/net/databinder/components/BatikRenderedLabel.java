@@ -38,10 +38,11 @@ public class BatikRenderedLabel extends RenderedLabel {
 		loadSharedResources(new BatikRenderedTextImageResource(), text, font, color, backgroundColor, maxWidth);
 	}
 
-	protected RenderedTextImageResource newRenderedTextImageResource(RenderedLabel label, boolean isShared) {
+	@Override
+	protected RenderedTextImageResource newRenderedTextImageResource(boolean isShared) {
 		RenderedTextImageResource res = new BatikRenderedTextImageResource();
 		res.setCacheable(isShared);
-		res.setState(label);
+		res.setState(this);
 		return res;
 	}
 
