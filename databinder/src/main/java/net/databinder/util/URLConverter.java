@@ -37,9 +37,9 @@ public class URLConverter extends AbstractConverter {
 		return URL.class;
 	}
 
-	public Object convert(Object obj, Locale arg1) {
+	public Object convertToObject(String value, Locale locale) {
 		try {
-			return new URL(obj.toString());
+			return new URL(value);
 		} catch (MalformedURLException e) {
 			throw new ConversionException(e);
 		}

@@ -37,11 +37,17 @@ public class ColorConverter extends AbstractConverter {
 		return Color.class;
 	}
 
-	public Object convert(Object obj, Locale arg1) {
+	public Object convertToObject(String obj, Locale loc) {
 		try {
 			return Color.decode(obj.toString());
 		} catch (NumberFormatException e) {
 			throw new ConversionException(e);
 		}
+	}
+	@Override
+	public String convertToString(Object value, Locale locale) {
+		if (value == null) return null;
+		Color c = (Color) value;
+		return "#" + Integer.toHexString(c.getRGB()).substring(2);
 	}
 }

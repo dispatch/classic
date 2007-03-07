@@ -21,6 +21,7 @@ package net.databinder.dispatch.components;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Locale;
 
 import net.databinder.components.CustomLabel;
 import net.sf.ehcache.CacheManager;
@@ -113,16 +114,23 @@ public abstract class XmlRpcLabel extends CustomLabel {
 	 */
 	protected abstract static class XmlRpcConverter extends CustomConverter {
 		protected abstract  String getMethodName();
-		public Object convert(Object source, Class cl) {
+		public Object convertToObject(String value, Locale locale) {
+			return null;
+		}
+		@Override
+		protected Class getTargetType() {
+			return String.class;
+		}
+		public String convertToString(Object source, Locale locale) {
 			String methodName = getMethodName();
 			int key = source.hashCode();
 			Ehcache cache = getCache(methodName);
 			Element elem = cache.get(key);
-			if (elem != null) return elem.getValue();
+			if (elem != null) return (String) elem.getValue();
 			try{
 				 Object out = getClient().execute(methodName, new Object[] {source});
 				cache.put(new Element(key, out));
-				return out;
+				return (String) out;
 			} catch (XmlRpcException e) {
 				if (Application.get().getConfigurationType().equals(Application.DEVELOPMENT))
 					throw new RestartResponseAtInterceptPageException(new ConnectionErrorPage(e));

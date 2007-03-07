@@ -1,5 +1,7 @@
 package net.databinder.components;
 
+import java.util.Locale;
+
 import wicket.model.IModel;
 import jtextile.JTextile;
 
@@ -31,14 +33,22 @@ public class TextileLabel extends CustomLabel {
 	 * @see jtextile.JTextile
 	 */
 	protected static class TextileConverter extends CustomConverter {
-		public Object convert(Object source, Class cl) {
-			if (source instanceof String && cl.equals(String.class))
+		@Override
+		protected Class getTargetType() {
+			return String.class;
+		}
+		@Override
+		public String convertToString(Object source, Locale locale) {
+			if (source instanceof String)
 				try{
 					return JTextile.textile((String) source);
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
-				return new UnsupportedOperationException("Can only convert Strings to Strings");
+				throw new UnsupportedOperationException("Can only convert Strings to Strings");
+		}
+		public Object convertToObject(String value, Locale locale) {
+			return null;
 		}
 	}
 }

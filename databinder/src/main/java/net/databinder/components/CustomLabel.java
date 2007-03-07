@@ -5,6 +5,7 @@ import java.util.Locale;
 import wicket.markup.html.basic.Label;
 import wicket.model.IModel;
 import wicket.util.convert.IConverter;
+import wicket.util.convert.converters.AbstractConverter;
 
 /**
  * Label that alters its contents with a specific converter before display. 
@@ -38,7 +39,7 @@ public abstract class CustomLabel extends Label {
 	 * Always returns the chosen converter.
 	 */
 	@Override
-	public final IConverter getConverter() {
+	public IConverter getConverter(Class type) {
 		return converter;
 	}
 	
@@ -46,7 +47,7 @@ public abstract class CustomLabel extends Label {
 	 * Provides basic Locale support so those IConverter methods will not need to be
 	 * overridden.
 	 */
-	protected abstract static class CustomConverter implements IConverter {
+	protected abstract static class CustomConverter extends AbstractConverter implements IConverter {
 		private Locale locale;
 		public Locale getLocale() {
 			return locale;

@@ -22,13 +22,11 @@ package net.databinder;
 import java.awt.Color;
 import java.net.URI;
 import java.net.URL;
-import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
 
 import net.databinder.components.PageExpiredCookieless;
 import net.databinder.util.ColorConverter;
-import net.databinder.util.ColorToStringConverter;
 import net.databinder.util.URIConverter;
 import net.databinder.util.URLConverter;
 import net.databinder.web.NorewriteWebResponse;
@@ -36,14 +34,14 @@ import net.databinder.web.NorewriteWebResponse;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 
+import wicket.IConverterLocator;
 import wicket.Request;
 import wicket.Session;
 import wicket.markup.html.pages.PageExpiredErrorPage;
 import wicket.protocol.http.WebApplication;
 import wicket.protocol.http.WebResponse;
-import wicket.util.convert.Converter;
-import wicket.util.convert.IConverterFactory;
-import wicket.util.convert.converters.StringConverter;
+import wicket.util.convert.ConverterLocator;
+import wicket.util.convert.IConverterLocatorFactory;
 
 /**
  * Optional Databinder base Application class for configuration and session management. 
@@ -75,17 +73,15 @@ public abstract class DataApplication extends WebApplication {
 		getPageSettings().setVersionPagesByDefault(false);
 
 		// register converters
-		getApplicationSettings().setConverterFactory(new IConverterFactory() {
-			/** Supplements the Wicket default converters. */
-			public wicket.util.convert.IConverter newConverter(Locale locale) {
-				Converter conv = new Converter(locale);
-				conv.set(URL.class, new URLConverter());
-				conv.set(URI.class, new URIConverter());
-				conv.set(Color.class, new ColorConverter());
-				((StringConverter)conv.get(String.class)).set(Color.class, new ColorToStringConverter());
-				return conv;
+		getApplicationSettings().setConverterLocatorFactory(new IConverterLocatorFactory() {
+			public IConverterLocator newConverterLocator() {
+				ConverterLocator converterLocator = new ConverterLocator();
+				converterLocator.set(URL.class, new URLConverter());
+				converterLocator.set(URI.class, new URIConverter());
+				converterLocator.set(Color.class, new ColorConverter());
+				return converterLocator;
 			}
-		});
+		});;
 
 		DataStaticService.setSessionFactory(buildHibernateSessionFactory());
 	}

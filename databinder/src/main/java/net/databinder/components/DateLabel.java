@@ -21,6 +21,7 @@ package net.databinder.components;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import wicket.model.IModel;
 
@@ -64,14 +65,22 @@ public class DateLabel extends CustomLabel {
 		public DateConverter(DateFormat df) {
 			this.df = df;
 		}
-		public Object convert(Object source, Class cl) {
-			if (source instanceof Date && cl.equals(String.class))
+		public Object convertToObject(final String value, Locale locale)
+		{
+			return parse(df, value, locale);
+		}
+		@Override
+		protected Class getTargetType() {
+			return Date.class;
+		}
+		public String convertToString(Object source, Locale locale) {
+			if (source instanceof Date)
 				try{
 					return df.format((Date) source);
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
-				return new UnsupportedOperationException("Can only convert Dates to Strings");
+				throw new UnsupportedOperationException("Can only convert Dates to Strings");
 		}
 	}
 }

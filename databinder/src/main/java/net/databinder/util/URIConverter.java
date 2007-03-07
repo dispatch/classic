@@ -36,10 +36,9 @@ public class URIConverter extends AbstractConverter {
 	protected Class getTargetType() {
 		return URI.class;
 	}
-
-	public Object convert(Object obj, Locale arg1) {
+	public Object convertToObject(String value, Locale locale) {
 		try {
-			return new URI(obj.toString());
+			return new URI(value);
 		} catch (URISyntaxException e) {
 			throw new ConversionException(e);
 		}
