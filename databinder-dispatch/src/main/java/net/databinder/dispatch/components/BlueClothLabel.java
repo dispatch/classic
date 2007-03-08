@@ -46,7 +46,7 @@ public class BlueClothLabel extends XmlRpcLabel {
 		setEscapeModelStrings(false);
 	}
 	/** XML-RPC method name is "bluecloth.to_html". */
-	protected static class BlueClothConverter extends XmlRpcConverter {
+	public static class BlueClothConverter extends XmlRpcConverter {
 		@Override
 		protected String getMethodName() {
 			return "bluecloth.to_html";

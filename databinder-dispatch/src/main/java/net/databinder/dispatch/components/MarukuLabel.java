@@ -46,7 +46,7 @@ public class MarukuLabel extends XmlRpcLabel {
 		setEscapeModelStrings(false);
 	}
 	/** XML-RPC method name is "maruku.to_html". */
-	protected static class MarukuConverter extends XmlRpcConverter {
+	public static class MarukuConverter extends XmlRpcConverter {
 		@Override
 		protected String getMethodName() {
 			return "maruku.to_html";

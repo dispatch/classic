@@ -48,7 +48,7 @@ public class RubyPantsLabel extends XmlRpcLabel {
 		setEscapeModelStrings(false);
 	}
 	/** XML-RPC method name is "rubypants.to_html". */
-	protected static class RubyPantsConverter extends XmlRpcConverter {
+	public static class RubyPantsConverter extends XmlRpcConverter {
 		@Override
 		protected String getMethodName() {
 			return "rubypants.to_html";
