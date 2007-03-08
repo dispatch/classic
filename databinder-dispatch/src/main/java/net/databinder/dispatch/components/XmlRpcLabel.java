@@ -113,7 +113,7 @@ public abstract class XmlRpcLabel extends CustomLabel {
 	/**
 	 * Converter calls into XML-RPC method name given by subclass (or finds result in cache).
 	 */
-	protected abstract static class XmlRpcConverter extends AbstractConverter {
+	public abstract static class XmlRpcConverter extends AbstractConverter {
 		protected abstract  String getMethodName();
 		public Object convertToObject(String value, Locale locale) {
 			return null;
