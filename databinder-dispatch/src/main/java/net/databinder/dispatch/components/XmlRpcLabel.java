@@ -38,6 +38,7 @@ import wicket.Application;
 import wicket.ResourceReference;
 import wicket.RestartResponseAtInterceptPageException;
 import wicket.model.IModel;
+import wicket.util.convert.converters.AbstractConverter;
 
 /**
  * Label that converts its model through an XML-RPC call before display. Results are
@@ -54,7 +55,7 @@ public abstract class XmlRpcLabel extends CustomLabel {
 	 * @param id Wicket id of component
 	 * @param converter specific converter to use before display
 	 */
-	protected XmlRpcLabel(String id, CustomConverter converter) {
+	protected XmlRpcLabel(String id, AbstractConverter converter) {
 		super(id, converter);
 	}
 	
@@ -63,7 +64,7 @@ public abstract class XmlRpcLabel extends CustomLabel {
 	 * @param model model to be passed through converter
 	 * @param converter specific converter to use before display
 	 */
-	protected XmlRpcLabel(String id, IModel model, CustomConverter converter) {
+	protected XmlRpcLabel(String id, IModel model, AbstractConverter converter) {
 		super(id, model, converter);
 	}
 
@@ -112,7 +113,7 @@ public abstract class XmlRpcLabel extends CustomLabel {
 	/**
 	 * Converter calls into XML-RPC method name given by subclass (or finds result in cache).
 	 */
-	protected abstract static class XmlRpcConverter extends CustomConverter {
+	protected abstract static class XmlRpcConverter extends AbstractConverter {
 		protected abstract  String getMethodName();
 		public Object convertToObject(String value, Locale locale) {
 			return null;

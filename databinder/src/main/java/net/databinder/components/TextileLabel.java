@@ -3,6 +3,7 @@ package net.databinder.components;
 import java.util.Locale;
 
 import wicket.model.IModel;
+import wicket.util.convert.converters.AbstractConverter;
 import jtextile.JTextile;
 
 /**
@@ -32,7 +33,7 @@ public class TextileLabel extends CustomLabel {
 	 * Passes all source objects through JTextile, checks that conversion is String-String.
 	 * @see jtextile.JTextile
 	 */
-	protected static class TextileConverter extends CustomConverter {
+	protected static class TextileConverter extends AbstractConverter {
 		@Override
 		protected Class getTargetType() {
 			return String.class;

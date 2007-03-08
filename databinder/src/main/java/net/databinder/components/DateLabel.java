@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import wicket.model.IModel;
+import wicket.util.convert.converters.AbstractConverter;
 
 /**
  * Label with a specific date format (rather than a globally defined one). 
@@ -60,7 +61,7 @@ public class DateLabel extends CustomLabel {
 	/**
 	 * Format Date as a String determined by its configuration. 
 	 */
-	protected static class DateConverter extends CustomConverter {
+	protected static class DateConverter extends AbstractConverter {
 		private DateFormat df;
 		public DateConverter(DateFormat df) {
 			this.df = df;

@@ -1,7 +1,5 @@
 package net.databinder.components;
 
-import java.util.Locale;
-
 import wicket.markup.html.basic.Label;
 import wicket.model.IModel;
 import wicket.util.convert.IConverter;
@@ -12,15 +10,14 @@ import wicket.util.convert.converters.AbstractConverter;
  * @author Nathan Hamblen
  */
 public abstract class CustomLabel extends Label {
-	private CustomConverter converter;
+	private IConverter converter;
 	
 	/**
 	 * @param id Wicket id of component
 	 * @param converter specific converter to use before display
 	 */
-	protected CustomLabel(String id, CustomConverter converter) {
+	protected CustomLabel(String id, IConverter converter) {
 		super(id);
-		converter.setLocale(getLocale());
 		this.converter = converter;
 	}
 	
@@ -29,10 +26,8 @@ public abstract class CustomLabel extends Label {
 	 * @param model model to be passed through converter
 	 * @param converter specific converter to use before display
 	 */
-	protected CustomLabel(String id, IModel model, CustomConverter converter) {
+	protected CustomLabel(String id, IModel model, IConverter converter) {
 		super(id, model);
-		converter.setLocale(getLocale());
-		this.converter = converter;
 	}
 	
 	/**
@@ -44,16 +39,9 @@ public abstract class CustomLabel extends Label {
 	}
 	
 	/**
-	 * Provides basic Locale support so those IConverter methods will not need to be
-	 * overridden.
+	 * Please override AbstractConverter directly.
+	 * @deprecated
 	 */
-	protected abstract static class CustomConverter extends AbstractConverter implements IConverter {
-		private Locale locale;
-		public Locale getLocale() {
-			return locale;
-		}
-		public void setLocale(Locale locale) {
-			this.locale = locale;
-		}
+	protected abstract static class CustomConverter extends AbstractConverter {
 	}
 }
