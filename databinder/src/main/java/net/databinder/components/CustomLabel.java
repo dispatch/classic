@@ -28,6 +28,7 @@ public abstract class CustomLabel extends Label {
 	 */
 	protected CustomLabel(String id, IModel model, IConverter converter) {
 		super(id, model);
+		this.converter = converter;
 	}
 	
 	/**
