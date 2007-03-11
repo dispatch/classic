@@ -19,8 +19,6 @@
 package net.databinder.auth;
 
 import net.databinder.DataApplication;
-import net.databinder.auth.components.DataSignInPage;
-import net.databinder.auth.data.DataUser;
 import net.databinder.auth.data.IUser;
 import net.databinder.models.ICriteriaBuilder;
 
@@ -46,7 +44,6 @@ import wicket.markup.html.WebPage;
  * or a User subclass, override getUserClass(). (This class, whatever it is, will be added to 
  * the Hibernate Annotations configuration automatically. It is also possible to use Databinder
  * authentication without extending this base class by implementing IAuthSettings. 
- * @see DataUser
  * @see IAuthSettings
  * @see IUser
  * @author Nathan Hamblen
@@ -109,8 +106,9 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, I
 	 * will be removed in a future version.
 	 * @return class to be used for signed in users
 	 */
+	@SuppressWarnings("deprecation")
 	public Class< ? extends IUser> getUserClass() {
-		return DataUser.class;
+		return net.databinder.auth.data.DataUser.class;
 	}
 	
 	/** Default user criteria builder, binds to "username" property. */
@@ -139,8 +137,9 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, I
 	 * in a future version.
 	 * @return page to sign in users
 	 */
+	@SuppressWarnings("deprecation")
 	public Class< ? extends WebPage> getSignInPageClass() {
-		return DataSignInPage.class;
+		return net.databinder.auth.components.DataSignInPage.class;
 	}
 	
 	/**
