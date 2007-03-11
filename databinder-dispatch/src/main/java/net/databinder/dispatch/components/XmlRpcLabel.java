@@ -28,6 +28,8 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfig;
@@ -50,6 +52,8 @@ public abstract class XmlRpcLabel extends CustomLabel {
 	private static XmlRpcClientConfig config;
 	/** External script source that responds to XML-RPC requests. */
 	public static final ResourceReference scriptFile = new ResourceReference(XmlRpcLabel.class, "databinder-dispatch.rb");
+
+	private static final Log log = LogFactory.getLog(XmlRpcLabel.class);
 
 	/**
 	 * @param id Wicket id of component
@@ -135,8 +139,10 @@ public abstract class XmlRpcLabel extends CustomLabel {
 			} catch (XmlRpcException e) {
 				if (Application.get().getConfigurationType().equals(Application.DEVELOPMENT))
 					throw new RestartResponseAtInterceptPageException(new ConnectionErrorPage(e));
-				else
-					throw new RuntimeException(e);
+				else {
+					log.error("Error contacting XML-RPC server", e);
+					return null;
+				}
 			}
 		}
 	}
