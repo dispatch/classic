@@ -26,7 +26,7 @@ import wicket.util.convert.ConversionException;
 import wicket.util.convert.converters.AbstractConverter;
 
 /**
- * Convert color stirng to a java.awt.Color using its static decode method.
+ * Convert between a HTML hex color string and java.awt.Color.
  * @author Nathan Hamblen
  * @see Color
  */
