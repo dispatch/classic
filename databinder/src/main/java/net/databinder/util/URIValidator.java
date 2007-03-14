@@ -65,7 +65,7 @@ public abstract class URIValidator extends AbstractValidator {
 		@Override
 		public void onValidate(FormComponent formComponent, URI uri) {
 			{
-				if (uri.getScheme() == null || !pattern.matcher(uri.getScheme()).matches())
+				if (uri != null && (uri.getScheme() == null || !pattern.matcher(uri.getScheme()).matches()))
 					error(formComponent);
 			}
 		}

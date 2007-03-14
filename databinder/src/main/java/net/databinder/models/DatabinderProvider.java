@@ -175,7 +175,8 @@ public class DatabinderProvider implements IDataProvider  {
 		if (criteriaBuilder != null)
 			criteriaBuilder.build(crit);
 		crit.setProjection(Projections.rowCount());
-		return (Integer) crit.uniqueResult();
+		Integer size = (Integer) crit.uniqueResult();
+		return size == null ? 0 : size;
 	}
 
 	/**
