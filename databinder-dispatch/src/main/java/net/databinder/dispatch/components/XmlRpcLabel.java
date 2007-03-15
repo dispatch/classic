@@ -127,6 +127,8 @@ public abstract class XmlRpcLabel extends CustomLabel {
 			return String.class;
 		}
 		public String convertToString(Object source, Locale locale) {
+			if (source == null)
+				return null;
 			String methodName = getMethodName();
 			int key = source.hashCode();
 			Ehcache cache = getCache(methodName);
