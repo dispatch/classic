@@ -54,8 +54,8 @@ public abstract class DataApplication extends WebApplication {
 	private boolean cookielessSupported = true;
 	
 	/**
-	 * Configures this application for development or production, turns off 
-	 * default page versioning, and <strong>initializes Hibernate session factory</strong>. 
+	 * Configures this application for development or production
+	 * and <strong>initializes Hibernate session factory</strong>. 
 	 * Development mode is the default; set a JVM property or context/init parameter of 
 	 * wicket.configuration=deployment to enable production defaults. If you override this 
 	 * method, be sure to call super() or initialize the Hibernate session factory yourself.
@@ -69,9 +69,6 @@ public abstract class DataApplication extends WebApplication {
 		if (configuration != null)
 			configure(configuration);
 		
-		// we find versioning less useful for simple, data-driven pages
-		getPageSettings().setVersionPagesByDefault(false);
-
 		// register converters
 		getApplicationSettings().setConverterLocatorFactory(new IConverterLocatorFactory() {
 			public IConverterLocator newConverterLocator() {
