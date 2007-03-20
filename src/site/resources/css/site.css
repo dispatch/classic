@@ -1,5 +1,5 @@
 body, td, th, select, input, li {
-  font-family: 'Lucida Sans', 'Lucida Sans Unicode', 'Lucida Grade', Lucida, LucidaSans, Helvetica, sans-serif;
+  font-family: 'Lucida Sans', 'Lucida Sans Unicode', 'Lucida Grande', Lucida, LucidaSans, sans-serif;
 }
 #contentBox, #contentBox li {
   font-family: 'Lucida Bright', 'lucidabright', 'Lucida Serif', Georgia, serif;
@@ -163,3 +163,4 @@ dl, dt {
   font-family: 'Lucida Sans Typewriter', monospace;
   font-size: 85%;
 }
+
