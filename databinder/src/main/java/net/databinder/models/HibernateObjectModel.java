@@ -6,12 +6,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -57,7 +57,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	private Serializable retainedObject;
 	/** Enable retaining unsaved objects between requests. */
 	private boolean retainUnsaved = true;
-	
+
 	/**
 	 * @param objectClass class to be loaded and stored by Hibernate
 	 * @param objectId id of the persistent object
@@ -67,9 +67,9 @@ public class HibernateObjectModel extends LoadableWritableModel {
 		this.objectClass = objectClass;
 		this.objectId = objectId;
 		// load object early, provoking load exceptions when they can be easily caught
-		getObject(null);
+		getObject();
 	}
-	
+
 	/**
 	 * Constructor for a model with no existing persistent object. This class should be
 	 * Serializable so that the new object can be stored in the session until it is persisted.
@@ -80,7 +80,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	public HibernateObjectModel(Class objectClass) {
 		this.objectClass = objectClass;
 	}
-	
+
 	/**
 	 * Construct with an entity.
 	 * @param persistentObject should be previously persisted or Serializable for temp storage.
@@ -100,12 +100,12 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	public HibernateObjectModel(String queryString, IQueryBinder queryBinder) {
 		this.queryString = queryString;
 		this.queryBinder = queryBinder;
-		getObject(null);	// loads & retains object
+		getObject();	// loads & retains object
 	}
-	
+
 	/**
 	 * Construct with a class and criteria binder that return exactly one result. Use this for fetch
-	 * instructions, scalar results, or if the persistent object ID is not available. Criteria that 
+	 * instructions, scalar results, or if the persistent object ID is not available. Criteria that
 	 * return more than one result will produce exceptions.
 	 * @param objectClass class of object for root criteria
 	 * @param criteriaBuilder builder to apply criteria restrictions
@@ -114,9 +114,9 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	public HibernateObjectModel(Class objectClass, ICriteriaBuilder criteriaBuilder) {
 		this.objectClass = objectClass;
 		this.criteriaBuilder = criteriaBuilder;
-		getObject(null);	// loads & retains object
+		getObject();	// loads & retains object
 	}
-	
+
 	/**
 	 * Construct with a query builder that returns exactly one result, used for custom query
 	 * objects. Queries that return more than one result will produce exceptions.
@@ -125,7 +125,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	 */
 	public HibernateObjectModel(IQueryBuilder queryBuilder) {
 		this.queryBuilder = queryBuilder;
-		getObject(null);	// loads & retains object
+		getObject();	// loads & retains object
 	}
 
 	/**
@@ -133,16 +133,20 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	 */
 	public HibernateObjectModel() {
 	}
-	
+
+	@Deprecated
+	public void setObject(Component component, Object object) {
+		setObject(object);
+	}
 	/**
 	 * Change the persistent object contained in this model.
 	 * Because this method establishes a persistent object ID, queries and binders
 	 * are removed if present.
 	 * @param object must be an entity contained in the current Hibernate session, or Serializable, or null
 	 */
-	public void setObject(Component component, Object object) {
+	public void setObject(Object object) {
 		clearPersistentObject();	// clear everything but objectClass
-		
+
 		if (object == null)
 			// clear out completely
 			objectClass = null;
@@ -160,14 +164,14 @@ public class HibernateObjectModel extends LoadableWritableModel {
 			setTempModelObject(object);	// skip calling load later
 		}
 	}
-		
+
 	/**
 	 * Disassociates this object from any persitant object, but retains the class
 	 * for contructing a blank copy if requested.
 	 * @see HibernateObjectModel(Class objectClass)
 	 */
 	public void clearPersistentObject() {
-		Object o = getObject(null);
+		Object o = getObject();
 		if (o != null)
 			if (o instanceof HibernateProxy)
 				objectClass = ((HibernateProxy)o).getHibernateLazyInitializer()
@@ -176,18 +180,18 @@ public class HibernateObjectModel extends LoadableWritableModel {
 				objectClass = o.getClass();
 		entityName = null;
 		objectId = null;
-		queryBinder = null; 
+		queryBinder = null;
 		queryBuilder = null;
 		queryString = null;
 		criteriaBuilder = null;
 		retainedObject = null;
 		detach();
 	}
-	
+
 	/**
-	 * Load the object through Hibernate, contruct a new instance if it is not 
-	 * bound to an id, or use unsaved retained object. This method uses the entityName 
-	 * to load when possible. A correct  (unproxied) objectClass is always available for 
+	 * Load the object through Hibernate, contruct a new instance if it is not
+	 * bound to an id, or use unsaved retained object. This method uses the entityName
+	 * to load when possible. A correct  (unproxied) objectClass is always available for
 	 * contructing empty objects.
 	 * @throws org.hibernate.HibernateException on load error
 	 */
@@ -218,16 +222,16 @@ public class HibernateObjectModel extends LoadableWritableModel {
 				return sess.load(entityName, objectId);
 			return sess.load(objectClass, objectId);
 		}
-		
+
 		if(criteriaBuilder != null) {
 			Criteria criteria = sess.createCriteria(objectClass);
 			criteriaBuilder.build(criteria);
 			return criteria.uniqueResult();
 		}
-		
+
 		if (queryBuilder != null)
 			return queryBuilder.build(sess).uniqueResult();
-		
+
 		Query query = sess.createQuery(queryString);
 		// if querybinder was null in constructor, that's weird, but continue
 		if (queryBinder != null)
@@ -237,18 +241,18 @@ public class HibernateObjectModel extends LoadableWritableModel {
 			throw new QueryException("Returned no results", queryString);
 		return o;
 	}
-	
+
 	/**
-	 * Uses version annotation to find version for this Model's object. 
+	 * Uses version annotation to find version for this Model's object.
 	 * @return Persistent storage version number if available, null otherwise
 	 */
 	public Serializable getVersion() {
-		Object o = getObject(null);
+		Object o = getObject();
 		if (o != null)
 			// must check superclasses; won't show on subs (incl cglib)
 			for (Class c = o.getClass(); c != null; c = c.getSuperclass())
 				for (Method m : c.getMethods())
-					if (m.isAnnotationPresent(Version.class) 
+					if (m.isAnnotationPresent(Version.class)
 							&& m.getParameterTypes().length == 0
 							&& m.getReturnType() instanceof Serializable)
 						try {
@@ -268,10 +272,10 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	public void setEntityName(String entityName) {
 		this.entityName = entityName;
 	}
-	
+
 	/**
 	 * When "bound," this model discards its temporary model object at the end of every
-	 * request cycle and reloads it via Hiberanate when needed again. When "unbound," its 
+	 * request cycle and reloads it via Hiberanate when needed again. When "unbound," its
 	 * behavior is dictated by the value of retanUnsaved.
 	 * @return true if information needed to load from Hibernate (identifier, query, or criteria) is present
 	 */

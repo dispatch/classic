@@ -18,7 +18,7 @@ import wicket.WicketRuntimeException;
 import wicket.markup.ComponentTag;
 import wicket.markup.html.image.Image;
 import wicket.markup.html.image.resource.RenderedDynamicImageResource;
-import wicket.model.ICompoundModel;
+import wicket.model.IInheritableModel;
 import wicket.model.IModel;
 import wicket.util.string.Strings;
 
@@ -30,26 +30,26 @@ import wicket.util.string.Strings;
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 /**
- * Renders its model text into a PNG, using any typeface available to the JVM. The size of 
+ * Renders its model text into a PNG, using any typeface available to the JVM. The size of
  * the image is determined by the model text and the characteristics of font selected. The
  * default font is 14pt sans, plain black on a white background. The background may be set
- * to null for alpha transparency, which will appear gray in outdated browsers. The image's 
- * alt attribute will be set to the model text, and width and height attributes will be 
- * set appropriately. 
+ * to null for alpha transparency, which will appear gray in outdated browsers. The image's
+ * alt attribute will be set to the model text, and width and height attributes will be
+ * set appropriately.
  * <p> If told to use a shared image resource, RenderedLabel will add its image
- * to the application's shared resources and reference it from a permanent, unique, 
+ * to the application's shared resources and reference it from a permanent, unique,
  * browser-chacheable URL. Note that if users might request a shared resource before a
  * page containing it has rendered (after a context reload, for example) you should load
  * that resource using loadSharedResources() as the application is starting up.
@@ -64,19 +64,19 @@ public class RenderedLabel extends Image  {
 	private static Font defaultFont =  new Font("sans", Font.PLAIN, 14);
 	private static Color defaultColor = Color.BLACK;
 	private static Color defaultBackgroundColor = Color.WHITE;
-	
+
 	private Font font = defaultFont;
 	private Color color = defaultColor;
 	private Color backgroundColor = defaultBackgroundColor;
 	private Integer maxWidth;
-	
+
 	/** If true, resource is shared across application with a permanent URL. */
 	private boolean isShared = false;
 	/** Hash of the most recently displayed label attributes. -1 is initial value, 0 for blank labels. */
 	private int labelHash = -1;
-	
+
 	private RenderedTextImageResource resource;
-	
+
 	/**
 	 * Constructor to be used if model is derived from a compound property model.
 	 * @param id Wicket id
@@ -85,7 +85,7 @@ public class RenderedLabel extends Image  {
 		super(id);
 		init();
 	}
-	
+
 	/**
 	 * Constructor for compound property model and shared resource pool.
 	 * @param id Wicket id
@@ -96,11 +96,11 @@ public class RenderedLabel extends Image  {
 		this.isShared = shareResource;
 		init();
 	}
-	
+
 	/**
 	 * Constructor with explicit model.
 	 * @param id Wicket id
-	 * @param model model for 
+	 * @param model model for
 	 */
 	public RenderedLabel(String id, IModel model) {
 		super(id, model);
@@ -110,7 +110,7 @@ public class RenderedLabel extends Image  {
 	/**
 	 * Constructor with explicit model.
 	 * @param id Wicket id
-	 * @param model model for 
+	 * @param model model for
 	 * @param shareResource true to add to shared resource pool
 	 */
 	public RenderedLabel(String id, IModel model, boolean shareResource) {
@@ -118,12 +118,12 @@ public class RenderedLabel extends Image  {
 		this.isShared = shareResource;
 		init();
 	}
-	
+
 	/** Perform generic initialization. */
 	protected void init() {
 		setEscapeModelStrings(false);
 	}
-	
+
 	@Override
 	protected void onBeforeRender() {
 		int curHash = getLabelHash();
@@ -137,7 +137,7 @@ public class RenderedLabel extends Image  {
 					shared.remove(shared.resourceKey(RenderedLabel.class, hash, null, null));
 				}
 				if (resource == null)
-					shared.add(RenderedLabel.class, hash, null, null, 
+					shared.add(RenderedLabel.class, hash, null, null,
 							resource = newRenderedTextImageResource(true));
 				setImageResourceReference(new ResourceReference(RenderedLabel.class, hash));
 			}
@@ -150,7 +150,7 @@ public class RenderedLabel extends Image  {
 		resource.setCacheable(isShared);
 		labelHash = getLabelHash();
 	}
-	
+
 	/**
 	 * @return false if model string is empty.
 	 */
@@ -159,9 +159,9 @@ public class RenderedLabel extends Image  {
 		return getText() != null;
 	}
 
-	/** 
+	/**
 	 * Adds image-specific attributes including width, height, and alternate text. A hash is appended
-	 * to the source URL to trigger a reload whenever drawing attributes change. 
+	 * to the source URL to trigger a reload whenever drawing attributes change.
 	 */
 	@Override
 	protected void onComponentTag(ComponentTag tag) {
@@ -188,7 +188,7 @@ public class RenderedLabel extends Image  {
 
 	protected static int getLabelHash(String text, Font font, Color color, Color backgroundColor, Integer maxWidth) {
 		if (text == null) return 0;
-		
+
 		int hash= text.hashCode() ^ font.hashCode() ^ color.hashCode();
 		if (backgroundColor != null)
 			hash ^= backgroundColor.hashCode();
@@ -196,15 +196,15 @@ public class RenderedLabel extends Image  {
 			hash ^= maxWidth.hashCode();
 		return hash;
 	}
-	
+
 	/** Restores  compound model resolution that is disabled in  the Image superclass. */
 	@Override
 	protected IModel initModel() {
-		// c&p'd from Component 
+		// c&p'd from Component
 		for (Component current = getParent(); current != null; current = current.getParent())
 		{
 			final IModel model = current.getModel();
-			if (model instanceof ICompoundModel)
+			if (model instanceof IInheritableModel)
 			{
 				setVersioned(false);
 				return model;
@@ -212,10 +212,10 @@ public class RenderedLabel extends Image  {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Load shared resource into pool so it will be available even before a page using the
-	 * rendered label is first rendered. May be needed if a page is cachable and the context 
+	 * rendered label is first rendered. May be needed if a page is cachable and the context
 	 * is restarted, for example.
 	 * @param text
 	 * @param font uses default if null
@@ -226,7 +226,7 @@ public class RenderedLabel extends Image  {
 	public static void loadSharedResources(String text, Font font, Color color, Color backgroundColor, Integer maxWidth) {
 		loadSharedResources(new RenderedTextImageResource(), text, font, color, backgroundColor, maxWidth);
 	}
-	
+
 	/**
 	 * Utility method to load a specific instance of a the rendering shared resource.
 	 */
@@ -242,7 +242,7 @@ public class RenderedLabel extends Image  {
 		SharedResources shared = wicket.Application.get().getSharedResources();
 
 		shared.add(RenderedLabel.class, hash, null, null, res);
-	}	
+	}
 
 	/**
 	 * Create a new image resource to render this label. Override in a subclass to use a different
@@ -256,7 +256,7 @@ public class RenderedLabel extends Image  {
 		res.setState(this);
 		return res;
 	}
-	
+
 	/**
 	 * Inner class that renders the model text into an image  resource.
 	 * @see wicket.markup.html.image.resource.DefaultButtonImageResource
@@ -273,7 +273,7 @@ public class RenderedLabel extends Image  {
 			super(1, 1,"png");	// tiny default that will resize to fit text
 			setType(BufferedImage.TYPE_INT_ARGB); // allow alpha transparency
 		}
-		
+
 		protected void setState(RenderedLabel label) {
 			backgroundColor = label.getBackgroundColor();
 			color = label.getColor();
@@ -282,7 +282,7 @@ public class RenderedLabel extends Image  {
 			renderedText = label.getText();
 			invalidate();
 		}
-		
+
 		/** Renders text into image. */
 		protected boolean render(final Graphics2D graphics)
 		{
@@ -302,17 +302,17 @@ public class RenderedLabel extends Image  {
 				setHeight(1);
 				return false;
 			}
-			
+
 			// Get size of text
 			graphics.setFont(font);
 			final FontMetrics metrics = graphics.getFontMetrics();
-			
+
 			List<String> lines = new LinkedList<String>();
-			
+
 			int dxText = breakLines(renderedText, metrics, lines),
 				lineHeight = metrics.getHeight(),
 				dyText = lineHeight * lines.size();
-			
+
 			// resize and redraw if we need to
 			if (dxText !=  width || dyText != height)
 			{
@@ -320,13 +320,13 @@ public class RenderedLabel extends Image  {
 				setHeight(dyText);
 				return false;
 			}
-			
+
 			// Turn on anti-aliasing
 			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 					RenderingHints.VALUE_ANTIALIAS_ON);
-			
+
 			graphics.setColor(color);
-			
+
 			// Draw each line at its baseline
 			int baseline = metrics.getAscent();
 			for (String line : lines) {
@@ -337,7 +337,7 @@ public class RenderedLabel extends Image  {
 		}
 
 		/**
-		 * Breaks source string into lines no longer than this label's maxWidth, if not null. 
+		 * Breaks source string into lines no longer than this label's maxWidth, if not null.
 		 * @param source this label's model, previously retrieved
 		 * @param metrics metrics for the font we will use for display
 		 * @param outputLines list to receive lines generated by this function
@@ -367,8 +367,8 @@ public class RenderedLabel extends Image  {
 			outputLines.add(line.toString());
 			return topWidth;
 		}
-		
-		/** 
+
+		/**
 		 * Normally, image rendering is deferred until the resource is requested, but
 		 * this method allows us to render the image when its markup is rendered. This way
 		 * the model will not need to be reattached when we serve the image, and we can
@@ -378,7 +378,7 @@ public class RenderedLabel extends Image  {
 			getImageData();
 		}
 	}
-	
+
 	/** @return String to be rendered */
 	protected String getText() {
 		String text = getModelObjectAsString();
@@ -388,7 +388,7 @@ public class RenderedLabel extends Image  {
 	public Color getBackgroundColor() {
 		return backgroundColor;
 	}
-	
+
 	/**
 	 * Specify a background color to match the page. Specify null for a transparent background blended
 	 * with the alpha channel, causing IE6 to display a gray background.
@@ -418,7 +418,7 @@ public class RenderedLabel extends Image  {
 		this.font = font;
 		return this;
 	}
-	
+
 
 	public Integer getMaxWidth() {
 		return maxWidth;

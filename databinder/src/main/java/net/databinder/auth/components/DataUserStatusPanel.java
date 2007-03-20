@@ -6,10 +6,10 @@ import wicket.markup.html.WebMarkupContainer;
 import wicket.markup.html.basic.Label;
 import wicket.markup.html.link.Link;
 import wicket.markup.html.panel.Panel;
-import wicket.model.Model;
+import wicket.model.AbstractReadOnlyModel;
 
 /**
- * Displays sign in and out links, as well as current user if any. 
+ * Displays sign in and out links, as well as current user if any.
  * @author Nathan Hamblen
  * @deprecated
  */
@@ -20,13 +20,13 @@ public class DataUserStatusPanel extends Panel {
 	 */
 	public DataUserStatusPanel(String id) {
 		super(id);
-		
+
 		add(new WebMarkupContainer("signedInWrapper") {
 			public boolean isVisible() {
 				return getAuthSession().isSignedIn();
 			}
-		}.add(new Label("username", new Model() {
-			public Object getObject(wicket.Component component) {
+		}.add(new Label("username", new AbstractReadOnlyModel() {
+			public Object getObject() {
 				return getUsername();
 			}
 		})).add(new Link("signOut") {
@@ -35,19 +35,19 @@ public class DataUserStatusPanel extends Panel {
 				signOut();
 			}
 		}));
-		
+
 		add(getSignInLink("signIn"));
 	}
-	
+
 	/** Signs out from session; override for other behavior.	 */
 	protected void signOut() {
 		getAuthSession().signOut();
 	}
-	
-	/** 
+
+	/**
 	 * Returns link to sign-in page from <tt>AuthDataApplication</tt> subclass. Uses redirect
 	 * to intercept page so that user will return to current page once signed in. Override
-	 * for other behavior.	 
+	 * for other behavior.
 	 */
 	protected Link getSignInLink(String id) {
 		return new Link(id) {
@@ -62,7 +62,7 @@ public class DataUserStatusPanel extends Panel {
 			}
 		};
 	}
-	
+
 	/**
 	 * Returns user.toString() on IUser from the session. Override for other behavior.
 	 * @return text (name) to display adjacent to sing out link.
@@ -70,7 +70,7 @@ public class DataUserStatusPanel extends Panel {
 	protected String getUsername() {
 		return getAuthSession().getUser().toString();
 	}
-	
+
 	/** @return casted web session*/
 	protected AuthDataSession getAuthSession() {
 		return (AuthDataSession) getSession();

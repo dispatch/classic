@@ -6,12 +6,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -35,15 +35,15 @@ import org.hibernate.criterion.Property;
 
 import wicket.PageParameters;
 import wicket.markup.html.form.Form;
-import wicket.markup.html.form.FormComponent;
 import wicket.markup.html.form.PasswordTextField;
 import wicket.markup.html.form.RequiredTextField;
 import wicket.markup.html.form.validation.EqualPasswordInputValidator;
-import wicket.markup.html.form.validation.StringValidator;
 import wicket.markup.html.panel.FeedbackPanel;
 import wicket.markup.html.panel.Panel;
 import wicket.model.CompoundPropertyModel;
 import wicket.model.Model;
+import wicket.validation.IValidatable;
+import wicket.validation.validator.StringValidator;
 
 /**
  * Registration with username, password, and password confirmation.
@@ -57,19 +57,20 @@ public class DataRegisterPanel extends Panel {
 		add(new FeedbackPanel("feedback"));
 		add(new RegisterForm("registerForm"));
 	}
-	
+
 	protected class RegisterForm extends Form {
 		private PasswordTextField password, passwordConfirm;
-		
+
 		public RegisterForm(String id) {
 			super(id, new CompoundPropertyModel(new Credentials()));
 			add(new RequiredTextField("username").add(new StringValidator(){
 				@Override
-				public void onValidate(FormComponent formComponent, String username) {
+				protected void onValidate(IValidatable validatable) {
+					String username = (String)validatable.getValue();
 					if (username == null || !isAvailable(username)) {
 						Map<String, String> m = new HashMap<String, String>(1);
 						m.put("username", username);
-						error(formComponent,"taken",  m);
+						error(validatable,"taken",  m);
 					}
 				}
 			}));
@@ -77,7 +78,7 @@ public class DataRegisterPanel extends Panel {
 			add(passwordConfirm = new PasswordTextField("passwordConfirm", new Model("")));
 			add(new EqualPasswordInputValidator(password, passwordConfirm));
 		}
-		
+
 		@Override
 		protected void onSubmit() {
 			Credentials creds = (Credentials) getModelObject();
@@ -88,7 +89,7 @@ public class DataRegisterPanel extends Panel {
 			session.getTransaction().commit();
 
 			((AuthDataSession)wicket.Session.get()).signIn(creds.getUsername(), creds.getPassword());
-			
+
 			if (!continueToOriginalDestination())
 			{
 				setResponsePage(getApplication().getSessionSettings().getPageFactory().newPage(
@@ -96,12 +97,12 @@ public class DataRegisterPanel extends Panel {
 			}
 		}
 	}
-	
-	/** @return new user object with given credentials */ 
+
+	/** @return new user object with given credentials */
 	protected IUser getNewUser(Credentials creds) {
 		return new DataUser(creds.getUsername(), creds.getPassword());
 	}
-	
+
 	/** @return true if the given username has not been taken */
 	protected boolean isAvailable(String username) {
 		Session session = DataStaticService.getHibernateSession();
@@ -110,7 +111,7 @@ public class DataRegisterPanel extends Panel {
 		c.setProjection(Projections.rowCount());
 		return c.uniqueResult().equals(0);
 	}
-	
+
 	protected static class Credentials implements Serializable {
 		private String username;
 		private String password;

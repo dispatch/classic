@@ -6,12 +6,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -20,13 +20,13 @@
 package net.databinder.models;
 
 import wicket.Component;
-import wicket.model.AbstractModel;
+import wicket.model.IModel;
 
 /**
  * Adaptation of Wicket's LoadableDetachableModel that does not extend a
  * read-only model and permits changing the underlying object.
  */
-public abstract class LoadableWritableModel extends AbstractModel {
+public abstract class LoadableWritableModel  implements IModel {
 
 	private transient boolean attached = false;
 	private transient Object tempModelObject;
@@ -42,7 +42,12 @@ public abstract class LoadableWritableModel extends AbstractModel {
 		}
 	}
 
+	@Deprecated
 	public Object getObject(Component component) {
+		return getObject();
+	}
+
+	public Object getObject() {
 		if (!attached) {
 			attached = true;
 			tempModelObject = load();
@@ -55,7 +60,7 @@ public abstract class LoadableWritableModel extends AbstractModel {
 	public final boolean isAttached() {
 		return attached;
 	}
-	
+
 	/**
 	 * Called by subclass when the model object is readily available. Saves a later
 	 * (possibly expensive) call to load().

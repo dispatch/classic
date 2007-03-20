@@ -11,10 +11,10 @@ import wicket.model.LoadableDetachableModel;
  * Projects a single list into multiple, arbitrarily transformed sublists without replicating
  *  the list structure. A parent list containing sublists is the object wrapped in this model,
  *  while the master list model passed in is held and used internally.
- *  <p>If you need to detach the master list, detach this model and the command will be 
- *  passed to the contained master list. Any action that changes the size of the master 
+ *  <p>If you need to detach the master list, detach this model and the command will be
+ *  passed to the contained master list. Any action that changes the size of the master
  *  list must also detach this model so it can recalculate the sublist count.
- *  
+ *
  * @author Nathan Hamblen
  */
 public abstract class SublistProjectionModel extends LoadableDetachableModel {
@@ -63,7 +63,7 @@ public abstract class SublistProjectionModel extends LoadableDetachableModel {
 
 	/**
 	 * Transposes rows and columns so the list runs top to bottom rather than
-	 * left to right. 
+	 * left to right.
 	 */
 	public static class Transposed extends Chunked {
 
@@ -82,7 +82,7 @@ public abstract class SublistProjectionModel extends LoadableDetachableModel {
 	}
 
 	protected List getMasterList() {
-		return (List) master.getObject(null);
+		return (List) master.getObject();
 	}
 
 	@Override
@@ -96,7 +96,7 @@ public abstract class SublistProjectionModel extends LoadableDetachableModel {
 	}
 
 	/**
-	 * This is a virtual list, a projection of the master list. Its size and index trasform is 
+	 * This is a virtual list, a projection of the master list. Its size and index trasform is
 	 * governed by the containing object.
 	 */
 	@SuppressWarnings("unchecked")

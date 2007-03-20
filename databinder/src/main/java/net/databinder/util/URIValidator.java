@@ -6,12 +6,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -21,8 +21,8 @@ package net.databinder.util;
 import java.net.URI;
 import java.util.regex.Pattern;
 
-import wicket.markup.html.form.FormComponent;
-import wicket.markup.html.form.validation.AbstractValidator;
+import wicket.validation.IValidatable;
+import wicket.validation.validator.AbstractValidator;
 
 /**
  * Validate that the input is a particular kind of URI.
@@ -30,12 +30,12 @@ import wicket.markup.html.form.validation.AbstractValidator;
  */
 public abstract class URIValidator extends AbstractValidator {
 
-	public void validate(final FormComponent formComponent)
-	{
-		onValidate(formComponent, (URI)formComponent.getConvertedInput());
+	@Override
+	protected void onValidate(IValidatable validatable) {
+		onValidate(validatable, (URI)validatable.getValue());
 	}
 
-	public abstract void onValidate(FormComponent formComponent, URI uri);
+	public abstract void onValidate(IValidatable formComponent, URI uri);
 
 	/**
 	 * Accepts only URIs having an http or https scheme.
@@ -56,21 +56,21 @@ public abstract class URIValidator extends AbstractValidator {
 	private static class SchemeValidator extends URIValidator {
 		Pattern pattern;
 		String resourceKeySuffix;
-		
+
 		public SchemeValidator(String pattern, String resourceKeySuffix) {
 			this.pattern = Pattern.compile(pattern);
 			this.resourceKeySuffix = resourceKeySuffix;
 		}
-		
+
 		@Override
-		public void onValidate(FormComponent formComponent, URI uri) {
+		public void onValidate(IValidatable validatable, URI uri) {
 			{
 				if (uri != null && (uri.getScheme() == null || !pattern.matcher(uri.getScheme()).matches()))
-					error(formComponent);
+					error(validatable);
 			}
 		}
 		@Override
-		protected String resourceKey(FormComponent formComponent) {
+		protected String resourceKey() {
 			return "URIValidator." + resourceKeySuffix;
 		}
 	}
