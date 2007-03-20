@@ -20,6 +20,7 @@ import wicket.markup.html.image.Image;
 import wicket.markup.html.image.resource.RenderedDynamicImageResource;
 import wicket.model.IInheritableModel;
 import wicket.model.IModel;
+import wicket.model.IWrapModel;
 import wicket.util.string.Strings;
 
 /*
@@ -201,15 +202,31 @@ public class RenderedLabel extends Image  {
 	@Override
 	protected IModel initModel() {
 		// c&p'd from Component
+		// Search parents for CompoundPropertyModel
 		for (Component current = getParent(); current != null; current = current.getParent())
 		{
-			final IModel model = current.getModel();
+			// Get model
+			IModel model = current.getModel();
+
+			if (model instanceof IWrapModel)
+			{
+				model = ((IWrapModel)model).getNestedModel();
+			}
+
 			if (model instanceof IInheritableModel)
 			{
+				// we turn off versioning as we share the model with another
+				// component that is the owner of the model (that component
+				// has to decide whether to version or not
 				setVersioned(false);
+
+				// return the shared inherited
+				model = ((IInheritableModel)model).wrapOnInheritance(this);
 				return model;
 			}
 		}
+
+		// No model for this component!
 		return null;
 	}
 
