@@ -17,7 +17,7 @@
   <dependency>
    <groupId>org.hibernate</groupId>
    <artifactId>hibernate-annotations</artifactId>
-   <version>3.2.2.ga</version>
+   <version>3.2.1.ga</version>
   </dependency>
   <dependency>
    <groupId>org.apache.wicket</groupId>
