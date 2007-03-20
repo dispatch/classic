@@ -6,12 +6,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -24,7 +24,6 @@ import net.databinder.components.DataPage;
 
 import org.apache.xmlrpc.XmlRpcException;
 
-import wicket.Component;
 import wicket.WicketRuntimeException;
 import wicket.markup.html.basic.Label;
 import wicket.markup.html.link.Link;
@@ -43,7 +42,7 @@ public class ConnectionErrorPage extends DataPage {
 	protected String getName() {
 		return "XML-RPC Connection Error";
 	}
-	
+
 	public ConnectionErrorPage(XmlRpcException e) {
 		add(new Label("error", new Model(e.getMessage())));
 		add(new Link("retry") {
@@ -54,7 +53,7 @@ public class ConnectionErrorPage extends DataPage {
 		});
 		add(new Label("script", new AbstractReadOnlyModel() {
 			@Override
-			public Object getObject(Component component) {
+			public Object getObject() {
 				try {
 					IResourceStream stream = XmlRpcLabel.scriptFile.getResource().getResourceStream();
 					String script = Streams.readString(stream.getInputStream());
@@ -65,10 +64,10 @@ public class ConnectionErrorPage extends DataPage {
 				}
 			}
 		}));
-		
+
 		HttpServletRequest req =  ((WebRequest)getRequest()).getHttpServletRequest();
 		String base = "http://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath() + "/";
-		
+
 		add(new Label("href", new Model(base + urlFor(XmlRpcLabel.scriptFile))).setRenderBodyOnly(true));
 	}
 }
