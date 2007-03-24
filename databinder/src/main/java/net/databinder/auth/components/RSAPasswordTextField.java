@@ -36,6 +36,7 @@ import wicket.markup.html.IHeaderContributor;
 import wicket.markup.html.IHeaderResponse;
 import wicket.markup.html.form.Form;
 import wicket.markup.html.form.PasswordTextField;
+import wicket.markup.html.resources.JavascriptResourceReference;
 import wicket.model.AbstractReadOnlyModel;
 import wicket.model.IModel;
 import wicket.util.convert.ConversionException;
@@ -48,11 +49,11 @@ import wicket.util.crypt.Base64;
  * @see EqualPasswordConvertedInputValidator
  */
 public class RSAPasswordTextField extends PasswordTextField implements IHeaderContributor {
-	private static final ResourceReference RSA_JS = new ResourceReference(
+	private static final ResourceReference RSA_JS = new JavascriptResourceReference(
 			RSAPasswordTextField.class, "RSA.js");
-	private static final ResourceReference BARRETT_JS = new ResourceReference(
+	private static final ResourceReference BARRETT_JS = new JavascriptResourceReference(
 			RSAPasswordTextField.class, "Barrett.js");
-	private static final ResourceReference BIGINT_JS = new ResourceReference(
+	private static final ResourceReference BIGINT_JS = new JavascriptResourceReference(
 			RSAPasswordTextField.class, "BigInt.js");
 
 	private String challenge;
