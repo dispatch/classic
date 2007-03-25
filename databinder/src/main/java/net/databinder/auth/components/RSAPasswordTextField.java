@@ -19,6 +19,7 @@
 package net.databinder.auth.components;
 
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -28,7 +29,6 @@ import java.security.interfaces.RSAPublicKey;
 import javax.crypto.Cipher;
 
 import net.databinder.auth.util.EqualPasswordConvertedInputValidator;
-
 import wicket.ResourceReference;
 import wicket.WicketRuntimeException;
 import wicket.behavior.AttributeAppender;
@@ -58,7 +58,7 @@ public class RSAPasswordTextField extends PasswordTextField implements IHeaderCo
 
 	private String challenge;
 	
-	/** 1024 RSA key, generated on first access. */
+	/** 1024 bit RSA key, generated on first access. */
 	private static KeyPair keypair;
 	static {
 		try {
@@ -114,11 +114,11 @@ public class RSAPasswordTextField extends PasswordTextField implements IHeaderCo
 			
 			String[] toks = dec.split("\\|", 2);
 			if (toks.length != 2 || !toks[0].equals(challenge))
-				return null;
+				throw new ConversionException("incorrect or empy challenge value").setResourceKey("RSAPasswordTextField.failed.challenge");
 
 			return toks[1];
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (GeneralSecurityException e) {
+			throw new ConversionException(e);
 		}
 	}
 	
