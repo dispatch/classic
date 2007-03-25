@@ -95,7 +95,7 @@ public class AuthDataSession extends DataSession {
 	/**
 	 * @return model for current user
 	 */
-	public IModel getUserModel() {
+	public HibernateObjectModel getUserModel() {
 		IAuthSettings app = (IAuthSettings)getApplication();
 		return isSignedIn() ? new HibernateObjectModel(app.getUserClass(), userId) : null;
 	}
