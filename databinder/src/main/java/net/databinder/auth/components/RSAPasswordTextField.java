@@ -61,10 +61,8 @@ public class RSAPasswordTextField extends PasswordTextField implements IHeaderCo
 	/** 1024 RSA key, generated on first access. */
 	private static KeyPair keypair;
 	static {
-		KeyPairGenerator keyGen;
 		try {
-			keyGen = KeyPairGenerator.getInstance("RSA");
-	        keypair = keyGen.genKeyPair();
+			keypair = KeyPairGenerator.getInstance("RSA").genKeyPair();
 		} catch (NoSuchAlgorithmException e) {
 			throw new WicketRuntimeException("Can't find RSA provider", e);
 		}
@@ -141,7 +139,7 @@ public class RSAPasswordTextField extends PasswordTextField implements IHeaderCo
 			.append("');");
 		response.renderJavascript(keyBuf.toString(), "rsa_key");
 		
-		// the challeng is unique per component instance, send for every component
+		// the challenge is unique per component instance, send for every component
 		StringBuilder chalBuf = new StringBuilder();
 		chalBuf
 			.append("var ")
