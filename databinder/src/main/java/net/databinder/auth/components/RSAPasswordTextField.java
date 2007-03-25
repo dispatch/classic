@@ -64,10 +64,10 @@ public class RSAPasswordTextField extends PasswordTextField implements IHeaderCo
 		KeyPairGenerator keyGen;
 		try {
 			keyGen = KeyPairGenerator.getInstance("RSA");
+	        keypair = keyGen.genKeyPair();
 		} catch (NoSuchAlgorithmException e) {
 			throw new WicketRuntimeException("Can't find RSA provider", e);
 		}
-        keypair = keyGen.genKeyPair();
 	}
 	public RSAPasswordTextField(String id, Form form) {
 		super(id);
@@ -90,12 +90,12 @@ public class RSAPasswordTextField extends PasswordTextField implements IHeaderCo
 					.append(getElementValue())
 					.append(" != '') ")
 					.append(getElementValue())
-					.append(" = ")
+					.append(" = encryptedString(key, ")
 					.append(getChallengeVar())
-					.append("+ '|' + encryptedString(key, ")
+					.append("+ '|' + ")
 					.append(getElementValue())
 					.append(");");
-				
+
 				return eventBuf.toString();
 			}
 		}, ""));
@@ -106,18 +106,19 @@ public class RSAPasswordTextField extends PasswordTextField implements IHeaderCo
 	
 	@Override
 	protected Object convertValue(String[] value) throws ConversionException {
-		String str = (String) super.convertValue(value);
-		if (str == null)
+		String enc = (String) super.convertValue(value);
+		if (enc == null)
 			return null;
-		String[] toks = str.split("\\|", 2);
-		if (toks.length != 2 || !toks[0].equals(challenge))
-			return null;
-		String enc = toks[1];
 		try {
 			Cipher rsa = Cipher.getInstance("RSA");
 			rsa.init(Cipher.DECRYPT_MODE, keypair.getPrivate());
+			String dec = new String(rsa.doFinal(hex2data(enc)));
 			
-			return new String(rsa.doFinal(hex2data(enc)));
+			String[] toks = dec.split("\\|", 2);
+			if (toks.length != 2 || !toks[0].equals(challenge))
+				return null;
+
+			return toks[1];
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
