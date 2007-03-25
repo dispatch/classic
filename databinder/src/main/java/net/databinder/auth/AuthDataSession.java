@@ -45,7 +45,6 @@ import wicket.Application;
 import wicket.Request;
 import wicket.RequestCycle;
 import wicket.WicketRuntimeException;
-import wicket.model.IModel;
 import wicket.protocol.http.WebApplication;
 import wicket.protocol.http.WebResponse;
 import wicket.util.time.Duration;
