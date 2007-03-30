@@ -53,8 +53,8 @@ public class RegisterPanel extends Panel {
 			return getUser().getId() != null;
 		}
 		
-		public RegisterForm(String id, HibernateObjectModel typistModel) {
-			super(id, typistModel);
+		public RegisterForm(String id, HibernateObjectModel userModel) {
+			super(id, userModel);
 			add(new RequiredTextField("username").add(new StringValidator(){
 				@Override
 				protected void onValidate(IValidatable validatable) {
