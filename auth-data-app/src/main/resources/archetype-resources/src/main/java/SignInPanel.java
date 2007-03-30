@@ -1,10 +1,10 @@
 package $package;
 
 import net.databinder.auth.AuthDataSession;
+import net.databinder.auth.components.RSAPasswordTextField;
 import wicket.PageParameters;
 import wicket.markup.html.form.CheckBox;
 import wicket.markup.html.form.Form;
-import wicket.markup.html.form.PasswordTextField;
 import wicket.markup.html.form.RequiredTextField;
 import wicket.markup.html.form.TextField;
 import wicket.markup.html.panel.FeedbackPanel;
@@ -29,8 +29,8 @@ public class SignInPanel extends Panel {
 		private TextField username, password;
 		protected SignInForm(String id) {
 			super(id);
-			add(username = new RequiredTextField("username", new Model(null)));
-			add(password = new PasswordTextField("password", new Model(null)));
+			add(username = new RequiredTextField("username", new Model()));
+			add(password = new RSAPasswordTextField("password", new Model(), this));
 			add(rememberMe = new CheckBox("rememberMe", new Model(Boolean.FALSE)));
 		}
 		@Override
