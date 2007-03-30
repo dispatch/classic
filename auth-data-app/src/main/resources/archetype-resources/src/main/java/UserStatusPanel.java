@@ -1,15 +1,18 @@
 package $package;
 
+import java.io.Serializable;
+
 import net.databinder.auth.AuthDataSession;
 import net.databinder.auth.IAuthSettings;
+import wicket.MetaDataKey;
 import wicket.markup.html.WebMarkupContainer;
 import wicket.markup.html.basic.Label;
 import wicket.markup.html.link.Link;
 import wicket.markup.html.panel.Panel;
-import wicket.model.Model;
+import wicket.model.AbstractReadOnlyModel;
 
 /**
- * Displays sign in and out links, as well as current user if any. 
+ * Displays sign in and out links, as well as current user if any.
  */
 public class UserStatusPanel extends Panel {
 	/**
@@ -18,29 +21,45 @@ public class UserStatusPanel extends Panel {
 	 */
 	public UserStatusPanel(String id) {
 		super(id);
-		
-		add(new WebMarkupContainer("signedInWrapper") {
+
+		WebMarkupContainer wrapper = new WebMarkupContainer("signedInWrapper") {
 			public boolean isVisible() {
 				return getAuthSession().isSignedIn();
 			}
-		}.add(new Label("username", new Model() {
-			public Object getObject(wicket.Component component) {
+		};
+		add(wrapper);
+		wrapper.add(new Label("username", new AbstractReadOnlyModel() {
+			@Override
+			public Object getObject() {
 				return getAuthSession().getUser().toString();
 			}
-		})).add(new Link("signOut") {
+		}));
+		wrapper.add(new Link("profile") {
+			@Override
+			public void onClick() {
+				if (getSession().getMetaData(inDetourKey) == null) {
+					getSession().setMetaData(inDetourKey,  new InDetour());
+					redirectToInterceptPage(new SignInPage(true));
+				} else
+					getSession().setMetaData(inDetourKey,  null);
+			}
+		});
+
+		wrapper.add(new Link("signOut") {
 			@Override
 			public void onClick() {
 				getAuthSession().signOut();
+				setResponsePage(getApplication().getHomePage());
 			}
-		}));
-		
+		});
+
 		add(getSignInLink("signIn"));
 	}
-	
-	/** 
+
+	/**
 	 * Returns link to sign-in page from <tt>AuthDataApplication</tt> subclass. Uses redirect
 	 * to intercept page so that user will return to current page once signed in. Override
-	 * for other behavior.	 
+	 * for other behavior.
 	 */
 	protected Link getSignInLink(String id) {
 		return new Link(id) {
@@ -55,7 +74,10 @@ public class UserStatusPanel extends Panel {
 			}
 		};
 	}
-	
+	/** Session marker for editing profile */
+	static class InDetour implements Serializable { }
+	static MetaDataKey inDetourKey = new MetaDataKey(InDetour.class) { };
+
 	/** @return casted web session*/
 	protected AuthDataSession getAuthSession() {
 		return (AuthDataSession) getSession();

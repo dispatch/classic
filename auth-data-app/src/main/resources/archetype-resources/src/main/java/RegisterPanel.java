@@ -1,30 +1,31 @@
 package $package;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 import net.databinder.DataStaticService;
 import net.databinder.auth.AuthDataSession;
-import net.databinder.auth.IAuthSettings;
-import net.databinder.auth.data.IUser;
+import net.databinder.auth.components.RSAPasswordTextField;
+import net.databinder.auth.util.EqualPasswordConvertedInputValidator;
+import net.databinder.components.DataForm;
+import net.databinder.models.HibernateObjectModel;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 
-import wicket.PageParameters;
-import wicket.markup.html.form.Form;
-import wicket.markup.html.form.FormComponent;
-import wicket.markup.html.form.PasswordTextField;
+import wicket.AttributeModifier;
+import wicket.markup.html.WebMarkupContainer;
+import wicket.markup.html.form.CheckBox;
 import wicket.markup.html.form.RequiredTextField;
-import wicket.markup.html.form.validation.EqualPasswordInputValidator;
-import wicket.markup.html.form.validation.StringValidator;
 import wicket.markup.html.panel.FeedbackPanel;
 import wicket.markup.html.panel.Panel;
-import wicket.model.CompoundPropertyModel;
+import wicket.model.AbstractReadOnlyModel;
 import wicket.model.Model;
+import wicket.util.string.Strings;
+import wicket.validation.IValidatable;
+import wicket.validation.validator.StringValidator;
 
 /**
  * Registration with username, password, and password confirmation.
@@ -34,71 +35,79 @@ public class RegisterPanel extends Panel {
 	public RegisterPanel(String id) {
 		super(id);
 		add(new FeedbackPanel("feedback"));
-		add(new RegisterForm("registerForm"));
+		HibernateObjectModel userModel = ((AuthDataSession)getSession()).getUserModel();
+		if (userModel == null) 
+			userModel = new HibernateObjectModel(DataUser.class);
+		add(new RegisterForm("registerForm", userModel));
 	}
 	
-	protected class RegisterForm extends Form {
-		private PasswordTextField password, passwordConfirm;
+	protected class RegisterForm extends DataForm {
+		private RSAPasswordTextField password, passwordConfirm;
+		private CheckBox rememberMe;
 		
-		public RegisterForm(String id) {
-			super(id, new CompoundPropertyModel(new Credentials()));
+		DataUser getUser() {
+			return (DataUser) getModelObject();
+		}
+		
+		boolean existing() {
+			return getUser().getId() != null;
+		}
+		
+		public RegisterForm(String id, HibernateObjectModel typistModel) {
+			super(id, typistModel);
 			add(new RequiredTextField("username").add(new StringValidator(){
 				@Override
-				public void onValidate(FormComponent formComponent, String username) {
-					if (username == null || !isAvailable(username)) {
+				protected void onValidate(IValidatable validatable) {
+					String username = (String) validatable.getValue();
+					if (username != null && !Strings.isEqual(username, getUser().getUsername()) && !isAvailable(username)) {
 						Map<String, String> m = new HashMap<String, String>(1);
 						m.put("username", username);
-						error(formComponent,"taken",  m);
+						error(validatable,"taken",  m);
 					}
 				}
 			}));
-			add(password = new PasswordTextField("password"));
-			add(passwordConfirm = new PasswordTextField("passwordConfirm", new Model("")));
-			add(new EqualPasswordInputValidator(password, passwordConfirm));
+			add(password = new RSAPasswordTextField("password", this) {
+				public boolean isRequired() {
+					return !existing();
+				}
+			});
+			add(passwordConfirm = new RSAPasswordTextField("passwordConfirm", new Model(), this) {
+				public boolean isRequired() {
+					return !existing();
+				}
+			});
+			add(new EqualPasswordConvertedInputValidator(password, passwordConfirm));
+			
+			add(new WebMarkupContainer("rememberMeRow") { 
+				public boolean isVisible() {
+					return !existing();
+				}
+			}.add(rememberMe = new CheckBox("rememberMe", new Model(Boolean.FALSE))));
+			
+			add(new WebMarkupContainer("submit").add(new AttributeModifier("value", new AbstractReadOnlyModel() {
+				public Object getObject() {
+					return existing() ? "Update Profile" : "Register";
+				}
+			})));
 		}
-		
+
 		@Override
 		protected void onSubmit() {
-			Credentials creds = (Credentials) getModelObject();
+			super.onSubmit();
 
-			IUser user = new DataUser(creds.getUsername(), creds.getPassword());
-			Session session = DataStaticService.getHibernateSession();
-			session.save(user);
-			session.getTransaction().commit();
+			((AuthDataSession)wicket.Session.get()).signIn(getUser(), (Boolean) rememberMe.getModelObject());
 
-			((AuthDataSession)wicket.Session.get()).signIn(creds.getUsername(), creds.getPassword());
-			
 			if (!continueToOriginalDestination())
-			{
-				setResponsePage(getApplication().getSessionSettings().getPageFactory().newPage(
-						getApplication().getHomePage(), (PageParameters)null));
-			}
+				setResponsePage(getApplication().getHomePage());
 		}
 	}
 
 	/** @return true if the given username has not been taken */
-	protected boolean isAvailable(String username) {
+	protected static boolean isAvailable(String username) {
 		Session session = DataStaticService.getHibernateSession();
-		Criteria c = session.createCriteria(((IAuthSettings)getApplication()).getUserClass());
+		Criteria c = session.createCriteria(DataUser.class);
 		c.add(Property.forName("username").eq(username));
 		c.setProjection(Projections.rowCount());
 		return c.uniqueResult().equals(0);
-	}
-	
-	protected static class Credentials implements Serializable {
-		private String username;
-		private String password;
-		public String getPassword() {
-			return password;
-		}
-		public void setPassword(String password) {
-			this.password = password;
-		}
-		public String getUsername() {
-			return username;
-		}
-		public void setUsername(String username) {
-			this.username = username;
-		}
 	}
 }

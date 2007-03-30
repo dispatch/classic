@@ -1,5 +1,6 @@
 package $package;
 
+import net.databinder.auth.AuthDataSession;
 import net.databinder.components.StyleLink;
 import wicket.markup.html.WebMarkupContainer;
 import wicket.markup.html.WebPage;
@@ -21,10 +22,16 @@ public class SignInPage extends WebPage {
 	private Panel signInPanel;
 
 	/**
-	 * Displays sign in page. Checks that the page being instantiated is of the type returned
-	 * by AuthDataApplication.getSignInPageClass().
+	 * Displays sign in page.
 	 */
 	public SignInPage() {
+		init();
+	}
+	public SignInPage(boolean register) {
+		this.register = register;
+		init();
+	}
+	void init() {
 		add(new StyleLink("signinStylesheet", SignInPage.class));
 		add(new StyleSheetReference("data-app", SignInPage.class, "data-app.css"));
 		
@@ -43,7 +50,7 @@ public class SignInPage extends WebPage {
 		add(new WebMarkupContainer("gotoSignIn"){
 			@Override
 			public boolean isVisible() {
-				return register;
+				return register && !((AuthDataSession)getSession()).isSignedIn();
 			}
 		}.add(new Link("signIn") {
 			@Override

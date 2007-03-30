@@ -25,7 +25,7 @@ import wicket.util.crypt.Base64UrlSafe;
 
 /**
  * Basic implementation of IUser.CookieAuth. Stores no passwords in memory or persistent
- * storage, only a hash. 
+ * storage, only a hash.
  */
 @Entity
 public class DataUser implements IUser.CookieAuth, Serializable {
@@ -90,6 +90,12 @@ public class DataUser implements IUser.CookieAuth, Serializable {
 
 	public void setPasswordHash(String passwordHash) {
 		this.passwordHash = passwordHash;
+	}
+	
+	@Transient
+	/** @return always null, password not retained */
+	public String getPassword() {
+		return null;
 	}
 	
 	/**

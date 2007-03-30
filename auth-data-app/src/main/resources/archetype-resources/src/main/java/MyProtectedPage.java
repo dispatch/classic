@@ -16,5 +16,6 @@ public class MyProtectedPage extends WebPage {
 		super();
 		add(new FeedbackPanel("feedback"));
 		add(new StyleSheetReference("data-app", MyProtectedPage.class, "data-app.css"));
+		add(new UserStatusPanel("user-status"));
 	}
 }
