@@ -32,7 +32,6 @@ import wicket.model.BoundCompoundPropertyModel;
  * @author Nathan Hamblen
  */
 public class DataPanel extends Panel {
-	private HibernateObjectModel persistentObjectModel;
 
 	/**
 	 * Create panel with an existing persistent object model.
@@ -40,8 +39,7 @@ public class DataPanel extends Panel {
 	 * @param model to be wrapped in a BoundCompoundPropertyModel
 	 */
 	public DataPanel(String id, HibernateObjectModel model) {
-		super(id);
-		initPersistentObjectModel(model);
+		super(id, new BoundCompoundPropertyModel(model));
 	}
 
 	/**
@@ -51,8 +49,7 @@ public class DataPanel extends Panel {
 	 * @param persistentObjectId id of the persistent object
 	 */
 	public DataPanel(String id, Class modelClass, Serializable persistentObjectId) {
-		super(id);
-		initPersistentObjectModel(new HibernateObjectModel(modelClass, persistentObjectId));
+		super(id, new BoundCompoundPropertyModel(new HibernateObjectModel(modelClass, persistentObjectId)));
 	}
 
 	/**
@@ -63,11 +60,6 @@ public class DataPanel extends Panel {
 	 */
 	protected DataPanel(String id) {
 		super(id);
-		// TODO: how to return the hibernate model later?
-	}
-
-	public void initPersistentObjectModel(HibernateObjectModel model) {
-		setModel(new BoundCompoundPropertyModel(persistentObjectModel = model));
 	}
 
 	/**
@@ -75,7 +67,7 @@ public class DataPanel extends Panel {
 	 */
 	protected HibernateObjectModel getPersistentObjectModel() {
 		try {
-			return persistentObjectModel;
+			return (HibernateObjectModel) getBindingModel().getTarget();
 		} catch (ClassCastException c) {
 			throw new RuntimeException("DataPanel's nested model was not a HibernateObjectModel", c);
 		}

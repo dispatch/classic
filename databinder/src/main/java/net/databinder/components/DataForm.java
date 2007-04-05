@@ -36,7 +36,6 @@ import wicket.model.BoundCompoundPropertyModel;
  */
 public class DataForm extends DataFormBase {
 	private Serializable version;
-	private HibernateObjectModel persistentObjectModel;
 
 	/**
 	 * Create form with an existing persistent object model.
@@ -44,8 +43,7 @@ public class DataForm extends DataFormBase {
 	 * @param model to be wrapped in a BoundCompoundPropertyModel
 	 */
 	public DataForm(String id, HibernateObjectModel model) {
-		super(id);
-		initPersistentObjectModel(model);
+		super(id, new BoundCompoundPropertyModel(model));
 		version = getPersistentObjectModel().getVersion();
 	}
 
@@ -59,8 +57,7 @@ public class DataForm extends DataFormBase {
 	 * @param modelClass for the persistent object
 	 */
 	public DataForm(String id, Class modelClass) {
-		super(id);
-		initPersistentObjectModel(new HibernateObjectModel(modelClass));
+		super(id, new BoundCompoundPropertyModel(new HibernateObjectModel(modelClass)));
 	}
 
 	/** @deprecated retain unsaved is now the default behavior; this method does nothing */
@@ -75,16 +72,11 @@ public class DataForm extends DataFormBase {
 	 * @param persistentObjectId id of the persistent object
 	 */
 	public DataForm(String id, Class modelClass, Serializable persistentObjectId) {
-		super(id);
-		initPersistentObjectModel(new HibernateObjectModel(modelClass, persistentObjectId));
-	}
-
-	public void initPersistentObjectModel(HibernateObjectModel model) {
-		setModel(new BoundCompoundPropertyModel(persistentObjectModel = model));
+		super(id, new BoundCompoundPropertyModel(new HibernateObjectModel(modelClass, persistentObjectId)));
 	}
 
 	public HibernateObjectModel getPersistentObjectModel() {
-		return persistentObjectModel;
+		return (HibernateObjectModel) getBindingModel().getTarget();
 	}
 
 	/**

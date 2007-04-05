@@ -18,9 +18,9 @@ import wicket.WicketRuntimeException;
 import wicket.markup.ComponentTag;
 import wicket.markup.html.image.Image;
 import wicket.markup.html.image.resource.RenderedDynamicImageResource;
-import wicket.model.IInheritableModel;
+import wicket.model.IComponentInheritedModel;
 import wicket.model.IModel;
-import wicket.model.IWrapModel;
+import wicket.model.INestedModelContainer;
 import wicket.util.string.Strings;
 
 /*
@@ -208,12 +208,12 @@ public class RenderedLabel extends Image  {
 			// Get model
 			IModel model = current.getModel();
 
-			if (model instanceof IWrapModel)
+			if (model instanceof INestedModelContainer)
 			{
-				model = ((IWrapModel)model).getNestedModel();
+				model = ((INestedModelContainer)model).getNestedModel();
 			}
 
-			if (model instanceof IInheritableModel)
+			if (model instanceof IComponentInheritedModel)
 			{
 				// we turn off versioning as we share the model with another
 				// component that is the owner of the model (that component
@@ -221,7 +221,7 @@ public class RenderedLabel extends Image  {
 				setVersioned(false);
 
 				// return the shared inherited
-				model = ((IInheritableModel)model).wrapOnInheritance(this);
+				model = ((IComponentInheritedModel)model).wrapOnInheritance(this);
 				return model;
 			}
 		}
