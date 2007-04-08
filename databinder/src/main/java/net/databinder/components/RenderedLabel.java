@@ -21,6 +21,7 @@ import wicket.markup.html.image.resource.RenderedDynamicImageResource;
 import wicket.model.IComponentInheritedModel;
 import wicket.model.IModel;
 import wicket.model.IWrapModel;
+import wicket.protocol.http.WebResponse;
 import wicket.util.string.Strings;
 
 /*
@@ -290,6 +291,11 @@ public class RenderedLabel extends Image  {
 		protected RenderedTextImageResource() {
 			super(1, 1,"png");	// tiny default that will resize to fit text
 			setType(BufferedImage.TYPE_INT_ARGB); // allow alpha transparency
+		}
+		
+		@Override
+		protected void setHeaders(WebResponse response) {
+			// don't set expire headers; if resource changes, its URL will change
 		}
 
 		protected void setState(RenderedLabel label) {
