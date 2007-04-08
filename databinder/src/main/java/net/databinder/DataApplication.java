@@ -36,6 +36,7 @@ import org.hibernate.cfg.AnnotationConfiguration;
 
 import wicket.IConverterLocator;
 import wicket.Request;
+import wicket.Response;
 import wicket.Session;
 import wicket.markup.html.pages.PageExpiredErrorPage;
 import wicket.protocol.http.WebApplication;
@@ -124,10 +125,10 @@ public abstract class DataApplication extends WebApplication {
 	 * @return new instance of DataSession
 	 */
 	@Override
-	public Session newSession(Request request) {
+	public Session newSession(Request request, Response response) {
 		return new DataSession(DataApplication.this, request);
 	}
-	
+		
 	/**
 	 * Reports if the program is running in a development environment, as determined by the
 	 * "wicket.configuration" environment variable or context/init parameter. If that variable 

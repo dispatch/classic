@@ -28,6 +28,7 @@ import org.hibernate.criterion.Restrictions;
 
 import wicket.Component;
 import wicket.Request;
+import wicket.Response;
 import wicket.RestartResponseAtInterceptPageException;
 import wicket.Session;
 import wicket.authorization.IUnauthorizedComponentInstantiationListener;
@@ -68,10 +69,9 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, I
 	 * @see AuthDataSession
 	 */
 	@Override
-	public AuthDataSession newSession(Request request) {
+	public Session newSession(Request request, Response response) {
 		return new AuthDataSession(this, request);
 	}
-	
 	/**
 	 * Adds to the configuration whatever IUser class is defined.
 	 */

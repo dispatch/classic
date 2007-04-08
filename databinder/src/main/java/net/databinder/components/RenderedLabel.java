@@ -20,7 +20,7 @@ import wicket.markup.html.image.Image;
 import wicket.markup.html.image.resource.RenderedDynamicImageResource;
 import wicket.model.IComponentInheritedModel;
 import wicket.model.IModel;
-import wicket.model.INestedModelContainer;
+import wicket.model.IWrapModel;
 import wicket.util.string.Strings;
 
 /*
@@ -201,16 +201,17 @@ public class RenderedLabel extends Image  {
 	/** Restores  compound model resolution that is disabled in  the Image superclass. */
 	@Override
 	protected IModel initModel() {
-		// c&p'd from Component
 		// Search parents for CompoundPropertyModel
 		for (Component current = getParent(); current != null; current = current.getParent())
 		{
 			// Get model
+			// Dont call the getModel() that could initialize many inbetween completely useless models. 
+			//IModel model = current.getModel();
 			IModel model = current.getModel();
 
-			if (model instanceof INestedModelContainer)
+			if (model instanceof IWrapModel)
 			{
-				model = ((INestedModelContainer)model).getNestedModel();
+				model = ((IWrapModel)model).getWrappedModel();
 			}
 
 			if (model instanceof IComponentInheritedModel)

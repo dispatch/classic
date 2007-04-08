@@ -76,7 +76,7 @@ public class DataForm extends DataFormBase {
 	}
 
 	public HibernateObjectModel getPersistentObjectModel() {
-		return (HibernateObjectModel) getBindingModel().getTarget();
+		return (HibernateObjectModel) getBindingModel().getObject();
 	}
 
 	/**
