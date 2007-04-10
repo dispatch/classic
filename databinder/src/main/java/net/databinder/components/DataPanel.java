@@ -67,7 +67,7 @@ public class DataPanel extends Panel {
 	 */
 	protected HibernateObjectModel getPersistentObjectModel() {
 		try {
-			return (HibernateObjectModel) getBindingModel().getObject();
+			return (HibernateObjectModel) getBindingModel().getChainedModel();
 		} catch (ClassCastException c) {
 			throw new RuntimeException("DataPanel's nested model was not a HibernateObjectModel", c);
 		}

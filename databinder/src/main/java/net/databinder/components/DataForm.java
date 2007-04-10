@@ -76,7 +76,7 @@ public class DataForm extends DataFormBase {
 	}
 
 	public HibernateObjectModel getPersistentObjectModel() {
-		return (HibernateObjectModel) getBindingModel().getObject();
+		return (HibernateObjectModel) getBindingModel().getChainedModel();
 	}
 
 	/**
@@ -116,7 +116,7 @@ public class DataForm extends DataFormBase {
 	 */
 	@Override
 	protected void onSubmit() {
-		Object modelObject = getPersistentObjectModel().getObject();
+		Object modelObject = getModelObject();
 		Session session = DataStaticService.getHibernateSession();
 		if (!session.contains(modelObject)) {
 			session.save(modelObject);
@@ -157,7 +157,7 @@ public class DataForm extends DataFormBase {
 	 */
 	protected boolean deletePersistentObject() {
 		Session session = DataStaticService.getHibernateSession();
-		Object modelObject = getPersistentObjectModel().getObject();
+		Object modelObject = getModelObject();
 		if (!session.contains(modelObject))
 			return false;
 		session.delete(modelObject);
