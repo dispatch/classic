@@ -30,17 +30,16 @@ import net.sf.ehcache.Element;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.wicket.Application;
+import org.apache.wicket.ResourceReference;
+import org.apache.wicket.RestartResponseAtInterceptPageException;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.convert.converters.AbstractConverter;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfig;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.apache.xmlrpc.client.XmlRpcLiteHttpTransportFactory;
-
-import wicket.Application;
-import wicket.ResourceReference;
-import wicket.RestartResponseAtInterceptPageException;
-import wicket.model.IModel;
-import wicket.util.convert.converters.AbstractConverter;
 
 /**
  * Label that converts its model through an XML-RPC call before display. Results are

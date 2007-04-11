@@ -18,7 +18,7 @@
  */
 package net.databinder.dispatch.components;
 
-import wicket.model.IModel;
+import org.apache.wicket.model.IModel;
 
 /**
  * Converts its model via the Ruby <a href="http://whytheluckystiff.net/ruby/redcloth/">RedCloth</a>

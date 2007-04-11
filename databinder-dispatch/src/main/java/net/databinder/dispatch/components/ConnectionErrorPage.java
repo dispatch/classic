@@ -24,14 +24,14 @@ import net.databinder.components.DataPage;
 
 import org.apache.xmlrpc.XmlRpcException;
 
-import wicket.WicketRuntimeException;
-import wicket.markup.html.basic.Label;
-import wicket.markup.html.link.Link;
-import wicket.model.AbstractReadOnlyModel;
-import wicket.model.Model;
-import wicket.protocol.http.WebRequest;
-import wicket.util.io.Streams;
-import wicket.util.resource.IResourceStream;
+import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.util.io.Streams;
+import org.apache.wicket.util.resource.IResourceStream;
 
 /**
  * Page describing connection problem and offering source for external script.
