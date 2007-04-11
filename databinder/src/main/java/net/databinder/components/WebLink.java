@@ -19,8 +19,7 @@
 package net.databinder.components;
 
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.MarkupStream;
-import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.Strings;
 
@@ -31,7 +30,7 @@ import org.apache.wicket.util.string.Strings;
  * for variable link body text.)
  * @author Nathan Hamblen
  */
-public class WebLink extends WebMarkupContainer {
+public class WebLink extends AbstractLink {
 	
 	/**
 	 * Initialize with a compound model.
@@ -53,16 +52,16 @@ public class WebLink extends WebMarkupContainer {
 	 */
 	@Override
 	protected void onComponentTag(ComponentTag tag) {
-		tag.put("href", Strings.replaceAll(getModelObjectAsString(), "&", "&amp;"));
+		if (isEnabled())
+			tag.put("href", Strings.replaceAll(getModelObjectAsString(), "&", "&amp;"));
+		else
+			disableLink(tag);
+
 		super.onComponentTag(tag);
 	}
 	
-	/**
-	 * Ensures that is component is mapped to an "a" tag.
-	 */
 	@Override
-	protected void onComponentTagBody(MarkupStream markupStream, ComponentTag openTag) {
-		checkComponentTag(openTag, "a");
-		super.onComponentTagBody(markupStream, openTag);
+	public boolean isEnabled() {
+		return getModelObject() != null;
 	}
 }
