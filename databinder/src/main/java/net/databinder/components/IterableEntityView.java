@@ -21,9 +21,9 @@ package net.databinder.components;
 import java.util.Iterator;
 
 import net.databinder.models.HibernateObjectModel;
-import wicket.markup.repeater.RefreshingView;
-import wicket.model.BoundCompoundPropertyModel;
-import wicket.model.IModel;
+import org.apache.wicket.markup.repeater.RefreshingView;
+import org.apache.wicket.model.BoundCompoundPropertyModel;
+import org.apache.wicket.model.IModel;
 
 /**
  * Similar to a PropertyListView, but works with any Iterable collection composed of

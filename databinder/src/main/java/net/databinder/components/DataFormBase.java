@@ -5,8 +5,8 @@ import net.databinder.DataStaticService;
 import org.hibernate.Session;
 import org.hibernate.StaleObjectStateException;
 
-import wicket.markup.html.form.Form;
-import wicket.model.IModel;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.model.IModel;
 
 public class DataFormBase extends Form {
 	public DataFormBase(String id) {

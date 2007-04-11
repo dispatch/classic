@@ -31,11 +31,11 @@ import javax.servlet.http.Cookie;
 import org.hibernate.Session;
 import org.hibernate.context.ManagedSessionContext;
 
-import wicket.Page;
-import wicket.Response;
-import wicket.protocol.http.WebRequest;
-import wicket.protocol.http.WebRequestCycle;
-import wicket.protocol.http.WebSession;
+import org.apache.wicket.Page;
+import org.apache.wicket.Response;
+import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.protocol.http.WebRequestCycle;
+import org.apache.wicket.protocol.http.WebSession;
 
 /**
  * <p>Opens Hibernate sessions and transactions as required and closes them at a request's

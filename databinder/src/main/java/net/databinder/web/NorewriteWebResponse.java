@@ -22,9 +22,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.databinder.DataApplication;
 
-import wicket.Application;
-import wicket.protocol.http.BufferedWebResponse;
-import wicket.protocol.http.WebResponse;
+import org.apache.wicket.Application;
+import org.apache.wicket.protocol.http.BufferedWebResponse;
+import org.apache.wicket.protocol.http.WebResponse;
 
 /**
  * Creates web response objects that do not rewrite URLs for cookieless support. Buffered or

@@ -22,21 +22,21 @@ import net.databinder.DataApplication;
 import net.databinder.auth.data.IUser;
 import net.databinder.models.ICriteriaBuilder;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.Request;
+import org.apache.wicket.Response;
+import org.apache.wicket.RestartResponseAtInterceptPageException;
+import org.apache.wicket.Session;
+import org.apache.wicket.authorization.IUnauthorizedComponentInstantiationListener;
+import org.apache.wicket.authorization.UnauthorizedInstantiationException;
+import org.apache.wicket.markup.html.WebPage;
 import org.hibernate.Criteria;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.criterion.Restrictions;
 
-import wicket.Component;
-import wicket.Request;
-import wicket.Response;
-import wicket.RestartResponseAtInterceptPageException;
-import wicket.Session;
-import wicket.authorization.IUnauthorizedComponentInstantiationListener;
-import wicket.authorization.UnauthorizedInstantiationException;
-import wicket.authorization.strategies.role.IRoleCheckingStrategy;
-import wicket.authorization.strategies.role.RoleAuthorizationStrategy;
-import wicket.authorization.strategies.role.Roles;
-import wicket.markup.html.WebPage;
+import org.apache.wicket.authorization.strategies.role.IRoleCheckingStrategy;
+import org.apache.wicket.authorization.strategies.role.RoleAuthorizationStrategy;
+import org.apache.wicket.authorization.strategies.role.Roles;
 
 /**
  * Adds basic authentication fuctionality to DataApplication. This class is a derivative

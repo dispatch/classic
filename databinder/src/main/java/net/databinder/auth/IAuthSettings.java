@@ -1,6 +1,6 @@
 package net.databinder.auth;
 
-import wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.WebPage;
 import net.databinder.auth.data.IUser;
 import net.databinder.models.ICriteriaBuilder;
 

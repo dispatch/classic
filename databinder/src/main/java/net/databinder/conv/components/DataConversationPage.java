@@ -2,7 +2,7 @@ package net.databinder.conv.components;
 
 import org.hibernate.classic.Session;
 
-import wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.WebPage;
 
 public abstract class DataConversationPage extends WebPage implements IConversationPage {
 

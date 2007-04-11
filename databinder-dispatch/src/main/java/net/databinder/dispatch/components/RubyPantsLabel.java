@@ -18,7 +18,7 @@
  */
 package net.databinder.dispatch.components;
 
-import wicket.model.IModel;
+import org.apache.wicket.model.IModel;
 
 /**
  * Converts its model via the <a href="http://chneukirchen.org/blog/static/projects/rubypants.html">RubyPants</a>

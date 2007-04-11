@@ -24,8 +24,8 @@ import net.databinder.conv.DataConversationRequestCycle;
 import org.hibernate.SessionFactory;
 import org.hibernate.context.ManagedSessionContext;
 
-import wicket.RequestCycle;
-import wicket.WicketRuntimeException;
+import org.apache.wicket.RequestCycle;
+import org.apache.wicket.WicketRuntimeException;
 
 /**
  * Holds a static reference to Hibernate session factory.

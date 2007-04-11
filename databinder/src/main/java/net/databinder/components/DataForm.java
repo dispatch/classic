@@ -26,7 +26,7 @@ import net.databinder.models.HibernateObjectModel;
 
 import org.hibernate.Session;
 
-import wicket.model.BoundCompoundPropertyModel;
+import org.apache.wicket.model.BoundCompoundPropertyModel;
 
 /**
  * Form for a persistant model object nested in a BoundCompoundPropertyModel.

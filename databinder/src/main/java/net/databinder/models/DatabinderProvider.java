@@ -27,9 +27,9 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 
-import wicket.markup.repeater.data.IDataProvider;
-import wicket.model.BoundCompoundPropertyModel;
-import wicket.model.IModel;
+import org.apache.wicket.markup.repeater.data.IDataProvider;
+import org.apache.wicket.model.BoundCompoundPropertyModel;
+import org.apache.wicket.model.IModel;
 
 /**
  * Provides query results to DataView and related components. Like the Hibernate model classes,

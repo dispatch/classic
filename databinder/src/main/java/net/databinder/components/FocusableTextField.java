@@ -18,10 +18,10 @@
  */
 package net.databinder.components;
 
-import wicket.markup.ComponentTag;
-import wicket.markup.html.WebPage;
-import wicket.markup.html.form.TextField;
-import wicket.model.IModel;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.model.IModel;
 
 /**
  * TextField that can be told to focus itself on the next request.  Works in cojunction with 

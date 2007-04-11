@@ -19,9 +19,9 @@
 
 package net.databinder.components;
 
-import wicket.AttributeModifier;
-import wicket.markup.html.list.ListItem;
-import wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.model.AbstractReadOnlyModel;
 
 /**
  * Alternates between class attribute values of "a" and "b", or user selected

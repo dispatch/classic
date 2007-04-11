@@ -21,8 +21,8 @@ package net.databinder.components;
 import java.io.Serializable;
 
 import net.databinder.models.HibernateObjectModel;
-import wicket.markup.html.panel.Panel;
-import wicket.model.BoundCompoundPropertyModel;
+import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.BoundCompoundPropertyModel;
 
 /**
  * Panel subclass to be tied to a single persistent object. Similar to

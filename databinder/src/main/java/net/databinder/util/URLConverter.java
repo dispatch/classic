@@ -23,8 +23,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
 
-import wicket.util.convert.ConversionException;
-import wicket.util.convert.converters.AbstractConverter;
+import org.apache.wicket.util.convert.ConversionException;
+import org.apache.wicket.util.convert.converters.AbstractConverter;
 
 /**
  * Convert an object to a java.net.URL.

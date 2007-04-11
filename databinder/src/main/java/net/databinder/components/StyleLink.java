@@ -18,8 +18,8 @@
  */
 package net.databinder.components;
 
-import wicket.markup.ComponentTag;
-import wicket.markup.html.resources.PackagedResourceReference;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.resources.PackagedResourceReference;
 
 /**
  * Component for a stylesheet link. The stylesheet is expected to be named

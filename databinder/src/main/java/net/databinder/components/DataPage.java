@@ -19,12 +19,12 @@
 
 package net.databinder.components;
 
-import wicket.PageParameters;
-import wicket.markup.html.WebPage;
-import wicket.markup.html.basic.Label;
-import wicket.markup.html.panel.FeedbackPanel;
-import wicket.model.AbstractReadOnlyModel;
-import wicket.model.IModel;
+import org.apache.wicket.PageParameters;
+import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.model.IModel;
 
 /**
  *  Simple page with a default stylesheet, page title, and feedback component in its

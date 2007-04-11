@@ -19,16 +19,16 @@
 package net.databinder.auth.components;
 
 import net.databinder.auth.AuthDataSession;
-import wicket.PageParameters;
-import wicket.markup.html.WebMarkupContainer;
-import wicket.markup.html.form.CheckBox;
-import wicket.markup.html.form.Form;
-import wicket.markup.html.form.PasswordTextField;
-import wicket.markup.html.form.RequiredTextField;
-import wicket.markup.html.form.TextField;
-import wicket.markup.html.panel.FeedbackPanel;
-import wicket.markup.html.panel.Panel;
-import wicket.model.Model;
+import org.apache.wicket.PageParameters;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.PasswordTextField;
+import org.apache.wicket.markup.html.form.RequiredTextField;
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.Model;
 
 /**
  * Displays username and password fields, along with optional "remember me" checkbox.

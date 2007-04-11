@@ -1,6 +1,6 @@
 package net.databinder.auth.data;
 
-import wicket.authorization.strategies.role.Roles;
+import org.apache.wicket.authorization.strategies.role.Roles;
 
 /**
  * Base user interface.

@@ -18,7 +18,7 @@
  */
 package net.databinder.components;
 
-import wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 
 /**
  * Extention of WebMarkupContainer that outputs a markup ID by default. This

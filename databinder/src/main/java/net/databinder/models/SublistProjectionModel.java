@@ -4,8 +4,8 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 
-import wicket.model.IModel;
-import wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 
 /**
  * Projects a single list into multiple, arbitrarily transformed sublists without replicating

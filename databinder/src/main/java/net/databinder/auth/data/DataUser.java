@@ -17,10 +17,10 @@ import net.databinder.auth.IAuthSettings;
 
 import org.hibernate.annotations.CollectionOfElements;
 
-import wicket.Application;
-import wicket.authorization.strategies.role.Roles;
-import wicket.util.crypt.Base64;
-import wicket.util.crypt.Base64UrlSafe;
+import org.apache.wicket.Application;
+import org.apache.wicket.authorization.strategies.role.Roles;
+import org.apache.wicket.util.crypt.Base64;
+import org.apache.wicket.util.crypt.Base64UrlSafe;
 
 /**
  * Basic implementation of IUser.CookieAuth. Stores no passwords in memory or persistent

@@ -22,8 +22,8 @@ package net.databinder.util;
 import java.awt.Color;
 import java.util.Locale;
 
-import wicket.util.convert.ConversionException;
-import wicket.util.convert.converters.AbstractConverter;
+import org.apache.wicket.util.convert.ConversionException;
+import org.apache.wicket.util.convert.converters.AbstractConverter;
 
 /**
  * Convert between a HTML hex color string and java.awt.Color.

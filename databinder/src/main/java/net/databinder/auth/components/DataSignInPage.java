@@ -21,12 +21,12 @@ package net.databinder.auth.components;
 import net.databinder.auth.IAuthSettings;
 import net.databinder.components.DataPage;
 import net.databinder.components.StyleLink;
-import wicket.Application;
-import wicket.WicketRuntimeException;
-import wicket.markup.html.WebMarkupContainer;
-import wicket.markup.html.WebPage;
-import wicket.markup.html.link.Link;
-import wicket.markup.html.panel.Panel;
+import org.apache.wicket.Application;
+import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.panel.Panel;
 
 /**
  * Serves as both a sign in and simple regristration page. Please use a differnt sign in page;

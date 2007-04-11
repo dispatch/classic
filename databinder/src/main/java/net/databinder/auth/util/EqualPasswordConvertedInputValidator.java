@@ -18,11 +18,11 @@
  */
 package net.databinder.auth.util;
 
-import wicket.markup.html.form.Form;
-import wicket.markup.html.form.FormComponent;
-import wicket.markup.html.form.validation.EqualPasswordInputValidator;
-import wicket.util.lang.Classes;
-import wicket.util.lang.Objects;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
+import org.apache.wicket.util.lang.Classes;
+import org.apache.wicket.util.lang.Objects;
 
 public class EqualPasswordConvertedInputValidator extends EqualPasswordInputValidator {
 	

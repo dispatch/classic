@@ -1,9 +1,9 @@
 package net.databinder.components;
 
-import wicket.markup.html.basic.Label;
-import wicket.model.IModel;
-import wicket.util.convert.IConverter;
-import wicket.util.convert.converters.AbstractConverter;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.convert.IConverter;
+import org.apache.wicket.util.convert.converters.AbstractConverter;
 
 /**
  * Label that alters its contents with a specific converter before display. 

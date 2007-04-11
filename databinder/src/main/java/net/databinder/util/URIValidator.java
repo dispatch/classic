@@ -21,8 +21,8 @@ package net.databinder.util;
 import java.net.URI;
 import java.util.regex.Pattern;
 
-import wicket.validation.IValidatable;
-import wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.validator.AbstractValidator;
 
 /**
  * Validate that the input is a particular kind of URI.

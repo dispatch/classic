@@ -41,13 +41,13 @@ import net.databinder.models.HibernateObjectModel;
 import org.hibernate.Criteria;
 import org.hibernate.NonUniqueResultException;
 
-import wicket.Application;
-import wicket.Request;
-import wicket.RequestCycle;
-import wicket.WicketRuntimeException;
-import wicket.protocol.http.WebApplication;
-import wicket.protocol.http.WebResponse;
-import wicket.util.time.Duration;
+import org.apache.wicket.Application;
+import org.apache.wicket.Request;
+import org.apache.wicket.RequestCycle;
+import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.protocol.http.WebResponse;
+import org.apache.wicket.util.time.Duration;
 
 public class AuthDataSession extends DataSession {
 	/** Effective signed in state. */

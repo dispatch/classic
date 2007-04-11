@@ -4,14 +4,14 @@ import net.databinder.models.IQueryBinder;
 
 import org.hibernate.Query;
 
-import wicket.ResourceReference;
-import wicket.ajax.AjaxRequestTarget;
-import wicket.ajax.markup.html.AjaxLink;
-import wicket.markup.html.form.Form;
-import wicket.markup.html.form.TextField;
-import wicket.markup.html.image.Image;
-import wicket.markup.html.panel.Panel;
-import wicket.model.IModel;
+import org.apache.wicket.ResourceReference;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
 
 /**
  * Panel for a "live" search field with a clear button. The SearchPanel's model object

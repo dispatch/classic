@@ -18,8 +18,8 @@
  */
 package net.databinder.components;
 
-import wicket.behavior.HeaderContributor;
-import wicket.markup.html.resources.JavaScriptReference;
+import org.apache.wicket.behavior.HeaderContributor;
+import org.apache.wicket.markup.html.resources.JavaScriptReference;
 
 /**
  * Component for a script (JavaScript) link. The stylesheet is expected to be named

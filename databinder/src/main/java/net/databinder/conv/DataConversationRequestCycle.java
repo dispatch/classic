@@ -31,12 +31,12 @@ import org.hibernate.FlushMode;
 import org.hibernate.classic.Session;
 import org.hibernate.context.ManagedSessionContext;
 
-import wicket.IRequestTarget;
-import wicket.Page;
-import wicket.Response;
-import wicket.protocol.http.WebRequest;
-import wicket.protocol.http.WebSession;
-import wicket.request.target.component.IBookmarkablePageRequestTarget;
+import org.apache.wicket.IRequestTarget;
+import org.apache.wicket.Page;
+import org.apache.wicket.Response;
+import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.protocol.http.WebSession;
+import org.apache.wicket.request.target.component.IBookmarkablePageRequestTarget;
 
 /**
  * Supports extended Hibernate sessions for long conversations. This is useful for a page or

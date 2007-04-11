@@ -29,18 +29,18 @@ import java.security.interfaces.RSAPublicKey;
 import javax.crypto.Cipher;
 
 import net.databinder.auth.util.EqualPasswordConvertedInputValidator;
-import wicket.ResourceReference;
-import wicket.WicketRuntimeException;
-import wicket.behavior.AttributeAppender;
-import wicket.markup.html.IHeaderContributor;
-import wicket.markup.html.IHeaderResponse;
-import wicket.markup.html.form.Form;
-import wicket.markup.html.form.PasswordTextField;
-import wicket.markup.html.resources.JavascriptResourceReference;
-import wicket.model.AbstractReadOnlyModel;
-import wicket.model.IModel;
-import wicket.util.convert.ConversionException;
-import wicket.util.crypt.Base64;
+import org.apache.wicket.ResourceReference;
+import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.markup.html.IHeaderContributor;
+import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.PasswordTextField;
+import org.apache.wicket.markup.html.resources.JavascriptResourceReference;
+import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.convert.ConversionException;
+import org.apache.wicket.util.crypt.Base64;
 
 /**
  * Note: if equal password validation is need, use EqualPasswordConvertedInputValidator.

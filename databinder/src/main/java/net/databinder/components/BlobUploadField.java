@@ -22,8 +22,8 @@ import java.io.IOException;
 
 import org.hibernate.Hibernate;
 
-import wicket.markup.html.form.upload.FileUploadField;
-import wicket.model.IModel;
+import org.apache.wicket.markup.html.form.upload.FileUploadField;
+import org.apache.wicket.model.IModel;
 
 /**
  * Extension of FileUploadField optimized for blob resources. This upload field can be 

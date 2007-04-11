@@ -10,19 +10,20 @@ import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
-import wicket.Component;
-import wicket.Resource;
-import wicket.ResourceReference;
-import wicket.SharedResources;
-import wicket.WicketRuntimeException;
-import wicket.markup.ComponentTag;
-import wicket.markup.html.image.Image;
-import wicket.markup.html.image.resource.RenderedDynamicImageResource;
-import wicket.model.IComponentInheritedModel;
-import wicket.model.IModel;
-import wicket.model.IWrapModel;
-import wicket.protocol.http.WebResponse;
-import wicket.util.string.Strings;
+import org.apache.wicket.Application;
+import org.apache.wicket.Component;
+import org.apache.wicket.Resource;
+import org.apache.wicket.ResourceReference;
+import org.apache.wicket.SharedResources;
+import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.image.resource.RenderedDynamicImageResource;
+import org.apache.wicket.model.IComponentInheritedModel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.IWrapModel;
+import org.apache.wicket.protocol.http.WebResponse;
+import org.apache.wicket.util.string.Strings;
 
 /*
  * Databinder: a simple bridge from Wicket to Hibernate
@@ -258,7 +259,7 @@ public class RenderedLabel extends Image  {
 		res.renderedText = text;
 
 		String hash = Integer.toHexString(getLabelHash(text, font, color, backgroundColor, maxWidth));
-		SharedResources shared = wicket.Application.get().getSharedResources();
+		SharedResources shared = Application.get().getSharedResources();
 
 		shared.add(RenderedLabel.class, hash, null, null, res);
 	}

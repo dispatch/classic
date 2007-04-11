@@ -2,11 +2,11 @@ package net.databinder.auth.components;
 
 import net.databinder.auth.AuthDataSession;
 import net.databinder.auth.IAuthSettings;
-import wicket.markup.html.WebMarkupContainer;
-import wicket.markup.html.basic.Label;
-import wicket.markup.html.link.Link;
-import wicket.markup.html.panel.Panel;
-import wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.AbstractReadOnlyModel;
 
 /**
  * Displays sign in and out links, as well as current user if any.

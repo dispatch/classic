@@ -18,11 +18,11 @@
  */
 package net.databinder.components;
 
-import wicket.markup.ComponentTag;
-import wicket.markup.MarkupStream;
-import wicket.markup.html.WebMarkupContainer;
-import wicket.model.IModel;
-import wicket.util.string.Strings;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.MarkupStream;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.string.Strings;
 
 /**
  * Component for an anchor linking outside of Wicket. Similar to 

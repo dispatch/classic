@@ -23,8 +23,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import wicket.model.IModel;
-import wicket.util.convert.converters.AbstractConverter;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.convert.converters.AbstractConverter;
 
 /**
  * Label with a specific date format (rather than a globally defined one). 

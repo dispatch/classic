@@ -16,8 +16,7 @@ import org.apache.batik.gvt.font.AWTGVTFont;
 import org.apache.batik.gvt.font.GVTFont;
 import org.apache.batik.gvt.renderer.StrokingTextPainter;
 import org.apache.batik.gvt.text.TextPaintInfo;
-
-import wicket.model.IModel;
+import org.apache.wicket.model.IModel;
 
 public class BatikRenderedLabel extends RenderedLabel {
 	public BatikRenderedLabel(String id) {

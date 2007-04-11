@@ -19,8 +19,8 @@
 
 package net.databinder.models;
 
-import wicket.Component;
-import wicket.model.IModel;
+import org.apache.wicket.Component;
+import org.apache.wicket.model.IModel;
 
 /**
  * Adaptation of Wicket's LoadableDetachableModel that does not extend a

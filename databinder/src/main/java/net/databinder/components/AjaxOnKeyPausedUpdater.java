@@ -1,9 +1,9 @@
 package net.databinder.components;
 
-import wicket.ResourceReference;
-import wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import wicket.markup.ComponentTag;
-import wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.ResourceReference;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.IHeaderResponse;
 
 /*
  * Databinder: a simple bridge from Wicket to Hibernate

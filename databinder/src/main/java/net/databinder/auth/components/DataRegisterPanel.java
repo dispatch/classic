@@ -33,17 +33,17 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 
-import wicket.PageParameters;
-import wicket.markup.html.form.Form;
-import wicket.markup.html.form.PasswordTextField;
-import wicket.markup.html.form.RequiredTextField;
-import wicket.markup.html.form.validation.EqualPasswordInputValidator;
-import wicket.markup.html.panel.FeedbackPanel;
-import wicket.markup.html.panel.Panel;
-import wicket.model.CompoundPropertyModel;
-import wicket.model.Model;
-import wicket.validation.IValidatable;
-import wicket.validation.validator.StringValidator;
+import org.apache.wicket.PageParameters;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.PasswordTextField;
+import org.apache.wicket.markup.html.form.RequiredTextField;
+import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.validator.StringValidator;
 
 /**
  * Registration with username, password, and password confirmation.
@@ -88,7 +88,7 @@ public class DataRegisterPanel extends Panel {
 			session.save(user);
 			session.getTransaction().commit();
 
-			((AuthDataSession)wicket.Session.get()).signIn(creds.getUsername(), creds.getPassword());
+			((AuthDataSession)org.apache.wicket.Session.get()).signIn(creds.getUsername(), creds.getPassword());
 
 			if (!continueToOriginalDestination())
 			{

@@ -2,8 +2,8 @@ package net.databinder.components;
 
 import java.util.Locale;
 
-import wicket.model.IModel;
-import wicket.util.convert.converters.AbstractConverter;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.convert.converters.AbstractConverter;
 import jtextile.JTextile;
 
 /**

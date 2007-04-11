@@ -33,8 +33,8 @@ import org.hibernate.QueryException;
 import org.hibernate.Session;
 import org.hibernate.proxy.HibernateProxy;
 
-import wicket.Component;
-import wicket.WicketRuntimeException;
+import org.apache.wicket.Component;
+import org.apache.wicket.WicketRuntimeException;
 
 /**
  * Model loaded and persisted by Hibernate. This central Databinder class can be initialized with an
