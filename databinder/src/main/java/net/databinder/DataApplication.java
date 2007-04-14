@@ -31,12 +31,15 @@ import net.databinder.util.URIConverter;
 import net.databinder.util.URLConverter;
 import net.databinder.web.NorewriteWebResponse;
 
+import org.apache.wicket.Application;
 import org.apache.wicket.IConverterLocator;
+import org.apache.wicket.IRequestCycleFactory;
 import org.apache.wicket.Request;
+import org.apache.wicket.RequestCycle;
 import org.apache.wicket.Response;
-import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.pages.PageExpiredErrorPage;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.util.convert.ConverterLocator;
 import org.apache.wicket.util.convert.IConverterLocatorFactory;
@@ -97,6 +100,15 @@ public abstract class DataApplication extends WebApplication {
 		}
 	}
 	
+	@Override
+	protected IRequestCycleFactory getRequestCycleFactory() {
+		return new IRequestCycleFactory() {
+			public RequestCycle newRequestCycle(Application application, Request request, Response response) {
+				return new DataRequestCycle((WebApplication)application, (WebRequest) request, response);
+			}
+		};
+	}
+	
 	/**
 	 * Override to add annotated classes for persistent storage by Hibernate, but don't forget
 	 * to call this super-implementation. If running in a development environment,
@@ -116,16 +128,6 @@ public abstract class DataApplication extends WebApplication {
     		.setProperty("hibernate.c3p0.timeout","3000")
     		.setProperty("hibernate.c3p0.idle_test_period", "300");
     	}
-	}
-	
-	/**
-	 * Returns a new instance of a DataSession. Override if your application uses
-	 * its own DataSession subclass. 
-	 * @return new instance of DataSession
-	 */
-	@Override
-	public Session newSession(Request request, Response response) {
-		return new DataSession(DataApplication.this, request);
 	}
 		
 	/**

@@ -28,14 +28,13 @@ import java.util.Map;
 
 import javax.servlet.http.Cookie;
 
-import org.hibernate.Session;
-import org.hibernate.context.ManagedSessionContext;
-
 import org.apache.wicket.Page;
 import org.apache.wicket.Response;
+import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebRequestCycle;
-import org.apache.wicket.protocol.http.WebSession;
+import org.hibernate.Session;
+import org.hibernate.context.ManagedSessionContext;
 
 /**
  * <p>Opens Hibernate sessions and transactions as required and closes them at a request's
@@ -49,8 +48,8 @@ public class DataRequestCycle extends WebRequestCycle {
 	private Map<String, Cookie> cookies;
 
 
-	public DataRequestCycle(final WebSession session, final WebRequest request, final Response response) {
-		super(session, request, response);
+	public DataRequestCycle(WebApplication application, WebRequest request, Response response) {
+		super(application, request, response);
 	}
 
 	/**

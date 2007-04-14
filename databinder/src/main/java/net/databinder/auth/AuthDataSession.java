@@ -33,13 +33,9 @@ import java.net.URLEncoder;
 import javax.servlet.http.Cookie;
 
 import net.databinder.DataRequestCycle;
-import net.databinder.DataSession;
 import net.databinder.DataStaticService;
 import net.databinder.auth.data.IUser;
 import net.databinder.models.HibernateObjectModel;
-
-import org.hibernate.Criteria;
-import org.hibernate.NonUniqueResultException;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.Request;
@@ -47,9 +43,12 @@ import org.apache.wicket.RequestCycle;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebResponse;
+import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.util.time.Duration;
+import org.hibernate.Criteria;
+import org.hibernate.NonUniqueResultException;
 
-public class AuthDataSession extends DataSession {
+public class AuthDataSession extends WebSession {
 	/** Effective signed in state. */
 	private Serializable userId;
 	private static final String CHARACTER_ENCODING = "UTF-8";
@@ -64,20 +63,11 @@ public class AuthDataSession extends DataSession {
 	}
 	
 	/**
-	 * Constructor for conversational Hibernate request cycle binding.
-	 * @param application the application this applies to
-	 * @param supportConversationSession if true, enable conversational binding
-	 */
-	public AuthDataSession(IAuthSettings application, Request request, boolean useConversationSession) {
-		super((WebApplication)application, request, useConversationSession);
-	}
-	
-	/**
 	 * @return current session casted to AuthDataSession
 	 * @throws ClassCastException if available session is not of this class
 	 */
 	public static AuthDataSession get() {
-		return (AuthDataSession) DataSession.get();
+		return (AuthDataSession) WebSession.get();
 	}
 	
 	/**

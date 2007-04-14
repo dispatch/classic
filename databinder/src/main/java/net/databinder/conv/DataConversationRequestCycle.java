@@ -27,16 +27,15 @@ import net.databinder.DataRequestCycle;
 import net.databinder.DataStaticService;
 import net.databinder.conv.components.IConversationPage;
 
-import org.hibernate.FlushMode;
-import org.hibernate.classic.Session;
-import org.hibernate.context.ManagedSessionContext;
-
 import org.apache.wicket.IRequestTarget;
 import org.apache.wicket.Page;
 import org.apache.wicket.Response;
+import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
-import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.target.component.IBookmarkablePageRequestTarget;
+import org.hibernate.FlushMode;
+import org.hibernate.classic.Session;
+import org.hibernate.context.ManagedSessionContext;
 
 /**
  * Supports extended Hibernate sessions for long conversations. This is useful for a page or
@@ -46,8 +45,9 @@ import org.apache.wicket.request.target.component.IBookmarkablePageRequestTarget
  * @author Nathan Hamblen
  */
 public class DataConversationRequestCycle extends DataRequestCycle {
-	public DataConversationRequestCycle(final WebSession session, final WebRequest request, final Response response) {
-		super(session, request, response);
+	
+	public DataConversationRequestCycle(WebApplication application, WebRequest request, Response response) {
+		super(application, request, response);
 	}
 	
 	/**
