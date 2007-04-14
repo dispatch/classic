@@ -18,12 +18,12 @@
   <dependency>
    <groupId>org.apache.batik</groupId>
    <artifactId>batik-gvt</artifactId>
-   <version>1.7-SNAPSHOT</version>
+   <version>1.7-beta1</version>
   </dependency>
   <dependency>
    <groupId>org.apache.batik</groupId>
    <artifactId>batik-awt-util</artifactId>
-   <version>1.7-SNAPSHOT</version>
+   <version>1.7-beta1</version>
   </dependency>
  </dependencies>
 </project>
