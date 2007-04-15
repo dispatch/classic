@@ -21,6 +21,7 @@ package net.databinder.components;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.internal.HtmlHeaderContainer;
 import org.apache.wicket.model.IModel;
 
 /**
@@ -29,31 +30,50 @@ import org.apache.wicket.model.IModel;
  */
 public class FocusableTextField extends TextField {
 	private boolean wantsFocus = false;
+
 	/**
-	 * @param id Wicket id
+	 * 	@param id Wicket id
 	 * @param model text field model
-	 * @param page page that will receive component
 	 */
-	public FocusableTextField(String id, IModel model, WebPage page) {
+	public FocusableTextField(String id, IModel model) {
 		super (id, model);
 		add(ScriptLink.headerContributor(FocusableTextField.class));
-		page.getBodyContainer().addOnLoadModifier("initFocusableTextField();", this);
 	}
+
 	/**
 	 * @param id Wicket id
-	 * @param page page that will receive component
+	 */
+	public FocusableTextField(String id) {
+		this(id, (IModel) null);
+	}
+
+	/**
+	 * Page parameter no longer necessary; use other constructor.
+	 * @deprecated
+	 */
+	public FocusableTextField(String id, IModel model, WebPage page) {
+		this(id, model);
+	}
+	/**
+	 * Page parameter no longer necessary; use other constructor.
+	 * @deprecated
 	 */
 	public FocusableTextField(String id, WebPage page) {
-		super (id);
-		add(ScriptLink.headerContributor(FocusableTextField.class));
-		page.getBodyContainer().addOnLoadModifier("initFocusableTextField();", this);
+		this(id);
 	}
+	
+	@Override
+	public void renderHead(HtmlHeaderContainer container) {
+		container.getHeaderResponse().renderOnLoadJavascript("initFocusableTextField();");
+	}
+	
 	/**
 	 * Request focus on next rendering.
 	 */
 	public void requestFocus() {
 		wantsFocus = true;
 	}
+	
 	/** Adds flagging id attribute if focus has been requested. */
 	@Override
 	protected void onComponentTag(ComponentTag tag) {
