@@ -64,6 +64,7 @@ public class FocusableTextField extends TextField {
 	
 	@Override
 	public void renderHead(HtmlHeaderContainer container) {
+		super.renderHead(container);
 		container.getHeaderResponse().renderOnLoadJavascript("initFocusableTextField();");
 	}
 	
