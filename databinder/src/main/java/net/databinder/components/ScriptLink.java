@@ -42,7 +42,7 @@ public class ScriptLink extends JavaScriptReference {
 	 * @return contributor to add to component
 	 */
 	public static HeaderContributor headerContributor(Class componentClass) {
-		return new HeaderContributor(HeaderContributor.forJavaScript(
-				componentClass, componentClass.getSimpleName() + EXT));
+		return HeaderContributor.forJavaScript(
+				componentClass, componentClass.getSimpleName() + EXT);
 	}
 }
