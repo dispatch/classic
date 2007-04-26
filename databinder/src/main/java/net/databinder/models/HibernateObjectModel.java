@@ -272,6 +272,24 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	public void setEntityName(String entityName) {
 		this.entityName = entityName;
 	}
+	
+	/** Compares contained objects if present, otherwise calls super-implementation.*/
+	@Override
+	public boolean equals(Object obj) {
+		Object target = getObject();
+		if (target != null && obj instanceof HibernateObjectModel)
+			return target.equals(((HibernateObjectModel)obj).getObject());
+		return super.equals(obj);
+	}
+	
+	/** @return hash of contained object if present, otherwise from super-implementation.*/
+	@Override
+	public int hashCode() {
+		Object target = getObject();
+		if (target == null)
+			return super.hashCode();
+		return target.hashCode();
+	}
 
 	/**
 	 * When "bound," this model discards its temporary model object at the end of every
