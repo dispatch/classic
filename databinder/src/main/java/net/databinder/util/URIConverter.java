@@ -25,6 +25,7 @@ import java.util.Locale;
 
 import org.apache.wicket.util.convert.ConversionException;
 import org.apache.wicket.util.convert.converters.AbstractConverter;
+import org.apache.wicket.util.string.Strings;
 
 /**
  * Convert an object to a java.net.URI.
@@ -38,7 +39,7 @@ public class URIConverter extends AbstractConverter {
 	}
 	public Object convertToObject(String value, Locale locale) {
 		try {
-			return new URI(value);
+			return Strings.isEmpty(value) ? null : new URI(value);
 		} catch (URISyntaxException e) {
 			throw new ConversionException(e);
 		}
