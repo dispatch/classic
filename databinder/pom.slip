@@ -29,10 +29,6 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 			groupId: "org.apache.wicket"
 			artifactId: "wicket-auth-roles"
 			version: "1.3.0-incubating-SNAPSHOT"
-			exclusions:
-				exclusion:
-					artifactId: "log4j"
-					groupId: "log4j"
 
 		dependency:
 			groupId: "c3p0"
