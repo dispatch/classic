@@ -45,6 +45,7 @@ public class TagField extends Panel {
 			@SuppressWarnings("unchecked")
 			public Object getObject() {
 				Collection<String> tags = (Collection<String>) TagField.this.getModelObject();
+				if (tags == null) return null;
 				return Strings.join(", ",  tags.toArray(new String[tags.size()]));
 			}
 			public void setObject(Object object) {
@@ -52,7 +53,8 @@ public class TagField extends Panel {
 					TagField.this.setModelObject(null);
 				else {
 					String value = ((String) object).toLowerCase();
-					TagField.this.setModelObject(new HashSet<String>(Arrays.asList(value.split(" *, *"))));
+					String[] tagstrs = value.split(" *, *,* *"); // also consumes empty ' ,  ,' tags
+					TagField.this.setModelObject(new HashSet<String>(Arrays.asList(tagstrs)));
 				}
 			}
 		}));
