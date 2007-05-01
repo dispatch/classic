@@ -48,11 +48,12 @@ public class TagField extends Panel {
 				return Strings.join(", ",  tags.toArray(new String[tags.size()]));
 			}
 			public void setObject(Object object) {
-				String value = ((String) object).toLowerCase();
-				if (Strings.isEmpty(value ))
+				if (object == null)
 					TagField.this.setModelObject(null);
-				else
+				else {
+					String value = ((String) object).toLowerCase();
 					TagField.this.setModelObject(new HashSet<String>(Arrays.asList(value.split(" *, *"))));
+				}
 			}
 		}));
 	}
