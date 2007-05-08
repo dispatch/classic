@@ -31,6 +31,7 @@ public class MoveUpLink extends Link {
 	/** Disable link as appropriate.  */
 	protected void onBeforeRender()
 	{
+		super.onBeforeRender();
 		setAutoEnable(false);
             if (getListView().getList().indexOf(item.getModelObject()) == 0)
 			setEnabled(false);

@@ -49,6 +49,7 @@ public class MoveDownLink extends Link {
 	/** Disable link as appropriate.  */
 	protected void onBeforeRender()
 	{
+		super.onBeforeRender();
 		setAutoEnable(false);
 		List list = getListView().getList();
 		if (list.indexOf(item.getModelObject()) == (list.size() - 1))
