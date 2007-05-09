@@ -5,10 +5,17 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.font.LineBreakMeasurer;
+import java.awt.font.TextAttribute;
+import java.awt.font.TextLayout;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
+import java.text.AttributedCharacterIterator;
+import java.text.AttributedString;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
@@ -72,6 +79,7 @@ public class RenderedLabel extends Image  {
 	private Color color = defaultColor;
 	private Color backgroundColor = defaultBackgroundColor;
 	private Integer maxWidth;
+	private boolean antiAliased = true;
 
 	/** If true, resource is shared across application with a permanent URL. */
 	private boolean isShared = false;
@@ -129,6 +137,7 @@ public class RenderedLabel extends Image  {
 
 	@Override
 	protected void onBeforeRender() {
+		super.onBeforeRender();
 		int curHash = getLabelHash();
 		if (isShared) {
 			if (labelHash != curHash) {
@@ -159,7 +168,7 @@ public class RenderedLabel extends Image  {
 	 */
 	@Override
 	public boolean isVisible() {
-		return getText() != null;
+		return getModelObject() != null;
 	}
 
 	/**
@@ -182,11 +191,11 @@ public class RenderedLabel extends Image  {
 		tag.put("width", resource.getWidth() );
 		tag.put("height", resource.getHeight() );
 
-		tag.put("alt", getText());
+		tag.put("alt", getModelObjectAsString());
 	}
 
 	protected int getLabelHash() {
-		return getLabelHash(getText(), font, color, backgroundColor, maxWidth);
+		return getLabelHash(getModelObjectAsString(), font, color, backgroundColor, maxWidth);
 	}
 
 	protected static int getLabelHash(String text, Font font, Color color, Color backgroundColor, Integer maxWidth) {
@@ -256,7 +265,7 @@ public class RenderedLabel extends Image  {
 		res.color = color == null ? defaultColor : color;
 		res.font = font == null ? defaultFont : font;
 		res.maxWidth = maxWidth;
-		res.renderedText = text;
+		res.text = text;
 
 		String hash = Integer.toHexString(getLabelHash(text, font, color, backgroundColor, maxWidth));
 		SharedResources shared = Application.get().getSharedResources();
@@ -281,13 +290,14 @@ public class RenderedLabel extends Image  {
 	 * Inner class that renders the model text into an image  resource.
 	 * @see wicket.markup.html.image.resource.DefaultButtonImageResource
 	 */
-	protected static class RenderedTextImageResource extends RenderedDynamicImageResource
+	public static class RenderedTextImageResource extends RenderedDynamicImageResource
 	{
 		protected Color backgroundColor;
 		protected Color color;
 		protected Font font;
 		protected Integer maxWidth;
-		protected String renderedText;
+		protected String text;
+		protected boolean antiAliased;
 
 		protected RenderedTextImageResource() {
 			super(1, 1,"png");	// tiny default that will resize to fit text
@@ -299,12 +309,13 @@ public class RenderedLabel extends Image  {
 			// don't set expire headers; if resource changes, its URL will change
 		}
 
-		protected void setState(RenderedLabel label) {
+		public void setState(RenderedLabel label) {
 			backgroundColor = label.getBackgroundColor();
 			color = label.getColor();
 			font = label.getFont();
 			maxWidth = label.getMaxWidth();
-			renderedText = label.getText();
+			text = label.getModelObjectAsString();
+			antiAliased = label.isAntiAliased();
 			invalidate();
 		}
 
@@ -318,79 +329,84 @@ public class RenderedLabel extends Image  {
 				graphics.setColor(backgroundColor);
 				graphics.fillRect(0, 0, width, height);
 			}
+			
+			List<AttributedCharacterIterator> attributedLines = getAttributedLines();
 
 			// render as a 1x1 pixel if text is empty
-			if (renderedText == null) {
+			if (attributedLines == null) {
 				if (width == 1 && height == 1)
 					return true;
 				setWidth(1);
 				setHeight(1);
 				return false;
 			}
+			
+			FontMetrics fontMetrics = graphics.getFontMetrics();
+			
+			List<TextLayout> layouts = new LinkedList<TextLayout>();
 
-			// Get size of text
-			graphics.setFont(font);
-			final FontMetrics metrics = graphics.getFontMetrics();
-
-			List<String> lines = new LinkedList<String>();
-
-			int dxText = breakLines(renderedText, metrics, lines),
-				lineHeight = metrics.getHeight(),
-				dyText = lineHeight * lines.size();
-
-			// resize and redraw if we need to
-			if (dxText !=  width || dyText != height)
-			{
-				setWidth(dxText);
-				setHeight(dyText);
+			float neededWidth = 0f;
+			for (AttributedCharacterIterator attributedIterator : attributedLines) {
+				if (maxWidth == null) {
+					TextLayout layout = new TextLayout(attributedIterator, graphics.getFontRenderContext());
+					 if (layout.getBounds().getWidth() > neededWidth)
+						 neededWidth = (float) layout.getBounds().getWidth();
+					layouts.add(layout);
+				}
+				else {
+					LineBreakMeasurer breaker = new LineBreakMeasurer(attributedIterator, graphics.getFontRenderContext());
+					TextLayout layout ;
+					while (null != (layout = breaker.nextLayout(maxWidth))) {
+						layouts.add(layout);
+						if (layout.getBounds().getWidth() > neededWidth)
+							neededWidth = (float) layout.getBounds().getWidth();
+					}
+				}
+			}
+			
+			float lineHeight = graphics.getFontMetrics().getHeight(),
+				neededHeight = layouts.size() * lineHeight + fontMetrics.getMaxDescent();
+			
+			if (neededWidth > width || neededHeight > height) {
+				setWidth((int)Math.ceil(neededWidth));
+				setHeight((int)Math.ceil(neededHeight));
 				return false;
 			}
-
 			// Turn on anti-aliasing
 			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-					RenderingHints.VALUE_ANTIALIAS_ON);
-
+					antiAliased ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
 			graphics.setColor(color);
-
-			// Draw each line at its baseline
-			int baseline = metrics.getAscent();
-			for (String line : lines) {
-				graphics.drawString(line, 0, baseline);
-				baseline += lineHeight;
+			
+			float y = lineHeight;
+			for (TextLayout layout : layouts) {
+				layout.draw(graphics, 0f, y);
+				y += lineHeight;
 			}
+
 			return true;
 		}
 
-		/**
-		 * Breaks source string into lines no longer than this label's maxWidth, if not null.
-		 * @param source this label's model, previously retrieved
-		 * @param metrics metrics for the font we will use for display
-		 * @param outputLines list to receive lines generated by this function
-		 * @return length in pixels of the longest line
-		 */
-		protected int breakLines(String source, FontMetrics metrics, List<String> outputLines) {
-			if (maxWidth == null) {
-				outputLines.add(source);
-				return metrics.stringWidth(source);
+		/** @return String to be rendered with attributes (global font only in this base class). */
+		protected List<AttributedCharacterIterator> getAttributedLines() {
+			if (Strings.isEmpty(text))
+				return null;
+			AttributedString attributedText = new AttributedString(text);
+			attributedText.addAttribute(TextAttribute.FONT, font);
+			return splitAtNewlines(attributedText, text);
+		}
+		
+		static List<AttributedCharacterIterator> splitAtNewlines(AttributedString attr, String plain) {
+			List<AttributedCharacterIterator> lines = new LinkedList<AttributedCharacterIterator>();
+			Pattern nl = Pattern.compile("\n");
+			Matcher m = nl.matcher(plain);
+			int last = 0;
+			while (m.find()) {
+				lines.add(attr.getIterator(null, last, m.end()));
+				last = m.end();
 			}
-			String sp = " ";
-			String words[] = source.split(sp);
-			StringBuilder line = new StringBuilder();
-			int topWidth = 0;
-			for (String word : words) {
-				if (line.length() >0) {
-					 int curWidth = metrics.stringWidth(line + sp + word);
-					 if (curWidth > maxWidth) {
-						 outputLines.add(line.toString());
-						 line.setLength(0);
-					 } else
-						 line.append(sp);
-				}
-				 line.append(word);
-				 topWidth = Math.max(metrics.stringWidth(line.toString()), topWidth);
-			}
-			outputLines.add(line.toString());
-			return topWidth;
+			lines.add(attr.getIterator(null, last, plain.length()));
+			return lines;
+			
 		}
 
 		/**
@@ -402,12 +418,6 @@ public class RenderedLabel extends Image  {
 		public void preload() {
 			getImageData();
 		}
-	}
-
-	/** @return String to be rendered */
-	protected String getText() {
-		String text = getModelObjectAsString();
-		return Strings.isEmpty(text) ? null : text;
 	}
 
 	public Color getBackgroundColor() {
@@ -473,5 +483,14 @@ public class RenderedLabel extends Image  {
 		} catch (Throwable e) {
 			throw new WicketRuntimeException("Error loading font resources", e);
 		}
+	}
+
+	public boolean isAntiAliased() {
+		return antiAliased;
+	}
+
+	public RenderedLabel setAntiAlias(boolean antiAlias) {
+		this.antiAliased = antiAlias;
+		return this;
 	}
 }
