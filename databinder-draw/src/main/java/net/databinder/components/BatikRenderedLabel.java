@@ -6,9 +6,9 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
+import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.batik.gvt.TextNode;
@@ -17,6 +17,7 @@ import org.apache.batik.gvt.font.GVTFont;
 import org.apache.batik.gvt.renderer.StrokingTextPainter;
 import org.apache.batik.gvt.text.TextPaintInfo;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.string.Strings;
 
 public class BatikRenderedLabel extends RenderedLabel {
 	public BatikRenderedLabel(String id) {
@@ -47,6 +48,24 @@ public class BatikRenderedLabel extends RenderedLabel {
 
 	
 	protected static class BatikRenderedTextImageResource extends RenderedTextImageResource {
+		
+		protected List<AttributedCharacterIterator> getAttributedLines() {
+			if (Strings.isEmpty(text))
+				return null;
+			AttributedString attributedText = new AttributedString(text);
+			
+			List<GVTFont> fonts = new ArrayList<GVTFont>(1);
+			fonts.add(new AWTGVTFont(font));
+			attributedText.addAttribute(StrokingTextPainter.GVT_FONTS, fonts);
+			
+			TextPaintInfo tpi = new TextPaintInfo();
+			tpi.visible = true;
+			tpi.fillPaint = color;
+			attributedText.addAttribute(StrokingTextPainter.PAINT_INFO, tpi);
+
+			return splitAtNewlines(attributedText, text);
+		}
+		
 		@Override
 		protected boolean render(Graphics2D graphics) {
 			final int width = getWidth(), height = getHeight();
@@ -58,7 +77,7 @@ public class BatikRenderedLabel extends RenderedLabel {
 			}
 
 			// render as a 1x1 pixel if text is empty
-			if (renderedText == null) {
+			if (text == null) {
 				if (width == 1 && height == 1)
 					return true;
 				setWidth(1);
@@ -68,36 +87,11 @@ public class BatikRenderedLabel extends RenderedLabel {
 			
 			// Get size of text
 			graphics.setFont(font);
-			final FontMetrics metrics = graphics.getFontMetrics();
+			final FontMetrics fontMetrics = graphics.getFontMetrics();
+
+			List<AttributedCharacterIterator> attributedLines = getAttributedLines();
 			
-			List<String> lines = new LinkedList<String>();
-			
-			int dxText = breakLines(renderedText, metrics, lines),
-				lineHeight = metrics.getHeight(),
-				dyText = lineHeight * lines.size();
-			
-			// resize and redraw if we need to
-			if (dxText !=  width || dyText != height)
-			{
-				setWidth(dxText);
-				setHeight(dyText);
-				return false;
-			}
-			
-			graphics.setColor(color);
-			TextNode node = new TextNode();
-			AttributedString ats = new AttributedString(renderedText);
-			
-			List<GVTFont> fonts = new ArrayList<GVTFont>(1);
-			fonts.add(new AWTGVTFont(font));
-			ats.addAttribute(StrokingTextPainter.GVT_FONTS, fonts);
-			
-			TextPaintInfo tpi = new TextPaintInfo();
-			tpi.visible = true;
-			tpi.fillPaint = color;
-	        
-			ats.addAttribute(StrokingTextPainter.PAINT_INFO, tpi);
-			
+			// each one of these is needed for a unhinted, anti-aliased display
 			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 					RenderingHints.VALUE_ANTIALIAS_ON);
 			graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
@@ -105,20 +99,31 @@ public class BatikRenderedLabel extends RenderedLabel {
 			graphics.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
 					RenderingHints.VALUE_STROKE_PURE);
 
-			node.setLocation(new Point(0, metrics.getAscent()));
-			node.setAttributedCharacterIterator(ats.getIterator());
-			node.getTextPainter().paint(node, graphics);
-			
-//			// Turn on anti-aliasing
-//			
-//			graphics.setColor(color);
-//			
-//			// Draw each line at its baseline
-//			int baseline = metrics.getAscent();
-//			for (String line : lines) {
-//				graphics.drawString(line, 0, baseline);
-//				baseline += lineHeight;
-//			}
+			 // TODO: maxwidth wrapping layout, format string processing
+
+			float lineHeight = graphics.getFontMetrics().getHeight(),
+				neededHeight = attributedLines.size() * lineHeight + fontMetrics.getMaxDescent(),
+				neededWidth = 0f, 
+				y = lineHeight;
+	
+			for (AttributedCharacterIterator line : attributedLines) {
+				TextNode node = new TextNode();
+				node.setLocation(new Point(0, (int) y));
+				node.setAttributedCharacterIterator(line);
+				node.getTextPainter().paint(node, graphics);
+				
+				float w = (float) node.getTextPainter().getBounds2D(node).getWidth();
+				if (w > neededWidth)
+					neededWidth = w;
+				
+				y += lineHeight;
+			}
+			if (neededWidth > width || neededHeight > height) {
+				setWidth((int)Math.ceil(neededWidth));
+				setHeight((int)Math.ceil(neededHeight));
+				return false;
+			}
+
 			return true;		
 		}
 	}
