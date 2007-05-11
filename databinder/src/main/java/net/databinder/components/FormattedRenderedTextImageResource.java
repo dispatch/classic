@@ -21,6 +21,9 @@ import org.apache.wicket.util.string.Strings;
  * @author Nathan Hamblen
  */
 public abstract class FormattedRenderedTextImageResource extends RenderedTextImageResource {
+    //matches links patters like `[foo]: http://example.com/  "Optional Title Here"` 
+    private static Pattern footnoteLinks = Pattern.compile("^ *\\[.+\\]\\:\\s.+\n", Pattern.MULTILINE);
+
 	// matches single newlines that do not have two spaces before them
 	private static Pattern strayNewlines = Pattern.compile("(?<!(  )|\n)\n(?!\n)");
 
@@ -30,7 +33,7 @@ public abstract class FormattedRenderedTextImageResource extends RenderedTextIma
 	// group 4: ending format element, to be expelled
 	private static Pattern boldFormat = Pattern.compile("(\\A|[^\\\\])(_{2}|\\*{2})(.+?)(\\2)", Pattern.DOTALL);
 	private static Pattern italicFormat = Pattern.compile("(\\A|[^\\\\])(\\*|_)(.+?)(\\2)", Pattern.DOTALL);
-	private static Pattern linkFormat = Pattern.compile("(\\A|[^\\\\])(\\[)(.+?)(\\])", Pattern.DOTALL);
+    private static Pattern linkFormat = Pattern.compile("(\\A|[^\\\\])(\\[)(.+?)(\\](\\(|\\[).+?(\\)|\\]))", Pattern.DOTALL);
 	
 	// matches a slash used for escaping, to be expelled
 	private static Pattern escapedCharacter = Pattern.compile("(\\\\)[^\\\\]");
@@ -91,7 +94,8 @@ public abstract class FormattedRenderedTextImageResource extends RenderedTextIma
 		String markedtext = getFormattedTextString();
 		if (Strings.isEmpty(markedtext))
 			return null;
-		
+
+        markedtext = footnoteLinks.matcher(markedtext).replaceAll("");
 		markedtext = strayNewlines.matcher(markedtext.trim()).replaceAll("");
 				
 		MutableRangeString rangeStr = new MutableRangeString(markedtext);
