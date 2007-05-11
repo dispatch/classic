@@ -21,6 +21,7 @@ package net.databinder;
 
 import net.databinder.conv.DataConversationRequestCycle;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.context.ManagedSessionContext;
 
@@ -75,25 +76,26 @@ public class DataStaticService {
 	}
 	
 	/**
-	 * Wraps callback in new a Hibernate session and transaction that are closed after the callback
-	 * returns. This is to be used when a thread-bound session may not be available, such as
-	 * application init or an external Web service request. (If a thread-bound session is found,
-	 * it is used to perform the callback.) Uncommited transactions begun by this method 
-	 * are rolled back, as with DataRequestCycle. Be careful of returning detached Hibernate 
-	 * objects that may not be fully loaded with data; consider using projections / scalar
-	 * queries instead.
-	 * @param callback
+	 * Wraps SessionUnit callback in a new thread-bound Hibernate session if one is not present.
+	 * This is to be used only when a thread-bound session may not be available, such as
+	 * application init or an external Web service request. The new session and transaction, if 
+	 * created, are closed after the callback returns and uncommited transactions are rolled 
+	 * back. (Existing sessions are left as they were.) Be careful 
+	 * of returning detached Hibernate objects that may not be fully loaded with data; 
+	 * consider using projections / scalar queries instead.
+	 * @param unit work to be performed in thread-bound session
+	 * @see SessionUnit
 	 */
-	public static Object wrapInHibernateSession(Callback callback) {
+	public static Object ensureSession(SessionUnit unit) {
 		checkConversationalSession();
 		SessionFactory sf = getHibernateSessionFactory();
 		if (ManagedSessionContext.hasBind(hibernateSessionFactory))
-			return callback.call();
+			return unit.run(getHibernateSession());
 		org.hibernate.classic.Session sess = sf.openSession();
 		try {
 			sess.beginTransaction();
 			ManagedSessionContext.bind(sess);
-			return callback.call();
+			return unit.run(sess);
 		} finally {
 			try {
 				if (sess.getTransaction().isActive())
@@ -104,9 +106,20 @@ public class DataStaticService {
 			}
 		}
 	}
-	
 	/**
-	 * Callback for wrapInHibernateSession().
+	 * Please use ensureSession(SessionUnit unit) instead.
+	 * @deprecated
+	 */
+	public static Object wrapInHibernateSession(final Callback callback) {
+		return ensureSession(new SessionUnit() {
+			public Object run(Session sess) {
+				return callback.call();
+			}
+		});
+	}
+	/**
+	 * Please use SessionUnit instead.
+	 * @deprecated
 	 */
 	public interface Callback {
 		/** Within call, session is available from DataStaticService.getHibernateSession().  */
