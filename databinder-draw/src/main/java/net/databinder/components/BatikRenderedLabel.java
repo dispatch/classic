@@ -112,7 +112,7 @@ public class BatikRenderedLabel extends RenderedLabel {
 				node.setAttributedCharacterIterator(line);
 				node.getTextPainter().paint(node, graphics);
 				
-				float w = (float) node.getTextPainter().getBounds2D(node).getWidth();
+				float w = (float) node.getTextPainter().getBounds2D(node).getWidth() + 4f;
 				if (w > neededWidth)
 					neededWidth = w;
 				
