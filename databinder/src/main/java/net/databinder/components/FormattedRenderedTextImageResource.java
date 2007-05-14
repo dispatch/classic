@@ -57,7 +57,7 @@ public abstract class FormattedRenderedTextImageResource extends RenderedTextIma
 			for(Range r : ranges) {
 				if (r.end > start) {
 					r.end = r.end + start - end;
-					if (r.start >= start)
+					if (r.start > start)
 						r.start = r.start + start - end;
 				}
 			}
