@@ -77,7 +77,7 @@ public class BatikRenderedLabel extends RenderedLabel {
 			}
 
 			// render as a 1x1 pixel if text is empty
-			if (text == null) {
+			if (Strings.isEmpty(text)) {
 				if (width == 1 && height == 1)
 					return true;
 				setWidth(1);
