@@ -17,7 +17,7 @@
   <dependency>
    <groupId>org.hibernate</groupId>
    <artifactId>hibernate</artifactId>
-   <version>3.2.4.ga</version>
+   <version>3.2.3.ga</version>
   </dependency>
   <dependency>
    <groupId>org.hibernate</groupId>
