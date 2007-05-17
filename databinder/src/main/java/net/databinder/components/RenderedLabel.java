@@ -319,7 +319,11 @@ public class RenderedLabel extends Image  {
 			invalidate();
 		}
 
-		/** Renders text into image. */
+        /** 
+         * Renders text into image. Will increase dimensions and return false if needed to accomodate
+         * text. Neither dimension will be decreased, unless the text in blank. Blank text is rendered
+         * as a 1 x 1 pixel square, with prior dimensions discarded.
+         */
 		protected boolean render(final Graphics2D graphics)
 		{
 			final int width = getWidth(), height = getHeight();
@@ -368,8 +372,8 @@ public class RenderedLabel extends Image  {
 				neededHeight = layouts.size() * lineHeight + fontMetrics.getMaxDescent();
 			
 			if (neededWidth > width || neededHeight > height) {
-				setWidth((int)Math.ceil(neededWidth));
-				setHeight((int)Math.ceil(neededHeight));
+                setWidth(Math.max((int)Math.ceil(neededWidth), width));
+                setHeight(Math.max((int)Math.ceil(neededHeight), height));
 				return false;
 			}
 			// Turn on anti-aliasing
