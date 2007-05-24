@@ -363,7 +363,7 @@ public class RenderedLabel extends Image  {
 					while (null != (layout = breaker.nextLayout(maxWidth))) {
 						layouts.add(layout);
 						if (layout.getBounds().getWidth() > neededWidth)
-							neededWidth = (float) layout.getBounds().getWidth();
+                            neededWidth = Math.min(maxWidth, (float) layout.getBounds().getWidth());
 					}
 				}
 			}
