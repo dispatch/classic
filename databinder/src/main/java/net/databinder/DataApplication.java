@@ -42,7 +42,6 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.util.convert.ConverterLocator;
-import org.apache.wicket.util.convert.IConverterLocatorFactory;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 
@@ -57,33 +56,23 @@ public abstract class DataApplication extends WebApplication {
 	private boolean cookielessSupported = true;
 	
 	/**
-	 * Configures this application for development or production
-	 * and <strong>initializes Hibernate session factory</strong>. 
-	 * Development mode is the default; set a JVM property or context/init parameter of 
-	 * wicket.configuration=deployment to enable production defaults. If you override this 
+	 * Initializes Hibernate session factory. If you override this 
 	 * method, be sure to call super() or initialize the Hibernate session factory yourself.
 	 * @see DataStaticService 
 	 */
 	@Override
 	protected void init() {
-		// this databinder-specific parameter will eventually be dropped in favor
-		// of wicket.configuration
-		String configuration = System.getProperty("net.databinder.configuration");
-		if (configuration != null)
-			configure(configuration);
-		
-		// register converters
-		getApplicationSettings().setConverterLocatorFactory(new IConverterLocatorFactory() {
-			public IConverterLocator newConverterLocator() {
-				ConverterLocator converterLocator = new ConverterLocator();
-				converterLocator.set(URL.class, new URLConverter());
-				converterLocator.set(URI.class, new URIConverter());
-				converterLocator.set(Color.class, new ColorConverter());
-				return converterLocator;
-			}
-		});;
-
 		DataStaticService.setSessionFactory(buildHibernateSessionFactory());
+	}
+	
+	@Override
+	protected IConverterLocator newConverterLocator() {
+		// register converters
+		ConverterLocator converterLocator = new ConverterLocator();
+		converterLocator.set(URL.class, new URLConverter());
+		converterLocator.set(URI.class, new URIConverter());
+		converterLocator.set(Color.class, new ColorConverter());
+		return converterLocator;
 	}
 	
 	/**
