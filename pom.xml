@@ -102,6 +102,7 @@
    <id>databinder-snapshots</id>
    <name>Databinder snapshot repository</name>
    <url>file:///var/dbwww/snapshot</url>
+   <uniqueVersion>false</uniqueVersion>
   </snapshotRepository>
   <site>
    <id>website</id>
