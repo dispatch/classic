@@ -150,6 +150,13 @@ public class DataForm extends DataFormBase {
 	}
 
 	/**
+	 * @return persistent storage version number if available, null otherwise
+	 */
+	protected Serializable getVersion() {
+		return version;
+	}
+
+	/**
 	 * Deletes the form's model object from persistent storage. Flushes change so that
 	 * queries executed in the same request (e.g., in a HibernateListModel) will not return
 	 * this object.
