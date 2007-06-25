@@ -31,9 +31,7 @@ import net.databinder.util.URIConverter;
 import net.databinder.util.URLConverter;
 import net.databinder.web.NorewriteWebResponse;
 
-import org.apache.wicket.Application;
 import org.apache.wicket.IConverterLocator;
-import org.apache.wicket.IRequestCycleFactory;
 import org.apache.wicket.Request;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.Response;
@@ -90,12 +88,8 @@ public abstract class DataApplication extends WebApplication {
 	}
 	
 	@Override
-	protected IRequestCycleFactory getRequestCycleFactory() {
-		return new IRequestCycleFactory() {
-			public RequestCycle newRequestCycle(Application application, Request request, Response response) {
-				return new DataRequestCycle((WebApplication)application, (WebRequest) request, response);
-			}
-		};
+	public RequestCycle newRequestCycle(Request request, Response response) {
+		return new DataRequestCycle(this, (WebRequest) request, response);
 	}
 	
 	/**
