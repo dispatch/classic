@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.list.ListView;
 /**
  * Similar to the Link created by ListView.moveUpLink(), but can be overridden
  * for saving changes to persistent storage.
+ * @deprecated use MoveUpButton
  */
 public class MoveUpLink extends Link {
 	private ListItem item;

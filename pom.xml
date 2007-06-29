@@ -18,6 +18,7 @@
  <packaging>pom</packaging>
  <modules>
   <module>databinder-models</module>
+  <module>databinder-components</module>
   <module>databinder</module>
   <module>databinder-dispatch</module>
   <module>data-app</module>

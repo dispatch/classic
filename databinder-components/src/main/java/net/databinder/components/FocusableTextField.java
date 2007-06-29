@@ -25,7 +25,7 @@ import org.apache.wicket.markup.html.internal.HtmlHeaderContainer;
 import org.apache.wicket.model.IModel;
 
 /**
- * TextField that can be told to focus itself on the next request.  Works in cojunction with 
+ * TextField that can be told to focus itself on the next request.  Works in conjunction with 
  * the onload handler. 
  */
 public class FocusableTextField extends TextField {

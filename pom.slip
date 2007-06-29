@@ -19,6 +19,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 	packaging: "pom"
 	modules:
 		module: "databinder-models"
+		module: "databinder-components"
 		module: "databinder"
 		module: "databinder-dispatch"
 		module: "data-app"

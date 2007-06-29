@@ -8,6 +8,7 @@ import org.apache.wicket.markup.html.list.ListView;
 /**
  * Similar to the Link created by ListView.removeLink(), but can be overridden
  * for saving changes to persistent storage.
+ * @deprecated use RemoveButton
  */
 public class RemoveLink extends Link {
 	private ListItem item;

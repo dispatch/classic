@@ -28,6 +28,7 @@ import org.apache.wicket.markup.html.list.ListView;
 /**
  * Similar to the Link created by ListView.moveDownLink(), but can be overridden
  * for saving changes to persistent storage.
+ * @deprecated use MoveDownButton
  */
 public class MoveDownLink extends Link {
 	private ListItem item;
