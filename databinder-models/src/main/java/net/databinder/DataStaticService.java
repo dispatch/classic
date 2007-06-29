@@ -19,7 +19,7 @@
 
 package net.databinder;
 
-import net.databinder.conv.DataConversationRequestCycle;
+import net.databinder.conv.IConversationRequestCycle;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -62,8 +62,8 @@ public class DataStaticService {
 		if (!ManagedSessionContext.hasBind(DataStaticService.getHibernateSessionFactory())) {
 			// if session is unavailable, it could be a late-loaded conversational cycle
 			RequestCycle cycle = RequestCycle.get();
-			if (cycle instanceof DataConversationRequestCycle)
-				((DataConversationRequestCycle)cycle).openHibernateSessionForPage();
+			if (cycle instanceof IConversationRequestCycle)
+				((IConversationRequestCycle)cycle).openHibernateSessionForPage();
 		}
 	}
 

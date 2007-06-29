@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
  <modelVersion>4.0.0</modelVersion>
- <artifactId>databinder</artifactId>
- <name>Databinder toolkit</name>
+ <artifactId>databinder-models</artifactId>
+ <name>Databinder models</name>
+ <description>Wicket models for Hibernate.</description>
  <parent>
   <groupId>net.databinder</groupId>
   <artifactId>databinder-parent</artifactId>
@@ -10,29 +11,19 @@
  </parent>
  <dependencies>
   <dependency>
-   <groupId>${pom.groupId}</groupId>
-   <version>${pom.version}</version>
-   <artifactId>databinder-models</artifactId>
-  </dependency>
-  <dependency>
-   <groupId>javax.servlet</groupId>
-   <artifactId>servlet-api</artifactId>
-   <version>2.3</version>
-  </dependency>
-  <dependency>
    <groupId>org.hibernate</groupId>
-   <artifactId>hibernate-annotations</artifactId>
-   <version>3.2.1.ga</version>
+   <artifactId>hibernate</artifactId>
+   <version>3.2.3.ga</version>
+  </dependency>
+  <dependency>
+   <groupId>javax.persistence</groupId>
+   <artifactId>persistence-api</artifactId>
+   <version>1.0</version>
   </dependency>
   <dependency>
    <groupId>org.apache.wicket</groupId>
-   <artifactId>wicket-auth-roles</artifactId>
+   <artifactId>wicket</artifactId>
    <version>1.3.0-SNAPSHOT</version>
-  </dependency>
-  <dependency>
-   <groupId>c3p0</groupId>
-   <artifactId>c3p0</artifactId>
-   <version>0.9.0.4</version>
   </dependency>
  </dependencies>
 </project>
