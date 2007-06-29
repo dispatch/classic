@@ -44,7 +44,7 @@ import org.hibernate.context.ManagedSessionContext;
  * until the session is flushed the changes are not made to persistent storage.   
  * @author Nathan Hamblen
  */
-public class DataConversationRequestCycle extends DataRequestCycle {
+public class DataConversationRequestCycle extends DataRequestCycle implements IConversationRequestCycle {
 	
 	public DataConversationRequestCycle(WebApplication application, WebRequest request, Response response) {
 		super(application, request, response);
