@@ -13,7 +13,7 @@
   <dependency>
    <groupId>${pom.groupId}</groupId>
    <version>${pom.version}</version>
-   <artifactId>databinder</artifactId>
+   <artifactId>databinder-components</artifactId>
   </dependency>
   <dependency>
    <groupId>org.apache.xmlrpc</groupId>

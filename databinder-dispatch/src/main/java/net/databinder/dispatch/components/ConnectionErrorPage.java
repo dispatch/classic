@@ -20,11 +20,8 @@ package net.databinder.dispatch.components;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.databinder.components.DataPage;
-
-import org.apache.xmlrpc.XmlRpcException;
-
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.AbstractReadOnlyModel;
@@ -32,16 +29,13 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.util.io.Streams;
 import org.apache.wicket.util.resource.IResourceStream;
+import org.apache.xmlrpc.XmlRpcException;
 
 /**
  * Page describing connection problem and offering source for external script.
  * @author Nathan Hamblen
  */
-public class ConnectionErrorPage extends DataPage {
-	@Override
-	protected String getName() {
-		return "XML-RPC Connection Error";
-	}
+public class ConnectionErrorPage extends WebPage {
 
 	public ConnectionErrorPage(XmlRpcException e) {
 		add(new Label("error", new Model(e.getMessage())));
