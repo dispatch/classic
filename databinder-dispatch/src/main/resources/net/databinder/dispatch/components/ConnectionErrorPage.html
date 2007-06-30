@@ -1,10 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
-<title>Connection Error Page</title>
+<title>XML-RPC Connection Error</title>
+<wicket:link><link rel="stylesheet" type="text/css" href="ConnectionErrorPage.css" /></wicket:link>
 </head>
 <body>
-<!-- nothing outside of this extend renders in Wicket -->
-<wicket:extend>
 
 <h2>XML-RPC Connection Error</h2>
 
@@ -24,7 +25,6 @@
 
 <p>To invoke with the default script, you might try the following command:</p>
 <pre>curl <span wicket:id="href">http://localhost/blah</span> | ruby</pre>
-</wicket:extend>
 
 </body>
 </html>
