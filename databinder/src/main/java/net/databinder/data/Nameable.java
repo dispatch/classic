@@ -21,7 +21,7 @@ package net.databinder.data;
 import java.util.regex.Pattern;
 
 /**
- * Foundation with for objects that generate names based on string properties.
+ * Foundation for objects that generate names based on string properties.
  * @author Nathan Hamblen
  */
 public class Nameable {
