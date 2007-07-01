@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -38,9 +39,14 @@ public class TagField extends Panel {
 		this(id, null);
 	}
 	public TagField(String id, IModel model) {
+		this(id, model, false);
+	}
+	public TagField(String id, boolean textarea) {
+		this(id, null, textarea);
+	}
+	public TagField(String id, IModel model, boolean textarea) {
 		super(id, model);
-		
-		add(new TextField("field", new IModel() {
+		IModel tagModel = new IModel() {
 			public void detach() {}
 			@SuppressWarnings("unchecked")
 			public Object getObject() {
@@ -57,6 +63,8 @@ public class TagField extends Panel {
 					TagField.this.setModelObject(new HashSet<String>(Arrays.asList(tagstrs)));
 				}
 			}
-		}));
+		};
+		add(new TextField("field", tagModel).setVisible(!textarea));
+		add(new TextArea("area", tagModel).setVisible(textarea));
 	}
 }
