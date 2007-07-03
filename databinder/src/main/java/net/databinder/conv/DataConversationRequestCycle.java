@@ -25,6 +25,7 @@ package net.databinder.conv;
 
 import net.databinder.DataRequestCycle;
 import net.databinder.DataStaticService;
+import net.databinder.IDataRequestCycle;
 import net.databinder.conv.components.IConversationPage;
 
 import org.apache.wicket.IRequestTarget;
@@ -44,7 +45,7 @@ import org.hibernate.context.ManagedSessionContext;
  * until the session is flushed the changes are not made to persistent storage.   
  * @author Nathan Hamblen
  */
-public class DataConversationRequestCycle extends DataRequestCycle implements IConversationRequestCycle {
+public class DataConversationRequestCycle extends DataRequestCycle implements IDataRequestCycle {
 	
 	public DataConversationRequestCycle(WebApplication application, WebRequest request, Response response) {
 		super(application, request, response);
@@ -62,7 +63,7 @@ public class DataConversationRequestCycle extends DataRequestCycle implements IC
 	 * and retrieves its associated conversation session if appropriate. Does nothing
 	 * if current page is not yet available.
 	 */
-	public void openHibernateSessionForPage() {
+	public void dataSessionRequested() {
 		Page page = getResponsePage();
 		if (page == null)
 			page = getRequest().getPage();

@@ -19,7 +19,6 @@
 
 package net.databinder;
 
-import net.databinder.conv.IConversationRequestCycle;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -50,20 +49,21 @@ public class DataStaticService {
 	 * @return Hibernate session bound to current thread
 	 */
 	public static org.hibernate.classic.Session getHibernateSession() {
-		checkConversationalSession();
+		dataSessionRequested();
 		return getHibernateSessionFactory().getCurrentSession();
 	}
 	
 	/**
-	 * Checks if current request cycle is for conversational sessions and notifies it that a
-	 * session is requested if appropriate.
+	 * Notifies current request cycle that a data session was requested, if a session factory
+	 * was not already bound for this thread and the request cycle is a listener.
+	 * @see IDataRequestCycle
 	 */
-	protected static void checkConversationalSession() {
+	private static void dataSessionRequested() {
 		if (!ManagedSessionContext.hasBind(DataStaticService.getHibernateSessionFactory())) {
 			// if session is unavailable, it could be a late-loaded conversational cycle
 			RequestCycle cycle = RequestCycle.get();
-			if (cycle instanceof IConversationRequestCycle)
-				((IConversationRequestCycle)cycle).openHibernateSessionForPage();
+			if (cycle instanceof IDataRequestCycle)
+				((IDataRequestCycle)cycle).dataSessionRequested();
 		}
 	}
 
@@ -87,7 +87,7 @@ public class DataStaticService {
 	 * @see SessionUnit
 	 */
 	public static Object ensureSession(SessionUnit unit) {
-		checkConversationalSession();
+		dataSessionRequested();
 		SessionFactory sf = getHibernateSessionFactory();
 		if (ManagedSessionContext.hasBind(hibernateSessionFactory))
 			return unit.run(getHibernateSession());

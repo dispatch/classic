@@ -43,7 +43,7 @@ import org.hibernate.context.ManagedSessionContext;
  * @see DataStaticService
  * @author Nathan Hamblen
  */
-public class DataRequestCycle extends WebRequestCycle {
+public class DataRequestCycle extends WebRequestCycle implements IDataRequestCycle {
 	/** cache of cookies from request */ 
 	private Map<String, Cookie> cookies;
 
@@ -74,8 +74,7 @@ public class DataRequestCycle extends WebRequestCycle {
 			}
 	}
 
-	@Override
-	protected void onBeginRequest() {
+	public void dataSessionRequested() {
 		openHibernateSession();
 	}
 	
