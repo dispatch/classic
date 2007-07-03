@@ -1,0 +1,17 @@
+<html>
+<body>
+	<wicket:panel>
+		<form wicket:id="form">
+			HQL Query, eg <em>from MyEntity</em>:<br/>
+			<textarea rows="5" cols="60" wicket:id="query"></textarea><br/>
+			<input wicket:id="submit" type="submit" value="Submit query"/>
+		</form>
+		<div wicket:id="resultsHolder">
+		<span wicket:id="executionInfo" >[execution info]</span>
+		<br/>
+		<table class="dataview" wicket:id="results">
+		</table>
+		</div>
+	</wicket:panel>
+</body>
+</html>
