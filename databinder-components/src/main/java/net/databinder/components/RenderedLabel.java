@@ -164,11 +164,11 @@ public class RenderedLabel extends Image  {
 	}
 
 	/**
-	 * @return false if model string is empty.
+	 * @return false if set to false or if model string is empty.
 	 */
 	@Override
 	public boolean isVisible() {
-		return getModelObject() != null;
+		return super.isVisible() && getModelObject() != null;
 	}
 
 	/**
