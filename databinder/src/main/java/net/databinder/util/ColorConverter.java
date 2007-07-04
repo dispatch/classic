@@ -24,6 +24,7 @@ import java.util.Locale;
 
 import org.apache.wicket.util.convert.ConversionException;
 import org.apache.wicket.util.convert.converters.AbstractConverter;
+import org.apache.wicket.util.string.Strings;
 
 /**
  * Convert between a HTML hex color string and java.awt.Color.
@@ -37,9 +38,10 @@ public class ColorConverter extends AbstractConverter {
 		return Color.class;
 	}
 
-	public Object convertToObject(String obj, Locale loc) {
+	public Object convertToObject(String str, Locale loc) {
 		try {
-			return Color.decode(obj.toString());
+			if (Strings.isEmpty(str)) return null;
+			return Color.decode(str.toString());
 		} catch (NumberFormatException e) {
 			throw new ConversionException(e);
 		}
