@@ -29,7 +29,7 @@ import net.databinder.models.HibernateObjectModel;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxSubmitButton;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.HeadersToolbar;
@@ -48,6 +48,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.util.string.Strings;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -103,7 +104,7 @@ public class QueryPanel extends Panel {
 		Form form = new Form("form", new CompoundPropertyModel(query));
 		form.setOutputMarkupId(true);
 		form.add(new TextArea("query"));
-		form.add(new AjaxSubmitButton("submit", form) {
+		form.add(new AjaxButton("submit", form) {
 			private static final long serialVersionUID = 1L;
 
 			protected void onSubmit(AjaxRequestTarget target, Form form)
@@ -123,7 +124,7 @@ public class QueryPanel extends Panel {
 	 * @return a result table, or an empty label if there is no current query
 	 */
 	private Component getResultsTable() {
-		if (query.getQuery() == null || query.getQuery().trim().isEmpty()) {
+		if (Strings.isEmpty(query.getQuery())) {
 			return new Label("results", "");
 		} else {
 			IDataProvider dataProvider = new IDataProvider() {
