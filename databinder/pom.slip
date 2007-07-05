@@ -13,7 +13,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		dependency:
 			groupId: "${pom.groupId}"
 			version: "${pom.version}"
-			artifactId: "databinder-components"
+			artifactId: "databinder-auth-components"
 
 		dependency:
 			groupId: "javax.servlet"

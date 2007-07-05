@@ -19,8 +19,10 @@
 package net.databinder.auth.components;
 
 import net.databinder.auth.IAuthSettings;
-import net.databinder.components.DataPage;
+import net.databinder.auth.components.DataRegisterPanel.Credentials;
+import net.databinder.auth.data.IUser;
 import net.databinder.components.StyleLink;
+
 import org.apache.wicket.Application;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -32,10 +34,9 @@ import org.apache.wicket.markup.html.panel.Panel;
  * Serves as both a sign in and simple regristration page. Please use a differnt sign in page;
  * override AuthDataApplication's getSignInPageClass() method. An updated version of
  * this page and its panels are available in the auth-data-app Maven archetype.
- * @deprecated
  * @author Nathan Hamblen
  */
-public class DataSignInPage extends WebPage {
+public abstract class DataSignInPage extends WebPage {
 	/** state of page, sign in or registration */
 	private boolean register = false;
 	
@@ -55,7 +56,6 @@ public class DataSignInPage extends WebPage {
 		if (!((IAuthSettings)Application.get()).getSignInPageClass().equals(getClass()))
 			throw new WicketRuntimeException("The sign in page requested does not match that defined in the AuthDataApplication subclass.");
 		
-		add(new StyleLink("dataStylesheet", DataPage.class));
 		add(new StyleLink("signinStylesheet", DataSignInPage.class));
 		
 		add(new WebMarkupContainer("gotoRegister"){
@@ -102,9 +102,16 @@ public class DataSignInPage extends WebPage {
 	 * @return panel that appears after user clicks registration link 
 	 */
 	protected Panel getRegisterPanel(String id) {
-		return new DataRegisterPanel(id);
+		return new DataRegisterPanel(id) {
+			@Override
+			protected IUser getNewUser(Credentials creds) {
+				return DataSignInPage.this.getNewUser(creds);
+			}
+		};
 	}
 
+	protected abstract IUser getNewUser(Credentials creds);
+	
 	/**
 	 * @return true if displaying registration page
 	 */

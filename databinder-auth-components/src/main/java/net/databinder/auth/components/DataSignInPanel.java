@@ -18,7 +18,7 @@
  */
 package net.databinder.auth.components;
 
-import net.databinder.auth.AuthDataSession;
+import net.databinder.auth.IAuthSession;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -33,7 +33,6 @@ import org.apache.wicket.model.Model;
 /**
  * Displays username and password fields, along with optional "remember me" checkbox.
  * Queries the AuthDataSession upon a login attempt.
- * @deprecated
  * @see AuthDataSession
  */
 public class DataSignInPanel extends Panel {
@@ -85,6 +84,6 @@ public class DataSignInPanel extends Panel {
 	 * @see AuthDataSession 
 	 */
 	protected boolean signIn(String username, String password, boolean setCookie) {
-		return ((AuthDataSession) getSession()).signIn(username, password, setCookie);
+		return ((IAuthSession) getSession()).signIn(username, password, setCookie);
 	}
 }

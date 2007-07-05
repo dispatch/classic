@@ -23,15 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.databinder.DataStaticService;
-import net.databinder.auth.AuthDataSession;
+import net.databinder.auth.IAuthSession;
 import net.databinder.auth.IAuthSettings;
-import net.databinder.auth.data.DataUser;
 import net.databinder.auth.data.IUser;
-
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Property;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.Form;
@@ -44,13 +38,16 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.validator.StringValidator;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Property;
 
 /**
  * Registration with username, password, and password confirmation.
  * @author Nathan Hamblen
- * @deprecated
  */
-public class DataRegisterPanel extends Panel {
+public abstract class DataRegisterPanel extends Panel {
 
 	public DataRegisterPanel(String id) {
 		super(id);
@@ -88,7 +85,7 @@ public class DataRegisterPanel extends Panel {
 			session.save(user);
 			session.getTransaction().commit();
 
-			((AuthDataSession)org.apache.wicket.Session.get()).signIn(creds.getUsername(), creds.getPassword());
+			((IAuthSession)org.apache.wicket.Session.get()).signIn(creds.getUsername(), creds.getPassword());
 
 			if (!continueToOriginalDestination())
 			{
@@ -99,9 +96,7 @@ public class DataRegisterPanel extends Panel {
 	}
 
 	/** @return new user object with given credentials */
-	protected IUser getNewUser(Credentials creds) {
-		return new DataUser(creds.getUsername(), creds.getPassword());
-	}
+	protected abstract IUser getNewUser(Credentials creds);
 
 	/** @return true if the given username has not been taken */
 	protected boolean isAvailable(String username) {

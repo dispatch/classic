@@ -28,7 +28,8 @@ import java.security.interfaces.RSAPublicKey;
 
 import javax.crypto.Cipher;
 
-import net.databinder.auth.util.EqualPasswordConvertedInputValidator;
+import net.databinder.auth.valid.EqualPasswordConvertedInputValidator;
+
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.behavior.AttributeAppender;
