@@ -29,7 +29,6 @@ import net.databinder.auth.data.IUser;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -56,7 +55,7 @@ public abstract class DataRegisterPanel extends Panel {
 	}
 
 	protected class RegisterForm extends Form {
-		private PasswordTextField password, passwordConfirm;
+		private RSAPasswordTextField password, passwordConfirm;
 
 		public RegisterForm(String id) {
 			super(id, new CompoundPropertyModel(new Credentials()));
@@ -71,8 +70,8 @@ public abstract class DataRegisterPanel extends Panel {
 					}
 				}
 			}));
-			add(password = new PasswordTextField("password"));
-			add(passwordConfirm = new PasswordTextField("passwordConfirm", new Model("")));
+			add(password = new RSAPasswordTextField("password", this));
+			add(passwordConfirm = new RSAPasswordTextField("passwordConfirm", new Model(), this));
 			add(new EqualPasswordInputValidator(password, passwordConfirm));
 		}
 

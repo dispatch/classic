@@ -19,11 +19,11 @@
 package net.databinder.auth.components;
 
 import net.databinder.auth.IAuthSession;
+
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -49,7 +49,7 @@ public class DataSignInPanel extends Panel {
 		protected SignInForm(String id) {
 			super(id);
 			add(username = new RequiredTextField("username", new Model(null)));
-			add(password = new PasswordTextField("password", new Model(null)));
+			add(password = new RSAPasswordTextField("password", new Model(null), this));
 			add(new WebMarkupContainer("rememberMeRow") {
 				@Override
 				public boolean isVisible() {
