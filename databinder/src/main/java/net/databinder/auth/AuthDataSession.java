@@ -48,7 +48,7 @@ import org.apache.wicket.util.time.Duration;
 import org.hibernate.Criteria;
 import org.hibernate.NonUniqueResultException;
 
-public class AuthDataSession extends WebSession {
+public class AuthDataSession extends WebSession implements IAuthSession {
 	/** Effective signed in state. */
 	private Serializable userId;
 	private static final String CHARACTER_ENCODING = "UTF-8";
