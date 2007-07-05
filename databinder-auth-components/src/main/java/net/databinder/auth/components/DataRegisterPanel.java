@@ -57,7 +57,7 @@ public class DataRegisterPanel extends Panel {
 				@Override
 				protected void onValidate(IValidatable validatable) {
 					String username = (String) validatable.getValue();
-					if (username != null && !isAvailable(username)) {
+					if (username != null && !isAvailable(username)) { // TODO is valid if has name already
 						Map<String, String> m = new HashMap<String, String>(1);
 						m.put("username", username);
 						error(validatable,"taken",  m);

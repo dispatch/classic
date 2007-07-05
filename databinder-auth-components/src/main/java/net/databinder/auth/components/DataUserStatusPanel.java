@@ -7,6 +7,7 @@ import net.databinder.auth.IAuthSettings;
 
 import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -40,7 +41,7 @@ public class DataUserStatusPanel extends Panel {
 			public void onClick() {
 				if (getSession().getMetaData(inDetourKey) == null) {
 					getSession().setMetaData(inDetourKey,  new InDetour());
-					redirectToInterceptPage(getPageFactory().newPage(((IAuthSettings)getApplication()).getSignInPageClass()));
+					redirectToInterceptPage(getProfilePage());
 				} else
 					getSession().setMetaData(inDetourKey,  null);
 			}
@@ -55,6 +56,10 @@ public class DataUserStatusPanel extends Panel {
 		});
 
 		add(getSignInLink("signIn"));
+	}
+	
+	WebPage getProfilePage() {
+		return new DataSignInPage(true);
 	}
 
 	/**
