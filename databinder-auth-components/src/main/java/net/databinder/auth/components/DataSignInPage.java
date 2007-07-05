@@ -51,6 +51,13 @@ public abstract class DataSignInPage extends WebPage {
 	 * by AuthDataApplication.getSignInPageClass().
 	 */
 	public DataSignInPage() {
+		init();
+	}
+	public DataSignInPage(boolean register) {
+		this.register = register;
+		init();
+	}
+	void init() {
 		// make sure nothing funny is going on, since this page has a default
 		// constructor and is bookmarkable
 		if (!((IAuthSettings)Application.get()).getSignInPageClass().equals(getClass()))

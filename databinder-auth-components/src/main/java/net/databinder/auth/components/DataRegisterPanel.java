@@ -107,7 +107,7 @@ public abstract class DataRegisterPanel extends Panel {
 		return c.uniqueResult().equals(0);
 	}
 
-	protected static class Credentials implements Serializable {
+	public static class Credentials implements Serializable {
 		private String username;
 		private String password;
 		public String getPassword() {
