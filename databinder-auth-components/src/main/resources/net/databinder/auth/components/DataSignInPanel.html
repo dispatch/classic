@@ -1,6 +1,6 @@
 <html>
 <head>
-	<link wicket:id="dataStylesheet" rel="stylesheet" type="text/css" href="../../components/DataPage.css" />
+	<link rel="stylesheet" type="text/css" href="data-app.css" />
 </head>
 <body>
 <wicket:panel>
@@ -18,11 +18,9 @@
 		<label>Password</label>
 		<input wicket:id="password" type="password" value="password" />
 	</div>
-	<div class="row" wicket:id="rememberMeRow">
-		<label style="float: none" for="rememberMe">
-			<input wicket:id="rememberMe" id="rememberMe"type="checkbox" />
-			Remember Me 
-		</label>
+	<div class="row">
+		<input wicket:id="rememberMe" id="rememberMe"type="checkbox" />
+		<label style="display:inline" for="rememberMe">Always sign in automatically</label>
 	</div>
 	<p> <input type="submit" name="submit" value="Sign in"/> </p>
 

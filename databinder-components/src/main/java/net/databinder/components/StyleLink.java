@@ -34,6 +34,10 @@ public class StyleLink extends PackagedResourceReference {
 		super(id, pageClass, pageClass.getSimpleName() + ".css", "href");
 	}
 	
+	protected StyleLink(String id, Class pageClass, String filename) {
+		super(id, pageClass, filename, "href");
+	}
+	
 	/** Sets appropriate href, type, and rel values for the stylesheet. */
 	@Override
 	protected void onComponentTag(ComponentTag tag) {

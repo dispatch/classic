@@ -1,4 +1,4 @@
-package net.databinder.components;
+package net.databinder.components.hibernate;
 
 import net.databinder.DataStaticService;
 

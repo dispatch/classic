@@ -6,6 +6,7 @@ import net.databinder.models.HibernateObjectModel;
 public interface IAuthSession {
 	public boolean signIn(String username, String password);
 	public boolean signIn(String username, String password, boolean setCookie);
+	public void signIn(IUser user, boolean setCookie);
 	public IUser getUser();
 	public HibernateObjectModel getUserModel();
 	public boolean isSignedIn();

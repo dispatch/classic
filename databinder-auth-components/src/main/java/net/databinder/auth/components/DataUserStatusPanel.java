@@ -1,8 +1,11 @@
 package net.databinder.auth.components;
 
+import java.io.Serializable;
+
 import net.databinder.auth.IAuthSession;
 import net.databinder.auth.IAuthSettings;
 
+import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
@@ -11,7 +14,6 @@ import org.apache.wicket.model.AbstractReadOnlyModel;
 
 /**
  * Displays sign in and out links, as well as current user if any.
- * @author Nathan Hamblen
  */
 public class DataUserStatusPanel extends Panel {
 	/**
@@ -21,27 +23,38 @@ public class DataUserStatusPanel extends Panel {
 	public DataUserStatusPanel(String id) {
 		super(id);
 
-		add(new WebMarkupContainer("signedInWrapper") {
+		WebMarkupContainer wrapper = new WebMarkupContainer("signedInWrapper") {
 			public boolean isVisible() {
 				return getAuthSession().isSignedIn();
 			}
-		}.add(new Label("username", new AbstractReadOnlyModel() {
-			public Object getObject() {
-				return getUsername();
-			}
-		})).add(new Link("signOut") {
+		};
+		add(wrapper);
+		wrapper.add(new Label("username", new AbstractReadOnlyModel() {
 			@Override
-			public void onClick() {
-				signOut();
+			public Object getObject() {
+				return getAuthSession().getUser().toString();
 			}
 		}));
+		wrapper.add(new Link("profile") {
+			@Override
+			public void onClick() {
+				if (getSession().getMetaData(inDetourKey) == null) {
+					getSession().setMetaData(inDetourKey,  new InDetour());
+					redirectToInterceptPage(getPageFactory().newPage(((IAuthSettings)getApplication()).getSignInPageClass()));
+				} else
+					getSession().setMetaData(inDetourKey,  null);
+			}
+		});
+
+		wrapper.add(new Link("signOut") {
+			@Override
+			public void onClick() {
+				getAuthSession().signOut();
+				setResponsePage(getApplication().getHomePage());
+			}
+		});
 
 		add(getSignInLink("signIn"));
-	}
-
-	/** Signs out from session; override for other behavior.	 */
-	protected void signOut() {
-		getAuthSession().signOut();
 	}
 
 	/**
@@ -62,14 +75,9 @@ public class DataUserStatusPanel extends Panel {
 			}
 		};
 	}
-
-	/**
-	 * Returns user.toString() on IUser from the session. Override for other behavior.
-	 * @return text (name) to display adjacent to sing out link.
-	 */
-	protected String getUsername() {
-		return getAuthSession().getUser().toString();
-	}
+	/** Session marker for editing profile */
+	static class InDetour implements Serializable { }
+	static MetaDataKey inDetourKey = new MetaDataKey(InDetour.class) { };
 
 	/** @return casted web session*/
 	protected IAuthSession getAuthSession() {

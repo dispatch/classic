@@ -1,27 +1,5 @@
-/*
- * Databinder: a simple bridge from Wicket to Hibernate
- * Copyright (C) 2006  Nathan Hamblen nathan@technically.us
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
 package net.databinder.auth.components;
 
-import net.databinder.auth.IAuthSession;
-
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
@@ -48,42 +26,19 @@ public class DataSignInPanel extends Panel {
 		private TextField username, password;
 		protected SignInForm(String id) {
 			super(id);
-			add(username = new RequiredTextField("username", new Model(null)));
-			add(password = new RSAPasswordTextField("password", new Model(null), this));
-			add(new WebMarkupContainer("rememberMeRow") {
-				@Override
-				public boolean isVisible() {
-					return includeRememberMe();
-				}
-			}.add(rememberMe = new CheckBox("rememberMe", new Model(Boolean.FALSE))));
+			add(username = new RequiredTextField("username", new Model()));
+			add(password = new RSAPasswordTextField("password", new Model(), this));
+			add(rememberMe = new CheckBox("rememberMe", new Model(Boolean.FALSE)));
 		}
 		@Override
 		protected void onSubmit() {
-			if (signIn((String)username.getModelObject(), (String)password.getModelObject(), 
-					(Boolean)rememberMe.getModelObject() && includeRememberMe()))
+			if (DataSignInPage.getAuthSession().signIn((String)username.getModelObject(), (String)password.getModelObject(), 
+					(Boolean)rememberMe.getModelObject()))
 			{
 				if (!continueToOriginalDestination())
-					setResponsePage(getApplication().getSessionSettings().getPageFactory().newPage(
-							getApplication().getHomePage(), (PageParameters)null));
+					setResponsePage(getApplication().getHomePage());
 			} else
 				error(getLocalizer().getString("signInFailed", this, "Sorry, these credentials are not recognized."));
 		}
-	}
-
-	/**
-	 * Returns true by default. Override to disable "remember me" functionality.
-	 * @return true to include remember me option
-	 */
-	protected boolean includeRememberMe() {
-		return true;
-	}
-	
-	/**
-	 * Call sign in method for session. Override to call a different sign in method.
-	 * @return true if credentials allowed sign-in
-	 * @see AuthDataSession 
-	 */
-	protected boolean signIn(String username, String password, boolean setCookie) {
-		return ((IAuthSession) getSession()).signIn(username, password, setCookie);
 	}
 }
