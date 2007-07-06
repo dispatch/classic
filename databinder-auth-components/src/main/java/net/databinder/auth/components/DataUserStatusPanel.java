@@ -59,7 +59,7 @@ public class DataUserStatusPanel extends Panel {
 	}
 	
 	WebPage getProfilePage() {
-		return new DataSignInPage(true);
+		return new DataProfilePage();
 	}
 
 	/**

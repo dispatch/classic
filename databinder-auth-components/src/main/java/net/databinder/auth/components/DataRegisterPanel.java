@@ -23,7 +23,6 @@ import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Projections;
 
 /**
  * Registration with username, password, and password confirmation.
@@ -51,13 +50,13 @@ public class DataRegisterPanel extends Panel {
 			return DataStaticService.getHibernateSession().contains(getUser());
 		}
 		
-		public RegisterForm(String id, HibernateObjectModel typistModel) {
-			super(id, typistModel);
+		public RegisterForm(String id, HibernateObjectModel userModel) {
+			super(id, userModel);
 			add(new RequiredTextField("username").add(new StringValidator(){
 				@Override
 				protected void onValidate(IValidatable validatable) {
 					String username = (String) validatable.getValue();
-					if (username != null && !isAvailable(username)) { // TODO is valid if has name already
+					if (username != null && !isAvailable(username, (IUser) getModelObject())) { // TODO is valid if has name already
 						Map<String, String> m = new HashMap<String, String>(1);
 						m.put("username", username);
 						error(validatable,"taken",  m);
@@ -101,12 +100,12 @@ public class DataRegisterPanel extends Panel {
 	}
 
 	/** @return true if the given username has not been taken */
-	public static boolean isAvailable(String username) {
+	public boolean isAvailable(String username, IUser current) {
 		Session session = DataStaticService.getHibernateSession();
 		IAuthSettings authSettings = (IAuthSettings)Application.get();
 		Criteria c = session.createCriteria(authSettings.getUserClass());
 		authSettings.getUserCriteriaBuilder(username).build(c);
-		c.setProjection(Projections.rowCount());
-		return c.uniqueResult().equals(0);
+		IUser found = (IUser) c.uniqueResult();
+		return found == null || found.equals(current);
 	}
 }
