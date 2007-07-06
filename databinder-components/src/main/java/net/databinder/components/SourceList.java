@@ -1,12 +1,14 @@
 package net.databinder.components;
 
+import java.io.Serializable;
+
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.link.Link;
 
-public class SourceList {
+public class SourceList implements Serializable {
 	List<SourceLink> links = new LinkedList<SourceLink>();
 	SourceLink current;
 	
