@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.databinder.DataStaticService;
+import net.databinder.auth.IAuthSession;
 import net.databinder.auth.IAuthSettings;
 import net.databinder.auth.data.IUser;
 import net.databinder.auth.valid.EqualPasswordConvertedInputValidator;
@@ -19,6 +20,7 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.hibernate.Criteria;
@@ -52,17 +54,7 @@ public class DataRegisterPanel extends Panel {
 		
 		public RegisterForm(String id, HibernateObjectModel userModel) {
 			super(id, userModel);
-			add(new RequiredTextField("username").add(new StringValidator(){
-				@Override
-				protected void onValidate(IValidatable validatable) {
-					String username = (String) validatable.getValue();
-					if (username != null && !isAvailable(username, (IUser) getModelObject())) { // TODO is valid if has name already
-						Map<String, String> m = new HashMap<String, String>(1);
-						m.put("username", username);
-						error(validatable,"taken",  m);
-					}
-				}
-			}));
+			add(new RequiredTextField("username").add(new UsernameValidator()));
 			add(password = new RSAPasswordTextField("password", this) {
 				public boolean isRequired() {
 					return !existing();
@@ -99,13 +91,25 @@ public class DataRegisterPanel extends Panel {
 		}
 	}
 
-	/** @return true if the given username has not been taken */
-	public boolean isAvailable(String username, IUser current) {
+	public static boolean isAvailable(String username) {
 		Session session = DataStaticService.getHibernateSession();
 		IAuthSettings authSettings = (IAuthSettings)Application.get();
 		Criteria c = session.createCriteria(authSettings.getUserClass());
 		authSettings.getUserCriteriaBuilder(username).build(c);
-		IUser found = (IUser) c.uniqueResult();
+		IUser found = (IUser) c.uniqueResult(), 
+			current = ((IAuthSession)WebSession.get()).getUser();
 		return found == null || found.equals(current);
 	}
+	public static class UsernameValidator extends StringValidator {
+		@Override
+		protected void onValidate(IValidatable validatable) {
+			String username = (String) validatable.getValue();
+			if (username != null && !isAvailable(username)) {
+				Map<String, String> m = new HashMap<String, String>(1);
+				m.put("username", username);
+				error(validatable,"taken",  m);
+			}
+		}
+	}
+
 }
