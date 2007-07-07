@@ -70,7 +70,7 @@ public abstract class DataPage extends WebPage {
 			}
 		}).setRenderBodyOnly(true));
 
-		add(new StyleLink("dataStylesheet", DataPage.class));
+		add(new DataStyleLink("dataStylesheet"));
 		add(new FeedbackPanel("feedback"));
 	}
 
