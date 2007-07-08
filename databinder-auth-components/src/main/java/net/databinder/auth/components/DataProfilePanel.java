@@ -29,9 +29,9 @@ import org.hibernate.Session;
 /**
  * Registration with username, password, and password confirmation.
  */
-public class DataRegisterPanel extends Panel {
+public class DataProfilePanel extends Panel {
 
-	public DataRegisterPanel(String id) {
+	public DataProfilePanel(String id) {
 		super(id);
 		add(new FeedbackPanel("feedback"));
 		HibernateObjectModel userModel = DataSignInPage.getAuthSession().getUserModel();

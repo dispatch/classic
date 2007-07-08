@@ -7,6 +7,6 @@ import org.apache.wicket.markup.html.WebPage;
 public class DataProfilePage extends WebPage {
 	public DataProfilePage() {
 		add(new DataStyleLink("dataStylesheet"));
-		add(new DataRegisterPanel("registerPanel"));
+		add(new DataProfilePanel("registerPanel"));
 	}
 }

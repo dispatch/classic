@@ -8,25 +8,21 @@ import net.databinder.components.SourceList;
 import net.databinder.models.HibernateObjectModel;
 
 import org.apache.wicket.Application;
+import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.markup.html.panel.Panel;
 
 /**
  * Serves as both a sign in and simple registration page. 
  */
 public class DataSignInPage extends WebPage {
-	/** Registration panel whose visibility is controlled from this class. */
-	private Panel registerPanel;
-
-	/** Sign-in panel whose visibility is controlled from this class. */
-	private Panel signInPanel;
-	
 	private SourceList sourceList;
 	
-	private SourceList.SourceLink registerLink, signinLink;
+	private Component profileSocket, signinSocket;
+	
+	private SourceList.SourceLink profileLink, signinLink;
 
 	/**
 	 * Displays sign in page.
@@ -49,31 +45,32 @@ public class DataSignInPage extends WebPage {
 		
 		sourceList = new SourceList();
 		
-		add(registerPanel = new DataRegisterPanel("registerPanel"));
-		registerLink = sourceList.new SourceLink("register", registerPanel);
-		add(new WebMarkupContainer("gotoRegister") {
+		add(profileSocket = profileSocket("profileSocket"));
+		add(new WebMarkupContainer("profileLinkWrapper") {
 			public boolean isVisible() {
-				return registerLink.isEnabled();
+				return profileLink.isEnabled();
 			}
-		}.add(registerLink));
+		}.add(profileLink = sourceList.new SourceLink("profileLink", profileSocket)));
 		
-		add(signInPanel = new DataSignInPanel("signInPanel"));
-		signinLink = sourceList.new SourceLink("signIn", signInPanel);
-		add(new WebMarkupContainer("gotoSignIn") {
+		add(signinSocket = signinSocket("signinSocket"));
+		add(new WebMarkupContainer("signinLinkWrapper") {
 			@Override
 			public boolean isVisible() {
 				return signinLink.isEnabled();
 			}
-		}.add(signinLink));
-		signinLink.onClick();
+		}.add(signinLink = sourceList.new SourceLink("signinLink", signinSocket)));
+		signinLink.onClick();	// show sign in first
 	}
+	
+	protected Component signinSocket(String id) {
+		return new DataSignInPanel(id);
+	}
+	
+	protected Component profileSocket(String id) {
+		return new DataProfilePanel(id);
+	}
+	
 	protected static  IAuthSession getAuthSession() {
 		return (IAuthSession) Session.get();
-	}
-	public SourceList.SourceLink getRegisterLink() {
-		return registerLink;
-	}
-	public SourceList.SourceLink getSigninLink() {
-		return signinLink;
 	}
 }
