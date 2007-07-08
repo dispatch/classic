@@ -29,21 +29,25 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.Strings;
 
 /**
- * Panel for a comma-separated list of tag strings displayed in a text field. The backing model 
- * for this component must be a Set of String tags. Tags are converted to lower case before
- * insertion to the set.
+ * Panel for a comma-separated list of tag strings displayed in a text field or text area. The 
+ * backing model for this component must be a Set of String tags. Tags are converted to 
+ * lower case before insertion to the set.
  */
 public class TagField extends Panel {
 	
+	/** Generates text field */
 	public TagField(String id) {
 		this(id, null);
 	}
+	/** Generates text field */
 	public TagField(String id, IModel model) {
 		this(id, model, false);
 	}
+	/** @param textarea true to generate a text area */
 	public TagField(String id, boolean textarea) {
 		this(id, null, textarea);
 	}
+	/** @param textarea true to generate a text area */
 	public TagField(String id, IModel model, boolean textarea) {
 		super(id, model);
 		IModel tagModel = new IModel() {
