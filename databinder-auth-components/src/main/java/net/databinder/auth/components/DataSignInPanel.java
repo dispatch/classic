@@ -1,5 +1,7 @@
 package net.databinder.auth.components;
 
+import net.databinder.auth.IAuthSession;
+
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
@@ -10,8 +12,8 @@ import org.apache.wicket.model.Model;
 
 /**
  * Displays username and password fields, along with optional "remember me" checkbox.
- * Queries the AuthDataSession upon a login attempt.
- * @see AuthDataSession
+ * Queries the IAuthSession upon a login attempt.
+ * @see IAuthSession
  */
 public class DataSignInPanel extends Panel {
 

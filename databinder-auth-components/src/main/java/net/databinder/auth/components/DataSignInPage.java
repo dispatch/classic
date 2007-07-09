@@ -62,10 +62,19 @@ public class DataSignInPage extends WebPage {
 		signinLink.onClick();	// show sign in first
 	}
 	
+	/**
+	 * Default returns DataSignInPanel.
+	 * @return component (usually panel) to display for sign in
+	 * @see DataSignInPanel
+	 */
 	protected Component signinSocket(String id) {
 		return new DataSignInPanel(id);
 	}
-	
+
+	/**
+	 * Default returns DataProfilePanel.
+	 * @return component to display for profile / registration
+	 */
 	protected Component profileSocket(String id) {
 		return new DataProfilePanel(id);
 	}
