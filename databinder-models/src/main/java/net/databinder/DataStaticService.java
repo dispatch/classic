@@ -53,6 +53,10 @@ public class DataStaticService {
 		return getHibernateSessionFactory().getCurrentSession();
 	}
 	
+	public static boolean hasBoundSession() {
+		return ManagedSessionContext.hasBind(getHibernateSessionFactory());
+	}
+	
 	/**
 	 * Notifies current request cycle that a data session was requested, if a session factory
 	 * was not already bound for this thread and the request cycle is a listener.

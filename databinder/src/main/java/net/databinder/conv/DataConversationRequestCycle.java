@@ -140,12 +140,14 @@ public class DataConversationRequestCycle extends DataRequestCycle implements ID
 	 */
 	@Override
 	public Page onRuntimeException(Page page, RuntimeException e) {
-		Session sess = DataStaticService.getHibernateSession();
-		try {
-			if (sess.getTransaction().isActive())
-				sess.getTransaction().rollback();
-		} finally {
-			sess.close();
+		if (DataStaticService.hasBoundSession()) {
+			Session sess = DataStaticService.getHibernateSession();
+			try {
+				if (sess.getTransaction().isActive())
+					sess.getTransaction().rollback();
+			} finally {
+				sess.close();
+			}
 		}
 		openHibernateSession();
 		return null;
