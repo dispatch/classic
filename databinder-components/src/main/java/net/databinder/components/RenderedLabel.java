@@ -370,7 +370,7 @@ public class RenderedLabel extends Image  {
 			}
 			
 			float lineHeight = graphics.getFontMetrics().getHeight(),
-				neededHeight = layouts.size() * lineHeight + fontMetrics.getMaxDescent();
+				neededHeight = layouts.size() * lineHeight;
 			
 			if (neededWidth > width || neededHeight > height) {
                 setWidth(Math.max((int)Math.ceil(neededWidth), width));
@@ -382,7 +382,7 @@ public class RenderedLabel extends Image  {
 					antiAliased ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
 			graphics.setColor(color);
 			
-			float y = lineHeight;
+			float y = lineHeight - fontMetrics.getMaxDescent();
 			for (TextLayout layout : layouts) {
 				layout.draw(graphics, 0f, y);
 				y += lineHeight;
