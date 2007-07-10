@@ -345,6 +345,7 @@ public class RenderedLabel extends Image  {
 				return false;
 			}
 			
+			graphics.setFont(font);
 			FontMetrics fontMetrics = graphics.getFontMetrics();
 			
 			List<TextLayout> layouts = new LinkedList<TextLayout>();
