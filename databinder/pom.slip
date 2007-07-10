@@ -23,7 +23,13 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		dependency:
 			groupId: "org.hibernate"
 			artifactId: "hibernate-annotations"
-			version: "3.2.1.ga"
+			version: "3.3.0.ga"
+
+		#hib-com-anno should be transitive, but central hib-anno POM is wrong
+		dependency:
+			groupId: "org.hibernate"
+			artifactId: "hibernate-commons-annotations"
+			version: "3.3.0.ga"
 
 		dependency:
 			groupId: "org.hibernate"
