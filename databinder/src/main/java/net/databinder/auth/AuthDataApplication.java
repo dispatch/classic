@@ -85,7 +85,7 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, I
 	 * Sends to sign in page if not signed in, otherwise throws UnauthorizedInstantiationException.
 	 */
 	public void onUnauthorizedInstantiation(Component component) {
-		if (((AuthDataSession)Session.get()).isSignedIn()) {
+		if (((IAuthSession)Session.get()).isSignedIn()) {
 			throw new UnauthorizedInstantiationException(component.getClass());
 		}
 		else {
@@ -97,7 +97,7 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, I
 	 * Passes query on to the IUser object if signed in.
 	 */
 	public final boolean hasAnyRole(Roles roles) {
-		IUser user = ((AuthDataSession)Session.get()).getUser();
+		IUser user = ((IAuthSession)Session.get()).getUser();
 		return user == null ? false : user.hasAnyRole(roles);
 	}
 
