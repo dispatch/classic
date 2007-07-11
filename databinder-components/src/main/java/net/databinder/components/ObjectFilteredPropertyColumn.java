@@ -8,7 +8,9 @@ import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-
+/**
+ * @author Mark Southern
+ */
 public class ObjectFilteredPropertyColumn extends ChoiceFilteredPropertyColumn {
 	private ChoiceRenderer choiceRenderer;
 	private String displayProperty;
