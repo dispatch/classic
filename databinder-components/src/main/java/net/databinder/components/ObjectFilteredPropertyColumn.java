@@ -9,11 +9,11 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 
-public class EntityFilteredPropertyColumn extends ChoiceFilteredPropertyColumn {
+public class ObjectFilteredPropertyColumn extends ChoiceFilteredPropertyColumn {
 	private ChoiceRenderer choiceRenderer;
 	private String displayProperty;
 
-	public EntityFilteredPropertyColumn(IModel displayModel, String sortProperty, String displayProperty, String propertyExpression, String filterLabelProperty, IModel filterChoices) {
+	public ObjectFilteredPropertyColumn(IModel displayModel, String sortProperty, String displayProperty, String propertyExpression, String filterLabelProperty, IModel filterChoices) {
 		super(displayModel,sortProperty,propertyExpression,filterChoices);
 		choiceRenderer = new ChoiceRenderer(filterLabelProperty);
 		this.displayProperty = displayProperty;
