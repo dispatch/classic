@@ -39,7 +39,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 			plugin:
 				artifactId: "maven-release-plugin"
 				configuration:
-					tagBase: "svn://localhost/databinder/"
+					tagBase: "svn://localhost/databinder/tags"
 			plugin:
 				artifactId: "maven-source-plugin"
 				executions:
@@ -66,11 +66,6 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 						reports:
 							report: "dependencies"
 							report: "license"
-			plugin:
-				artifactId: "maven-site-plugin"
-				configuration:
-					inputEncoding: "UTF-8"
-					outputEncoding: "UTF-8"
 	distributionManagement:
 		repository:
 			id: "databinder"
