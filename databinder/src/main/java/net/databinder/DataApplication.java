@@ -55,12 +55,16 @@ public abstract class DataApplication extends WebApplication {
 	
 	/**
 	 * Initializes Hibernate session factory. If you override this 
-	 * method, be sure to call super() or initialize the Hibernate session factory yourself.
+	 * method, be sure to call super() or initialize the Hibernate session factory yourself. Also
+	 * turns off exceptions for missing resources in deployment mode, as search engines
+	 * will ask for those long after they are gone.
 	 * @see DataStaticService 
 	 */
 	@Override
 	protected void init() {
 		DataStaticService.setSessionFactory(buildHibernateSessionFactory());
+		if (!isDevelopment())
+			getResourceSettings().setThrowExceptionOnMissingResource(false);
 	}
 	
 	@Override
