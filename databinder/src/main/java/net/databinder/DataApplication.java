@@ -87,7 +87,7 @@ public abstract class DataApplication extends WebApplication {
 			configureHibernate(config);
 			return config.buildSessionFactory();
 		} catch (Throwable ex) {
-				throw new ExceptionInInitializerError(ex);
+				throw new RuntimeException(ex);
 		}
 	}
 	
