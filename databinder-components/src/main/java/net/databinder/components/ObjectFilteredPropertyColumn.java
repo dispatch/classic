@@ -9,6 +9,7 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 /**
+ * DataTable property filter column that works with joined entities instead of string properties.
  * @author Mark Southern
  */
 public class ObjectFilteredPropertyColumn extends ChoiceFilteredPropertyColumn {
