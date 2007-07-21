@@ -74,6 +74,10 @@ public class DataRequestCycle extends WebRequestCycle implements IDataRequestCyc
 			}
 	}
 
+	/**
+	 * Called by DataStaticService when a session is needed and does not already exist. 
+	 * Opens a new thread-bound Hibernate session.
+	 */
 	public void dataSessionRequested() {
 		openHibernateSession();
 	}
