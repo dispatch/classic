@@ -59,7 +59,7 @@ public class DataStaticService {
 	
 	/**
 	 * Notifies current request cycle that a data session was requested, if a session factory
-	 * was not already bound for this thread and the request cycle is a listener.
+	 * was not already bound for this thread and the request cycle is an IDataRequestCycle.
 	 * @see IDataRequestCycle
 	 */
 	private static void dataSessionRequested() {
@@ -80,13 +80,13 @@ public class DataStaticService {
 	}
 	
 	/**
-	 * Wraps SessionUnit callback in a new thread-bound Hibernate session if one is not present.
-	 * This is to be used only when a thread-bound session may not be available, such as
-	 * application init or an external Web service request. The new session and transaction, if 
-	 * created, are closed after the callback returns and uncommited transactions are rolled 
-	 * back. (Existing sessions are left as they were.) Be careful 
-	 * of returning detached Hibernate objects that may not be fully loaded with data; 
-	 * consider using projections / scalar queries instead.
+	 * Wraps SessionUnit callback in a temporary thread-bound Hibernate session if
+	 * necessary. This is to be used outside of a regular a session-handling request cycle,
+	 * such as during application init or an external Web service request. 
+	 * The temporary session and transaction, if created, are closed after the callback returns and 
+	 * uncommited transactions are rolled back. Be careful of returning detached Hibernate 
+	 * objects that may not be fully loaded with data; consider using projections / scalar 
+	 * queries instead.
 	 * @param unit work to be performed in thread-bound session
 	 * @see SessionUnit
 	 */
