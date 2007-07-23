@@ -31,6 +31,7 @@ import net.databinder.models.HibernateObjectModel;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.RequiredTextField;
@@ -48,7 +49,12 @@ import org.hibernate.Session;
  * Registration with username, password, and password confirmation.
  */
 public class DataProfilePanel extends Panel {
+	private Page returnPage;
 
+	public DataProfilePanel(String id, Page returnPage) {
+		this(id);
+		this.returnPage = returnPage;
+	}
 	public DataProfilePanel(String id) {
 		super(id);
 		add(new FeedbackPanel("feedback"));
@@ -104,8 +110,11 @@ public class DataProfilePanel extends Panel {
 			
 			DataSignInPage.getAuthSession().signIn(getUser(), (Boolean) rememberMe.getModelObject());
 
-			if (!continueToOriginalDestination())
-				setResponsePage(getApplication().getHomePage());
+			if (returnPage == null) {
+				if (!continueToOriginalDestination())
+					setResponsePage(getApplication().getHomePage());
+			} else
+				setResponsePage(returnPage);
 		}
 	}
 

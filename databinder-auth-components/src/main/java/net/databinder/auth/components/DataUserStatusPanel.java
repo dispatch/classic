@@ -18,12 +18,9 @@
  */
 package net.databinder.auth.components;
 
-import java.io.Serializable;
-
 import net.databinder.auth.IAuthSession;
 import net.databinder.auth.IAuthSettings;
 
-import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -57,11 +54,7 @@ public class DataUserStatusPanel extends Panel {
 		wrapper.add(new Link("profile") {
 			@Override
 			public void onClick() {
-				if (getSession().getMetaData(inDetourKey) == null) {
-					getSession().setMetaData(inDetourKey,  new InDetour());
-					redirectToInterceptPage(getProfilePage());
-				} else
-					getSession().setMetaData(inDetourKey,  null);
+				setResponsePage(getProfilePage());
 			}
 		});
 
@@ -77,7 +70,7 @@ public class DataUserStatusPanel extends Panel {
 	}
 	
 	WebPage getProfilePage() {
-		return new DataProfilePage();
+		return new DataProfilePage(getPage());
 	}
 
 	/**
@@ -98,9 +91,6 @@ public class DataUserStatusPanel extends Panel {
 			}
 		};
 	}
-	/** Session marker for editing profile */
-	static class InDetour implements Serializable { }
-	static MetaDataKey inDetourKey = new MetaDataKey(InDetour.class) { };
 
 	/** @return casted web session*/
 	protected IAuthSession getAuthSession() {
