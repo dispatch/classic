@@ -82,13 +82,9 @@ public abstract class DataApplication extends WebApplication {
 	 * initialization. Override if using a custom session factory.
 	 */
 	public SessionFactory buildHibernateSessionFactory() {
-		try {
-			AnnotationConfiguration config = new AnnotationConfiguration();
-			configureHibernate(config);
-			return config.buildSessionFactory();
-		} catch (Throwable ex) {
-				throw new RuntimeException(ex);
-		}
+		AnnotationConfiguration config = new AnnotationConfiguration();
+		configureHibernate(config);
+		return config.buildSessionFactory();
 	}
 	
 	@Override
