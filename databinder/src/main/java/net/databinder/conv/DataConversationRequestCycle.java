@@ -28,12 +28,10 @@ import net.databinder.DataStaticService;
 import net.databinder.IDataRequestCycle;
 import net.databinder.conv.components.IConversationPage;
 
-import org.apache.wicket.IRequestTarget;
 import org.apache.wicket.Page;
 import org.apache.wicket.Response;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
-import org.apache.wicket.request.target.component.IBookmarkablePageRequestTarget;
 import org.hibernate.FlushMode;
 import org.hibernate.classic.Session;
 import org.hibernate.context.ManagedSessionContext;
@@ -69,10 +67,9 @@ public class DataConversationRequestCycle extends DataRequestCycle implements ID
 			page = getRequest().getPage();
 		
 		if (page == null) {
-			IRequestTarget target = getRequestTarget();
-			if (target instanceof IBookmarkablePageRequestTarget) {
+			Class pageClass = getResponsePageClass(); 
+			if (pageClass != null) {
 				openHibernateSession();
-				Class pageClass = ((IBookmarkablePageRequestTarget)target).getPageClass();
 				// set to manual if we are going to a conv. page
 				if (IConversationPage.class.isAssignableFrom(pageClass))
 					DataStaticService.getHibernateSession().setFlushMode(FlushMode.MANUAL);
