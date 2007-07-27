@@ -35,6 +35,7 @@ import org.apache.wicket.IConverterLocator;
 import org.apache.wicket.Request;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.Response;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.pages.PageExpiredErrorPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
@@ -49,24 +50,39 @@ import org.hibernate.cfg.AnnotationConfiguration;
  * Hibernate session factories.
  * @author Nathan Hamblen
  */
-public abstract class DataApplication extends WebApplication {
+public abstract class DataApplication extends WebApplication implements IDataApplication {
 	/** true if cookieless use is supported through URL rewriting(defaults to true). */
 	private boolean cookielessSupported = true;
 	
+	/** App-wide session factory */
+	private SessionFactory hibernateSessionFactory;
+	
 	/**
 	 * Initializes Hibernate session factory. If you override this 
-	 * method, be sure to call super() or initialize the Hibernate session factory yourself. Also
+	 * method, be sure to call super() or initialize a Hibernate session factory and return it in
+	 * getHibernateSessionFactory() yourself. This method also
 	 * turns off exceptions for missing resources in deployment mode, as search engines
-	 * will ask for those long after they are gone.
+	 * will request those long after they are gone.
 	 * @see DataStaticService 
 	 */
 	@Override
 	protected void init() {
-		DataStaticService.setSessionFactory(buildHibernateSessionFactory());
+		hibernateSessionFactory = buildHibernateSessionFactory();
 		if (!isDevelopment())
 			getResourceSettings().setThrowExceptionOnMissingResource(false);
 	}
 	
+	/** @return this application's session factory. */
+	public SessionFactory getHibernateSessionFactory() {
+		if (hibernateSessionFactory == null)
+			throw new WicketRuntimeException("The Hibernate session factory has not been " +
+					"initialized. This is normally done in DataApplication.init().");
+		return hibernateSessionFactory;
+	}
+	
+	/**
+	 * Adds converters to Wicket's base locator.
+	 */
 	@Override
 	protected IConverterLocator newConverterLocator() {
 		// register converters
@@ -87,6 +103,10 @@ public abstract class DataApplication extends WebApplication {
 		return config.buildSessionFactory();
 	}
 	
+	/**
+	 * @return a DataRequestCycle
+	 * @see DataRequestCycle
+	 */
 	@Override
 	public RequestCycle newRequestCycle(Request request, Response response) {
 		return new DataRequestCycle(this, (WebRequest) request, response);

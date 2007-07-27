@@ -20,29 +20,32 @@
 package net.databinder;
 
 
-import org.hibernate.Session;
+import org.apache.wicket.Application;
+import org.apache.wicket.RequestCycle;
+import org.apache.wicket.WicketRuntimeException;
 import org.hibernate.SessionFactory;
 import org.hibernate.context.ManagedSessionContext;
 
-import org.apache.wicket.RequestCycle;
-import org.apache.wicket.WicketRuntimeException;
-
 /**
- * Holds a static reference to Hibernate session factory.
+ * Provides access to the Hibernate session factory and current sessions.
  * @author Nathan Hamblen
  */
 public class DataStaticService {
+	@Deprecated
 	private static SessionFactory hibernateSessionFactory;
 	
 	/**
-	 * @return session factory, as configured by the application
-	 * @throws WicketRuntimeException if session factory was not previously set 
+	 * @return session factory, as returned by the application
+	 * @throws WicketRuntimeException if session factory can not be found 
+	 * @see IDataApplication
 	 */
 	public static SessionFactory getHibernateSessionFactory() {
-		if (hibernateSessionFactory == null)
-			throw new WicketRuntimeException("The Hibernate session factory has not been " +
-					"initialized. This is normally done in DataApplication.init().");
-		return hibernateSessionFactory;
+		Application app = Application.get();
+		if (app instanceof IDataApplication)
+			return ((IDataApplication)app).getHibernateSessionFactory();
+		if (hibernateSessionFactory != null)
+			return hibernateSessionFactory;
+		throw new WicketRuntimeException("Please implement IDataApplication in your Application subclass.");
 	}
 	
 	/**
@@ -73,7 +76,9 @@ public class DataStaticService {
 
 	
 	/**
-	 * @param sessionFactory to use for this application
+	 * Please implement IDataApplication in your application class instead of calling this method.
+	 * @deprecated
+	 * @see IDataApplication
 	 */
 	public static void setSessionFactory(SessionFactory sessionFactory) {
 		hibernateSessionFactory = sessionFactory;
@@ -109,24 +114,5 @@ public class DataStaticService {
 				ManagedSessionContext.unbind(sf);
 			}
 		}
-	}
-	/**
-	 * Please use ensureSession(SessionUnit unit) instead.
-	 * @deprecated
-	 */
-	public static Object wrapInHibernateSession(final Callback callback) {
-		return ensureSession(new SessionUnit() {
-			public Object run(Session sess) {
-				return callback.call();
-			}
-		});
-	}
-	/**
-	 * Please use SessionUnit instead.
-	 * @deprecated
-	 */
-	public interface Callback {
-		/** Within call, session is available from DataStaticService.getHibernateSession().  */
-		Object call(); 
 	}
 }
