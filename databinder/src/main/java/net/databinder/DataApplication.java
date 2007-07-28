@@ -117,7 +117,7 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 	 * to call this super-implementation. If running in a development environment,
 	 * the session factory is set for hbm2ddl auto-updating to create and add columns to tables 
 	 * as required. Otherwise, it is configured for C3P0 connection pooling. (At present the two
-	 * seem to be incompatible.) If you don't want this behaviour, don't call the 
+	 * seem to be incompatible.) If you don't want this behavior, don't call the 
 	 * super-implementation.
 	 * @param config used to build Hibernate session factory
 	 */
