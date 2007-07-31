@@ -20,7 +20,9 @@ package net.databinder.auth.components;
 
 import net.databinder.auth.IAuthSession;
 import net.databinder.auth.IAuthSettings;
+import net.databinder.auth.components.DataSignInPage.ILazyPage;
 
+import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -70,7 +72,11 @@ public class DataUserStatusPanel extends Panel {
 	}
 	
 	WebPage getProfilePage() {
-		return new DataProfilePage(getPage());
+		return new DataProfilePage(new ILazyPage() {
+			public Page getPage() {
+				return getPage();
+			}
+		});
 	}
 
 	/**

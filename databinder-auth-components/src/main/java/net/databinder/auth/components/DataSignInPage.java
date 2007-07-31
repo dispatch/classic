@@ -27,6 +27,8 @@ import net.databinder.models.HibernateObjectModel;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
+import org.apache.wicket.IClusterable;
+import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -41,6 +43,11 @@ public class DataSignInPage extends WebPage {
 	private Component profileSocket, signinSocket;
 	
 	private SourceList.SourceLink profileLink, signinLink;
+	
+	public interface ILazyPage extends IClusterable {
+		Page getPage();
+	}
+	private ILazyPage returnPage;
 
 	/**
 	 * Displays sign in page.
@@ -48,6 +55,7 @@ public class DataSignInPage extends WebPage {
 	public DataSignInPage(PageParameters params) {
 		String username = params.getString("username");
 		String token = params.getString("token");
+		// e-mail auth, for example
 		if (username != null && token != null) {
 			IAuthSettings settings = ((IAuthSettings)Application.get());
 			HibernateObjectModel userModel = new HibernateObjectModel(settings.getUserClass(),
@@ -59,18 +67,25 @@ public class DataSignInPage extends WebPage {
 			setRedirect(true);
 			return;
 		}
+		init();
+	}
+	public DataSignInPage(ILazyPage returnPage) {
+		this.returnPage = returnPage;
+		init();
+	}
+	protected void init() {
 		add(new DataStyleLink("dataStylesheet"));
 		
 		sourceList = new SourceList();
 		
-		add(profileSocket = profileSocket("profileSocket"));
+		add(profileSocket = profileSocket("profileSocket", returnPage));
 		add(new WebMarkupContainer("profileLinkWrapper") {
 			public boolean isVisible() {
 				return profileLink.isEnabled();
 			}
 		}.add(profileLink = sourceList.new SourceLink("profileLink", profileSocket)));
 		
-		add(signinSocket = signinSocket("signinSocket"));
+		add(signinSocket = signinSocket("signinSocket", returnPage));
 		add(new WebMarkupContainer("signinLinkWrapper") {
 			@Override
 			public boolean isVisible() {
@@ -85,16 +100,16 @@ public class DataSignInPage extends WebPage {
 	 * @return component (usually panel) to display for sign in
 	 * @see DataSignInPanel
 	 */
-	protected Component signinSocket(String id) {
-		return new DataSignInPanel(id);
+	protected Component signinSocket(String id, ILazyPage returnPage) {
+		return new DataSignInPanel(id, returnPage);
 	}
 
 	/**
 	 * Default returns DataProfilePanel.
 	 * @return component to display for profile / registration
 	 */
-	protected Component profileSocket(String id) {
-		return new DataProfilePanel(id);
+	protected Component profileSocket(String id, ILazyPage returnPage) {
+		return new DataProfilePanel(id, returnPage);
 	}
 	
 	protected static  IAuthSession getAuthSession() {

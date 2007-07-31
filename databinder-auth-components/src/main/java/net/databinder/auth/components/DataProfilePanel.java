@@ -24,6 +24,7 @@ import java.util.Map;
 import net.databinder.DataStaticService;
 import net.databinder.auth.IAuthSession;
 import net.databinder.auth.IAuthSettings;
+import net.databinder.auth.components.DataSignInPage.ILazyPage;
 import net.databinder.auth.data.IUser;
 import net.databinder.auth.valid.EqualPasswordConvertedInputValidator;
 import net.databinder.components.hibernate.DataForm;
@@ -31,7 +32,6 @@ import net.databinder.models.HibernateObjectModel;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.RequiredTextField;
@@ -49,9 +49,9 @@ import org.hibernate.Session;
  * Registration with username, password, and password confirmation.
  */
 public class DataProfilePanel extends Panel {
-	private Page returnPage;
+	private ILazyPage returnPage;
 
-	public DataProfilePanel(String id, Page returnPage) {
+	public DataProfilePanel(String id, ILazyPage returnPage) {
 		this(id);
 		this.returnPage = returnPage;
 	}
@@ -114,7 +114,7 @@ public class DataProfilePanel extends Panel {
 				if (!continueToOriginalDestination())
 					setResponsePage(getApplication().getHomePage());
 			} else
-				setResponsePage(returnPage);
+				setResponsePage(returnPage.getPage());
 		}
 	}
 
