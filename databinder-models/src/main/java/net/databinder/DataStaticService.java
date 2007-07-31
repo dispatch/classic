@@ -98,7 +98,7 @@ public class DataStaticService {
 	public static Object ensureSession(SessionUnit unit) {
 		dataSessionRequested();
 		SessionFactory sf = getHibernateSessionFactory();
-		if (ManagedSessionContext.hasBind(hibernateSessionFactory))
+		if (ManagedSessionContext.hasBind(sf))
 			return unit.run(getHibernateSession());
 		org.hibernate.classic.Session sess = sf.openSession();
 		try {
