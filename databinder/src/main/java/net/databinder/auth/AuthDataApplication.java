@@ -39,7 +39,7 @@ import org.apache.wicket.authorization.strategies.role.RoleAuthorizationStrategy
 import org.apache.wicket.authorization.strategies.role.Roles;
 
 /**
- * Adds basic authentication fuctionality to DataApplication. This class is a derivative
+ * Adds basic authentication functionality to DataApplication. This class is a derivative
  * of Wicket's AuthenticatedWebApplication, brought into the DataApplication hierarchy. Unlike
  * that implementation, this one supplies a default User entity.. To use a different IUser class,
  * or a User subclass, override getUserClass(). (This class, whatever it is, will be added to 

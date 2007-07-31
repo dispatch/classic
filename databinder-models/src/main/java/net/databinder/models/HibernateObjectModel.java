@@ -164,6 +164,11 @@ public class HibernateObjectModel extends LoadableWritableModel {
 			setTempModelObject(object);	// skip calling load later
 		}
 	}
+	
+	/** @return true if current object is new and not yet saved */
+	public boolean isUnsaved() {
+		return !DataStaticService.getHibernateSession().contains(getObject());
+	}
 
 	/**
 	 * Disassociates this object from any persitant object, but retains the class
