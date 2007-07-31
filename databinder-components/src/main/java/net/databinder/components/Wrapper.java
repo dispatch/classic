@@ -19,6 +19,7 @@
 package net.databinder.components;
 
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.model.IModel;
 
 /**
  * Extention of WebMarkupContainer that outputs a markup ID by default. This
@@ -34,5 +35,8 @@ public class Wrapper extends WebMarkupContainer {
 	public Wrapper(String id) {
 		super(id);
 		setOutputMarkupId(true);
+	}
+	public Wrapper(String id, IModel model) {
+		super(id, model);
 	}
 }

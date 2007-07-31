@@ -20,13 +20,13 @@ import org.apache.wicket.markup.html.link.Link;
  * @author Nathan Hamblen
  */
 public class SourceList implements Serializable {
-	List<SourceLink> links = new LinkedList<SourceLink>();
+	private List<SourceLink> links = new LinkedList<SourceLink>();
 	SourceLink current;
 	
 	/** 
 	 * Link that that causes the paired component to be visible when clicked, and all other
 	 * components in the SourceList to be invisible. Paired components are set to invisible
-	 * on initialization; to make select a linked component programmatically, call onClick().  
+	 * on initialization; to select a linked component programmatically, call onClick().  
 	 */
 	public class SourceLink extends Link {
 		Component target;

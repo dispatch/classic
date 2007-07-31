@@ -44,6 +44,17 @@ form.labelAbove div.row {
 	color: black;
 }
 
+ul.source-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+ul.source-list li {
+	padding: 0;
+	margin: .5em 0;
+}
+
 tr.a, tr.even {
 	background: #E6E6E5;
 }

@@ -24,12 +24,17 @@ import java.io.Serializable;
 import net.databinder.DataStaticService;
 import net.databinder.models.HibernateObjectModel;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.model.BoundCompoundPropertyModel;
+import org.apache.wicket.model.ComponentPropertyModel;
+import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.model.IModel;
 import org.hibernate.Session;
 
-import org.apache.wicket.model.BoundCompoundPropertyModel;
-
 /**
- * Form for a persistant model object nested in a BoundCompoundPropertyModel.
+ * Form for a persistent model object nested in a BoundCompoundPropertyModel.
  * Saves the model object to persistent storage when a valid form is submitted. This
  * form can be a child component of any Wicket page.
  * @author Nathan Hamblen
@@ -38,31 +43,19 @@ public class DataForm extends DataFormBase {
 	private Serializable version;
 
 	/**
-	 * Create form with an existing persistent object model.
-	 * @param id
-	 * @param model to be wrapped in a BoundCompoundPropertyModel
-	 */
-	public DataForm(String id, HibernateObjectModel model) {
-		super(id, new BoundCompoundPropertyModel(model));
-		version = getPersistentObjectModel().getVersion();
-	}
-
-	/**
-	 * Instatiates this form and a new, blank instance of the given class as a persistent modell
-	 * object. By default the model object created is <b>not</b> retained between requests until
-	 * it is persisted. This works well when the object's initial state is determined wholly by
-	 * data posted with this form. For special cases, such as non-posting ajax requests,
-	 * call <tt>retainUnsaved()</tt>.
+	 * Instantiates this form and a new, blank instance of the given class as a persistent model
+	 * object. By default the model object created is serialized and retained between requests until
+	 * it is persisted.
 	 * @param id
 	 * @param modelClass for the persistent object
+	 * @see HibernateObjectModel#setRetainUnsaved(boolean)
 	 */
 	public DataForm(String id, Class modelClass) {
 		super(id, new BoundCompoundPropertyModel(new HibernateObjectModel(modelClass)));
 	}
 
-	/** @deprecated retain unsaved is now the default behavior; this method does nothing */
-	public DataForm retainUnsaved() {
-		return this;
+	public DataForm(String id, HibernateObjectModel model) {
+		super(id, new BoundCompoundPropertyModel(model));
 	}
 
 	/**
@@ -75,8 +68,18 @@ public class DataForm extends DataFormBase {
 		super(id, new BoundCompoundPropertyModel(new HibernateObjectModel(modelClass, persistentObjectId)));
 	}
 
+	/**
+	 * Form that is nested below a component with a compound model containing a Hibernate
+	 * model.
+	 * @param id
+	 * @see DataWrapper
+	 */
+	public DataForm(String id) {
+		super(id);
+	}
+
 	public HibernateObjectModel getPersistentObjectModel() {
-		return (HibernateObjectModel) getBindingModel().getChainedModel();
+		return (HibernateObjectModel) getCompoundModel().getChainedModel();
 	}
 
 	/**
@@ -87,8 +90,20 @@ public class DataForm extends DataFormBase {
 	public DataForm setPersistentObject(Object object) {
 		getPersistentObjectModel().setObject(object);
 		setModel(getModel());		// informs child components
-		version = getPersistentObjectModel().getVersion();
 		return this;
+	}
+
+	/** Late-init version record. */
+	@Override
+	protected void onBeforeRender() {
+		super.onBeforeRender();
+		if (version == null)
+			version = getPersistentObjectModel().getVersion();
+	}
+	
+	@Override
+	protected void onModelChanged() {
+		version = getPersistentObjectModel().getVersion();
 	}
 
 	/**
@@ -99,15 +114,28 @@ public class DataForm extends DataFormBase {
 	public DataForm clearPersistentObject() {
 		getPersistentObjectModel().clearPersistentObject();
 		setModel(getModel());		// informs child components
-		version = null;
 		return this;
 	}
 
 	/**
-	 * @return this form's model, for binding components to expressions
+	 * Binding models to be phased out.
+	 * @deprecated
+	 * @see ComponentPropertyModel
 	 */
 	protected BoundCompoundPropertyModel getBindingModel() {
 		return (BoundCompoundPropertyModel) getModel();
+	}
+	
+	protected CompoundPropertyModel getCompoundModel() {
+		IModel model = getModel();
+		Component cur = this;
+		while (cur != null) {
+			model = cur.getModel();
+			if (model != null && model instanceof CompoundPropertyModel)
+				return (CompoundPropertyModel) model;
+			cur = cur.getParent();
+		}
+		throw new WicketRuntimeException("DataForm has no parent compound model");
 	}
 
 	/**
@@ -116,7 +144,7 @@ public class DataForm extends DataFormBase {
 	 */
 	@Override
 	protected void onSubmit() {
-		Object modelObject = getModelObject();
+		Object modelObject = getPersistentObjectModel().getObject();
 		Session session = DataStaticService.getHibernateSession();
 		if (!session.contains(modelObject)) {
 			session.save(modelObject);
@@ -164,11 +192,31 @@ public class DataForm extends DataFormBase {
 	 */
 	protected boolean deletePersistentObject() {
 		Session session = DataStaticService.getHibernateSession();
-		Object modelObject = getModelObject();
+		Object modelObject = getPersistentObjectModel().getObject();
 		if (!session.contains(modelObject))
 			return false;
 		session.delete(modelObject);
 		session.flush();
 		return true;
+	}
+	
+	public class ClearLink extends Link {
+		public ClearLink(String id) {
+			super(id);
+		}
+		@Override
+		public boolean isEnabled() {
+			return !DataForm.this.isVisibleInHierarchy() || !getPersistentObjectModel().isUnsaved();
+		}
+		@Override
+		public void onClick() {
+			clearPersistentObject();
+			DataForm.this.setVisible(true);
+		}
+	}
+
+	/** @deprecated retain unsaved is now the default behavior; this method does nothing */
+	public DataForm retainUnsaved() {
+		return this;
 	}
 }
