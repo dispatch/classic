@@ -74,7 +74,7 @@ public class DataUserStatusPanel extends Panel {
 	WebPage getProfilePage() {
 		return new DataProfilePage(new ILazyPage() {
 			public Page getPage() {
-				return getPage();
+				return DataUserStatusPanel.this.getPage();
 			}
 		});
 	}
