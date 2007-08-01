@@ -6,10 +6,14 @@ import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.IModel;
 
+/**
+ * Boomarkable link with object identifier set automatically from the attached object.
+ * @author Nathan Hamblen
+ */
 public class PageSourceLink extends BookmarkablePageLink {
 	private String idParameter;
 	/**
-	 * Construct a link to a page using the model object's Hibernate identifier  and set to the
+	 * Construct a link to a page using the model object's Hibernate identifier set to the
 	 * "id" parameter.
 	 * @see #setParameters()
 	 * @param id component id
@@ -20,7 +24,7 @@ public class PageSourceLink extends BookmarkablePageLink {
 		this(id, pageClass, model, null);
 	}
 	/**
-	 * Construct a link to a page using the model object's Hibernate identifier  and set to the
+	 * Construct a link to a page using the model object's Hibernate identifier set to the
 	 * given identifier parameter.
 	 * @param id component id
 	 * @param pageClass target page class
