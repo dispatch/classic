@@ -10,6 +10,12 @@ import org.apache.wicket.model.IModel;
  */
 public class ModelSourceLink extends Link {
 	private Component target;
+	/**
+	 * Construct link to set model of component.
+	 * @param id component id
+	 * @param target set model of this component
+	 * @param model the model to set
+	 */
 	public ModelSourceLink(String id, Component target, IModel model) {
 		super(id, model);
 		this.target = target;
@@ -22,6 +28,9 @@ public class ModelSourceLink extends Link {
 		
 		return !getModelObject().equals(target.getModelObject());
 	}
+	/**
+	 * Set model of target, and set target to visible in case it has hide before use behavior.
+	 */
 	@Override
 	public void onClick() {
 		target.setModelObject(getModelObject());
