@@ -9,7 +9,7 @@ import org.apache.wicket.model.ComponentPropertyModel;
 import org.apache.wicket.model.IModel;
 
 /**
- * Displays a list of links to set the model of a target component. The panel renders to an
+ * Displays a list of links to set the model of a target component or page. The panel renders to an
  * unordered list of class <tt>source-list</tt>. 
  * @author Nathan Hamblen
  */

@@ -43,7 +43,7 @@ public class PageSourceListPanel extends SourceListPanel {
 		this.idParameter = idParameter;
 	}
 
-	/** Constructs source links. */
+	/** Called from super-class to construct source links . */
 	@Override
 	protected Link sourceLink(String id, final IModel model) {
 		PageSourceLink link = new PageSourceLink(id, pageClass, model, idParameter) {
