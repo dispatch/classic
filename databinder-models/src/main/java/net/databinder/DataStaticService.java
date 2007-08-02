@@ -40,9 +40,12 @@ public class DataStaticService {
 	 * @see IDataApplication
 	 */
 	public static SessionFactory getHibernateSessionFactory() {
+		return getHibernateSessionFactory(null);
+	}
+	public static SessionFactory getHibernateSessionFactory(Object key) {
 		Application app = Application.get();
 		if (app instanceof IDataApplication)
-			return ((IDataApplication)app).getHibernateSessionFactory();
+			return ((IDataApplication)app).getHibernateSessionFactory(key);
 		if (hibernateSessionFactory != null)
 			return hibernateSessionFactory;
 		throw new WicketRuntimeException("Please implement IDataApplication in your Application subclass.");
@@ -52,12 +55,19 @@ public class DataStaticService {
 	 * @return Hibernate session bound to current thread
 	 */
 	public static org.hibernate.classic.Session getHibernateSession() {
-		dataSessionRequested();
-		return getHibernateSessionFactory().getCurrentSession();
+		return getHibernateSession(null);
+	}
+	public static org.hibernate.classic.Session getHibernateSession(Object key) {
+		dataSessionRequested(key);
+		return getHibernateSessionFactory(key).getCurrentSession();
 	}
 	
 	public static boolean hasBoundSession() {
-		return ManagedSessionContext.hasBind(getHibernateSessionFactory());
+		return hasBoundSession(null);
+	}
+	
+	public static boolean hasBoundSession(Object key) {
+		return ManagedSessionContext.hasBind(getHibernateSessionFactory(key));
 	}
 	
 	/**
@@ -65,12 +75,12 @@ public class DataStaticService {
 	 * was not already bound for this thread and the request cycle is an IDataRequestCycle.
 	 * @see IDataRequestCycle
 	 */
-	private static void dataSessionRequested() {
-		if (!ManagedSessionContext.hasBind(DataStaticService.getHibernateSessionFactory())) {
+	private static void dataSessionRequested(Object key) {
+		if (!hasBoundSession(key)) {
 			// if session is unavailable, it could be a late-loaded conversational cycle
 			RequestCycle cycle = RequestCycle.get();
 			if (cycle instanceof IDataRequestCycle)
-				((IDataRequestCycle)cycle).dataSessionRequested();
+				((IDataRequestCycle)cycle).dataSessionRequested(key);
 		}
 	}
 
@@ -96,8 +106,11 @@ public class DataStaticService {
 	 * @see SessionUnit
 	 */
 	public static Object ensureSession(SessionUnit unit) {
-		dataSessionRequested();
-		SessionFactory sf = getHibernateSessionFactory();
+		return ensureSession(unit, null);
+	}
+	public static Object ensureSession(SessionUnit unit, Object key) {
+		dataSessionRequested(key);
+		SessionFactory sf = getHibernateSessionFactory(key);
 		if (ManagedSessionContext.hasBind(sf))
 			return unit.run(getHibernateSession());
 		org.hibernate.classic.Session sess = sf.openSession();

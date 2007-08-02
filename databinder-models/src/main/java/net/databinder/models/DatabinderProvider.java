@@ -49,6 +49,8 @@ public class DatabinderProvider implements IDataProvider  {
 	/** Controls wrapping with a compound property model. */
 	private boolean wrapWithPropertyModel = true;
 	
+	private Object factoryKey;
+	
 	/**
 	 * Provides all entities of the given class.
 	 */
@@ -109,6 +111,15 @@ public class DatabinderProvider implements IDataProvider  {
 		this.countQueryBinder = countQueryBinder;
 	}
 
+	public Object getFactoryKey() {
+		return factoryKey;
+	}
+
+	DatabinderProvider setFactoryKey(Object key) {
+		this.factoryKey = key;
+		return this;
+	}
+	
 	/** Used only by deprecated subclasses. Please ignore.  */
 	protected void setCriteriaBuilder(ICriteriaBuilder criteriaBuilder) {
 		this.criteriaBuilder = criteriaBuilder;
@@ -128,7 +139,7 @@ public class DatabinderProvider implements IDataProvider  {
 	 * It should not be necessary to override (or call) this default implementation.
 	 */
 	public final Iterator iterator(int first, int count) {
-		Session sess =  DataStaticService.getHibernateSession();
+		Session sess =  DataStaticService.getHibernateSession(factoryKey);
 		
 		if (queryString != null) {
 			org.hibernate.Query q = sess.createQuery(queryString);
@@ -154,7 +165,7 @@ public class DatabinderProvider implements IDataProvider  {
 	 * It should not be necessary to override (or call) this default implementation.
 	 */
 	public final int size() {
-		Session sess =  DataStaticService.getHibernateSession();
+		Session sess =  DataStaticService.getHibernateSession(factoryKey);
 
 		if (countQueryString != null) {
 			Query query = sess.createQuery(countQueryString);

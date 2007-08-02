@@ -21,7 +21,6 @@ package net.databinder.components.hibernate;
 
 import java.io.Serializable;
 
-import net.databinder.DataStaticService;
 import net.databinder.models.HibernateObjectModel;
 
 import org.apache.wicket.Component;
@@ -56,6 +55,7 @@ public class DataForm extends DataFormBase {
 
 	public DataForm(String id, HibernateObjectModel model) {
 		super(id, new BoundCompoundPropertyModel(model));
+		setFactoryKey(model.getFactoryKey());
 	}
 
 	/**
@@ -77,6 +77,12 @@ public class DataForm extends DataFormBase {
 	public DataForm(String id) {
 		super(id);
 	}
+	
+	public DataForm setFactoryKey(Object key) {
+		super.setFactoryKey(key);
+		return this;
+	}
+
 
 	public HibernateObjectModel getPersistentObjectModel() {
 		return (HibernateObjectModel) getCompoundModel().getChainedModel();
@@ -145,7 +151,7 @@ public class DataForm extends DataFormBase {
 	@Override
 	protected void onSubmit() {
 		Object modelObject = getPersistentObjectModel().getObject();
-		Session session = DataStaticService.getHibernateSession();
+		Session session = getHibernateSession();
 		if (!session.contains(modelObject)) {
 			session.save(modelObject);
 			setPersistentObject(modelObject);	// tell model this object is now bound
@@ -191,7 +197,7 @@ public class DataForm extends DataFormBase {
 	 * @return true if the object was deleted, false if it did not exist
 	 */
 	protected boolean deletePersistentObject() {
-		Session session = DataStaticService.getHibernateSession();
+		Session session = getHibernateSession();
 		Object modelObject = getPersistentObjectModel().getObject();
 		if (!session.contains(modelObject))
 			return false;

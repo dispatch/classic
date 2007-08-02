@@ -22,6 +22,7 @@ package net.databinder;
 import java.awt.Color;
 import java.net.URI;
 import java.net.URL;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -55,7 +56,7 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 	private boolean cookielessSupported = true;
 	
 	/** App-wide session factory */
-	private SessionFactory hibernateSessionFactory;
+	private HashMap<Object, SessionFactory>hibernateSessionFactories = new HashMap<Object, SessionFactory>();
 	
 	/**
 	 * Initializes Hibernate session factory. If you override this 
@@ -67,17 +68,21 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 	 */
 	@Override
 	protected void init() {
-		hibernateSessionFactory = buildHibernateSessionFactory();
+		hibernateSessionFactories.put(null, buildHibernateSessionFactories());
 		if (!isDevelopment())
 			getResourceSettings().setThrowExceptionOnMissingResource(false);
 	}
 	
-	/** @return this application's session factory. */
-	public SessionFactory getHibernateSessionFactory() {
-		if (hibernateSessionFactory == null)
-			throw new WicketRuntimeException("The Hibernate session factory has not been " +
-					"initialized. This is normally done in DataApplication.init().");
-		return hibernateSessionFactory;
+	
+	public SessionFactory getHibernateSessionFactory(Object key) {
+		SessionFactory sf = hibernateSessionFactories.get(key);
+		if (sf == null)
+			if (key == null)
+				throw new WicketRuntimeException("The default Hibernate session factory has not been " +
+						"initialized. This is normally done in DataApplication.init().");
+			else
+				throw new WicketRuntimeException("Session factory not found for key: " + key);
+		return sf;
 	}
 	
 	/**
@@ -97,19 +102,17 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 	 * Called by init to create  Hibernate session factory, triggering a general Hibernate
 	 * initialization. Override if using a custom session factory.
 	 */
-	public SessionFactory buildHibernateSessionFactory() {
-		AnnotationConfiguration config = new AnnotationConfiguration();
-		configureHibernate(config);
-		return config.buildSessionFactory();
+	public SessionFactory buildHibernateSessionFactories() {
+		return buildHibernateSessionFactory(null);
 	}
 	
-	/**
-	 * @return a DataRequestCycle
-	 * @see DataRequestCycle
-	 */
-	@Override
-	public RequestCycle newRequestCycle(Request request, Response response) {
-		return new DataRequestCycle(this, (WebRequest) request, response);
+	public SessionFactory buildHibernateSessionFactory(Object key) {
+		AnnotationConfiguration config = new AnnotationConfiguration();
+		if (key == null)
+			configureHibernate(config);
+		else
+			configureHibernate(config, key);
+		return config.buildSessionFactory();
 	}
 	
 	/**
@@ -122,6 +125,9 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 	 * @param config used to build Hibernate session factory
 	 */
 	protected  void configureHibernate(AnnotationConfiguration config) {
+		configureHibernate(config, null);
+	}
+	protected  void configureHibernate(AnnotationConfiguration config, Object key) {
 		config.setProperty("hibernate.current_session_context_class","managed");
 
     	if (isDevelopment())
@@ -133,6 +139,15 @@ public abstract class DataApplication extends WebApplication implements IDataApp
     	}
 	}
 		
+	/**
+	 * @return a DataRequestCycle
+	 * @see DataRequestCycle
+	 */
+	@Override
+	public RequestCycle newRequestCycle(Request request, Response response) {
+		return new DataRequestCycle(this, (WebRequest) request, response);
+	}
+	
 	/**
 	 * Reports if the program is running in a development environment, as determined by the
 	 * "wicket.configuration" environment variable or context/init parameter. If that variable 

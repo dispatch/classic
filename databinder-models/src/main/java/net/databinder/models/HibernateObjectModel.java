@@ -57,6 +57,8 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	private Serializable retainedObject;
 	/** Enable retaining unsaved objects between requests. */
 	private boolean retainUnsaved = true;
+	
+	private Object factoryKey;
 
 	/**
 	 * @param objectClass class to be loaded and stored by Hibernate
@@ -133,7 +135,16 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	 */
 	public HibernateObjectModel() {
 	}
+	
+	public Object getFactoryKey() {
+		return factoryKey;
+	}
 
+	public HibernateObjectModel setFactoryKey(Object key) {
+		this.factoryKey = key;
+		return this;
+	}
+	
 	@Deprecated
 	public void setObject(Component component, Object object) {
 		setObject(object);
@@ -151,7 +162,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 			// clear out completely
 			objectClass = null;
 		else {
-			Session sess = DataStaticService.getHibernateSession();
+			Session sess = DataStaticService.getHibernateSession(factoryKey);
 			if (sess.contains(object)) {
 				objectId = sess.getIdentifier(object);
 				// the entityName, rather than the objectClass, will be used to load
@@ -165,9 +176,13 @@ public class HibernateObjectModel extends LoadableWritableModel {
 		}
 	}
 	
+	public Serializable getIdentifier() {
+		return DataStaticService.getHibernateSession(factoryKey).getIdentifier(getObject());
+	}
+	
 	/** @return true if current object is new and not yet saved */
 	public boolean isUnsaved() {
-		return !DataStaticService.getHibernateSession().contains(getObject());
+		return !DataStaticService.getHibernateSession(factoryKey).contains(getObject());
 	}
 
 	/**
@@ -221,7 +236,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 		} catch (Throwable e) {
 			throw new RuntimeException("Unable to instantiate object. Does it have a default constructor?", e);
 		}
-		Session sess = DataStaticService.getHibernateSession();
+		Session sess = DataStaticService.getHibernateSession(factoryKey);
 		if (objectId != null) {
 			if (entityName != null)
 				return sess.load(entityName, objectId);

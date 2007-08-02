@@ -1,26 +1,38 @@
 package net.databinder.conv.components;
 
 
-import org.hibernate.classic.Session;
+import java.util.HashMap;
 
 import org.apache.wicket.markup.html.WebPage;
+import org.hibernate.classic.Session;
 
-public abstract class ConversationPage extends WebPage implements IConversationPage {
-	private Session conversationSession;
+public class ConversationPage extends WebPage implements IConversationPage {
+	private HashMap<Object, Session> conversationSessions = new HashMap<Object, Session>();
 	
 	public ConversationPage() {
 	}
 	
 	public ConversationPage(Session conversationSession) {
-		this.conversationSession = conversationSession;
+		setConversationSession(null);
+	}
+
+	public ConversationPage(Object key, Session conversationSession) {
+		setConversationSession(key, conversationSession);
+	}
+	
+	public Session getConversationSession(Object key) {
+		return conversationSessions.get(key);
+	}
+	
+	public void setConversationSession(Object key, Session conversationSession) {
+		conversationSessions.put(key, conversationSession);
 	}
 
 	public Session getConversationSession() {
-		return conversationSession;
+		return getConversationSession(null);
 	}
 
 	public void setConversationSession(Session conversationSession) {
-		this.conversationSession = conversationSession;
+		setConversationSession(null, conversationSession);
 	}
-
 }

@@ -61,7 +61,7 @@ public class DataConversationRequestCycle extends DataRequestCycle implements ID
 	 * Determines current page and retrieves its associated conversation session if 
 	 * appropriate. Does nothing if current page is not yet available.
 	 */
-	public void dataSessionRequested() {
+	public void dataSessionRequested(Object key) {
 		Page page = getResponsePage();
 		if (page == null)
 			page = getRequest().getPage();
@@ -69,10 +69,10 @@ public class DataConversationRequestCycle extends DataRequestCycle implements ID
 		if (page == null) {
 			Class pageClass = getResponsePageClass(); 
 			if (pageClass != null) {
-				openHibernateSession();
+				openHibernateSession(key);
 				// set to manual if we are going to a conv. page
 				if (IConversationPage.class.isAssignableFrom(pageClass))
-					DataStaticService.getHibernateSession().setFlushMode(FlushMode.MANUAL);
+					DataStaticService.getHibernateSession(key).setFlushMode(FlushMode.MANUAL);
 			}
 			return;
 		}
@@ -80,22 +80,23 @@ public class DataConversationRequestCycle extends DataRequestCycle implements ID
 		// if continuing a conversation page
 		if (page instanceof  IConversationPage) {
 			// look for existing session
-			org.hibernate.classic.Session sess = ((IConversationPage)page).getConversationSession();
-
+			org.hibernate.classic.Session sess = ((IConversationPage)page).getConversationSession(key);
+			
 			// if usable session exists, bind and return
 			if (sess != null && sess.isOpen()) {
-					sess.beginTransaction();
-					ManagedSessionContext.bind(sess);
-					return;
+				keys.add(key);
+				sess.beginTransaction();
+				ManagedSessionContext.bind(sess);
+				return;
 			}
 			// else start new one and set in page
-			sess = openHibernateSession();
+			sess = openHibernateSession(key);
 			sess.setFlushMode(FlushMode.MANUAL);
-			((IConversationPage)page).setConversationSession(sess);
+			((IConversationPage)page).setConversationSession(key, sess);
 			return;
 		}
 		// start new standard session
-		openHibernateSession();
+		openHibernateSession(key);
 	}
 	
 	/**
@@ -104,31 +105,33 @@ public class DataConversationRequestCycle extends DataRequestCycle implements ID
 	 */
 	@Override
 	protected void onEndRequest() {
-		if (!ManagedSessionContext.hasBind(DataStaticService.getHibernateSessionFactory()))
-			return;
-		org.hibernate.classic.Session sess = DataStaticService.getHibernateSession();
-		boolean transactionComitted = false;
-		if (sess.getTransaction().isActive())
-			sess.getTransaction().rollback();
-		else
-			transactionComitted = true;
-		
-		Page page = getResponsePage() ;
-		
-		if (page != null) {
-			// check for current conversational session
-			if (page instanceof IConversationPage) {
-				IConversationPage convPage = (IConversationPage)page;
-				// close if not dirty contains no changes
-				if (transactionComitted && !sess.isDirty()) {
+		for (Object key : keys) {
+			if (!ManagedSessionContext.hasBind(DataStaticService.getHibernateSessionFactory(key)))
+				return;
+			org.hibernate.classic.Session sess = DataStaticService.getHibernateSession(key);
+			boolean transactionComitted = false;
+			if (sess.getTransaction().isActive())
+				sess.getTransaction().rollback();
+			else
+				transactionComitted = true;
+			
+			Page page = getResponsePage() ;
+			
+			if (page != null) {
+				// check for current conversational session
+				if (page instanceof IConversationPage) {
+					IConversationPage convPage = (IConversationPage)page;
+					// close if not dirty contains no changes
+					if (transactionComitted && !sess.isDirty()) {
+						sess.close();
+						sess = null;
+					}
+					convPage.setConversationSession(key, sess);
+				} else
 					sess.close();
-					sess = null;
-				}
-				convPage.setConversationSession(sess);
-			} else
-				sess.close();
-		}		
-		ManagedSessionContext.unbind(DataStaticService.getHibernateSessionFactory());
+			}		
+			ManagedSessionContext.unbind(DataStaticService.getHibernateSessionFactory(key));
+		}
 	}
 
 	/** 
@@ -137,16 +140,18 @@ public class DataConversationRequestCycle extends DataRequestCycle implements ID
 	 */
 	@Override
 	public Page onRuntimeException(Page page, RuntimeException e) {
-		if (DataStaticService.hasBoundSession()) {
-			Session sess = DataStaticService.getHibernateSession();
-			try {
-				if (sess.getTransaction().isActive())
-					sess.getTransaction().rollback();
-			} finally {
-				sess.close();
+		for (Object key : keys) {
+			if (DataStaticService.hasBoundSession(key)) {
+				Session sess = DataStaticService.getHibernateSession(key);
+				try {
+					if (sess.getTransaction().isActive())
+						sess.getTransaction().rollback();
+				} finally {
+					sess.close();
+				}
 			}
+			openHibernateSession(key);
 		}
-		openHibernateSession();
 		return null;
 	}
 

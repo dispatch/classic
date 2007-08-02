@@ -40,6 +40,8 @@ public class HibernateListModel extends LoadableDetachableModel {
 	private ICriteriaBuilder criteriaBuilder;
 	private boolean cacheable = false;
 	
+	private Object factoryKey;
+	
 	/**
 	 * Contructor for a simple query.
 	 * @param queryString query with no parameters
@@ -95,12 +97,21 @@ public class HibernateListModel extends LoadableDetachableModel {
 		this.queryBuilder = queryBuilder;
 	}
 
+	public Object getFactoryKey() {
+		return factoryKey;
+	}
+
+	public HibernateListModel setFactoryKey(Object key) {
+		this.factoryKey = key;
+		return this;
+	}
+	
 	/**
 	 * Load the object List through Hibernate, binding query parameters if available.
 	 */
 	@Override
 	protected Object load() {
-		Session session = DataStaticService.getHibernateSession();
+		Session session = DataStaticService.getHibernateSession(factoryKey);
 		if (queryString != null) {
 			Query query = session.createQuery(queryString);
 			if (queryBinder != null)
