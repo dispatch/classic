@@ -68,9 +68,9 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 	 */
 	@Override
 	protected void init() {
-		hibernateSessionFactories.put(null, buildHibernateSessionFactories());
 		if (!isDevelopment())
 			getResourceSettings().setThrowExceptionOnMissingResource(false);
+		buildHibernateSessionFactory(null);
 	}
 	
 	
@@ -83,6 +83,10 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 			else
 				throw new WicketRuntimeException("Session factory not found for key: " + key);
 		return sf;
+	}
+	
+	protected void setHibernateSessionFactory(Object key, SessionFactory sf) {
+		hibernateSessionFactories.put(key, sf);
 	}
 	
 	/**
@@ -102,17 +106,13 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 	 * Called by init to create  Hibernate session factory, triggering a general Hibernate
 	 * initialization. Override if using a custom session factory.
 	 */
-	public SessionFactory buildHibernateSessionFactories() {
-		return buildHibernateSessionFactory(null);
-	}
-	
-	public SessionFactory buildHibernateSessionFactory(Object key) {
+	final public void buildHibernateSessionFactory(Object key) {
 		AnnotationConfiguration config = new AnnotationConfiguration();
 		if (key == null)
 			configureHibernate(config);
 		else
 			configureHibernate(config, key);
-		return config.buildSessionFactory();
+		setHibernateSessionFactory(key, config.buildSessionFactory());
 	}
 	
 	/**
