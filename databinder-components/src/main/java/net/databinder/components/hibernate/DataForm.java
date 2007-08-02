@@ -78,8 +78,10 @@ public class DataForm extends DataFormBase {
 		super(id);
 	}
 	
+	@Override
 	public DataForm setFactoryKey(Object key) {
 		super.setFactoryKey(key);
+		getPersistentObjectModel().setFactoryKey(key);
 		return this;
 	}
 
