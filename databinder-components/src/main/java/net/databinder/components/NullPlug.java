@@ -25,8 +25,8 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
  * generate markup.  
  * @author Nathan Hamblen
  */
-public class NullSocket extends WebMarkupContainer {
-	public NullSocket(String id) {
+public class NullPlug extends WebMarkupContainer {
+	public NullPlug(String id) {
 		super(id);
 		setRenderBodyOnly(true);
 	}

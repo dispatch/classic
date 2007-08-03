@@ -27,7 +27,7 @@ import net.databinder.auth.IAuthSettings;
 import net.databinder.auth.components.DataSignInPage.LazyPage;
 import net.databinder.auth.data.IUser;
 import net.databinder.auth.valid.EqualPasswordConvertedInputValidator;
-import net.databinder.components.NullSocket;
+import net.databinder.components.NullPlug;
 import net.databinder.components.hibernate.DataForm;
 import net.databinder.models.HibernateObjectModel;
 
@@ -78,7 +78,7 @@ public class DataProfilePanel extends Panel {
 		
 		public ProfileForm(String id, HibernateObjectModel userModel) {
 			super(id, userModel);
-			add(topFormSocket("topFormSocket"));
+			add(highFormSocket("highFormSocket"));
 			add(new RequiredTextField("username").add(new UsernameValidator()));
 			add(password = new RSAPasswordTextField("password", this) {
 				public boolean isRequired() {
@@ -98,7 +98,7 @@ public class DataProfilePanel extends Panel {
 				}
 			}.add(rememberMe = new CheckBox("rememberMe", new Model(Boolean.FALSE))));
 			
-			add(bottomFormSocket("bottomFormSocket"));
+			add(lowFormSocket("lowFormSocket"));
 			
 			add(new WebMarkupContainer("submit").add(new AttributeModifier("value", new AbstractReadOnlyModel() {
 				public Object getObject() {
@@ -142,12 +142,12 @@ public class DataProfilePanel extends Panel {
 		}
 	}
 	
-	protected Component topFormSocket(String id) {
-		return new NullSocket(id);
+	protected Component highFormSocket(String id) {
+		return new NullPlug(id);
 	}
 
-	protected Component bottomFormSocket(String id) {
-		return new NullSocket(id);
+	protected Component lowFormSocket(String id) {
+		return new NullPlug(id);
 	}
 
 	public ProfileForm getForm() {
