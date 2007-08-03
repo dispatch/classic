@@ -19,7 +19,7 @@
 package net.databinder.auth.components;
 
 import net.databinder.auth.IAuthSession;
-import net.databinder.auth.components.DataSignInPage.ILazyPage;
+import net.databinder.auth.components.DataSignInPage.LazyPage;
 
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
@@ -35,8 +35,8 @@ import org.apache.wicket.model.Model;
  * @see IAuthSession
  */
 public class DataSignInPanel extends Panel {
-	private ILazyPage returnPage;
-	public DataSignInPanel(String id, ILazyPage returnPage) {
+	private LazyPage returnPage;
+	public DataSignInPanel(String id, LazyPage returnPage) {
 		super(id);
 		this.returnPage = returnPage;
 		add(new FeedbackPanel("feedback"));

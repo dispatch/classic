@@ -18,7 +18,7 @@
  */
 package net.databinder.auth.components;
 
-import net.databinder.auth.components.DataSignInPage.ILazyPage;
+import net.databinder.auth.components.DataSignInPage.LazyPage;
 import net.databinder.components.DataStyleLink;
 
 import org.apache.wicket.Component;
@@ -28,11 +28,11 @@ import org.apache.wicket.markup.html.WebPage;
  * Display profile editing panel for logged in user. 
  */
 public class DataProfilePage extends WebPage {
-	public DataProfilePage(ILazyPage returnPage) {
+	public DataProfilePage(LazyPage returnPage) {
 		add(new DataStyleLink("dataStylesheet"));
 		add(profileSocket("profileSocket", returnPage));
 	}
-	protected Component profileSocket(String id, ILazyPage returnPage) {
+	protected Component profileSocket(String id, LazyPage returnPage) {
 		return new DataProfilePanel(id, returnPage);
 	}
 }

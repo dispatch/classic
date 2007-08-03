@@ -44,10 +44,10 @@ public class DataSignInPage extends WebPage {
 	
 	private SourceList.SourceLink profileLink, signinLink;
 	
-	public interface ILazyPage extends IClusterable {
+	public interface LazyPage extends IClusterable {
 		Page getPage();
 	}
-	private ILazyPage returnPage;
+	private LazyPage returnPage;
 
 	/**
 	 * Displays sign in page.
@@ -69,7 +69,7 @@ public class DataSignInPage extends WebPage {
 		}
 		init();
 	}
-	public DataSignInPage(ILazyPage returnPage) {
+	public DataSignInPage(LazyPage returnPage) {
 		this.returnPage = returnPage;
 		init();
 	}
@@ -100,7 +100,7 @@ public class DataSignInPage extends WebPage {
 	 * @return component (usually panel) to display for sign in
 	 * @see DataSignInPanel
 	 */
-	protected Component signinSocket(String id, ILazyPage returnPage) {
+	protected Component signinSocket(String id, LazyPage returnPage) {
 		return new DataSignInPanel(id, returnPage);
 	}
 
@@ -108,7 +108,7 @@ public class DataSignInPage extends WebPage {
 	 * Default returns DataProfilePanel.
 	 * @return component to display for profile / registration
 	 */
-	protected Component profileSocket(String id, ILazyPage returnPage) {
+	protected Component profileSocket(String id, LazyPage returnPage) {
 		return new DataProfilePanel(id, returnPage);
 	}
 	
