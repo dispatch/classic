@@ -115,7 +115,7 @@ public class DatabinderProvider implements IDataProvider  {
 		return factoryKey;
 	}
 
-	DatabinderProvider setFactoryKey(Object key) {
+	public DatabinderProvider setFactoryKey(Object key) {
 		this.factoryKey = key;
 		return this;
 	}
