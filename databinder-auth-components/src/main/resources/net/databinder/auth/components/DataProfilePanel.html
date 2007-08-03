@@ -1,6 +1,6 @@
 <html>
 <head>
-	<link rel="stylesheet" type="text/css" href="data-app.css" />
+	<link rel="stylesheet" type="text/css" href="../../../../../../../../databinder-components/src/main/resources/net/databinder/components/DataStyleSheet.css" />
 </head>
 <body>
 
@@ -10,6 +10,8 @@
 </div>
 
 <form wicket:id="registerForm" class="labelAbove">
+
+	<div wicket:id="topFormSocket" />
 
 	<div class="row">
 		<label>Username</label>
@@ -27,6 +29,9 @@
 		<input wicket:id="rememberMe" id="rememberMe"type="checkbox" />
 		<label style="display:inline" for="rememberMe">Always sign in automatically</label>
 	</div>
+	
+	<div wicket:id="bottomFormSocket" />
+	
 	<p> <input wicket:id="submit" type="submit" name="submit" value="Register"/> </p>
 
 </form>

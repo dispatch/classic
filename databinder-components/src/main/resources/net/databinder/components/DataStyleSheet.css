@@ -34,6 +34,14 @@ form.labelAbove label {
 form.labelAbove div.row {
 	margin: .75em 0;
 }
+
+form.labelAbove textarea {
+  font-family: Monaco, 'Lucida Sans Typewriter', monospace;
+  font-size: 9px;
+  width: 33em; 
+  height: 18em;
+}
+
 .feedback ul {
 	background: #FFD39F;
 	padding: .5em;

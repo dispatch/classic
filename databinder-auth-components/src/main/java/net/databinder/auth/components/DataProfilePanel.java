@@ -27,11 +27,13 @@ import net.databinder.auth.IAuthSettings;
 import net.databinder.auth.components.DataSignInPage.LazyPage;
 import net.databinder.auth.data.IUser;
 import net.databinder.auth.valid.EqualPasswordConvertedInputValidator;
+import net.databinder.components.NullSocket;
 import net.databinder.components.hibernate.DataForm;
 import net.databinder.models.HibernateObjectModel;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.RequiredTextField;
@@ -50,21 +52,19 @@ import org.hibernate.Session;
  */
 public class DataProfilePanel extends Panel {
 	private LazyPage returnPage;
+	private ProfileForm form;
 
 	public DataProfilePanel(String id, LazyPage returnPage) {
-		this(id);
-		this.returnPage = returnPage;
-	}
-	public DataProfilePanel(String id) {
 		super(id);
+		this.returnPage = returnPage;
 		add(new FeedbackPanel("feedback"));
 		HibernateObjectModel userModel = DataSignInPage.getAuthSession().getUserModel();
 		if (userModel == null) 
 			userModel = new HibernateObjectModel(((IAuthSettings)getApplication()).getUserClass());
-		add(new RegisterForm("registerForm", userModel));
+		add(form = new ProfileForm("registerForm", userModel));
 	}
 	
-	protected class RegisterForm extends DataForm {
+	protected class ProfileForm extends DataForm {
 		private RSAPasswordTextField password, passwordConfirm;
 		private CheckBox rememberMe;
 		
@@ -76,8 +76,9 @@ public class DataProfilePanel extends Panel {
 			return DataStaticService.getHibernateSession().contains(getUser());
 		}
 		
-		public RegisterForm(String id, HibernateObjectModel userModel) {
+		public ProfileForm(String id, HibernateObjectModel userModel) {
 			super(id, userModel);
+			add(topFormSocket("topFormSocket"));
 			add(new RequiredTextField("username").add(new UsernameValidator()));
 			add(password = new RSAPasswordTextField("password", this) {
 				public boolean isRequired() {
@@ -96,6 +97,8 @@ public class DataProfilePanel extends Panel {
 					return !existing();
 				}
 			}.add(rememberMe = new CheckBox("rememberMe", new Model(Boolean.FALSE))));
+			
+			add(bottomFormSocket("bottomFormSocket"));
 			
 			add(new WebMarkupContainer("submit").add(new AttributeModifier("value", new AbstractReadOnlyModel() {
 				public Object getObject() {
@@ -137,6 +140,18 @@ public class DataProfilePanel extends Panel {
 				error(validatable,"taken",  m);
 			}
 		}
+	}
+	
+	protected Component topFormSocket(String id) {
+		return new NullSocket(id);
+	}
+
+	protected Component bottomFormSocket(String id) {
+		return new NullSocket(id);
+	}
+
+	public ProfileForm getForm() {
+		return form;
 	}
 
 }

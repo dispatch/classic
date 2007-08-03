@@ -56,7 +56,7 @@ public class DataUserStatusPanel extends Panel {
 		wrapper.add(new Link("profile") {
 			@Override
 			public void onClick() {
-				setResponsePage(getProfilePage());
+				setResponsePage(profilePage());
 			}
 		});
 
@@ -71,7 +71,7 @@ public class DataUserStatusPanel extends Panel {
 		add(getSignInLink("signIn"));
 	}
 	
-	WebPage getProfilePage() {
+	protected WebPage profilePage() {
 		return new DataProfilePage(new LazyPage() {
 			public Page getPage() {
 				return DataUserStatusPanel.this.getPage();
