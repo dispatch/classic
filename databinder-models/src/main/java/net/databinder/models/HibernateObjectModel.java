@@ -180,11 +180,6 @@ public class HibernateObjectModel extends LoadableWritableModel {
 		return DataStaticService.getHibernateSession(factoryKey).getIdentifier(getObject());
 	}
 	
-	/** @return true if current object is new and not yet saved */
-	public boolean isUnsaved() {
-		return !DataStaticService.getHibernateSession(factoryKey).contains(getObject());
-	}
-
 	/**
 	 * Disassociates this object from any persitant object, but retains the class
 	 * for contructing a blank copy if requested.
@@ -312,8 +307,9 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	}
 
 	/**
-	 * When "bound," this model discards its temporary model object at the end of every
-	 * request cycle and reloads it via Hiberanate when needed again. When "unbound," its
+	 * "bound" objects are those that can be loaded from persistent storage by a known id or
+	 * query. When bound, this model discards its temporary model object at the end of every
+	 * request cycle and reloads it via Hiberanate when needed again. When unbound, its
 	 * behavior is dictated by the value of retanUnsaved.
 	 * @return true if information needed to load from Hibernate (identifier, query, or criteria) is present
 	 */

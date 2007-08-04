@@ -214,7 +214,7 @@ public class DataForm extends DataFormBase {
 		}
 		@Override
 		public boolean isEnabled() {
-			return !DataForm.this.isVisibleInHierarchy() || !getPersistentObjectModel().isUnsaved();
+			return !DataForm.this.isVisibleInHierarchy() || getPersistentObjectModel().isBound();
 		}
 		@Override
 		public void onClick() {
