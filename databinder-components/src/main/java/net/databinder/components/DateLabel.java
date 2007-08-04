@@ -28,6 +28,9 @@ import org.apache.wicket.util.convert.converters.AbstractConverter;
 
 /**
  * Label with a specific date format (rather than a globally defined one). 
+ * <b>Note:</b>Since this class's inception, the wicket-datetime project has
+ * produced a DateLabel class. This component will not be expanded, and will eventually
+ * be deprecated.
  * @author Nathan Hamblen
  */
 public class DateLabel extends CustomLabel {
