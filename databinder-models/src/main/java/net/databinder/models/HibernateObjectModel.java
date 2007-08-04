@@ -307,7 +307,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	}
 
 	/**
-	 * "bound" objects are those that can be loaded from persistent storage by a known id or
+	 * "bound" models are those that can be loaded from persistent storage by a known id or
 	 * query. When bound, this model discards its temporary model object at the end of every
 	 * request cycle and reloads it via Hiberanate when needed again. When unbound, its
 	 * behavior is dictated by the value of retanUnsaved.
