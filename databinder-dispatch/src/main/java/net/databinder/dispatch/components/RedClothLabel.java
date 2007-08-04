@@ -27,28 +27,19 @@ import org.apache.wicket.model.IModel;
  * @see XmlRpcLabel 
  * @author Nathan Hamblen
  */
-public class RedClothLabel extends XmlRpcLabel {
+public class RedClothLabel extends TextFormattedLabel {
 
 	/**
 	 * @param Wicket id
 	 */
 	public RedClothLabel(String id) {
-		super(id, new RedClothConverter());
-		setEscapeModelStrings(false);
+		super(id, TextFormat.Textile);
 	}
 /**
  * @param Wicket id
  * @param String model
  */
 	public RedClothLabel(String id, IModel model) {
-		super(id, model, new RedClothConverter());
-		setEscapeModelStrings(false);
-	}
-	/** XML-RPC method name is "redcloth.to_html". */
-	public static class RedClothConverter extends XmlRpcConverter {
-		@Override
-		protected String getMethodName() {
-			return "redcloth.to_html";
-		}
+		super(id, model, TextFormat.Textile);
 	}
 }

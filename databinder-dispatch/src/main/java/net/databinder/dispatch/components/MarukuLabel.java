@@ -28,28 +28,19 @@ import org.apache.wicket.model.IModel;
  * @see XmlRpcLabel 
  * @author Nathan Hamblen
  */
-public class MarukuLabel extends XmlRpcLabel {
+public class MarukuLabel extends TextFormattedLabel {
 
 	/**
 	 * @param Wicket id
 	 */
 	public MarukuLabel(String id) {
-		super(id, new MarukuConverter());
-		setEscapeModelStrings(false);
+		super(id, TextFormat.Markdown);
 	}
 /**
  * @param Wicket id
  * @param String model
  */
 	public MarukuLabel(String id, IModel model) {
-		super(id, model, new MarukuConverter());
-		setEscapeModelStrings(false);
-	}
-	/** XML-RPC method name is "maruku.to_html". */
-	public static class MarukuConverter extends XmlRpcConverter {
-		@Override
-		protected String getMethodName() {
-			return "maruku.to_html";
-		}
+		super(id, model, TextFormat.Markdown);
 	}
 }
