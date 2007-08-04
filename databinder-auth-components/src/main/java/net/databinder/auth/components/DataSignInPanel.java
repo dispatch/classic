@@ -19,7 +19,7 @@
 package net.databinder.auth.components;
 
 import net.databinder.auth.IAuthSession;
-import net.databinder.auth.components.DataSignInPage.LazyPage;
+import net.databinder.auth.components.DataSignInPage.ReturnPage;
 
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
@@ -35,8 +35,8 @@ import org.apache.wicket.model.Model;
  * @see IAuthSession
  */
 public class DataSignInPanel extends Panel {
-	private LazyPage returnPage;
-	public DataSignInPanel(String id, LazyPage returnPage) {
+	private ReturnPage returnPage;
+	public DataSignInPanel(String id, ReturnPage returnPage) {
 		super(id);
 		this.returnPage = returnPage;
 		add(new FeedbackPanel("feedback"));
@@ -61,7 +61,7 @@ public class DataSignInPanel extends Panel {
 					if (!continueToOriginalDestination())
 						setResponsePage(getApplication().getHomePage());
 				} else
-					setResponsePage(returnPage.getPage());
+					setResponsePage(returnPage.get());
 			} else
 				error(getLocalizer().getString("signInFailed", this, "Sorry, these credentials are not recognized."));
 		}

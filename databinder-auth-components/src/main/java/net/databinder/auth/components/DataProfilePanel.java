@@ -24,7 +24,7 @@ import java.util.Map;
 import net.databinder.DataStaticService;
 import net.databinder.auth.IAuthSession;
 import net.databinder.auth.IAuthSettings;
-import net.databinder.auth.components.DataSignInPage.LazyPage;
+import net.databinder.auth.components.DataSignInPage.ReturnPage;
 import net.databinder.auth.data.IUser;
 import net.databinder.auth.valid.EqualPasswordConvertedInputValidator;
 import net.databinder.components.NullPlug;
@@ -51,10 +51,10 @@ import org.hibernate.Session;
  * Registration with username, password, and password confirmation.
  */
 public class DataProfilePanel extends Panel {
-	private LazyPage returnPage;
+	private ReturnPage returnPage;
 	private ProfileForm form;
 
-	public DataProfilePanel(String id, LazyPage returnPage) {
+	public DataProfilePanel(String id, ReturnPage returnPage) {
 		super(id);
 		this.returnPage = returnPage;
 		add(new FeedbackPanel("feedback"));
@@ -117,7 +117,7 @@ public class DataProfilePanel extends Panel {
 				if (!continueToOriginalDestination())
 					setResponsePage(getApplication().getHomePage());
 			} else
-				setResponsePage(returnPage.getPage());
+				setResponsePage(returnPage.get());
 		}
 	}
 
