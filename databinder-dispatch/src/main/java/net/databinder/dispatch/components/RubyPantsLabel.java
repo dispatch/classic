@@ -30,28 +30,19 @@ import org.apache.wicket.model.IModel;
  * @see XmlRpcLabel 
  * @author Nathan Hamblen
  */
-public class RubyPantsLabel extends XmlRpcLabel {
+public class RubyPantsLabel extends TextFormattedLabel {
 
 	/**
 	 * @param Wicket id
 	 */
 	public RubyPantsLabel(String id) {
-		super(id, new RubyPantsConverter());
-		setEscapeModelStrings(false);
+		super(id, TextFormat.Smartypants);
 	}
-/**
- * @param Wicket id
- * @param String model
- */
+	/**
+	 * @param Wicket id
+	 * @param String model
+	 */
 	public RubyPantsLabel(String id, IModel model) {
-		super(id, model, new RubyPantsConverter());
-		setEscapeModelStrings(false);
-	}
-	/** XML-RPC method name is "rubypants.to_html". */
-	public static class RubyPantsConverter extends XmlRpcConverter {
-		@Override
-		protected String getMethodName() {
-			return "rubypants.to_html";
-		}
+		super(id, model, TextFormat.Smartypants);
 	}
 }
