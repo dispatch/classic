@@ -89,6 +89,14 @@ public class DatabinderProvider implements IDataProvider  {
 	}
 	
 	/**
+	 * Provides entities matching the given queries.
+	 */
+	public DatabinderProvider(String query, String countQuery) {
+		this.queryString = query;
+		this.countQueryString = countQuery;
+	}
+	
+	/**
 	 * Provides entities matching the given query with bound parameters.  The count query
 	 * is derived by prefixing "select count(*)" to the given query; this will fail if 
 	 * the supplied query has a select clause.
@@ -103,7 +111,7 @@ public class DatabinderProvider implements IDataProvider  {
 	 * @param query query to return entities
 	 * @param queryBinder binder for the standard query
 	 * @param countQuery query to return count of entities
-	 * @param countQueryBinder binder for the count query
+	 * @param countQueryBinder binder for the count query (may be same as queryBinder)
 	 */
 	public DatabinderProvider(String query, IQueryBinder queryBinder, String countQuery, IQueryBinder countQueryBinder) {
 		this(query, queryBinder);
