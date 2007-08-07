@@ -31,6 +31,9 @@ pre, table, td {
 form.labelAbove label {
 	display: block;
 }
+form.labelAbove label .note {
+	font-size: 85%;
+}
 form.labelAbove div.row {
 	margin: .75em 0;
 }
