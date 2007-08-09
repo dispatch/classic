@@ -104,14 +104,19 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 	
 	/**
 	 * Called by init to create  Hibernate session factory, triggering a general Hibernate
-	 * initialization. Override if using a custom session factory.
+	 * initialization. Initializes a new AnnotationConfiguration. Override if using a 
+	 * creating a configuration externally.
 	 */
-	final public void buildHibernateSessionFactory(Object key) {
-		AnnotationConfiguration config = new AnnotationConfiguration();
-		if (key == null)
-			configureHibernate(config);
-		else
-			configureHibernate(config, key);
+	public void buildHibernateSessionFactory(Object key) {
+		buildHibernateSessionFactory(key, new AnnotationConfiguration());
+	}
+	
+	/**
+	 * Builds session factory with the given configuration after passing it to configureHibernate
+	 * methods.
+	 */
+	final public void buildHibernateSessionFactory(Object key, AnnotationConfiguration config) {
+		configureHibernate(config, key);
 		setHibernateSessionFactory(key, config.buildSessionFactory());
 	}
 	
@@ -125,9 +130,6 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 	 * @param config used to build Hibernate session factory
 	 */
 	protected  void configureHibernate(AnnotationConfiguration config) {
-		configureHibernate(config, null);
-	}
-	protected  void configureHibernate(AnnotationConfiguration config, Object key) {
 		config.setProperty("hibernate.current_session_context_class","managed");
 
     	if (isDevelopment())
@@ -137,6 +139,10 @@ public abstract class DataApplication extends WebApplication implements IDataApp
     		.setProperty("hibernate.c3p0.timeout","3000")
     		.setProperty("hibernate.c3p0.idle_test_period", "300");
     	}
+	}
+	
+	protected  void configureHibernate(AnnotationConfiguration config, Object key) {
+		configureHibernate(config);
 	}
 		
 	/**
