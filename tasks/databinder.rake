@@ -7,7 +7,7 @@ def child_artifact(child_spec, parent_artifact, path)
 		unz.from_path(File.dirname(path)).include(file_name)
 		unz.extract()
 		tgt = (File.join(dest_path, file_name))
-		mv(tgt, task.name) if not File.exist? tgt
+		mv(tgt, task.name) if not File.exist? task.name
 	end
 end
 
