@@ -1,0 +1,22 @@
+require "buildr"
+
+repositories.remote << "http://repo1.maven.org/maven2/"
+repositories.remote << "http://wicketstuff.org/maven/repository/"
+repositories.remote << "http://databinder.net/snapshot/"
+
+BATIK_ZIP = download(artifact("org.apache.batik:batik:zip:1.7-beta1") => "http://apache.mirrors.tds.net/xmlgraphics/batik/batik-1.7beta1.zip")
+BATIK_GVT = child_artifact("org.apache.batik:batik-gvt:jar:1.7-beta1", BATIK_ZIP, "batik-1.7/lib/batik-gvt.jar")
+BATIK_AWT_UTIL = child_artifact("org.apache.batik:batik-awt-util:jar:1.7-beta1", BATIK_ZIP, "batik-1.7/lib/batik-awt-util.jar")
+
+desc "Databinder draw"
+define "databinder-draw" do
+
+	project.version = "1.1-SNAPSHOT"
+	project.group = "net.databinder"
+
+	compile.options.target = "1.5"
+	compile.with [DATABINDER, BATIK_GVT, BATIK_AWT_UTIL]	# should really just be databinder-components
+
+	package :jar
+
+end
