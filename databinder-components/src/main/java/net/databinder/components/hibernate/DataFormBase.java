@@ -7,6 +7,12 @@ import org.apache.wicket.model.IModel;
 import org.hibernate.Session;
 import org.hibernate.StaleObjectStateException;
 
+/**
+ * Base class for forms that commit in onSubmit(). This is extended by DataForm, and may be
+ * extended directly by client forms when DataForm is not appropriate. Transactions
+ * are committed only when no errors are displayed.
+ * @author Nathan Hamblen
+ */
 public class DataFormBase extends Form {
 	private Object factoryKey;
 	public DataFormBase(String id) {
@@ -30,11 +36,16 @@ public class DataFormBase extends Form {
 		return DataStaticService.getHibernateSession(factoryKey);
 	}
 	
+	/**
+	 * Commits transaction if no errors are registered for any form component. 
+	 */
 	protected void onSubmit() {
 		try {
-			Session session = DataStaticService.getHibernateSession(factoryKey);
-			session.flush(); // needed for conv. sessions, harmless otherwise
-			session.getTransaction().commit();
+			if (!hasError()) {
+				Session session = DataStaticService.getHibernateSession(factoryKey);
+				session.flush(); // needed for conv. sessions, harmless otherwise
+				session.getTransaction().commit();
+			}
 		} catch (StaleObjectStateException e) {
 			error(getString("version.mismatch", null)); // report error
 		}
