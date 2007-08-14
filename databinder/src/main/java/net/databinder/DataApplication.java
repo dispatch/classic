@@ -70,6 +70,53 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 			getResourceSettings().setThrowExceptionOnMissingResource(false);
 		buildHibernateSessionFactory(null);
 	}
+
+	/**
+	 * Called by init to create Hibernate session factory and load a configuration. Passes
+	 * a new AnnotationConfiguration to buildHibernateSessionFactory(key, config) by 
+	 * default. Override if creating a configuration externally.
+	 */
+	public void buildHibernateSessionFactory(Object key) {
+		buildHibernateSessionFactory(key, new AnnotationConfiguration());
+	}
+	
+	/**
+	 * Builds and retains a session factory with the given configuration after passing it to 
+	 * configureHibernate methods.
+	 */
+	final public void buildHibernateSessionFactory(Object key, AnnotationConfiguration config) {
+		configureHibernate(config, key);
+		setHibernateSessionFactory(key, config.buildSessionFactory());
+	}
+	
+	/**
+	 * Configure the session factory associated with the key. The default implementation
+	 * calls the key-neutral configureHibernate(config) method.
+	 * @param config
+	 * @param key
+	 */
+	protected  void configureHibernate(AnnotationConfiguration config, Object key) {
+		configureHibernate(config);
+	}
+		
+	/**
+	 * Override to add annotated classes to all session factories, but don't forget
+	 * to call this super-implementation. If running in a development environment,
+	 * the session factory is set for hbm2ddl auto-updating to create and add columns to tables 
+	 * as required. Otherwise, it is configured for C3P0 connection pooling. 
+	 * @param config used to build Hibernate session factory
+	 */
+	protected  void configureHibernate(AnnotationConfiguration config) {
+		config.setProperty("hibernate.current_session_context_class","managed");
+
+    	if (isDevelopment())
+    		config.setProperty("hibernate.hbm2ddl.auto", "update");
+    	else {
+    		config.setProperty("hibernate.c3p0.max_size", "20")
+    		.setProperty("hibernate.c3p0.timeout","3000")
+    		.setProperty("hibernate.c3p0.idle_test_period", "300");
+    	}
+	}
 	
 	/**
 	 * @param key object, or null for the default factory
@@ -107,53 +154,6 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 		return converterLocator;
 	}
 	
-	/**
-	 * Called by init to create Hibernate session factory and load a configuration. Passes
-	 * a new AnnotationConfiguration to buildHibernateSessionFactory(key, config) by 
-	 * default. Override if creating a configuration externally.
-	 */
-	public void buildHibernateSessionFactory(Object key) {
-		buildHibernateSessionFactory(key, new AnnotationConfiguration());
-	}
-	
-	/**
-	 * Builds and retains a session factory with the given configuration after passing it to 
-	 * configureHibernate methods.
-	 */
-	final public void buildHibernateSessionFactory(Object key, AnnotationConfiguration config) {
-		configureHibernate(config, key);
-		setHibernateSessionFactory(key, config.buildSessionFactory());
-	}
-	
-	/**
-	 * Override to add annotated classes to all session factories, but don't forget
-	 * to call this super-implementation. If running in a development environment,
-	 * the session factory is set for hbm2ddl auto-updating to create and add columns to tables 
-	 * as required. Otherwise, it is configured for C3P0 connection pooling. 
-	 * @param config used to build Hibernate session factory
-	 */
-	protected  void configureHibernate(AnnotationConfiguration config) {
-		config.setProperty("hibernate.current_session_context_class","managed");
-
-    	if (isDevelopment())
-    		config.setProperty("hibernate.hbm2ddl.auto", "update");
-    	else {
-    		config.setProperty("hibernate.c3p0.max_size", "20")
-    		.setProperty("hibernate.c3p0.timeout","3000")
-    		.setProperty("hibernate.c3p0.idle_test_period", "300");
-    	}
-	}
-	
-	/**
-	 * Configure the session factory associated with the key. The default implementation
-	 * calls the key-neutral configureHibernate(config) method.
-	 * @param config
-	 * @param key
-	 */
-	protected  void configureHibernate(AnnotationConfiguration config, Object key) {
-		configureHibernate(config);
-	}
-		
 	/**
 	 * @return a DataRequestCycle
 	 * @see DataRequestCycle
