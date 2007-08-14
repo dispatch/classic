@@ -27,7 +27,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.context.ManagedSessionContext;
 
 /**
- * Provides access to the Hibernate session factory and current sessions.
+ * Provides access to application-bound Hibernate session factories and current sessions.
  * @author Nathan Hamblen
  */
 public class DataStaticService {
@@ -35,13 +35,19 @@ public class DataStaticService {
 	private static SessionFactory hibernateSessionFactory;
 	
 	/**
-	 * @return session factory, as returned by the application
+	 * @return default session factory, as returned by the application
 	 * @throws WicketRuntimeException if session factory can not be found 
 	 * @see IDataApplication
 	 */
 	public static SessionFactory getHibernateSessionFactory() {
 		return getHibernateSessionFactory(null);
 	}
+	/**
+	 * @param key object, or null for the default factory
+	 * @return session factory, as returned by the application
+	 * @throws WicketRuntimeException if session factory can not be found 
+	 * @see IDataApplication
+	 */
 	public static SessionFactory getHibernateSessionFactory(Object key) {
 		Application app = Application.get();
 		if (app instanceof IDataApplication)
@@ -52,20 +58,30 @@ public class DataStaticService {
 	}
 	
 	/**
-	 * @return Hibernate session bound to current thread
+	 * @return default Hibernate session bound to current thread
 	 */
 	public static org.hibernate.classic.Session getHibernateSession() {
 		return getHibernateSession(null);
 	}
+	/**
+	 * @param factory key, or null for the default factory
+	 * @return Hibernate session bound to current thread
+	 */
 	public static org.hibernate.classic.Session getHibernateSession(Object key) {
 		dataSessionRequested(key);
 		return getHibernateSessionFactory(key).getCurrentSession();
 	}
-	
+	/**
+	 * @return true if a session is bound for the default factory
+	 */
 	public static boolean hasBoundSession() {
 		return hasBoundSession(null);
 	}
 	
+	/**
+	 * @param factory key, or null for the default factory
+	 * @return true if a session is bound for the keyed factory
+	 */
 	public static boolean hasBoundSession(Object key) {
 		return ManagedSessionContext.hasBind(getHibernateSessionFactory(key));
 	}
@@ -73,6 +89,7 @@ public class DataStaticService {
 	/**
 	 * Notifies current request cycle that a data session was requested, if a session factory
 	 * was not already bound for this thread and the request cycle is an IDataRequestCycle.
+	 * @param factory key, or null for the default factory
 	 * @see IDataRequestCycle
 	 */
 	private static void dataSessionRequested(Object key) {
@@ -83,7 +100,6 @@ public class DataStaticService {
 				((IDataRequestCycle)cycle).dataSessionRequested(key);
 		}
 	}
-
 	
 	/**
 	 * Please implement IDataApplication in your application class instead of calling this method.
@@ -95,8 +111,8 @@ public class DataStaticService {
 	}
 	
 	/**
-	 * Wraps SessionUnit callback in a temporary thread-bound Hibernate session if
-	 * necessary. This is to be used outside of a regular a session-handling request cycle,
+	 * Wraps SessionUnit callback in a temporary thread-bound Hibernate session from the default
+	 * factory if necessary. This is to be used outside of a regular a session-handling request cycle,
 	 * such as during application init or an external Web service request. 
 	 * The temporary session and transaction, if created, are closed after the callback returns and 
 	 * uncommited transactions are rolled back. Be careful of returning detached Hibernate 
@@ -108,6 +124,18 @@ public class DataStaticService {
 	public static Object ensureSession(SessionUnit unit) {
 		return ensureSession(unit, null);
 	}
+	/**
+	 * Wraps SessionUnit callback in a temporary thread-bound Hibernate session from the keyed
+	 * factory if necessary. This is to be used outside of a regular a session-handling request cycle,
+	 * such as during application init or an external Web service request. 
+	 * The temporary session and transaction, if created, are closed after the callback returns and 
+	 * uncommited transactions are rolled back. Be careful of returning detached Hibernate 
+	 * objects that may not be fully loaded with data; consider using projections / scalar 
+	 * queries instead.
+	 * @param unit work to be performed in thread-bound session
+	 * @param factory key, or null for the default factory
+	 * @see SessionUnit
+	 */
 	public static Object ensureSession(SessionUnit unit, Object key) {
 		dataSessionRequested(key);
 		SessionFactory sf = getHibernateSessionFactory(key);
