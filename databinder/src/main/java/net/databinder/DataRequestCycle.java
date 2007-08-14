@@ -39,8 +39,8 @@ import org.hibernate.context.ManagedSessionContext;
 
 /**
  * <p>Opens Hibernate sessions and transactions as required and closes them at a request's
- * end. Uncomitted transactions are rolled back. Uses Hibernate session factory from
- * DataStaticService..</p>
+ * end. Uncomitted transactions are rolled back. Uses keyed Hibernate session factories from
+ * DataStaticService.</p>
  * @see DataStaticService
  * @author Nathan Hamblen
  */
@@ -48,16 +48,16 @@ public class DataRequestCycle extends WebRequestCycle implements IDataRequestCyc
 	/** cache of cookies from request */ 
 	private Map<String, Cookie> cookies;
 	
+	/** Keys for session factories that have been opened for this request */ 
 	protected HashSet<Object> keys = new HashSet<Object>();
-
 
 	public DataRequestCycle(WebApplication application, WebRequest request, Response response) {
 		super(application, request, response);
 	}
 
 	/**
-	 * Will open a session if one is not already open for this request.
-	 * @return the open Hibernate session for the current request cycle.
+	 * Call DataStaticService.getHibernateSession() instead of this method.
+	 * @see DataStaticService#getHibernateSession()
 	 * @deprecated
 	 */
 	public static Session getHibernateSession() {
@@ -85,6 +85,11 @@ public class DataRequestCycle extends WebRequestCycle implements IDataRequestCyc
 		openHibernateSession(key);
 	}
 	
+	/**
+	 * Open a session and begin a transaction for the keyed session factory.
+	 * @param key object, or null for the default factory
+	 * @return newly opened session
+	 */
 	protected org.hibernate.classic.Session openHibernateSession(Object key) {
 		org.hibernate.classic.Session sess = DataStaticService.getHibernateSessionFactory(key).openSession();
 		sess.beginTransaction();
@@ -94,7 +99,7 @@ public class DataRequestCycle extends WebRequestCycle implements IDataRequestCyc
 	}
 
 	/**
-	 * Closes the Hibernate session, if one was open for this request. If a transaction has
+	 * Closes all Hibernate sessions opened for this request. If a transaction has
 	 * not been committed, it will be rolled back before closing the session.
 	 * @see net.databinder.components.hibernate.DataForm#onSubmit()
 	 */
@@ -109,7 +114,7 @@ public class DataRequestCycle extends WebRequestCycle implements IDataRequestCyc
 	}
 
 	/** 
-	 * Closes and reopens session for this request cycle. Unrelated models may try to load 
+	 * Closes and reopens sessions for this request cycle. Unrelated models may try to load 
 	 * themselves after this point. 
 	 */
 	@Override

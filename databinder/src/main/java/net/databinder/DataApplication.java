@@ -92,8 +92,8 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 	/**
 	 * Configure the session factory associated with the key. The default implementation
 	 * calls the key-neutral configureHibernate(config) method.
-	 * @param config
-	 * @param key
+	 * @param config configuration to update
+	 * @param key object, or null for the default factory
 	 */
 	protected  void configureHibernate(AnnotationConfiguration config, Object key) {
 		configureHibernate(config);
