@@ -47,8 +47,7 @@ import org.hibernate.cfg.AnnotationConfiguration;
 
 /**
  * Optional Databinder base Application class for configuration and session management. 
- * Independent WebApplication subclasses will need to establish both Wicket and 
- * Hibernate session factories.
+ * Supports multiple session factories with key objects.
  * @author Nathan Hamblen
  */
 public abstract class DataApplication extends WebApplication implements IDataApplication {
@@ -59,11 +58,10 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 	private HashMap<Object, SessionFactory>hibernateSessionFactories = new HashMap<Object, SessionFactory>();
 	
 	/**
-	 * Initializes Hibernate session factory. If you override this 
-	 * method, be sure to call super() or initialize a Hibernate session factory and return it in
-	 * getHibernateSessionFactory() yourself. This method also
-	 * turns off exceptions for missing resources in deployment mode, as search engines
-	 * will request those long after they are gone.
+	 * Initializes a default Hibernate session factory. If you override this 
+	 * method, be sure to call super() or initialize a Hibernate session factory yourself. 
+	 * This method also turns off exceptions for missing resources in deployment mode, 
+	 * as search engines will request those long after they are gone.
 	 * @see DataStaticService 
 	 */
 	@Override
@@ -73,7 +71,10 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 		buildHibernateSessionFactory(null);
 	}
 	
-	
+	/**
+	 * @param key object, or null for the default factory
+	 * @return the retained session factory
+	 */
 	public SessionFactory getHibernateSessionFactory(Object key) {
 		SessionFactory sf = hibernateSessionFactories.get(key);
 		if (sf == null)
@@ -85,6 +86,10 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 		return sf;
 	}
 	
+	/**
+	 * @param key object, or null for the default factory
+	 * @param sf session factory to retain
+	 */
 	protected void setHibernateSessionFactory(Object key, SessionFactory sf) {
 		hibernateSessionFactories.put(key, sf);
 	}
@@ -103,17 +108,17 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 	}
 	
 	/**
-	 * Called by init to create  Hibernate session factory, triggering a general Hibernate
-	 * initialization. Initializes a new AnnotationConfiguration. Override if using a 
-	 * creating a configuration externally.
+	 * Called by init to create Hibernate session factory and load a configuration. Passes
+	 * a new AnnotationConfiguration to buildHibernateSessionFactory(key, config) by 
+	 * default. Override if creating a configuration externally.
 	 */
 	public void buildHibernateSessionFactory(Object key) {
 		buildHibernateSessionFactory(key, new AnnotationConfiguration());
 	}
 	
 	/**
-	 * Builds session factory with the given configuration after passing it to configureHibernate
-	 * methods.
+	 * Builds and retains a session factory with the given configuration after passing it to 
+	 * configureHibernate methods.
 	 */
 	final public void buildHibernateSessionFactory(Object key, AnnotationConfiguration config) {
 		configureHibernate(config, key);
@@ -121,12 +126,10 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 	}
 	
 	/**
-	 * Override to add annotated classes for persistent storage by Hibernate, but don't forget
+	 * Override to add annotated classes to all session factories, but don't forget
 	 * to call this super-implementation. If running in a development environment,
 	 * the session factory is set for hbm2ddl auto-updating to create and add columns to tables 
-	 * as required. Otherwise, it is configured for C3P0 connection pooling. (At present the two
-	 * seem to be incompatible.) If you don't want this behavior, don't call the 
-	 * super-implementation.
+	 * as required. Otherwise, it is configured for C3P0 connection pooling. 
 	 * @param config used to build Hibernate session factory
 	 */
 	protected  void configureHibernate(AnnotationConfiguration config) {
@@ -141,6 +144,12 @@ public abstract class DataApplication extends WebApplication implements IDataApp
     	}
 	}
 	
+	/**
+	 * Configure the session factory associated with the key. The default implementation
+	 * calls the key-neutral configureHibernate(config) method.
+	 * @param config
+	 * @param key
+	 */
 	protected  void configureHibernate(AnnotationConfiguration config, Object key) {
 		configureHibernate(config);
 	}
