@@ -30,5 +30,6 @@ public abstract class SourceListPanel extends Panel {
 			}
 		});
 	}
+	/** Supply a source link for the model and id */
 	protected abstract Link sourceLink(String id, IModel model);
 }
