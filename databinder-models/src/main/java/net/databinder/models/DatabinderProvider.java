@@ -119,10 +119,16 @@ public class DatabinderProvider implements IDataProvider  {
 		this.countQueryBinder = countQueryBinder;
 	}
 
+	/** @return session factory key, or null for the default factory */
 	public Object getFactoryKey() {
 		return factoryKey;
 	}
 
+	/**
+	 * Set a factory key other than the default (null).
+	 * @param session factory key
+	 * @return this, for chaining
+	 */
 	public DatabinderProvider setFactoryKey(Object key) {
 		this.factoryKey = key;
 		return this;

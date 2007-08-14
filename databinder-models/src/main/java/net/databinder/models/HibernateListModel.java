@@ -97,10 +97,16 @@ public class HibernateListModel extends LoadableDetachableModel {
 		this.queryBuilder = queryBuilder;
 	}
 
+	/** @return session factory key, or null for the default factory */
 	public Object getFactoryKey() {
 		return factoryKey;
 	}
 
+	/**
+	 * Set a factory key other than the default (null).
+	 * @param session factory key
+	 * @return this, for chaining
+	 */
 	public HibernateListModel setFactoryKey(Object key) {
 		this.factoryKey = key;
 		return this;

@@ -136,10 +136,16 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	public HibernateObjectModel() {
 	}
 	
+	/** @return session factory key, or null for the default factory */
 	public Object getFactoryKey() {
 		return factoryKey;
 	}
 
+	/**
+	 * Set a factory key other than the default (null).
+	 * @param session factory key
+	 * @return this, for chaining
+	 */
 	public HibernateObjectModel setFactoryKey(Object key) {
 		this.factoryKey = key;
 		return this;
