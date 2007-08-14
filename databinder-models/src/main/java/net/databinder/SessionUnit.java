@@ -23,7 +23,7 @@ import org.hibernate.Session;
 /**
  * Unit of work to be used with DataStaticService.ensureSession()
  * when a session is required but might not be bound to the current thread.
- * @see DataStaticService
+ * @see DataStaticService#ensureSession(SessionUnit)
  * @author Nathan Hamblen
  */
 public interface SessionUnit {
