@@ -60,6 +60,7 @@ public class DataConversationRequestCycle extends DataRequestCycle implements ID
 	 * Called by DataStaticService when a session is needed and does not already exist. 
 	 * Determines current page and retrieves its associated conversation session if 
 	 * appropriate. Does nothing if current page is not yet available.
+	 * @param key factory key object, or null for the default factory
 	 */
 	public void dataSessionRequested(Object key) {
 		Page page = getResponsePage();
