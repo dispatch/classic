@@ -47,33 +47,35 @@ public class DataSignInPage extends WebPage {
 	public interface ReturnPage extends IClusterable {
 		Page get();
 	}
-	private ReturnPage returnPage;
-
 	/**
 	 * Displays sign in page.
 	 */
 	public DataSignInPage(PageParameters params) {
-		String username = params.getString("username");
-		String token = params.getString("token");
-		// e-mail auth, for example
-		if (username != null && token != null) {
-			IAuthSettings settings = ((IAuthSettings)Application.get());
-			HibernateObjectModel userModel = new HibernateObjectModel(settings.getUserClass(),
-					settings.getUserCriteriaBuilder(username));  
-			IUser.CookieAuth user = (IUser.CookieAuth) userModel.getObject();
-			if (user != null && user.getToken().equals(token))
-				getAuthSession().signIn(user, true);
-			setResponsePage(((Application)settings).getHomePage());
-			setRedirect(true);
-			return;
-		}
-		init();
+		this(params, null);
 	}
+	
 	public DataSignInPage(ReturnPage returnPage) {
-		this.returnPage = returnPage;
-		init();
+		this(null, returnPage);
 	}
-	protected void init() {
+	
+	public DataSignInPage(PageParameters params, ReturnPage returnPage) {
+		if (params != null) {
+			String username = params.getString("username");
+			String token = params.getString("token");
+			// e-mail auth, for example
+			if (username != null && token != null) {
+				IAuthSettings settings = ((IAuthSettings)Application.get());
+				HibernateObjectModel userModel = new HibernateObjectModel(settings.getUserClass(),
+						settings.getUserCriteriaBuilder(username));  
+				IUser.CookieAuth user = (IUser.CookieAuth) userModel.getObject();
+				if (user != null && user.getToken().equals(token))
+					getAuthSession().signIn(user, true);
+				setResponsePage(((Application)settings).getHomePage());
+				setRedirect(true);
+				return;
+			}
+		}
+
 		add(new DataStyleLink("dataStylesheet"));
 		
 		sourceList = new SourceList();
