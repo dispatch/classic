@@ -25,8 +25,8 @@ end
 WICKET_SELF = group("wicket", "wicket-auth-roles", "wicket-extensions", :under=>"org.apache.wicket", :version=>"1.3.0-beta3")
 WICKET=[WICKET_SELF, "commons-collections:commons-collections:jar:2.1.1","commons-logging:commons-logging:jar:1.0.4"]
 
-HB_CORE_ZIP=download(artifact("org.hibernate:hibernate:zip:3.2.4.sp1")=>"http://dl.sourceforge.net/sourceforge/hibernate/hibernate-3.2.4.sp1.zip")
-HIBERNATE_CORE = child_artifact("org.hibernate:hibernate:jar:3.2.4.sp1", HB_CORE_ZIP, "hibernate-3.2/hibernate3.jar")
+HB_CORE_ZIP=download(artifact("org.hibernate:hibernate:zip:3.2.5.ga")=>"http://dl.sourceforge.net/sourceforge/hibernate/hibernate-3.2.5.ga.zip")
+HIBERNATE_CORE = child_artifact("org.hibernate:hibernate:jar:3.2.5.ga", HB_CORE_ZIP, "hibernate-3.2/hibernate3.jar")
 HIBERNATE_SELF = [HIBERNATE_CORE,"org.hibernate:hibernate-annotations:jar:3.3.0.ga", "org.hibernate:hibernate-commons-annotations:jar:3.3.0.ga"]
 JTA = child_artifact("javax.transaction:jta:jar:1.0.1B", HB_CORE_ZIP, "hibernate-3.2/lib/jta.jar")
 CGLIB = child_artifact("cglib:cglib:jar:2.1_3", HB_CORE_ZIP, "hibernate-3.2/lib/cglib-2.1.3.jar")
