@@ -240,8 +240,8 @@ public class HibernateObjectModel extends LoadableWritableModel {
 		Session sess = DataStaticService.getHibernateSession(factoryKey);
 		if (objectId != null) {
 			if (entityName != null)
-				return sess.load(entityName, objectId);
-			return sess.load(objectClass, objectId);
+				return sess.get(entityName, objectId);
+			return sess.get(objectClass, objectId);
 		}
 
 		if(criteriaBuilder != null) {
