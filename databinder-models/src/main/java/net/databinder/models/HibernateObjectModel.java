@@ -30,6 +30,7 @@ import net.databinder.DataStaticService;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.QueryException;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -239,9 +240,17 @@ public class HibernateObjectModel extends LoadableWritableModel {
 		}
 		Session sess = DataStaticService.getHibernateSession(factoryKey);
 		if (objectId != null) {
-			if (entityName != null)
-				return sess.get(entityName, objectId);
-			return sess.get(objectClass, objectId);
+			Object obj;
+			if (entityName != null) {
+				obj = sess.get(entityName, objectId);
+				if (obj == null)
+					throw new ObjectNotFoundException(objectId, entityName);
+			} else {
+				obj =  sess.get(objectClass, objectId);
+				if (obj == null)
+					throw new ObjectNotFoundException(objectId, objectClass.toString());
+			}
+			return obj;
 		}
 
 		if(criteriaBuilder != null) {
