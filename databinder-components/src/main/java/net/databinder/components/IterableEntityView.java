@@ -71,7 +71,8 @@ public abstract class IterableEntityView extends RefreshingView {
 
 		public ModelIterator(Iterable items)
 		{
-			this.iterator = items.iterator();
+			if (items != null)
+				this.iterator = items.iterator();
 		}
 
 		public void remove()
@@ -81,7 +82,7 @@ public abstract class IterableEntityView extends RefreshingView {
 
 		public boolean hasNext()
 		{
-			return iterator.hasNext();
+			return iterator != null && iterator.hasNext();
 		}
 
 		public Object next()
