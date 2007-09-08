@@ -13,17 +13,13 @@
 
 <p>
 	Sorry, Databinder dispatch is unable to contact the XML-RPC server required for this
-	action. You must be running a script similar to the one below to use XmlRpcLabel 
-	components. Please ensure the external server is running and <a wicket:id="retry" href="#">try again</a>.
+	action. You must be running a script similar to 
+	<a wicket:id="script" href="databinder-dispatch.rb">databinder.dispatch.rb</a>
+	 to use XmlRpcLabel components. Please ensure the external server is running 
+	 and <a wicket:id="retry" href="#">try again</a>.
 </p>
 
-<h3>databinder-dispatch.rb</h3>
-<pre wicket:id="script" style="border: gray 1px solid; padding: .5em">
-#!/usr/bin/env ruby
-...
-</pre>
-
-<p>To invoke with the default script, you might try the following command:</p>
+<p>To invoke the script directly, you could try the following command:</p>
 <pre>curl <span wicket:id="href">http://localhost/blah</span> | ruby</pre>
 
 </body>
