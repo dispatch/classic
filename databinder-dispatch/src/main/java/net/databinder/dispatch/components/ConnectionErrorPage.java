@@ -18,17 +18,16 @@
  */
 package net.databinder.dispatch.components;
 
+import java.net.URI;
+
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
-import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebRequest;
-import org.apache.wicket.util.io.Streams;
-import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.xmlrpc.XmlRpcException;
 
 /**
@@ -45,23 +44,13 @@ public class ConnectionErrorPage extends WebPage {
 				continueToOriginalDestination();
 			}
 		});
-		add(new Label("script", new AbstractReadOnlyModel() {
-			@Override
-			public Object getObject() {
-				try {
-					IResourceStream stream = XmlRpcLabel.scriptFile.getResource().getResourceStream();
-					String script = Streams.readString(stream.getInputStream());
-					stream.close();
-					return script;
-				} catch (Exception e) {
-					throw new WicketRuntimeException(e);
-				}
-			}
-		}));
+		ResourceLink script = new ResourceLink("script", XmlRpcLabel.scriptFile);
+		add(script);
 
 		HttpServletRequest req =  ((WebRequest)getRequest()).getHttpServletRequest();
-		String base = "http://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath() + "/";
+		URI full= URI.create(req.getRequestURL().toString());
+		Model path = new Model(full.resolve(req.getContextPath() +"/" + urlFor(XmlRpcLabel.scriptFile)));
 
-		add(new Label("href", new Model(base + urlFor(XmlRpcLabel.scriptFile))).setRenderBodyOnly(true));
+		add(new Label("href", path).setRenderBodyOnly(true));
 	}
 }
