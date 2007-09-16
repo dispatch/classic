@@ -20,7 +20,7 @@ import org.apache.wicket.model.IModel;
  * Panel for a "live" search field with a clear button. The SearchPanel's model object
  * is linked to the text of the search field inside it. Instances of this class must
  * implement the onUpdate method to register external components for updating.
- * It is possible to override a search button text with a key "searchbutton.text" 
+ * It is possible to override the search button text with the key "searchbutton.text" 
  * @author Nathan Hamblen
  */
 public abstract class SearchPanel extends Panel {
