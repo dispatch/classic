@@ -102,6 +102,14 @@ public class DataUser implements IUser.CookieAuth, Serializable {
 		passwordHash = getHash(password);
 	}
 
+	/** 
+	 * Password is not retained, but this method satifies some bean utils.
+	 * @return always null
+	 */
+	public String getPassword() {
+		return null;
+	}
+
 	/**
 	 * Performs hash on given password and compares it to the correct hash.
 	 * @true if hashed password is correct
