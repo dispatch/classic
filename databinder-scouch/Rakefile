@@ -1,0 +1,15 @@
+require "buildr"
+
+LOG = "commons-logging:commons-logging:jar:1.0.4"
+CODEC = "commons-codec:commons-codec:jar:1.2"
+HTTP = [LOG, CODEC, "commons-httpclient:commons-httpclient:jar:3.1"]
+
+repositories.remote << "http://repo1.maven.org/maven2/"
+
+define "databinder-scouch" do
+	compile.with HTTP
+	
+	task :shell => :compile do
+		system "scala -classpath " << compile.classpath.join(":") 
+	end
+end
