@@ -149,6 +149,7 @@ public class DataConversationRequestCycle extends DataRequestCycle implements ID
 						sess.getTransaction().rollback();
 				} finally {
 					sess.close();
+					ManagedSessionContext.unbind(DataStaticService.getHibernateSessionFactory(key));
 				}
 			}
 			openHibernateSession(key);
