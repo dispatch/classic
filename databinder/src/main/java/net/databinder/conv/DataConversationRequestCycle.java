@@ -28,11 +28,15 @@ import net.databinder.DataStaticService;
 import net.databinder.IDataRequestCycle;
 import net.databinder.conv.components.IConversationPage;
 
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.Page;
 import org.apache.wicket.Response;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.hibernate.FlushMode;
+import org.hibernate.HibernateException;
 import org.hibernate.classic.Session;
 import org.hibernate.context.ManagedSessionContext;
 
@@ -43,8 +47,9 @@ import org.hibernate.context.ManagedSessionContext;
  * until the session is flushed the changes are not made to persistent storage.   
  * @author Nathan Hamblen
  */
-public class DataConversationRequestCycle extends DataRequestCycle implements IDataRequestCycle {
-	
+public class DataConversationRequestCycle extends DataRequestCycle implements IDataRequestCycle {	
+	private static final Log log = LogFactory.getLog(DataConversationRequestCycle.class);
+
 	public DataConversationRequestCycle(WebApplication application, WebRequest request, Response response) {
 		super(application, request, response);
 	}
@@ -81,14 +86,19 @@ public class DataConversationRequestCycle extends DataRequestCycle implements ID
 		// if continuing a conversation page
 		if (page instanceof  IConversationPage) {
 			// look for existing session
-			org.hibernate.classic.Session sess = ((IConversationPage)page).getConversationSession(key);
+			IConversationPage convPage = (IConversationPage) page;
+			org.hibernate.classic.Session sess = convPage.getConversationSession(key);
 			
-			// if usable session exists, bind and return
+			// if usable session exists, try to open txn, bind, and return
 			if (sess != null && sess.isOpen()) {
-				keys.add(key);
-				sess.beginTransaction();
-				ManagedSessionContext.bind(sess);
-				return;
+				try {
+					sess.beginTransaction();
+					ManagedSessionContext.bind(sess);
+					keys.add(key);
+					return;
+				} catch (HibernateException e) {
+					log.warn("Existing session exception on beginTransation, opening new", e);
+				}
 			}
 			// else start new one and set in page
 			sess = openHibernateSession(key);
