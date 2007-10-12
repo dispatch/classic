@@ -1,6 +1,7 @@
 package net.databinder.components;
 
 import org.apache.wicket.ResourceReference;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.IHeaderResponse;
@@ -60,5 +61,13 @@ public abstract class AjaxOnKeyPausedSubmitter extends AjaxFormSubmitBehavior {
 		super.onComponentTag(tag);
         tag.put("onkeyup", "AjaxOnKeyPausedTimerReset(this);");
         tag.put("onblur", "AjaxOnKeyPausedTimerCancel();");
+	}
+
+	/**
+	 * Does nothing; override to respond to errors in the submitted form. (Submit on
+	 * pause is probably not a good match for forms that need validation.)
+	 */
+	@Override
+	protected void onError(AjaxRequestTarget target) {
 	}
 }
