@@ -22,7 +22,7 @@ def dep_preview(path, parent_spec)
 	end
 end
 
-WICKET_SELF = group("wicket", "wicket-auth-roles", "wicket-extensions", :under=>"org.apache.wicket", :version=>"1.3.0-beta2")
+WICKET_SELF = group("wicket", "wicket-auth-roles", "wicket-extensions", :under=>"org.apache.wicket", :version=>"1.3.0-beta4")
 WICKET=[WICKET_SELF, "commons-collections:commons-collections:jar:2.1.1","commons-logging:commons-logging:jar:1.0.4"]
 
 HB_CORE_ZIP=download(artifact("org.hibernate:hibernate:zip:3.2.5.ga")=>"http://dl.sourceforge.net/sourceforge/hibernate/hibernate-3.2.5.ga.zip")
