@@ -38,7 +38,7 @@
   <dependency>
    <groupId>org.apache.wicket</groupId>
    <artifactId>wicket-auth-roles</artifactId>
-   <version>1.3.0-beta3</version>
+   <version>1.3.0-beta4</version>
   </dependency>
   <dependency>
    <groupId>c3p0</groupId>
