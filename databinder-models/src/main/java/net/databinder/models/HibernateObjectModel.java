@@ -195,7 +195,6 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	 */
 	private String getEntityName(Session sess, Object object) { 
 		if (object instanceof HibernateProxy) { 
-			System.out.print("USING PROXY");
 			LazyInitializer li = ((HibernateProxy) object).getHibernateLazyInitializer(); 
 			if ( li.getSession() != sess) { 
 				throw new TransientObjectException( "The proxy was not associated with this session" ); 
