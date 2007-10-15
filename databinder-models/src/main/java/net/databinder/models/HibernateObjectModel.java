@@ -27,15 +27,18 @@ import javax.persistence.Version;
 
 import net.databinder.DataStaticService;
 
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.QueryException;
-import org.hibernate.ObjectNotFoundException;
-import org.hibernate.Session;
-import org.hibernate.proxy.HibernateProxy;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
+import org.hibernate.Criteria;
+import org.hibernate.ObjectNotFoundException;
+import org.hibernate.Query;
+import org.hibernate.QueryException;
+import org.hibernate.Session;
+import org.hibernate.TransientObjectException;
+import org.hibernate.engine.EntityEntry;
+import org.hibernate.impl.SessionImpl;
+import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.proxy.LazyInitializer;
 
 /**
  * Model loaded and persisted by Hibernate. This central Databinder class can be initialized with an
@@ -173,7 +176,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 			if (sess.contains(object)) {
 				objectId = sess.getIdentifier(object);
 				// the entityName, rather than the objectClass, will be used to load
-				entityName = sess.getEntityName(object);
+				entityName = getEntityName(sess, object);
 			} else {
 				objectClass = object.getClass();
 				if (retainUnsaved)
@@ -182,6 +185,29 @@ public class HibernateObjectModel extends LoadableWritableModel {
 			setTempModelObject(object);	// skip calling load later
 		}
 	}
+	
+	/**
+	 * Get entity name from Hibernate session.
+	 * @param sess Hibernate session
+	 * @param object entity whose name we need
+	 * @return name of entity
+	 * @see <a href="http://opensource.atlassian.com/projects/hibernate/browse/HHH-961">HHH-961</a>
+	 */
+	private String getEntityName(Session sess, Object object) { 
+		if (object instanceof HibernateProxy) { 
+			System.out.print("USING PROXY");
+			LazyInitializer li = ((HibernateProxy) object).getHibernateLazyInitializer(); 
+			if ( li.getSession() != sess) { 
+				throw new TransientObjectException( "The proxy was not associated with this session" ); 
+			} 
+			object = li.getImplementation(); 
+		} 
+		// hate to use SessionImpl but we have little choice here
+		EntityEntry entry = ((SessionImpl)sess).getPersistenceContext().getEntry(object); 
+		if (entry==null) throw new TransientObjectException("Entry in persistence context not found for object"); 
+		return entry.getPersister().getEntityName(); 
+	}
+
 	
 	public Serializable getIdentifier() {
 		return DataStaticService.getHibernateSession(factoryKey).getIdentifier(getObject());
@@ -295,14 +321,6 @@ public class HibernateObjectModel extends LoadableWritableModel {
 		return null;
 	}
 
-	public String getEntityName() {
-		return entityName;
-	}
-
-	public void setEntityName(String entityName) {
-		this.entityName = entityName;
-	}
-	
 	/** Compares contained objects if present, otherwise calls super-implementation.*/
 	@Override
 	public boolean equals(Object obj) {
