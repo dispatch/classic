@@ -40,6 +40,8 @@ import org.hibernate.impl.SessionImpl;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.LazyInitializer;
 
+import sun.util.logging.resources.logging;
+
 /**
  * Model loaded and persisted by Hibernate. This central Databinder class can be initialized with an
  * entity ID, different types of queries, or an existing persistent object. As a writable Wicket model,
@@ -201,10 +203,15 @@ public class HibernateObjectModel extends LoadableWritableModel {
 			} 
 			object = li.getImplementation(); 
 		} 
-		// hate to use SessionImpl but we have little choice here
-		EntityEntry entry = ((SessionImpl)sess).getPersistenceContext().getEntry(object); 
-		if (entry==null) throw new TransientObjectException("Entry in persistence context not found for object"); 
-		return entry.getPersister().getEntityName(); 
+		try {
+			// hate to use SessionImpl but we have little choice here
+			EntityEntry entry = ((SessionImpl)sess).getPersistenceContext().getEntry(object);
+			if (entry==null) throw new TransientObjectException("Entry in persistence context not found for object"); 
+			return entry.getPersister().getEntityName(); 
+		} catch (ClassCastException e) {
+			// if this is was not the SessionImpl we expected
+			return sess.getEntityName(object);
+		}
 	}
 
 	
