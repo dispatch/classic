@@ -41,7 +41,7 @@ public interface IUser {
 
 		/** 
 		 * @param location IP address or other identifier
-		 * @return restricted token for as URL-safe hash for user, password, and location parameter
+		 * @return restricted token as URL-safe hash for user, password, and location parameter
 		 */
 		public String getToken(String location);
 	}
