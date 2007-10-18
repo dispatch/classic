@@ -40,8 +40,6 @@ import org.hibernate.impl.SessionImpl;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.LazyInitializer;
 
-import sun.util.logging.resources.logging;
-
 /**
  * Model loaded and persisted by Hibernate. This central Databinder class can be initialized with an
  * entity ID, different types of queries, or an existing persistent object. As a writable Wicket model,
