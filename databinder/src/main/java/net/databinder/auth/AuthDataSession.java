@@ -54,12 +54,17 @@ public class AuthDataSession extends WebSession implements IAuthSession {
 	private static final String CHARACTER_ENCODING = "UTF-8";
 
 	/**
-	 * Initialize new session. Retains user class from AuthDataApplication instance.
-	 * @param application must be WebApplication subclass
-	 * @see WebApplication
+	 * @deprecated use AuthDataSession(Request request)
 	 */
 	public AuthDataSession(IAuthSettings application, Request request) {
-		super((WebApplication)application, request);
+		this(request);
+	}
+	/**
+	 * Initialize new session.
+	 * @see WebApplication
+	 */
+	public AuthDataSession(Request request) {
+		super(request);
 	}
 	
 	/**

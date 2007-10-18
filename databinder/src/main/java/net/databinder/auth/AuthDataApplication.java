@@ -70,7 +70,7 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, I
 	 */
 	@Override
 	public Session newSession(Request request, Response response) {
-		return new AuthDataSession(this, request);
+		return new AuthDataSession(request);
 	}
 	/**
 	 * Adds to the configuration whatever IUser class is defined.
