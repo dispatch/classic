@@ -65,7 +65,7 @@ public abstract class UserBase implements IUser.CookieAuth, Serializable {
 	
 	/** 
 	 * @param location IP address or other identifier
-	 * @return restricted token for as URL-safe hash for user, password, and location parameter
+	 * @return restricted token as URL-safe hash for user, password, and location parameter
 	 */
 	@Transient
 	public String getToken(String location) {
