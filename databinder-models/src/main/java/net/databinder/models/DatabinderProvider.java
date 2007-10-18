@@ -165,11 +165,12 @@ public class DatabinderProvider implements IDataProvider  {
 		}
 		
 		Criteria crit = sess.createCriteria(objectClass);
-		if (criteriaBuilder != null) {
+		if (criteriaBuilder != null)
 			criteriaBuilder.build(crit);
-			if (sortCriteriaBuilder != null)
-				sortCriteriaBuilder.build(crit);
-		}
+		
+		if (sortCriteriaBuilder != null)
+			sortCriteriaBuilder.build(crit);
+		
 		crit.setFirstResult(first);
 		crit.setMaxResults(count);
 		return crit.list().iterator();
