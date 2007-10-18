@@ -1,8 +1,6 @@
 package net.databinder.auth.data;
 
 import java.io.Serializable;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,27 +9,17 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Transient;
 
-import net.databinder.auth.IAuthSettings;
-
+import org.apache.wicket.authorization.strategies.role.Roles;
 import org.hibernate.annotations.CollectionOfElements;
 
-import org.apache.wicket.Application;
-import org.apache.wicket.authorization.strategies.role.Roles;
-import org.apache.wicket.util.crypt.Base64;
-import org.apache.wicket.util.crypt.Base64UrlSafe;
-
 /**
- * Basic implementation of IUser.CookieAuth. Stores no passwords in memory or persistent
- * storage, only a hash. Subclass as needed, uses default inheritance strategy of single 
- * table per class hierarchy. Please use your own IUser implementation.  An updated version of
- * this class is available in the auth-data-app Maven archetype.
- * @deprecated
+ * This class is deprecated.
+ * @deprecated Please extend DataUserBase or implement IUser directly.
  * @author Nathan Hamblen
  */
 @Entity
-public class DataUser implements IUser.CookieAuth, Serializable {
+public class DataUser extends UserBase implements IUser.CookieAuth, Serializable {
 	private Integer id;
 	private String passwordHash;
 	private String username;
@@ -65,27 +53,6 @@ public class DataUser implements IUser.CookieAuth, Serializable {
 		this.username = username;
 	}
 	
-	/**
-	 * Generates a hash for password using salt from AuthDataApplication.getSalt()
-	 * and returns the hash encoded as a Base64 String.
-	 * @see AuthDataApplication.getSalt();
-	 * @param password to encode
-	 * @return base64 encoded SHA hash, 28 characters 
-	 */
-	public static String getHash(String password) {
-		try {
-			MessageDigest md = MessageDigest.getInstance("SHA");
-			md.update(((IAuthSettings)Application.get()).getSalt());
-			byte[] hash = md.digest(password.getBytes());
-			// using a Base64 string for the hash because putting a 
-			// byte[] into a blob isn't working consistently.
-			return new String(Base64.encodeBase64(hash));
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(
-					"SHA Hash algorithm not found. Make available, or override this method.", e);
-		}
-	}
-
 	@Column(length = 28, nullable = false)
 	public String getPasswordHash() {
 		return passwordHash;
@@ -136,23 +103,6 @@ public class DataUser implements IUser.CookieAuth, Serializable {
 
 	public void setRoles(Set<String> roles) {
 		this.roles = roles;
-	}
-	
-	/** 
-	 * @return salted hash that is determined by both username and password hash. 
-	 */
-	@Transient
-	public String getToken() {
-		try {
-			MessageDigest md = MessageDigest.getInstance("SHA");
-			md.update(((IAuthSettings)Application.get()).getSalt());
-			md.update(passwordHash.getBytes());
-			byte[] hash = md.digest(username.getBytes());
-			return new String(Base64UrlSafe.encodeBase64(hash));
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(
-					"SHA Hash algorithm not found. Make available, or override this method.", e);
-		}
 	}
 	
 	/**

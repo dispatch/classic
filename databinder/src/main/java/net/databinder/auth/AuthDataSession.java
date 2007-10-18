@@ -21,7 +21,7 @@ package net.databinder.auth;
 /**
  * Holds IUser identifier for signed in users. Remembering the user with a browser cookie
  * allows that user to bypass login for the length of time specified in getSignInCookieMaxAge().
- * <p> In general the sematics here expect users to have a username and password, though the 
+ * <p> In general the semantics here expect users to have a username and password, though the 
  * IUser interface itself does not require it. Use your <tt>AuthDataApplication</tt> subclass to specify
  * a user class and criteria builder as needed.</p>
  */
@@ -167,14 +167,15 @@ public class AuthDataSession extends WebSession implements IAuthSession {
 				throw new WicketRuntimeException(e);
 			}
 			if (potential != null && potential instanceof IUser.CookieAuth) {
-				String correctToken = ((IUser.CookieAuth)potential).getToken();
+				IAuthSettings app = (IAuthSettings)getApplication();
+				String correctToken = app.getToken((IUser.CookieAuth)potential);
 				if (correctToken.equals(token.getValue()))
 					signIn(potential, false);
 			}
 		}
 		return userId != null;
 	}
-	
+		
 	/**
 	 * Looks for a persisted IUser object matching the given username. Uses the user class
 	 * and criteria builder returned from the application subclass implementing IAuthSettings.
@@ -222,13 +223,15 @@ public class AuthDataSession extends WebSession implements IAuthSession {
 		IUser.CookieAuth cookieUser = (IUser.CookieAuth) getUser();
 		WebResponse resp = (WebResponse) RequestCycle.get().getResponse();
 		
+		IAuthSettings app = (IAuthSettings)getApplication();
+		
 		int  maxAge = (int) getSignInCookieMaxAge().seconds();
 		
 		Cookie name, auth;
 		try {
 			name = new Cookie(getUserCookieName(), 
 					URLEncoder.encode(cookieUser.getUsername(), CHARACTER_ENCODING));
-			auth = new Cookie(getAuthCookieName(), cookieUser.getToken());
+			auth = new Cookie(getAuthCookieName(), app.getToken(cookieUser));
 		} catch (UnsupportedEncodingException e) {
 			throw new WicketRuntimeException(e);
 		}

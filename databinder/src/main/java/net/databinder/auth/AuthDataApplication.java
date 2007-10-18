@@ -18,18 +18,24 @@
  */
 package net.databinder.auth;
 
+import javax.servlet.http.HttpServletRequest;
+
 import net.databinder.DataApplication;
 import net.databinder.auth.data.IUser;
+import net.databinder.auth.data.IUser.CookieAuth;
 import net.databinder.models.ICriteriaBuilder;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Request;
+import org.apache.wicket.RequestCycle;
 import org.apache.wicket.Response;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.Session;
 import org.apache.wicket.authorization.IUnauthorizedComponentInstantiationListener;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.util.string.Strings;
 import org.hibernate.Criteria;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.criterion.Restrictions;
@@ -137,14 +143,27 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, I
 	 * in a future version.
 	 * @return page to sign in users
 	 */
-	@SuppressWarnings("deprecation")
 	public Class< ? extends WebPage> getSignInPageClass() {
 		return net.databinder.auth.components.DataSignInPage.class;
 	}
 	
 	/**
+	 * Get the restricted token for a user, passing IP address as location parameter. This implementation
+	 * checks the "X-Forwarded-For" header to read addresses behind an HTTP proxy server.
+	 * @param user source of token
+	 * @return restricted token
+	 */
+	public String getToken(CookieAuth user) {
+		HttpServletRequest req = ((WebRequest) RequestCycle.get().getRequest()).getHttpServletRequest();
+		String originAddr = req.getHeader("X-Forwarded-For");
+		if (Strings.isEmpty(originAddr)) 
+			originAddr = req.getRemoteAddr();
+		return user.getToken(originAddr);
+	}
+	
+	/**
 	 * Cryptographic salt to be used in authentication. The default IUser
-	 * implementation uses this value. If your imlementation does not require
+	 * implementation uses this value. If your implementation does not require
 	 * a salt value (!), return null.
 	 * @return
 	 */

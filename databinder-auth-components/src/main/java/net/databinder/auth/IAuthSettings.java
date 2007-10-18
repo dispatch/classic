@@ -29,4 +29,11 @@ public interface IAuthSettings {
 	 * @return
 	 */
 	public abstract byte[] getSalt();
+	
+	/**
+	 * Get the restricted token for a user, passing an appropriate location parameter. 
+	 * @param user source of token
+	 * @return restricted token
+	 */
+	public String getToken(IUser.CookieAuth user);
 }

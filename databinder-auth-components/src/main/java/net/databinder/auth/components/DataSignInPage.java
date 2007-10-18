@@ -64,13 +64,14 @@ public class DataSignInPage extends WebPage {
 			String token = params.getString("token");
 			// e-mail auth, for example
 			if (username != null && token != null) {
-				IAuthSettings settings = ((IAuthSettings)Application.get());
-				HibernateObjectModel userModel = new HibernateObjectModel(settings.getUserClass(),
-						settings.getUserCriteriaBuilder(username));  
+				IAuthSettings app = ((IAuthSettings)Application.get());
+				HibernateObjectModel userModel = new HibernateObjectModel(app.getUserClass(),
+						app.getUserCriteriaBuilder(username));  
 				IUser.CookieAuth user = (IUser.CookieAuth) userModel.getObject();
-				if (user != null && user.getToken().equals(token))
+				
+				if (user != null && app.getToken(user).equals(token))
 					getAuthSession().signIn(user, true);
-				setResponsePage(((Application)settings).getHomePage());
+				setResponsePage(((Application)app).getHomePage());
 				setRedirect(true);
 				return;
 			}
