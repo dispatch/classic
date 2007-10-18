@@ -33,16 +33,14 @@ import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.Session;
 import org.apache.wicket.authorization.IUnauthorizedComponentInstantiationListener;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
-import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.protocol.http.WebRequest;
-import org.apache.wicket.util.string.Strings;
-import org.hibernate.Criteria;
-import org.hibernate.cfg.AnnotationConfiguration;
-import org.hibernate.criterion.Restrictions;
-
 import org.apache.wicket.authorization.strategies.role.IRoleCheckingStrategy;
 import org.apache.wicket.authorization.strategies.role.RoleAuthorizationStrategy;
 import org.apache.wicket.authorization.strategies.role.Roles;
+import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.protocol.http.WebRequest;
+import org.hibernate.Criteria;
+import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.criterion.Restrictions;
 
 /**
  * Adds basic authentication functionality to DataApplication. This class is a derivative
@@ -148,17 +146,19 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, I
 	}
 	
 	/**
-	 * Get the restricted token for a user, passing IP address as location parameter. This implementation
-	 * checks the "X-Forwarded-For" header to read addresses behind an HTTP proxy server.
+	 * Get the restricted token for a user, using IP addresses as location parameter. This implementation
+	 * combines the "X-Forwarded-For" header with the remote address value so that unique
+	 * values result with and without proxying. (The forwarded header is not trusted on its own
+	 * because it can be most easily spoofed.)
 	 * @param user source of token
 	 * @return restricted token
 	 */
 	public String getToken(CookieAuth user) {
 		HttpServletRequest req = ((WebRequest) RequestCycle.get().getRequest()).getHttpServletRequest();
-		String originAddr = req.getHeader("X-Forwarded-For");
-		if (Strings.isEmpty(originAddr)) 
-			originAddr = req.getRemoteAddr();
-		return user.getToken(originAddr);
+		String fwd = req.getHeader("X-Forwarded-For");
+		if (fwd == null)
+			fwd = "nil";
+		return user.getToken(fwd + "-" + req.getRemoteAddr());
 	}
 	
 	/**
