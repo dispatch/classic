@@ -27,8 +27,8 @@ import org.mortbay.jetty.webapp.WebAppContext;
 /**
  * Optional main() class for running embedded Jetty. Client applications may pass
  * this classname to the Java runtime to serve with no other configuration. The webroot 
- * is expected to be in src/main/webapp, and the server defaults to a root servlet context 
- * on port 8080. <tt>jetty.contextPath</tt> and <tt>jetty.port</tt> system properties
+ * defaults to src/main/webapp, and the server to a root servlet context 
+ * on port 8080. <tt>jetty.warPath</tt>, <tt>jetty.contextPath</tt>, and <tt>jetty.port</tt> system properties
  * may be used to override (e.g. <tt>-Djetty.port=80</tt> as a command line parameter).
  * @author Nathan Hamblen
  */
@@ -44,7 +44,9 @@ public class DataServer {
 		if (Strings.isEmpty(contextPath)) contextPath = "/";
 		web.setContextPath(contextPath);
 		
-		web.setWar("src/main/webapp");
+		String warPath = System.getProperty("jetty.warPath");
+		if (Strings.isEmpty(warPath)) warPath = "src/main/webapp";
+		web.setWar(warPath);
 		
 		server.addHandler(web);
 
