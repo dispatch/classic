@@ -23,25 +23,37 @@ def dep_preview(path, parent_spec)
 end
 
 def embed_server
-  def serve(params = [])
+
+  def java_runner(params = [], cp = [], main_class = 'net.databinder.web.DataServer')
     params << "-Dmail.smtp.host=$SMTP_HOST" if ENV["SMTP_HOST"]
     params << "-Djetty.warPath=" + _('src/main/webapp')
-    "java $JAVA_OPTIONS " << params.join(" ") << " -classpath " << compile.target.to_s() << ":" << compile.classpath.join(":") << " net.databinder.web.DataServer"
+    cp << compile.target.to_s() << compile.classpath
+    "java $JAVA_OPTIONS " << params.join(" ") << ' -cp ' << cp.join(":") << ' ' << main_class
   end
 
+  def rebel_params()
+    if ENV["JAVA_REBEL"]
+    	["-noverify", "-javaagent:$JAVA_REBEL", "-Xbootclasspath/a:$JAVA_REBEL"]
+   	else [] end
+  end
+  
   task :run => :compile do
-    params = ["-Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog"]
-    params << ["-noverify", "-javaagent:$JAVA_REBEL", "-Xbootclasspath/a:$JAVA_REBEL"] if ENV["JAVA_REBEL"]
-    system serve(params)
+    system java_runner(rebel_params << ["-Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog"])
   end
 
-  pid_f = _("server.pid")
+  task :play => :compile do
+    scala_home = ENV['SCALA_HOME'] or raise('sorry, a SCALA_HOME is required to play')
+    scala_lib = scala_home + '/lib/'
+    system java_runner(rebel_params, Dir.entries(scala_lib).map {|f| scala_lib + f }, 'scala.tools.nsc.MainGenericRunner')
+  end
+
+  def pid_f() _("server.pid") end
 
   def pid() File.exist?(pid_f) && IO.read(pid_f).to_i end
 
   task :start => :compile do
     start_port = ENV['START_PORT'] || '8080'
-    system 'nohup ' << serve(['-Djetty.port=' + start_port]) << '>/dev/null &\echo $! > ' << pid_f
+    system 'nohup ' << java_runner(['-Djetty.port=' + start_port]) << '>/dev/null &\echo $! > ' << pid_f
     puts "started server port:" << start_port << " pid: " << pid().to_s
   end
 
