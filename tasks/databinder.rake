@@ -29,11 +29,11 @@ def embed_server
   end
 
   task :run => :compile do
+    props = ["-Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog"]
     if (ENV["JAVA_REBEL"]) then
-      system serve(["-noverify", "-javaagent:$JAVA_REBEL", "-Xbootclasspath/a:$JAVA_REBEL"])
-    else
-      system serve()
+      props = props + ["-noverify", "-javaagent:$JAVA_REBEL", "-Xbootclasspath/a:$JAVA_REBEL"]
     end
+    system serve(props)
   end
 
   pid_f = _("server.pid")
