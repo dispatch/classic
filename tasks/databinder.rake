@@ -75,3 +75,6 @@ DATABINDER_COMPONENTS="net.databinder:databinder-components:jar:1.1-SNAPSHOT"
 DATABINDER_SELF=[DATABINDER_COMPONENTS, group("databinder","databinder-dispatch", "databinder-auth-components", "databinder-models", :under => "net.databinder", :version => "1.1-SNAPSHOT")]
 XML_RPC = ["org.apache.ws.commons:ws-commons-util:jar:1.0.1","org.apache.xmlrpc:xmlrpc-client:jar:3.0","org.apache.xmlrpc:xmlrpc-common:jar:3.0", "commons-httpclient:commons-httpclient:jar:3.0.1", "commons-codec:commons-codec:jar:1.2"]
 DATABINDER=[DATABINDER_SELF, WICKET, HIBERNATE, XML_RPC]
+
+JETTY = "org.mortbay.jetty:jetty:jar:6.1.5"
+JETTY_UTIL = "org.mortbay.jetty:jetty-util:jar:6.1.5"
