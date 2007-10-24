@@ -27,7 +27,7 @@ def embed_server
   def java_runner(params = [], cp = [], main_class = 'net.databinder.web.DataServer')
     params << "-Dmail.smtp.host=$SMTP_HOST" if ENV["SMTP_HOST"]
     params << "-Djetty.warPath=" + _('src/main/webapp')
-    cp << compile.target.to_s() << compile.classpath
+    (cp << compile.target.to_s) += compile.classpath
     "java $JAVA_OPTIONS " << params.join(" ") << ' -cp ' << cp.join(":") << ' ' << main_class
   end
 
@@ -38,7 +38,7 @@ def embed_server
   end
   
   task :run => :compile do
-    system java_runner(rebel_params << ["-Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog"])
+    system java_runner(rebel_params + ["-Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog"])
   end
 
   task :play => :compile do
