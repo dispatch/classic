@@ -1,25 +1,63 @@
 def child_artifact(child_spec, parent_artifact, path)
-	parent_artifact.invoke
-	artifact(child_spec) do |task|
-		file_name = File.basename(path) 
-		dest_path = File.dirname(task.name) 
-		unz = Unzip.new(dest_path => parent_artifact)
-		unz.from_path(File.dirname(path)).include(file_name)
-		unz.extract()
-		tgt = (File.join(dest_path, file_name))
-		mv(tgt, task.name) if not File.exist? task.name
-	end
+  parent_artifact.invoke
+  artifact(child_spec) do |task|
+    file_name = File.basename(path) 
+    dest_path = File.dirname(task.name) 
+    unz = Unzip.new(dest_path => parent_artifact)
+    unz.from_path(File.dirname(path)).include(file_name)
+    unz.extract()
+    tgt = (File.join(dest_path, file_name))
+    mv(tgt, task.name) if not File.exist? task.name
+  end
 end
 
 def dep_preview(path, parent_spec)
-	file_name = File.basename(path)
-	parent_artifact = artifact(parent_spec)
-	file("dep_preview/" + file_name => parent_artifact) do |task|
-		dest_path = File.dirname(task.name) 
-		unz = Unzip.new(dest_path => parent_artifact)
-		unz.from_path(File.dirname(path)).include(file_name)
-		unz.extract()
-	end
+  file_name = File.basename(path)
+  parent_artifact = artifact(parent_spec)
+  file("dep_preview/" + file_name => parent_artifact) do |task|
+    dest_path = File.dirname(task.name) 
+    unz = Unzip.new(dest_path => parent_artifact)
+    unz.from_path(File.dirname(path)).include(file_name)
+    unz.extract()
+  end
+end
+
+def embed_server
+  def serve(params = [])
+    params << "-Dmail.smtp.host=$SMTP_HOST" if (ENV["SMTP_HOST"])
+    "java $JAVA_OPTIONS " << params.join(" ") << " -classpath " << compile.target.to_s() << ":" << compile.classpath.join(":") << " net.databinder.web.DataServer"
+  end
+
+  task :run => :compile do
+    if (ENV["JAVA_REBEL"]) then
+      system serve(["-noverify", "-javaagent:$JAVA_REBEL", "-Xbootclasspath/a:$JAVA_REBEL"])
+    else
+      system serve()
+    end
+  end
+
+  pid_f = _("server.pid")
+
+  def pid() File.exist?(pid_f) && IO.read(pid_f).to_i end
+
+  task :start => :compile do
+    start_port = ENV['START_PORT'] || '8080'
+    system 'nohup ' << serve(['-Djetty.port=' + start_port]) << '>/dev/null &\echo $! > ' << pid_f
+    puts "started server port:" << start_port << " pid: " << pid().to_s
+  end
+
+  task :stop do
+    if pid
+      begin
+        Process.kill("TERM", pid)
+      rescue Errno::ESRCH
+        puts "server not running at pid: #{pid}; removing record"
+      end
+      rm pid_f
+    else
+      puts "no server id on record"
+    end
+  end
 end
 
 WICKET_SELF = group("wicket", "wicket-auth-roles", "wicket-extensions", :under=>"org.apache.wicket", :version=>"1.3.0-beta4")
