@@ -31,7 +31,7 @@ def embed_server
   task :run => :compile do
     props = ["-Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog"]
     if (ENV["JAVA_REBEL"]) then
-      props = props + ["-noverify", "-javaagent:$JAVA_REBEL", "-Xbootclasspath/a:$JAVA_REBEL"]
+      props += ["-noverify", "-javaagent:$JAVA_REBEL", "-Xbootclasspath/a:$JAVA_REBEL"]
     end
     system serve(props)
   end
