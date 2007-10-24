@@ -24,16 +24,15 @@ end
 
 def embed_server
   def serve(params = [])
-    params << "-Dmail.smtp.host=$SMTP_HOST" if (ENV["SMTP_HOST"])
+    params << "-Dmail.smtp.host=$SMTP_HOST" if ENV["SMTP_HOST"]
+    params << "-Djetty.warPath=" + _('src/main/webapp')
     "java $JAVA_OPTIONS " << params.join(" ") << " -classpath " << compile.target.to_s() << ":" << compile.classpath.join(":") << " net.databinder.web.DataServer"
   end
 
   task :run => :compile do
-    props = ["-Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog"]
-    if (ENV["JAVA_REBEL"]) then
-      props += ["-noverify", "-javaagent:$JAVA_REBEL", "-Xbootclasspath/a:$JAVA_REBEL"]
-    end
-    system serve(props)
+    params = ["-Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog"]
+    params << ["-noverify", "-javaagent:$JAVA_REBEL", "-Xbootclasspath/a:$JAVA_REBEL"] if ENV["JAVA_REBEL"]
+    system serve(params)
   end
 
   pid_f = _("server.pid")
