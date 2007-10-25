@@ -18,9 +18,14 @@
  */
 package net.databinder.web;
 
+import java.io.File;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.util.string.Strings;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.handler.MovedContextHandler;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
 
@@ -33,6 +38,7 @@ import org.mortbay.jetty.webapp.WebAppContext;
  * @author Nathan Hamblen
  */
 public class DataServer {
+	private static final Log log = LogFactory.getLog(DataServer.class);
 
 	public static void main(String[] args) throws Exception
 	{
@@ -41,7 +47,8 @@ public class DataServer {
 		WebAppContext web = new WebAppContext();
 		
 		String contextPath = System.getProperty("jetty.contextPath");
-		if (Strings.isEmpty(contextPath)) contextPath = "/";
+		if (Strings.isEmpty(contextPath)) 
+			contextPath = "/" + new File(".").getCanonicalFile().getName();
 		web.setContextPath(contextPath);
 		
 		String warPath = System.getProperty("jetty.warPath");
@@ -49,6 +56,9 @@ public class DataServer {
 		web.setWar(warPath);
 		
 		server.addHandler(web);
+		
+		if (!contextPath.equals("/"))
+			server.addHandler(new MovedContextHandler(server, "/", contextPath));
 
 		SelectChannelConnector connector = new SelectChannelConnector();
 		try {
@@ -59,6 +69,7 @@ public class DataServer {
 		server.setConnectors(new Connector[] { connector });
 
 		server.start();
+		log.info("Ready at http://localhost:" + connector.getPort() + contextPath);
 		server.join();
 	}
 
