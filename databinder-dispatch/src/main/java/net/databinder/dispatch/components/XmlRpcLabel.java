@@ -28,8 +28,6 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.Application;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
@@ -40,6 +38,8 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfig;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.apache.xmlrpc.client.XmlRpcLiteHttpTransportFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Label that converts its model through an XML-RPC call before display. Results are
@@ -52,7 +52,7 @@ public abstract class XmlRpcLabel extends CustomLabel {
 	/** External script source that responds to XML-RPC requests. */
 	public static final ResourceReference scriptFile = new ResourceReference(XmlRpcLabel.class, "databinder-dispatch.rb");
 
-	private static final Log log = LogFactory.getLog(XmlRpcLabel.class);
+	private static final Logger log = LoggerFactory.getLogger(XmlRpcLabel.class);
 
 	/**
 	 * @param id Wicket id of component
