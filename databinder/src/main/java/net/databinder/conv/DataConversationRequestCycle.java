@@ -28,9 +28,6 @@ import net.databinder.DataStaticService;
 import net.databinder.IDataRequestCycle;
 import net.databinder.conv.components.IConversationPage;
 
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.Page;
 import org.apache.wicket.Response;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -39,6 +36,8 @@ import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.classic.Session;
 import org.hibernate.context.ManagedSessionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Supports extended Hibernate sessions for long conversations. This is useful for a page or
@@ -48,7 +47,7 @@ import org.hibernate.context.ManagedSessionContext;
  * @author Nathan Hamblen
  */
 public class DataConversationRequestCycle extends DataRequestCycle implements IDataRequestCycle {	
-	private static final Log log = LogFactory.getLog(DataConversationRequestCycle.class);
+	private static final Logger log = LoggerFactory.getLogger(DataConversationRequestCycle.class);
 
 	public DataConversationRequestCycle(WebApplication application, WebRequest request, Response response) {
 		super(application, request, response);
