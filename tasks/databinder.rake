@@ -37,18 +37,18 @@ def embed_server
    	else [] end
   end
   
-  def console_log_cp() [artifact(JDK_LOG).name] end
+  def dev_log_cp() [artifact(JDK_LOG).name] end
   def live_log_cp() LOG4J.map {|a| artifact(a).name } end
   
   task :run => :compile do
-    system java_runner(rebel_params, console_log_cp)
+    system java_runner(rebel_params, dev_log_cp)
   end
 
   task :play => :compile do
     scala_home = ENV['SCALA_HOME'] or raise('sorry, a SCALA_HOME is required to play')
     scala_lib = scala_home + '/lib/'
     cp = Dir.entries(scala_lib).map {|f| scala_lib + f }
-    cp += console_log_cp
+    cp += dev_log_cp
     system java_runner(rebel_params, cp, 'scala.tools.nsc.MainGenericRunner')
   end
 
