@@ -38,6 +38,7 @@ def embed_server
   end
   
   def console_log_cp() [artifact(JDK_LOG).name] end
+  def live_log_cp() LOG4J.map {|a| artifact(a).name } end
   
   task :run => :compile do
     system java_runner(rebel_params, console_log_cp)
@@ -57,7 +58,7 @@ def embed_server
 
   task :start => :compile do
     start_port = ENV['START_PORT'] || '8080'
-    system 'nohup ' << java_runner(['-Djetty.port=' + start_port], LOG4J) << '>/dev/null &\echo $! > ' << pid_f
+    system 'nohup ' << java_runner(['-Djetty.port=' + start_port], live_log_cp) << '>/dev/null &\echo $! > ' << pid_f
     puts "started server port:" << start_port << " pid: " << pid().to_s
   end
 
