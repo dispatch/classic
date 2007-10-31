@@ -34,9 +34,14 @@ def embed_server
     cp << compile.target.to_s
     cp += compile.classpath
 
-    Dir.chdir _('.')
-
     "java $JAVA_OPTIONS " << params.join(" ") << ' -cp ' << cp.join(":") << ' ' << main_class
+  end
+
+  def proj_sys(cmd)
+    wd = Dir.pwd
+    Dir.chdir _('.')
+    system cmd
+    Dir.chdir wd
   end
 
   def rebel_params()
@@ -46,14 +51,14 @@ def embed_server
   end
   
   task :run => :compile do
-    system java_runner(rebel_params, JDK_LOG)
+    proj_sys java_runner(rebel_params, JDK_LOG)
   end
 
   task :play => :compile do
     scala_home = ENV['SCALA_HOME'] or raise('sorry, a SCALA_HOME is required to play')
     scala_lib = scala_home + '/lib/'
     cp = Dir.entries(scala_lib).map {|f| scala_lib + f }
-    system java_runner(rebel_params, JDK_LOG, cp, 'scala.tools.nsc.MainGenericRunner')
+    proj_sys java_runner(rebel_params, JDK_LOG, cp, 'scala.tools.nsc.MainGenericRunner')
   end
 
   def pid_f() _("server.pid") end
@@ -61,7 +66,7 @@ def embed_server
   def pid() File.exist?(pid_f) && IO.read(pid_f).to_i end
 
   task :start => :compile do
-    system 'nohup ' << java_runner([], LOG4J) << '>/dev/null &\echo $! > ' << pid_f
+    proj_sys 'nohup ' << java_runner([], LOG4J) << '>/dev/null &\echo $! > ' << pid_f
     puts "started server pid: " << pid().to_s
   end
 
