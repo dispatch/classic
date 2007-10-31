@@ -24,10 +24,16 @@ end
 
 def embed_server
 
-  def java_runner(params = [], cp = [], main_class = 'net.databinder.web.DataServer')
+  def java_runner(params = [], cp_artifacts = [], cp = [], main_class = 'net.databinder.web.DataServer')
     params << "-Dmail.smtp.host=$SMTP_HOST" if ENV["SMTP_HOST"]
+    params << '-Djetty.port=' + ENV['JETTY_PORT'] if ENV['JETTY_PORT']
+    params << '-Djetty.contextPath=' + ENV['JETTY_CONTEXT'] if ENV['JETTY_CONTEXT']
+
+    cp_artifacts << JETTY << JETTY_UTIL
+    cp += cp_artifacts.map { |a| artifact(a).invoke; artifact(a).name }
     cp << compile.target.to_s
     cp += compile.classpath
+
     'cd ' + _('.') + ";java $JAVA_OPTIONS " << params.join(" ") << ' -cp ' << cp.join(":") << ' ' << main_class
   end
 
@@ -37,19 +43,15 @@ def embed_server
    	else [] end
   end
   
-  def dev_log_cp() [artifact(JDK_LOG).name] end
-  def live_log_cp() LOG4J.map {|a| artifact(a).name } end
-  
   task :run => :compile do
-    system java_runner(rebel_params, dev_log_cp)
+    system java_runner(rebel_params, JDK_LOG)
   end
 
   task :play => :compile do
     scala_home = ENV['SCALA_HOME'] or raise('sorry, a SCALA_HOME is required to play')
     scala_lib = scala_home + '/lib/'
     cp = Dir.entries(scala_lib).map {|f| scala_lib + f }
-    cp += dev_log_cp
-    system java_runner(rebel_params, cp, 'scala.tools.nsc.MainGenericRunner')
+    system java_runner(rebel_params, JDK_LOG, cp, 'scala.tools.nsc.MainGenericRunner')
   end
 
   def pid_f() _("server.pid") end
@@ -57,8 +59,7 @@ def embed_server
   def pid() File.exist?(pid_f) && IO.read(pid_f).to_i end
 
   task :start => :compile do
-    start_port = ENV['START_PORT'] || '8080'
-    system 'nohup ' << java_runner(['-Djetty.port=' + start_port], live_log_cp) << '>/dev/null &\echo $! > ' << pid_f
+    system 'nohup ' << java_runner([], LOG4J) << '>/dev/null &\echo $! > ' << pid_f
     puts "started server port:" << start_port << " pid: " << pid().to_s
   end
 
@@ -76,10 +77,10 @@ def embed_server
   end
 end
 
-WICKET_SELF = group("wicket", "wicket-auth-roles", "wicket-extensions", :under=>"org.apache.wicket", :version=>"1.3.0-beta4")
+WICKET_SELF = group("wicket", "wicket-auth-roles", "wicket-extensions", :under=>"org.apache.wicket", :version=>"1.3.0-SNAPSHOT")
 WICKET=[WICKET_SELF, "commons-collections:commons-collections:jar:2.1.1","org.slf4j:slf4j-api:jar:1.4.2"]
 LOG4J = ["org.slf4j:slf4j-log4j12:jar:1.4.2","log4j:log4j:jar:1.2.14"]
-JDK_LOG = "org.slf4j:slf4j-jdk14:jar:1.4.2"
+JDK_LOG = ["org.slf4j:slf4j-jdk14:jar:1.4.2"]
 
 HB_CORE_ZIP=download(artifact("org.hibernate:hibernate:zip:3.2.5.ga")=>"http://dl.sourceforge.net/sourceforge/hibernate/hibernate-3.2.5.ga.zip")
 HIBERNATE_CORE = child_artifact("org.hibernate:hibernate:jar:3.2.5.ga", HB_CORE_ZIP, "hibernate-3.2/hibernate3.jar")
