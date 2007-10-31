@@ -34,7 +34,9 @@ def embed_server
     cp << compile.target.to_s
     cp += compile.classpath
 
-    'cd ' + _('.') + ";java $JAVA_OPTIONS " << params.join(" ") << ' -cp ' << cp.join(":") << ' ' << main_class
+    system 'cd ' << _('.')
+
+    "java $JAVA_OPTIONS " << params.join(" ") << ' -cp ' << cp.join(":") << ' ' << main_class
   end
 
   def rebel_params()
@@ -60,7 +62,7 @@ def embed_server
 
   task :start => :compile do
     system 'nohup ' << java_runner([], LOG4J) << '>/dev/null &\echo $! > ' << pid_f
-    puts "started server port:" << start_port << " pid: " << pid().to_s
+    puts "started server pid: " << pid().to_s
   end
 
   task :stop do
