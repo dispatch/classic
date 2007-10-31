@@ -34,7 +34,7 @@ def embed_server
     cp << compile.target.to_s
     cp += compile.classpath
 
-    system 'cd ' << _('.')
+    Dir.chdir _('.')
 
     "java $JAVA_OPTIONS " << params.join(" ") << ' -cp ' << cp.join(":") << ' ' << main_class
   end
