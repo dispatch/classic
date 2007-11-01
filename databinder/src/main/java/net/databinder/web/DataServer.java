@@ -19,10 +19,13 @@
 package net.databinder.web;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.wicket.util.string.Strings;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.ajp.Ajp13SocketConnector;
 import org.mortbay.jetty.handler.MovedContextHandler;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
@@ -65,17 +68,39 @@ public class DataServer {
 		if (!contextPath.equals("/"))
 			server.addHandler(new MovedContextHandler(server, "/", contextPath));
 
-		SelectChannelConnector connector = new SelectChannelConnector();
+		List<Connector> conns = new ArrayList<Connector>(2);
+		
+		int httpPort = 8080;
 		try {
-			connector.setPort(Integer.valueOf(System.getProperty("jetty.port")));
-			log.info("jetty.port property: " + connector.getPort());
-		} catch (NumberFormatException e) {
-			connector.setPort(8080);
+			httpPort = Integer.valueOf(System.getProperty("jetty.port"));
+			log.info("jetty.port property: " + httpPort);
+		} catch (NumberFormatException e) { }
+		
+		if (httpPort != 0) {
+			SelectChannelConnector httpConn = new SelectChannelConnector();
+			httpConn.setPort(httpPort);
+			conns.add(httpConn);
 		}
-		server.setConnectors(new Connector[] { connector });
+
+		int ajpPort = 0;
+		try {
+			ajpPort = Integer.valueOf(System.getProperty("jetty.ajp.port"));
+			log.info("jetty.ajp.port property: " + ajpPort);
+		} catch (NumberFormatException e) { }
+		
+		if (ajpPort != 0) {
+			Ajp13SocketConnector ajpConn = new Ajp13SocketConnector();
+			ajpConn.setPort(ajpPort);
+			conns.add(ajpConn);
+		}
+		
+		server.setConnectors(conns.toArray(new Connector[conns.size()]));
 
 		server.start();
-		log.info("Ready at http://localhost:" + connector.getPort() + contextPath);
+		if (httpPort != 0)
+			log.info("Ready at http://localhost:" + httpPort + contextPath);
+		if (ajpPort != 0)
+			log.info("Ready at ajp://localhost:" + ajpPort + contextPath);
 		server.join();
 	}
 
