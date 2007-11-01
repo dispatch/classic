@@ -36,18 +36,13 @@
    <version>3.2.4.sp1</version>
   </dependency>
   <dependency>
-   <groupId>org.apache.wicket</groupId>
-   <artifactId>wicket-auth-roles</artifactId>
-   <version>1.3.0-beta4</version>
-  </dependency>
-  <dependency>
    <groupId>c3p0</groupId>
    <artifactId>c3p0</artifactId>
    <version>0.9.0.4</version>
   </dependency>
   <dependency>
    <groupId>org.mortbay.jetty</groupId>
-   <artifactId>jetty</artifactId>
+   <artifactId>jetty-ajp</artifactId>
    <version>6.1.5</version>
    <optional>true</optional>
   </dependency>
