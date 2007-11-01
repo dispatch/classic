@@ -36,8 +36,10 @@ import org.slf4j.LoggerFactory;
  * Optional main() class for running embedded Jetty. Client applications may pass
  * this classname to the Java runtime to serve with no other configuration. The webroot 
  * defaults to src/main/webapp, and the server to a context named after the current directory 
- * on port 8080. <tt>jetty.warPath</tt>, <tt>jetty.contextPath</tt>, and <tt>jetty.port</tt> system properties
- * may be used to override (e.g. <tt>-Djetty.port=80</tt> as a command line parameter).
+ * with HTTP on port 8080. <tt>jetty.warPath</tt>, <tt>jetty.contextPath</tt>,
+ * <tt>jetty.port</tt>, and <tt>jetty.ajp.port</tt> system properties
+ * may be used to override (e.g. <tt>-Djetty.port=80</tt> as a command line parameter). AJP
+ * is enabled by specifying a port, and HTTP disabled by setting jetty.port to 0.
  * @author Nathan Hamblen
  */
 public class DataServer {
