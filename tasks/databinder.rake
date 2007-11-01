@@ -27,9 +27,9 @@ def embed_server
   def java_runner(params = [], cp_artifacts = [], cp = [], main_class = 'net.databinder.web.DataServer')
     params << "-Dmail.smtp.host=$SMTP_HOST" if ENV["SMTP_HOST"]
     params << '-Djetty.port=' + ENV['JETTY_PORT'] if ENV['JETTY_PORT']
+    params << '-Djetty.ajp.port=' + ENV['JETTY_AJP_PORT'] if ENV['JETTY_AJP_PORT']
     params << '-Djetty.contextPath=' + ENV['JETTY_CONTEXT'] if ENV['JETTY_CONTEXT']
 
-    cp_artifacts << JETTY << JETTY_UTIL
     cp += cp_artifacts.map { |a| artifact(a).invoke; artifact(a).name }
     cp << compile.target.to_s
     cp += compile.classpath
@@ -102,5 +102,4 @@ DATABINDER_SELF=[DATABINDER_COMPONENTS, group("databinder","databinder-dispatch"
 XML_RPC = ["org.apache.ws.commons:ws-commons-util:jar:1.0.1","org.apache.xmlrpc:xmlrpc-client:jar:3.0","org.apache.xmlrpc:xmlrpc-common:jar:3.0", "commons-httpclient:commons-httpclient:jar:3.0.1", "commons-codec:commons-codec:jar:1.2"]
 DATABINDER=[DATABINDER_SELF, WICKET, HIBERNATE, XML_RPC]
 
-JETTY = "org.mortbay.jetty:jetty:jar:6.1.5"
-JETTY_UTIL = "org.mortbay.jetty:jetty-util:jar:6.1.5"
+JETTY = group('jetty','jetty-util','jetty-ajp', :under=>'org.mortbay.jetty', :version=>'6.1.5')
