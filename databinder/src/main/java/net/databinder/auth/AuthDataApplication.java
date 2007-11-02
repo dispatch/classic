@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.databinder.DataApplication;
 import net.databinder.auth.data.IUser;
+import net.databinder.auth.data.UserBase;
 import net.databinder.auth.data.IUser.CookieAuth;
 import net.databinder.models.ICriteriaBuilder;
 
@@ -44,13 +45,14 @@ import org.hibernate.criterion.Restrictions;
 
 /**
  * Adds basic authentication functionality to DataApplication. This class is a derivative
- * of Wicket's AuthenticatedWebApplication, brought into the DataApplication hierarchy. Unlike
- * that implementation, this one supplies a default User entity.. To use a different IUser class,
- * or a User subclass, override getUserClass(). (This class, whatever it is, will be added to 
- * the Hibernate Annotations configuration automatically. It is also possible to use Databinder
+ * of Wicket's AuthenticatedWebApplication, brought into the DataApplication hierarchy
+ * and including light user specifications in IUser. You are encouraged to override
+ * getUserClass() to implement your own user entity, possibly by extending UserBase.
+ * It is also possible to use Databinder
  * authentication without extending this base class by implementing IAuthSettings. 
  * @see IAuthSettings
  * @see IUser
+ * @see UserBase
  * @author Nathan Hamblen
  */
 public abstract class AuthDataApplication extends DataApplication 
@@ -137,8 +139,7 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, I
 	}
 
 	/**
-	 * Please override to return your own sign in page. This implementation will be removed
-	 * in a future version.
+	 * Override if you need to customize the sign-in page.
 	 * @return page to sign in users
 	 */
 	public Class< ? extends WebPage> getSignInPageClass() {
