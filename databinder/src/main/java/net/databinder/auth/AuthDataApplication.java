@@ -48,8 +48,12 @@ import org.hibernate.criterion.Restrictions;
  * of Wicket's AuthenticatedWebApplication, brought into the DataApplication hierarchy
  * and including light user specifications in IUser. You are encouraged to override
  * getUserClass() to implement your own user entity, possibly by extending UserBase.
- * It is also possible to use Databinder
- * authentication without extending this base class by implementing IAuthSettings. 
+ * It is also possible to use Databinder authentication without extending this base class 
+ * by implementing IAuthSettings.
+ * <p>Text appearing in authentication components can be overriden for any language, using
+ * resource keys listed in their documentation. Except as otherwise noted, these resources
+ * can be housed in the application class's properties file, so that subclasses of  the pages
+ * and panels are not necessarily required.
  * @see IAuthSettings
  * @see IUser
  * @see UserBase
