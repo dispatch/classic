@@ -31,10 +31,10 @@ import org.apache.wicket.IClusterable;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.Session;
+import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.pages.AccessDeniedPage;
 import org.apache.wicket.model.ResourceModel;
 
 /**
@@ -72,10 +72,9 @@ public class DataSignInPage extends WebPage {
 		IAuthSettings app = null;
 		try { app = ((IAuthSettings)Application.get()); } catch (ClassCastException e) { }
 		// make sure the user is not trying to sign in or register with the wrong page
-		if (app == null || !app.getSignInPageClass().isInstance(this)) {
-			setResponsePage(AccessDeniedPage.class);
-			return;
-		}
+		if (app != null || !app.getSignInPageClass().isInstance(this))
+			throw new UnauthorizedInstantiationException(DataSignInPage.class);
+
 		if (params != null) {
 			String username = params.getString("username");
 			String token = params.getString("token");
