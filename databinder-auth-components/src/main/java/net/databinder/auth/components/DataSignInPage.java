@@ -72,7 +72,7 @@ public class DataSignInPage extends WebPage {
 		IAuthSettings app = null;
 		try { app = ((IAuthSettings)Application.get()); } catch (ClassCastException e) { }
 		// make sure the user is not trying to sign in or register with the wrong page
-		if (app != null || !app.getSignInPageClass().isInstance(this))
+		if (app == null || !app.getSignInPageClass().isInstance(this))
 			throw new UnauthorizedInstantiationException(DataSignInPage.class);
 
 		if (params != null) {
