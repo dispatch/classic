@@ -34,6 +34,7 @@ import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.pages.AccessDeniedPage;
 import org.apache.wicket.model.ResourceModel;
 
 /**
@@ -68,12 +69,18 @@ public class DataSignInPage extends WebPage {
 	}
 	
 	public DataSignInPage(PageParameters params, ReturnPage returnPage) {
+		IAuthSettings app = null;
+		try { app = ((IAuthSettings)Application.get()); } catch (ClassCastException e) { }
+		// make sure the user is not trying to sign in or register with the wrong page
+		if (app == null || !app.getSignInPageClass().isInstance(this)) {
+			setResponsePage(AccessDeniedPage.class);
+			return;
+		}
 		if (params != null) {
 			String username = params.getString("username");
 			String token = params.getString("token");
 			// e-mail auth, for example
 			if (username != null && token != null) {
-				IAuthSettings app = ((IAuthSettings)Application.get());
 				HibernateObjectModel userModel = new HibernateObjectModel(app.getUserClass(),
 						app.getUserCriteriaBuilder(username));  
 				IUser.CookieAuth user = (IUser.CookieAuth) userModel.getObject();
