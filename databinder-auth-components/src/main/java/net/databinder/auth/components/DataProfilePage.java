@@ -23,12 +23,18 @@ import net.databinder.components.DataStyleLink;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.model.ResourceModel;
 
 /**
  * Display profile editing panel for logged in user. 
+ * Replaceable String resources: <pre>
+ * data.auth.update
+ * data.auth.title.update
  */
 public class DataProfilePage extends WebPage {
 	public DataProfilePage(ReturnPage returnPage) {
+		add(new Label("title", new ResourceModel("data.auth.title.update", "Update Account")));
 		add(new DataStyleLink("dataStylesheet"));
 		add(profileSocket("profileSocket", returnPage));
 	}

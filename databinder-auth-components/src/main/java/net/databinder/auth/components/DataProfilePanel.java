@@ -37,10 +37,12 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.RequiredTextField;
+import org.apache.wicket.markup.html.form.SimpleFormComponentLabel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.validator.StringValidator;
@@ -49,6 +51,15 @@ import org.hibernate.Session;
 
 /**
  * Registration with username, password, and password confirmation.
+ * Replaceable String resources: <pre>
+ * data.auth.username
+ * data.auth.password
+ * data.auth.passwordConfirm
+ * data.auth.remember
+ * data.auth.register
+ * data.auth.update
+ * data.auth.username.taken * </pre> * Must be overriden in a containing page
+ * or a subclass of this panel.
  */
 public class DataProfilePanel extends Panel {
 	private ReturnPage returnPage;
@@ -65,6 +76,7 @@ public class DataProfilePanel extends Panel {
 	}
 	
 	protected class ProfileForm extends DataForm {
+		private RequiredTextField username;
 		private RSAPasswordTextField password, passwordConfirm;
 		private CheckBox rememberMe;
 		
@@ -79,18 +91,25 @@ public class DataProfilePanel extends Panel {
 		public ProfileForm(String id, HibernateObjectModel userModel) {
 			super(id, userModel);
 			add(highFormSocket("highFormSocket"));
-			add(new RequiredTextField("username").add(new UsernameValidator()));
+			add(username = new RequiredTextField("username"));
+			username.add(new UsernameValidator());
+			username.setLabel(new ResourceModel("data.auth.username", "Username"));
+			add(new SimpleFormComponentLabel("username-label", username));
 			add(password = new RSAPasswordTextField("password", this) {
 				public boolean isRequired() {
 					return !existing();
 				}
 			});
+			password.setLabel(new ResourceModel("data.auth.password", "Password"));
+			add(new SimpleFormComponentLabel("password-label", password));
 			add(passwordConfirm = new RSAPasswordTextField("passwordConfirm", new Model(), this) {
 				public boolean isRequired() {
 					return !existing();
 				}
 			});
 			add(new EqualPasswordConvertedInputValidator(password, passwordConfirm));
+			passwordConfirm.setLabel(new ResourceModel("data.auth.passwordConfirm", "Retype Password"));
+			add(new SimpleFormComponentLabel("passwordConfirm-label", passwordConfirm));
 			
 			add(new WebMarkupContainer("rememberMeRow") { 
 				public boolean isVisible() {
@@ -102,7 +121,7 @@ public class DataProfilePanel extends Panel {
 			
 			add(new WebMarkupContainer("submit").add(new AttributeModifier("value", new AbstractReadOnlyModel() {
 				public Object getObject() {
-					return existing() ? "Update Profile" : "Register";
+					return existing() ? getString("auth.data.update", null, "Update Account") : getString("data.auth.register", null, "Register");
 				}
 			})));
 		}
@@ -137,7 +156,7 @@ public class DataProfilePanel extends Panel {
 			if (username != null && !isAvailable(username)) {
 				Map<String, String> m = new HashMap<String, String>(1);
 				m.put("username", username);
-				error(validatable,"taken",  m);
+				error(validatable,"data.auth.username.taken",  m);
 			}
 		}
 	}

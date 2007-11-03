@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
-<title>Please sign in</title>
+<title wicket:id="title">Please sign in</title>
 <link wicket:id="dataStylesheet" rel="stylesheet" type="text/css" href="../../../../../../../../databinder-components/src/main/resources/net/databinder/components/DataStyleSheet.css" />
 <wicket:link><link rel="stylesheet" type="text/css" href="DataSignInPage.css" /></wicket:link>
 </head>
@@ -11,13 +11,13 @@
 <div id="box">
 	
 	<p wicket:id="profileLinkWrapper">
-		Don't have an account? 
-		<a wicket:id="profileLink" href="DataRegisterPanel.html">Register now</a>.
+		<wicket:message key="data.auth.pre_register_link">Don't have an account? </wicket:message>
+		<a wicket:id="profileLink" href="DataRegisterPanel.html"><wicket:message key="data.auth.register_link">Register now</wicket:message></a>.
 	</p>
 	
 	<p wicket:id="signinLinkWrapper">
-		Already have an account? 
-		<a wicket:id="signinLink" href="DataSignInPanel.html">Sign in</a>.
+		<wicket:message key="data.auth.pre_sign_in_link">Already have an account?</wicket:message>
+		<a wicket:id="signinLink" href="DataSignInPanel.html"><wicket:message key="data.auth.sign_in_link">Sign in</wicket:message></a>.
 	</p>
 	
 	<div wicket:id="signinSocket">

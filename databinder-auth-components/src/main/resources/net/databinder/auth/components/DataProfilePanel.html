@@ -14,20 +14,20 @@
 	<div wicket:id="highFormSocket" />
 
 	<div class="row">
-		<label>Username</label>
+		<label wicket:id="username-label">Username</label>
 		<input wicket:id="username" type="text" value="foo" />
 	</div>
 	<div class="row">
-		<label>Password</label>
+		<label wicket:id="password-label">Password</label>
 		<input wicket:id="password" type="password" value="password" />
 	</div>
 	<div class="row">
-		<label>Retype Password</label>
+		<label wicket:id="passwordConfirm-label">Retype Password</label>
 		<input wicket:id="passwordConfirm" type="password" />
 	</div>
 	<div class="row" wicket:id="rememberMeRow">
 		<input wicket:id="rememberMe" id="rememberMe"type="checkbox" />
-		<label style="display:inline" for="rememberMe">Always sign in automatically</label>
+		<label style="display:inline" for="rememberMe"><wicket:message key="data.auth.remember">Always sign in automatically</wicket:message></label>
 	</div>
 	
 	<div wicket:id="lowFormSocket" />

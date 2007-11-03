@@ -32,6 +32,10 @@ import org.apache.wicket.model.AbstractReadOnlyModel;
 
 /**
  * Displays sign in and out links, as well as current user if any.
+ * Replaceable String resources: <pre>
+ * data.auth.status.account
+ * data.auth.status.sign_out
+ * data.auth.status.sign_in</pre>
  */
 public class DataUserStatusPanel extends Panel {
 	/**

@@ -24,14 +24,20 @@ import net.databinder.auth.components.DataSignInPage.ReturnPage;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
+import org.apache.wicket.markup.html.form.SimpleFormComponentLabel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.ResourceModel;
 
 /**
  * Displays username and password fields, along with optional "remember me" checkbox.
- * Queries the IAuthSession upon a login attempt.
+ * Queries the IAuthSession upon a login attempt. Replaceable String resources: <pre>
+ * data.auth.username
+ * data.auth.password
+ * data.auth.remember
+ * data.auth.sign_in</pre>
  * @see IAuthSession
  */
 public class DataSignInPanel extends Panel {
@@ -49,7 +55,11 @@ public class DataSignInPanel extends Panel {
 		protected SignInForm(String id) {
 			super(id);
 			add(username = new RequiredTextField("username", new Model()));
+			username.setLabel(new ResourceModel("data.auth.username", "Username"));
+			add(new SimpleFormComponentLabel("username-label", username));
 			add(password = new RSAPasswordTextField("password", new Model(), this));
+			password.setLabel(new ResourceModel("data.auth.password", "Password"));
+			add(new SimpleFormComponentLabel("password-label", password));
 			add(rememberMe = new CheckBox("rememberMe", new Model(Boolean.FALSE)));
 		}
 		@Override

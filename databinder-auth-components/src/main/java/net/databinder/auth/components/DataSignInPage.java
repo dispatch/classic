@@ -33,9 +33,18 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.model.ResourceModel;
 
 /**
- * Serves as both a sign in and simple registration page. 
+ * Sign in and registration page.
+ * Replaceable String resources: <pre>
+ * data.auth.title.sign_in
+ * data.auth.pre_register_link
+ * data.auth.register_link
+ * data.auth.pre_sign_in_link
+ * data.auth.sign_in_link
+ * or a subclass of this panel.
  */
 public class DataSignInPage extends WebPage {
 	private SourceList sourceList;
@@ -76,6 +85,8 @@ public class DataSignInPage extends WebPage {
 				return;
 			}
 		}
+		
+		add(new Label("title", new ResourceModel("data.auth.title.sign_in", "Please sign in")));
 
 		add(new DataStyleLink("dataStylesheet"));
 		
