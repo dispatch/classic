@@ -27,6 +27,7 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletResponse;
 
 import net.databinder.components.PageExpiredCookieless;
+import net.databinder.components.hibernate.DataBrowser;
 import net.databinder.util.ColorConverter;
 import net.databinder.util.URIConverter;
 import net.databinder.util.URLConverter;
@@ -60,8 +61,9 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 	/**
 	 * Initializes a default Hibernate session factory. If you override this 
 	 * method, be sure to call super() or initialize a Hibernate session factory yourself. 
-	 * This method also turns off exceptions for missing resources in deployment mode, 
-	 * as search engines will request those long after they are gone.
+	 * This method also turns off exceptions for missing resources in deployment mode 
+	 * (as search engines will request those long after they are gone) and mounts the
+	 * data browser.
 	 * @see DataStaticService 
 	 */
 	@Override
@@ -69,6 +71,16 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 		if (!isDevelopment())
 			getResourceSettings().setThrowExceptionOnMissingResource(false);
 		buildHibernateSessionFactory(null);
+		if (isDataBrowserAllowed())
+			mountDataBrowser();
+	}
+	
+	/**
+	 * Mounts Data Diver to /dbrowse. Override to mount elsewhere, or not mount at all.
+	 * This method is only called if isDataBrowserAllowed() returns true in init().
+	 */
+	protected void mountDataBrowser() {
+		mountBookmarkablePage("/dbrowse", DataBrowser.class);
 	}
 
 	/**
@@ -171,6 +183,14 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 	 */
 	protected boolean isDevelopment() {
 		return  getConfigurationType().equalsIgnoreCase(DEVELOPMENT);
+	}
+	
+	/**
+	 * Returns true if development mode is enabled. Override for other behavior.
+	 * @return true if the Data Browser page should be enabled
+	 */
+	public boolean isDataBrowserAllowed() {
+		return isDevelopment();
 	}
 	
 	/**
