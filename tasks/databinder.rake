@@ -1,3 +1,5 @@
+repositories.local = ENV['M2_REPO'] if ENV['M2_REPO']
+
 def child_artifact(child_spec, parent_artifact, path)
   parent_artifact.invoke
   artifact(child_spec) do |task|
