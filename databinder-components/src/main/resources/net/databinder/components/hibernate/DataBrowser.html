@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>
+			Data Browser
+		</title>
+		<link wicket:id="css" rel="stylesheet" type="text/css" href="../DataStyleSheet.css" />
+		<wicket:link><link rel="stylesheet" type="text/css" href="DataBrowser.css" /></wicket:link>
+	</head>
+	<body>
+		<h2>
+			Data Browser
+		</h2>
+		<div>
+			<div>Mapped Entities</div>
+			<ul id="entities">
+				<li wicket:id="entities"><span wicket:id="name">example.Bookmark</span></li>
+			</ul>
+		</div>
+		<div wicket:id="queryPanel" id="queryPanel">
+			<form>
+				HQL Query, eg <em>from MyEntity</em>:<br/>
+				<textarea rows="5" cols="60"></textarea><br/>
+				<input type="submit" value="Submit query"/>
+			</form>
+			<span>query executed in 1.277 ms: from Bookmark</span><br />
+			<table class="dataview" id="results6">
+				<thead>
+					<tr class="headers">
+						<th>
+							<span>id</span>
+						</th>
+						<th>
+							<span>created</span>
+						</th>
+						<th>
+							<span>name</span>
+						</th>
+						<th>
+							<span>url</span>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>
+							<span>1</span>
+						</td>
+						<td>
+							<span>1:45 PM</span>
+						</td>
+						<td>
+							<span>test</span>
+						</td>
+						<td>
+							<span>http://localhost:8080/bookmark/</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<span>3</span>
+						</td>
+						<td>
+							<span>6:24 PM</span>
+						</td>
+						<td>
+							<span>euotns</span>
+						</td>
+						<td>
+							<span>http://eueoa</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<span>6</span>
+						</td>
+						<td>
+							<span>6:47 PM</span>
+						</td>
+						<td>
+							<span>aeouao</span>
+						</td>
+						<td>
+							<span>ftp://technically.us/eat/</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<span>7</span>
+						</td>
+						<td>
+							<span>10:23 PM</span>
+						</td>
+						<td>
+							<span>tech</span>
+						</td>
+						<td>
+							<span>http://technically.us/</span>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</body>
+</html>

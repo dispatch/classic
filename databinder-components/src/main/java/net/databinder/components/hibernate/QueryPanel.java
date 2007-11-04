@@ -50,6 +50,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
 import org.hibernate.Query;
+import org.hibernate.QueryException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
@@ -112,8 +113,20 @@ public class QueryPanel extends Panel {
 				if (resultsHolder.get("results") != null) {
 					resultsHolder.remove("results");
 				}
-				resultsHolder.add(getResultsTable());
+				try {
+					resultsHolder.add(getResultsTable());
+				} catch (QueryException e) {
+					note(e);
+				} catch (IllegalArgumentException e) {
+					note(e);
+				} catch (IllegalStateException e) {
+					note(e);
+				}
 				target.addComponent(resultsHolder);
+			}
+			private void note(Exception e) {
+				resultsHolder.add(new Label("results", 
+						e.getClass().getSimpleName()+ ": " + e.getMessage()));
 			}
 		});
 		add(form);
@@ -164,8 +177,15 @@ public class QueryPanel extends Panel {
 			IColumn[] columns;
 			Session sess =  DataStaticService.getHibernateSession();
 			Query q = sess.createQuery(query.getQuery());
-			String[] aliases = q.getReturnAliases();
-			Type[] returnTypes = q.getReturnTypes();
+			String[] aliases;
+			Type[] returnTypes;
+			try {
+				aliases = q.getReturnAliases();
+				returnTypes = q.getReturnTypes();
+			} catch (NullPointerException e) { // thrown on updates
+				return new Label("results", "");
+			}
+			
 			if (returnTypes.length != 1) {
 				columns = new IColumn[returnTypes.length];
 				for (int i = 0; i < returnTypes.length; i++) {
