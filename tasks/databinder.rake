@@ -26,6 +26,12 @@ end
 
 def embed_server
 
+  compile.with JETTY
+  scalac.with JETTY if defined? scalac
+  
+  # if not deploying embedded, be sure not to include Jetty jars
+  package(:war).path("WEB-INF/lib").exclude(artifacts(JETTY).map {|a| a.name})
+
   def java_runner(params = [], cp_artifacts = [], cp = [], main_class = 'net.databinder.web.DataServer')
     params << "-Dmail.smtp.host=$SMTP_HOST" if ENV["SMTP_HOST"]
     params << '-Djetty.port=' + ENV['JETTY_PORT'] if ENV['JETTY_PORT']
@@ -98,11 +104,13 @@ HIBERNATE_SELF = [HIBERNATE_CORE,"org.hibernate:hibernate-annotations:jar:3.3.0.
 JTA = child_artifact("javax.transaction:jta:jar:1.0.1B", HB_CORE_ZIP, "hibernate-3.2/lib/jta.jar")
 CGLIB = child_artifact("cglib:cglib:jar:2.1_3", HB_CORE_ZIP, "hibernate-3.2/lib/cglib-2.1.3.jar")
 EHCACHE=child_artifact("net.sf.ehcache:ehcache:jar:1.2.3", HB_CORE_ZIP, "hibernate-3.2/lib/ehcache-1.2.3.jar")
+C3P0='c3p0:c3p0:jar:0.9.0.4'
 HIBERNATE=[HIBERNATE_SELF, JTA, EHCACHE, CGLIB, "javax.persistence:persistence-api:jar:1.0", "dom4j:dom4j:jar:1.6.1", "asm:asm-attrs:jar:1.5.3", "asm:asm:jar:1.5.3", "antlr:antlr:jar:2.7.6", "commons-logging:commons-logging:jar:1.0.4"]
 
 DATABINDER_COMPONENTS="net.databinder:databinder-components:jar:1.1-SNAPSHOT"
 DATABINDER_SELF=[DATABINDER_COMPONENTS, group("databinder","databinder-dispatch", "databinder-auth-components", "databinder-models", :under => "net.databinder", :version => "1.1-SNAPSHOT")]
 XML_RPC = ["org.apache.ws.commons:ws-commons-util:jar:1.0.1","org.apache.xmlrpc:xmlrpc-client:jar:3.0","org.apache.xmlrpc:xmlrpc-common:jar:3.0", "commons-httpclient:commons-httpclient:jar:3.0.1", "commons-codec:commons-codec:jar:1.2"]
-DATABINDER=[DATABINDER_SELF, WICKET, HIBERNATE, XML_RPC]
+DATABINDER=[DATABINDER_SELF, WICKET, HIBERNATE, XML_RPC, C3P0]
 
-JETTY = group('jetty','jetty-util','jetty-ajp', :under=>'org.mortbay.jetty', :version=>'6.1.5')
+SERVLET_API="javax.servlet:servlet-api:jar:2.5"
+JETTY = [SERVLET_API, group('jetty','jetty-util','jetty-ajp', :under=>'org.mortbay.jetty', :version=>'6.1.5')]
