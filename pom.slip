@@ -48,15 +48,6 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 						goals:
 							goal: "jar"
 				inherited: "true"
-	repositories:
-		repository:
-			id: "wicket"
-			name: "Wicket repository"
-			url: "http://wicket.sourceforge.net/maven2"
-		repository:
-			id: "wicket-snapshots"
-			name: "Wicket snapshot repository"
-			url: "http://wicketstuff.org/maven/repository/"
 	reporting:
 		plugins:
 			plugin:
