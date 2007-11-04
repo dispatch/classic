@@ -35,7 +35,7 @@ def embed_server
     cp += cp_artifacts.map { |a| artifact(a).invoke; artifact(a).name }
     cp << compile.target.to_s
     cp += compile.classpath
-    cp += scalac.classpath if scalac
+    cp += scalac.classpath if defined? scalac
 
     ENV['JAVA_HOME'] + "/bin/java $JAVA_OPTIONS " << params.join(" ") << ' -cp ' << cp.join(":") << ' ' << main_class
   end
