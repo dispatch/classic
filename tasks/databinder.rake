@@ -38,7 +38,7 @@ def embed_server
     params << '-Djetty.ajp.port=' + ENV['JETTY_AJP_PORT'] if ENV['JETTY_AJP_PORT']
     params << '-Djetty.contextPath=' + ENV['JETTY_CONTEXT'] if ENV['JETTY_CONTEXT']
 
-    cp += cp_artifacts.map { |a| artifact(a).invoke; artifact(a).name }
+    cp += artifacts(cp_artifacts).map { |a| a.invoke; a.name }
     cp << compile.target.to_s
     cp += compile.classpath
     cp += scalac.classpath if defined? scalac
