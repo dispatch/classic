@@ -46,6 +46,7 @@ public class DatabinderProvider implements IDataProvider  {
 	private ICriteriaBuilder criteriaBuilder, sortCriteriaBuilder;
 	private String queryString, countQueryString;
 	private IQueryBinder queryBinder, countQueryBinder;
+	private IQueryBuilder queryBuilder, countQueryBuilder;
 	/** Controls wrapping with a compound property model. */
 	private boolean wrapWithPropertyModel = true;
 	
@@ -118,6 +119,11 @@ public class DatabinderProvider implements IDataProvider  {
 		this.countQueryString = countQuery;
 		this.countQueryBinder = countQueryBinder;
 	}
+	
+	public DatabinderProvider(IQueryBuilder queryBuilder, IQueryBuilder countQueryBuilder) {
+		this.queryBuilder = queryBuilder;
+		this.countQueryBuilder = countQueryBuilder;
+	}
 
 	/** @return session factory key, or null for the default factory */
 	public Object getFactoryKey() {
@@ -155,6 +161,13 @@ public class DatabinderProvider implements IDataProvider  {
 	public final Iterator iterator(int first, int count) {
 		Session sess =  DataStaticService.getHibernateSession(factoryKey);
 		
+		if(queryBuilder != null) {
+			org.hibernate.Query q = queryBuilder.build(sess);
+			q.setFirstResult(first);
+			q.setMaxResults(count);
+			return q.iterate();
+		}			
+		
 		if (queryString != null) {
 			org.hibernate.Query q = sess.createQuery(queryString);
 			if (queryBinder != null)
@@ -182,6 +195,12 @@ public class DatabinderProvider implements IDataProvider  {
 	public final int size() {
 		Session sess =  DataStaticService.getHibernateSession(factoryKey);
 
+		if(countQueryBuilder != null) {
+			org.hibernate.Query q = countQueryBuilder.build(sess);
+			Object obj = q.uniqueResult();
+			return ((Number) obj).intValue();
+		}
+		
 		if (countQueryString != null) {
 			Query query = sess.createQuery(countQueryString);
 			if (countQueryBinder != null)
