@@ -29,7 +29,12 @@ def embed_server
   compile.with JETTY
   scalac.with JETTY if defined? scalac
   test.with JDK_LOG
-  
+
+  def scala_libs()
+    scala_lib = ENV['SCALA_HOME'] + '/lib/'
+    Dir.entries(scala_lib).map {|f| scala_lib + f }
+  end
+
   def java_runner(cp, params = [], main_class = 'net.databinder.web.DataServer')
     params << "-Dmail.smtp.host=$SMTP_HOST" if ENV["SMTP_HOST"]
     params << '-Djetty.port=' + ENV['JETTY_PORT'] if ENV['JETTY_PORT']
@@ -38,9 +43,7 @@ def embed_server
 
     cp += [compile.target.to_s]
     if defined? scalac then
-      cp += scalac.classpath
-      scala_lib = ENV['SCALA_HOME'] + '/lib/'
-      cp += Dir.entries(scala_lib).map {|f| scala_lib + f }
+      cp += scalac.classpath + scala_libs
     end
     cp
 
@@ -66,7 +69,7 @@ def embed_server
 
   task :play => :compile do
     raise('sorry, a SCALA_HOME is required to play') if not ENV['SCALA_HOME']
-    proj_sys java_runner(test.classpath, rebel_params, 'scala.tools.nsc.MainGenericRunner')
+    proj_sys java_runner(test.classpath + scala_libs, rebel_params, 'scala.tools.nsc.MainGenericRunner')
   end
 
   def pid_f() _("server.pid") end
