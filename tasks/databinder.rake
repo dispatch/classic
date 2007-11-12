@@ -28,20 +28,15 @@ def embed_server
 
   compile.with JETTY
   scalac.with JETTY if defined? scalac
+  test.with JDK_LOG
   
-  # if not deploying embedded, be sure not to include Jetty jars
-  package(:war).path("WEB-INF/lib").exclude(artifacts(JETTY).map {|a| a.name})
-
-  def java_runner(params = [], cp_artifacts = [], cp = [], main_class = 'net.databinder.web.DataServer')
+  def java_runner(cp, params = [], main_class = 'net.databinder.web.DataServer')
     params << "-Dmail.smtp.host=$SMTP_HOST" if ENV["SMTP_HOST"]
     params << '-Djetty.port=' + ENV['JETTY_PORT'] if ENV['JETTY_PORT']
     params << '-Djetty.ajp.port=' + ENV['JETTY_AJP_PORT'] if ENV['JETTY_AJP_PORT']
     params << '-Djetty.contextPath=' + ENV['JETTY_CONTEXT'] if ENV['JETTY_CONTEXT']
 
-    cp += artifacts(cp_artifacts).map { |a| a.invoke; a.name }
     cp << compile.target.to_s
-    cp += compile.classpath
-    cp += scalac.classpath if defined? scalac
 
     ENV['JAVA_HOME'] + "/bin/java $JAVA_OPTIONS " << params.join(" ") << ' -cp ' << cp.join(":") << ' ' << main_class
   end
@@ -55,27 +50,28 @@ def embed_server
 
   def rebel_params()
     if ENV["JAVA_REBEL"]
-    	["-noverify", "-javaagent:$JAVA_REBEL", "-Xbootclasspath/a:$JAVA_REBEL"]
+    	["-noverify", "-javaagent:$JAVA_REBEL"]
    	else [] end
   end
   
   task :run => :compile do
-    proj_sys java_runner(rebel_params, JDK_LOG)
+    proj_sys java_runner(test.classpath, rebel_params)
   end
 
   task :play => :compile do
     scala_home = ENV['SCALA_HOME'] or raise('sorry, a SCALA_HOME is required to play')
     scala_lib = scala_home + '/lib/'
     cp = Dir.entries(scala_lib).map {|f| scala_lib + f }
-    proj_sys java_runner(rebel_params, JDK_LOG, cp, 'scala.tools.nsc.MainGenericRunner')
+    proj_sys java_runner(test.classpath + cp, rebel_params, 'scala.tools.nsc.MainGenericRunner')
   end
 
   def pid_f() _("server.pid") end
 
   def pid() File.exist?(pid_f) && IO.read(pid_f).to_i end
 
-  task :start => :compile do
-    proj_sys 'nohup ' << java_runner([], LOG4J) << '>/dev/null &\echo $! > ' << pid_f
+  task :start => :package do
+    cp = compile.classpath + artifacts(LOG4J).map { |a| a.name }
+    proj_sys 'nohup ' << java_runner(cp) << '>/dev/null &\echo $! > ' << pid_f
     puts "started server pid: " << pid().to_s
   end
 
