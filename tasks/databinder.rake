@@ -36,9 +36,15 @@ def embed_server
     params << '-Djetty.ajp.port=' + ENV['JETTY_AJP_PORT'] if ENV['JETTY_AJP_PORT']
     params << '-Djetty.contextPath=' + ENV['JETTY_CONTEXT'] if ENV['JETTY_CONTEXT']
 
-    cp << compile.target.to_s
+    cp += [compile.target.to_s]
+    if defined? scalac then
+      cp += scalac.classpath
+      scala_lib = ENV['SCALA_HOME'] + '/lib/'
+      cp += Dir.entries(scala_lib).map {|f| scala_lib + f }
+    end
+    cp
 
-    ENV['JAVA_HOME'] + "/bin/java $JAVA_OPTIONS " << params.join(" ") << ' -cp ' << cp.join(":") << ' ' << main_class
+    ENV['JAVA_HOME'] + "/bin/java $JAVA_OPTIONS " << params.join(" ") << ' -cp ' << cp.uniq.join(":") << ' ' << main_class
   end
 
   def proj_sys(cmd)
@@ -59,10 +65,8 @@ def embed_server
   end
 
   task :play => :compile do
-    scala_home = ENV['SCALA_HOME'] or raise('sorry, a SCALA_HOME is required to play')
-    scala_lib = scala_home + '/lib/'
-    cp = Dir.entries(scala_lib).map {|f| scala_lib + f }
-    proj_sys java_runner(test.classpath + cp, rebel_params, 'scala.tools.nsc.MainGenericRunner')
+    raise('sorry, a SCALA_HOME is required to play') if not ENV['SCALA_HOME']
+    proj_sys java_runner(test.classpath, rebel_params, 'scala.tools.nsc.MainGenericRunner')
   end
 
   def pid_f() _("server.pid") end
