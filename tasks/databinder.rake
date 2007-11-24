@@ -63,11 +63,11 @@ def embed_server
    	else [] end
   end
   
-  task :run => :compile do
+  task :run => :build do
     proj_sys java_runner(test.classpath, rebel_params)
   end
 
-  task :play => :compile do
+  task :play => :build do
     raise('sorry, a SCALA_HOME is required to play') if not ENV['SCALA_HOME']
     proj_sys java_runner(test.classpath + scala_libs, rebel_params, 'scala.tools.nsc.MainGenericRunner')
   end
