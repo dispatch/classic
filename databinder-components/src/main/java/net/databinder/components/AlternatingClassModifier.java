@@ -42,7 +42,7 @@ public class AlternatingClassModifier extends AttributeModifier {
 	 * @param item Object whose index determines class value.
 	 */
 	public AlternatingClassModifier(final ListItem item, final String classA, final String classB) {
-		super("class", new AbstractReadOnlyModel() {
+		super("class", true, new AbstractReadOnlyModel() {
 			@Override
 			public Object getObject() {
 				return item.getIndex() % 2 == 0 ? classA : classB;
