@@ -22,10 +22,8 @@ package net.databinder.components.hibernate;
 import java.util.ArrayList;
 
 import net.databinder.DataStaticService;
-import net.databinder.IDataApplication;
 import net.databinder.components.DataStyleLink;
 
-import org.apache.wicket.Application;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -34,17 +32,20 @@ import org.apache.wicket.markup.html.pages.AccessDeniedPage;
 import org.apache.wicket.model.LoadableDetachableModel;
 
 /**
- * Page containing a QueryPanel for browsing data and testing Hibernate queries. DataApplication
- * mounts this page to /dbrowse by default for development (when IDataApplication.isDataBrowserAllowed() 
- * returns true).  For security, this page can not be constructed when isDataBrowserAllowed()
- * returns false.
- * @see IDataApplication
+ * Page containing a QueryPanel for browsing data and testing Hibernate queries. This 
+ * page is not bookmarkable so that it will not be inadverdantly
+ * available from the classpath. To access the page it must be subclassed or manually
+ * linked. DataApplication.BmarkDataBrowser is a subclass that requires that the
+ * running application be assignable to DataApplication and return true for
+ * isDataBrowserAllowed(). To use this page from an application that does not extend
+ * DataApplication, make a bookmarkable subclass and call super(true), 
+ * or link to the class with PageLink.
+ * @see DataApplication#BmarkDataBrowser
  * @author Nathan Hamblen
  */
 public class DataBrowser extends WebPage {
-	public DataBrowser() {
-		Application app = getApplication();
-		if (app instanceof IDataApplication && ((IDataApplication)app).isDataBrowserAllowed()) {
+	public DataBrowser(boolean allowAccess) {
+		if (allowAccess) {
 			add(new DataStyleLink("css"));
 			add(new QueryPanel("queryPanel"));
 			add(new ListView("entities", new LoadableDetachableModel() {

@@ -33,6 +33,7 @@ import net.databinder.util.URIConverter;
 import net.databinder.util.URLConverter;
 import net.databinder.web.NorewriteWebResponse;
 
+import org.apache.wicket.Application;
 import org.apache.wicket.IConverterLocator;
 import org.apache.wicket.Request;
 import org.apache.wicket.RequestCycle;
@@ -76,11 +77,23 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 	}
 	
 	/**
+	 * Bookmarkable subclass of DataBrowser. Access to the page is permitted
+	 * only if the current application is assignable to DataApplication
+	 * and returns true for isDataBrowserAllowed().
+	 * @see DataBrowser
+	 */
+	public static class BmarkDataBrowser extends DataBrowser {
+		public BmarkDataBrowser() {
+			super(((DataApplication)Application.get()).isDataBrowserAllowed());
+		}
+	}
+	
+	/**
 	 * Mounts Data Diver to /dbrowse. Override to mount elsewhere, or not mount at all.
 	 * This method is only called if isDataBrowserAllowed() returns true in init().
 	 */
 	protected void mountDataBrowser() {
-		mountBookmarkablePage("/dbrowse", DataBrowser.class);
+		mountBookmarkablePage("/dbrowse", BmarkDataBrowser.class);
 	}
 
 	/**
@@ -189,7 +202,7 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 	 * Returns true if development mode is enabled. Override for other behavior.
 	 * @return true if the Data Browser page should be enabled
 	 */
-	public boolean isDataBrowserAllowed() {
+	protected boolean isDataBrowserAllowed() {
 		return isDevelopment();
 	}
 	

@@ -16,14 +16,4 @@ public interface IDataApplication {
 	 * @return configured Hibernate session factory
 	 */
 	SessionFactory getHibernateSessionFactory(Object key);
-	
-	/**
-	 * Determines when the data browser page should be accessible. Normally this
-	 * is allowed in development but disabled for live sites.
-	 * @return true if data browser should be accessible
-	 */
-	boolean isDataBrowserAllowed();
-	/* Note: considered using IAuthorizationStrategy, but didn't want to risk a user linking
-	 * DataBrowser's jar without extending DataApplication and neglecting
-	 * to add any authorization strategy to prevent the browser's  use in production. */ 
 }
