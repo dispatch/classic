@@ -101,11 +101,13 @@ public class BatikRenderedLabel extends RenderedLabel {
 
 			 // TODO: maxwidth wrapping layout, format string processing
 
-			float lineHeight = graphics.getFontMetrics().getHeight(),
-				neededHeight = attributedLines.size() * lineHeight + fontMetrics.getMaxDescent(),
+			float lineHeight = fontMetrics.getHeight(),
+				spare = fontMetrics.getMaxAscent() - fontMetrics.getAscent()
+					+ fontMetrics.getMaxDescent() - fontMetrics.getDescent(),
+				neededHeight = attributedLines.size() * lineHeight + spare,
 				neededWidth = 0f, 
-				y = lineHeight;
-	
+				y = fontMetrics.getMaxAscent();
+			
 			for (AttributedCharacterIterator line : attributedLines) {
 				TextNode node = new TextNode();
 				node.setLocation(new Point(0, (int) y));
