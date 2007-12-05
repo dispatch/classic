@@ -56,28 +56,35 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 	/** true if cookieless use is supported through URL rewriting(defaults to true). */
 	private boolean cookielessSupported = true;
 	
-	/** App-wide session factory */
-	private HashMap<Object, SessionFactory>hibernateSessionFactories = new HashMap<Object, SessionFactory>();
+	/** App-wide session factories */
+	private HashMap<Object, SessionFactory> hibernateSessionFactories = new HashMap<Object, SessionFactory>();
 	
 	/**
-	 * Initializes a default Hibernate session factory. If you override this 
-	 * method, be sure to call super() or initialize a Hibernate session factory yourself. 
-	 * This method also turns off exceptions for missing resources in deployment mode 
-	 * (as search engines will request those long after they are gone) and mounts the
-	 * data browser.
-	 * @see DataStaticService 
+	 * Internal initialization. Client applications should not normally override
+	 * or call this method.
 	 */
 	@Override
-	protected void init() {
-		if (!isDevelopment())
-			getResourceSettings().setThrowExceptionOnMissingResource(false);
+	protected void internalInit() {
+		super.internalInit();
+		dataInit();
+	}
+	
+	/**
+	 * Initializes a default Hibernate session factory and mounts a page for
+	 * the data browser. This is called automatically during start-up. Applications 
+	 * with one session factory will not normally need to override this method; 
+	 * see related methods to override specific tasks.
+	 * @see #buildHibernateSessionFactory(Object) aoe
+	 * @see #mountDataBrowser() 
+	 */
+	protected void dataInit() {
 		buildHibernateSessionFactory(null);
 		if (isDataBrowserAllowed())
 			mountDataBrowser();
 	}
 	
 	/**
-	 * Bookmarkable subclass of DataBrowser. Access to the page is permitted
+	 * Bookmarkable subclass of DataBrowser page. Access to the page is permitted
 	 * only if the current application is assignable to DataApplication
 	 * and returns true for isDataBrowserAllowed().
 	 * @see DataBrowser
@@ -98,42 +105,59 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 
 	/**
 	 * Called by init to create Hibernate session factory and load a configuration. Passes
-	 * a new AnnotationConfiguration to buildHibernateSessionFactory(key, config) by 
+	 * an empty new AnnotationConfiguration to buildHibernateSessionFactory(key, config) by 
 	 * default. Override if creating a configuration externally.
+	 * @param key session factory key; the default key is null
 	 */
 	public void buildHibernateSessionFactory(Object key) {
 		buildHibernateSessionFactory(key, new AnnotationConfiguration());
 	}
 	
 	/**
-	 * Builds and retains a session factory with the given configuration after passing it to 
-	 * configureHibernate methods.
+	 * Builds and  a session factory with the given configuration. Passes config
+	 * through configureHibernate methods.
+	 * @param key session factory key; the default key is null
+	 * @param config annotation conifuration
+	 * @see #configureHibernateEssentials(AnnotationConfiguration)
+	 * @see #configureHibernate(AnnotationConfiguration, Object) 
 	 */
 	final public void buildHibernateSessionFactory(Object key, AnnotationConfiguration config) {
+		configureHibernateEssentials(config);
 		configureHibernate(config, key);
 		setHibernateSessionFactory(key, config.buildSessionFactory());
 	}
 	
 	/**
-	 * Configure the session factory associated with the key. The default implementation
-	 * calls the key-neutral configureHibernate(config) method.
+	 * Configures the session factory associated with the key. The default implementation
+	 * calls the configureHibernate(config) method and ignores the key.
+	 * For applications with multiple session factories, override this method to
+	 * perform key-specific configuration here instead.
 	 * @param config configuration to update
 	 * @param key object, or null for the default factory
 	 */
 	protected  void configureHibernate(AnnotationConfiguration config, Object key) {
 		configureHibernate(config);
 	}
+	
+	/**
+	 * For Hibernate settings that should not normally be overriden by client
+	 * applications. Specifically, this method sets Hibernate for a ManagedSessionContext,
+	 * the session lookup method used by DataRequestCycle.
+	 * @param config Hibernate configuration
+	 */
+	protected void configureHibernateEssentials(AnnotationConfiguration config) {
+		config.setProperty("hibernate.current_session_context_class","managed");
+	}
 		
 	/**
-	 * Override to add annotated classes to all session factories, but don't forget
-	 * to call this super-implementation. If running in a development environment,
-	 * the session factory is set for hbm2ddl auto-updating to create and add columns to tables 
-	 * as required. Otherwise, it is configured for C3P0 connection pooling. 
+	 * Configures the default session factory; override to add annotated classes 
+	 * but don't forget to call this super-implementation if you want its defaults.
+	 * When running in development the session factory is set for 
+	 * hbm2ddl auto-updating to create and add columns to tables 
+	 * as required. For deployment it is configured for C3P0 connection pooling.
 	 * @param config used to build Hibernate session factory
 	 */
 	protected  void configureHibernate(AnnotationConfiguration config) {
-		config.setProperty("hibernate.current_session_context_class","managed");
-
     	if (isDevelopment())
     		config.setProperty("hibernate.hbm2ddl.auto", "update");
     	else {

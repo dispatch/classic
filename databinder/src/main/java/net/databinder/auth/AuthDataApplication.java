@@ -63,13 +63,20 @@ public abstract class AuthDataApplication extends DataApplication
 implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, IAuthSettings {
 
 	/**
-	 * Calls configuration in super-implementation, then sets Wicket's security strategy for role
-	 * authorization and appoints this class as the unauthorized instatiation listener.
-	 * @see DataApplication.init()
+	 * Internal initialization. Client applications should not normally override
+	 * or call this method.
 	 */
 	@Override
-	protected void init() {
-		super.init();
+	protected void internalInit() {
+		super.internalInit();
+		authInit();
+	}
+	
+	/**
+	 * Sets Wicket's security strategy for role authorization and appoints this 
+	 * object as the unauthorized instatiation listener. Called automatically on start-up.
+	 */
+	protected void authInit() {
 		getSecuritySettings().setAuthorizationStrategy(new RoleAuthorizationStrategy(this));
 		getSecuritySettings().setUnauthorizedComponentInstantiationListener(this);
 	}
