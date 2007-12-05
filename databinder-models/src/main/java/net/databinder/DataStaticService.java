@@ -28,6 +28,11 @@ import org.hibernate.context.ManagedSessionContext;
 
 /**
  * Provides access to application-bound Hibernate session factories and current sessions.
+ * This class will work with a
+ * <a href="http://www.hibernate.org/hib_docs/v3/api/org/hibernate/context/ManagedSessionContext.html">ManagedSessionContext</a>
+ * and IDataRequestCycle listener when present, but neither is required so long as a
+ * "current" session is available from the session factory supplied by the application.
+ * @see IDataApplication
  * @author Nathan Hamblen
  */
 public class DataStaticService {
@@ -117,7 +122,9 @@ public class DataStaticService {
 	 * The temporary session and transaction, if created, are closed after the callback returns and 
 	 * uncommited transactions are rolled back. Be careful of returning detached Hibernate 
 	 * objects that may not be fully loaded with data; consider using projections / scalar 
-	 * queries instead.
+	 * queries instead.<b>Note</b> This method uses a ManagedSessionContext. With JTA
+	 * or other forms of current session lookup a wrapping session will not be
+	 * detected and a new one will always be created.
 	 * @param unit work to be performed in thread-bound session
 	 * @see SessionUnit
 	 */
@@ -131,7 +138,9 @@ public class DataStaticService {
 	 * The temporary session and transaction, if created, are closed after the callback returns and 
 	 * uncommited transactions are rolled back. Be careful of returning detached Hibernate 
 	 * objects that may not be fully loaded with data; consider using projections / scalar 
-	 * queries instead.
+	 * queries instead. <b>Note</b> This method uses a ManagedSessionContext. With JTA
+	 * or other forms of current session lookup a wrapping session will not be
+	 * detected and a new one will always be created. 
 	 * @param unit work to be performed in thread-bound session
 	 * @param factory key, or null for the default factory
 	 * @see SessionUnit
