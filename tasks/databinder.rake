@@ -31,8 +31,7 @@ def embed_server
   test.with JDK_LOG
 
   def scala_libs()
-    scala_lib = ENV['SCALA_HOME'] + '/lib/'
-    Dir.entries(scala_lib).map {|f| scala_lib + f }
+    FileList["#{ENV["SCALA_HOME"]}/lib/*"]
   end
 
   def java_runner(cp, params = [], main_class = 'net.databinder.web.DataServer')
