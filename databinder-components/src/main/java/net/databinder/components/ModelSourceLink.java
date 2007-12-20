@@ -34,7 +34,6 @@ public class ModelSourceLink extends Link {
 	@Override
 	public void onClick() {
 		target.setModelObject(getModelObject());
-		target.setModel(target.getModel());
 		target.setVisible(true);
 	}
 }

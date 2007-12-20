@@ -97,7 +97,6 @@ public class DataForm extends DataFormBase {
 	 */
 	public DataForm setPersistentObject(Object object) {
 		getPersistentObjectModel().setObject(object);
-		setModel(getModel());		// informs child components
 		return this;
 	}
 
@@ -121,7 +120,6 @@ public class DataForm extends DataFormBase {
 	 */
 	public DataForm clearPersistentObject() {
 		getPersistentObjectModel().clearPersistentObject();
-		setModel(getModel());		// informs child components
 		return this;
 	}
 

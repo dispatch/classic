@@ -80,7 +80,6 @@ public class DataPanel extends Panel {
 	 */
 	public DataPanel setPersistentObject(Object object) {
 		getPersistentObjectModel().setObject(object);
-		setModel(getModel());		// informs child components
 		return this;
 	}
 
