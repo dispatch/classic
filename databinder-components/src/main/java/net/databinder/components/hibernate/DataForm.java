@@ -78,6 +78,10 @@ public class DataForm extends DataFormBase {
 		super(id);
 	}
 	
+	/**
+	 * @param key for the Hibernate session factory to be used with this component
+	 * @return this 
+	 */
 	@Override
 	public DataForm setFactoryKey(Object key) {
 		super.setFactoryKey(key);
@@ -97,7 +101,12 @@ public class DataForm extends DataFormBase {
 	 */
 	public DataForm setPersistentObject(Object object) {
 		getPersistentObjectModel().setObject(object);
+		updateVersion();
 		return this;
+	}
+	
+	private void updateVersion() {
+		version = getPersistentObjectModel().getVersion();
 	}
 
 	/** Late-init version record. */
@@ -105,12 +114,12 @@ public class DataForm extends DataFormBase {
 	protected void onBeforeRender() {
 		super.onBeforeRender();
 		if (version == null)
-			version = getPersistentObjectModel().getVersion();
+			updateVersion();
 	}
 	
 	@Override
 	protected void onModelChanged() {
-		version = getPersistentObjectModel().getVersion();
+		updateVersion();
 	}
 
 	/**
@@ -120,6 +129,7 @@ public class DataForm extends DataFormBase {
 	 */
 	public DataForm clearPersistentObject() {
 		getPersistentObjectModel().clearPersistentObject();
+		version = null;
 		return this;
 	}
 
@@ -159,7 +169,7 @@ public class DataForm extends DataFormBase {
 		super.onSubmit();	// flush and commit session
 		// if version is present it should have changed
 		if (version != null) {
-			version = getPersistentObjectModel().getVersion();
+			updateVersion();
 		}
 	}
 
