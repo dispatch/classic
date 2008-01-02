@@ -32,11 +32,6 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 			version: "3.3.0.ga"
 
 		dependency:
-			groupId: "org.hibernate"
-			artifactId: "hibernate"
-			version: "3.2.4.sp1"
-
-		dependency:
 			groupId: "c3p0"
 			artifactId: "c3p0"
 			version: "0.9.0.4"
