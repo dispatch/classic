@@ -24,6 +24,23 @@ def dep_preview(path, parent_spec)
   end
 end
 
+module SoftFail
+  def fail_download(remote_uris)
+    puts "Can't find javadoc #{to_spec}\n"
+  end
+end
+
+LIB_DOCS='lib_docs'
+def doc_tasks(jar_spec)
+  artifacts(jar_spec).map do |a|
+    doc_a = artifact(a.to_hash.merge({:classifier=>'javadoc'}))
+    doc_a.extend SoftFail
+    file(_(LIB_DOCS) + '/' + a.to_spec => doc_a) do |task|
+      unzip(task.name => doc_a) if File.exist? doc_a.name
+    end
+  end
+end
+
 def embed_server
 
   compile.with JETTY
