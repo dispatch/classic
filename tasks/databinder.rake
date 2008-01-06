@@ -118,7 +118,7 @@ MAIL = ["javax.mail:mail:jar:1.4", "javax.activation:activation:jar:1.1"]
 LOG4J = ["org.slf4j:slf4j-log4j12:jar:1.4.2","log4j:log4j:jar:1.2.14", MAIL]
 JDK_LOG = ["org.slf4j:slf4j-jdk14:jar:1.4.2"]
 
-HB_CORE_ZIP=download(artifact("org.hibernate:hibernate:zip:3.2.5.ga")=>"http://easynews.dl.sourceforge.net/sourceforge/hibernate/hibernate-3.2.5.ga.zip")
+HB_CORE_ZIP=download(artifact("org.hibernate:hibernate:zip:3.2.5.ga")=>"http://downloads.sourceforge.net/sourceforge/hibernate/hibernate-3.2.5.ga.zip?download")
 HIBERNATE_CORE = child_artifact("org.hibernate:hibernate:jar:3.2.5.ga", HB_CORE_ZIP, "hibernate-3.2/hibernate3.jar")
 HIBERNATE_SELF = [HIBERNATE_CORE,"org.hibernate:hibernate-annotations:jar:3.3.0.ga", "org.hibernate:hibernate-commons-annotations:jar:3.3.0.ga"]
 JTA = child_artifact("javax.transaction:jta:jar:1.0.1B", HB_CORE_ZIP, "hibernate-3.2/lib/jta.jar")
