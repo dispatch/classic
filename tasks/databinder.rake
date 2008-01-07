@@ -132,4 +132,4 @@ DATABINDER_SELF=[DATABINDER_COMPONENTS, group("databinder","databinder-dispatch"
 XML_RPC = ["org.apache.ws.commons:ws-commons-util:jar:1.0.1","org.apache.xmlrpc:xmlrpc-client:jar:3.0","org.apache.xmlrpc:xmlrpc-common:jar:3.0", "commons-httpclient:commons-httpclient:jar:3.0.1", "commons-codec:commons-codec:jar:1.2"]
 DATABINDER=[DATABINDER_SELF, WICKET, HIBERNATE, XML_RPC, C3P0]
 
-JETTY = group('jetty','jetty-util','jetty-ajp', 'servlet-api-2.5', :under=>'org.mortbay.jetty', :version=>'6.1.5')
+JETTY = group('jetty','jetty-util','jetty-ajp', 'servlet-api-2.5', :under=>'org.mortbay.jetty', :version=>'6.1.7')
