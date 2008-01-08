@@ -66,13 +66,6 @@ def embed_server
     ENV['JAVA_HOME'] + "/bin/java $JAVA_OPTIONS " << params.join(" ") << ' -cp ' << cp.uniq.join(":") << ' ' << main_class
   end
 
-  def proj_sys(cmd)
-    wd = Dir.pwd
-    Dir.chdir _('.')
-    system cmd
-    Dir.chdir wd
-  end
-
   def rebel_params()
     if ENV["JAVA_REBEL"]
     	["-noverify", "-javaagent:$JAVA_REBEL"]
@@ -80,12 +73,12 @@ def embed_server
   end
   
   task :run => :build do
-    proj_sys java_runner(test.classpath, rebel_params)
+    system java_runner(test.classpath, rebel_params)
   end
 
   task :play => :build do
     raise('sorry, a SCALA_HOME is required to play') if not ENV['SCALA_HOME']
-    proj_sys java_runner(test.classpath + scala_libs, rebel_params, 'scala.tools.nsc.MainGenericRunner')
+    system java_runner(test.classpath + scala_libs, rebel_params, 'scala.tools.nsc.MainGenericRunner')
   end
 
   def pid_f() _("server.pid") end
@@ -94,7 +87,7 @@ def embed_server
 
   task :start => :package do
     cp = compile.classpath + artifacts(LOG4J).map { |a| a.name }
-    proj_sys 'nohup ' << java_runner(cp) << '>/dev/null &\echo $! > ' << pid_f
+    system 'nohup ' << java_runner(cp) << '>/dev/null &\echo $! > ' << pid_f
     puts "started server pid: " << pid().to_s
   end
 
