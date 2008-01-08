@@ -19,8 +19,12 @@
 package net.databinder.web;
 
 import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.wicket.util.string.Strings;
 import org.mortbay.jetty.Connector;
@@ -35,7 +39,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Optional main() class for running embedded Jetty. Client applications may pass
  * this classname to the Java runtime to serve with no other configuration. The webroot 
- * defaults to src/main/webapp, and the server to a context named after the current directory 
+ * defaults to src/main/webapp, and the server to a context named after the project directory 
  * with HTTP on port 8080. <tt>jetty.warPath</tt>, <tt>jetty.contextPath</tt>,
  * <tt>jetty.port</tt>, and <tt>jetty.ajp.port</tt> system properties
  * may be used to override (e.g. <tt>-Djetty.port=80</tt> as a command line parameter). AJP
@@ -51,17 +55,42 @@ public class DataServer {
 
 		WebAppContext web = new WebAppContext();
 		
+		URL classes = null;
+		String projectDir = null;
+		try {
+			// look for project's classes directory
+			URL[] urls = ((URLClassLoader)DataServer.class.getClassLoader()).getURLs();
+			for (URL url : urls)
+				if (url.getPath().endsWith("classes/")) {
+					classes = url;
+					break;
+				}
+		} catch (Exception e) { 
+			log.info("unable to find project path by classloader", e);
+		}
+
+		if (classes == null) {
+			projectDir = new File(".").getCanonicalPath();
+			log.info("project path as current directory: " + projectDir);
+		} else {
+			projectDir = classes.toURI().resolve("../..").getPath();
+			log.info("project path as found by classloader: " + projectDir);
+		}
+
 		String contextPath = System.getProperty("jetty.contextPath");
 		if (Strings.isEmpty(contextPath)) {
-			contextPath = "/" + new File(".").getCanonicalFile().getName();
-			log.info("context path by current directory: " + contextPath);
+			Matcher m = Pattern.compile("(\\/[^\\/]+)/?$").matcher(projectDir);
+			if (!m.find())
+				throw new RuntimeException("Project path not as expected: " + projectDir);
+			contextPath = m.group(1);
+			log.info("context path by project directory: " + contextPath);
 		}
 		else
 			log.info("jetty.contextPath property: " + contextPath);
 		web.setContextPath(contextPath);
 		
 		String warPath = System.getProperty("jetty.warPath");
-		if (Strings.isEmpty(warPath)) warPath = "src/main/webapp";
+		if (Strings.isEmpty(warPath)) warPath = projectDir + "/src/main/webapp";
 		else log.info("jetty.warPath property: " + warPath);
 		web.setWar(warPath);
 		
