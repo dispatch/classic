@@ -87,7 +87,7 @@ def embed_server
 
   task :start => :package do
     cp = compile.classpath + artifacts(LOG4J).map { |a| a.name }
-    system 'nohup ' << java_runner(cp) << '>/dev/null &\echo $! > ' << pid_f
+    system 'nohup ' << java_runner(cp, ['-server']) << '>/dev/null &\echo $! > ' << pid_f
     puts "started server pid: " << pid().to_s
   end
 
