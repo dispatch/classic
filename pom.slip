@@ -36,6 +36,8 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 				configuration:
 					source: "1.5"
 					target: "1.5"
+					compilerArguments:
+					  deprecation:
 			plugin:
 				artifactId: "maven-release-plugin"
 				configuration:
