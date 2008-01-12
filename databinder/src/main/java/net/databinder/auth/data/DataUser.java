@@ -15,7 +15,7 @@ import org.hibernate.annotations.CollectionOfElements;
 
 /**
  * This class is deprecated.
- * @deprecated Please extend DataUserBase or implement IUser directly.
+ * @deprecated Please extend UserBase or implement IUser directly.
  * @author Nathan Hamblen
  */
 @Entity
