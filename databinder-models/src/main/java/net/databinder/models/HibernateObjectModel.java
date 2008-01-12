@@ -92,7 +92,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	 * @param persistentObject should be previously persisted or Serializable for temp storage.
 	 */
 	public HibernateObjectModel(Object persistentObject) {
-		setObject(null, persistentObject);
+		setObject(persistentObject);
 	}
 
 	/**
