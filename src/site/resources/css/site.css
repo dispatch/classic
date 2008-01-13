@@ -159,8 +159,8 @@ dl, dt {
   padding:0;
   margin-left: 0;
 }
-.source pre, pre, tt {
+.source pre, pre, tt, code {
   font-family: 'Lucida Sans Typewriter', monospace;
-  font-size: 85%;
+  font-size: 9pt;
 }
 
