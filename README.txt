@@ -6,6 +6,39 @@ http://databinder.net/
 
 Version History
 
+1.1 Compatible with Wicket 1.3.0, this version improves upon Databinder's 
+interface with Hibernate such that an external session and transaction 
+manager (such as Spring) can be use with Databinder's model and component 
+classes. The runnable DataServer class provides a simple embedded Jetty 
+configuration that can be used in development and production. Several new 
+data-oriented components are available, such as the DataBrowser (contributed 
+by Xavier Hanin---merci !) and SourceList components.
+
+* Centralization of session-fetching in DataStaticService rather than 
+  DataRequestCycle
+* Use of Hibernate's "current session" facility to support external session 
+  and transaction management
+* Upgrade Hibernate dependency to 3.2.5.ga
+* Experimental support of conversational Hibernate sessions
+* Retain serialized unsaved objects by default
+* Databinder dispatch, an interface to Ruby-based text processing libraries
+* IterableEntityView, an analogue for to ListView for an Collection (not 
+  position-dependent)
+* Refactoring of DatabinderProvider now that DataView is Wicket core
+* URIConverter, URIValidator, ColorConverter
+* Authorization refactor: localizable strings, extensible layout by "sockets 
+  and plugs", UserBase as unmapped base user class
+* Authorization cookies bound to IP address, and specific to servlet context
+* Authorization password encrypted by javascript
+* HibernateObjectModel#isBound method reports if entity has identifiers to 
+  be loaded from storage
+* Page versioning restored to Wicket default
+* Implementations of equals and hashcode for HibernateObjectModel that refer 
+  to target object
+* DataBrowser mounting to /dbrowse in development mode
+* DataApplication init() refactor, calling super() no longer necessary
+
+
 1.0	Uses Wicket's Application.getConfigurationType() rather than 
 	tracking configuration independently, to gain compatibility with 
 	other methods of specifying wicket.configuration.
