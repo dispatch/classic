@@ -57,6 +57,9 @@ def embed_server
     params << '-Djetty.ajp.port=' + ENV['JETTY_AJP_PORT'] if ENV['JETTY_AJP_PORT']
     params << '-Djetty.contextPath=' + ENV['JETTY_CONTEXT'] if ENV['JETTY_CONTEXT']
 
+    mkpath _('target/tmp')
+    params << '-Djava.io.tmpdir=' + _('target/tmp')
+
     cp += [compile.target.to_s]
     if defined? scalac then
       cp += scalac.classpath + scala_libs
@@ -120,8 +123,8 @@ EHCACHE=child_artifact("net.sf.ehcache:ehcache:jar:1.2.3", HB_CORE_ZIP, "hiberna
 C3P0='c3p0:c3p0:jar:0.9.0.4'
 HIBERNATE=[HIBERNATE_SELF, JTA, EHCACHE, CGLIB, "javax.persistence:persistence-api:jar:1.0", "dom4j:dom4j:jar:1.6.1", "asm:asm-attrs:jar:1.5.3", "asm:asm:jar:1.5.3", "antlr:antlr:jar:2.7.6", "commons-logging:commons-logging:jar:1.0.4"]
 
-DATABINDER_COMPONENTS="net.databinder:databinder-components:jar:1.1-SNAPSHOT"
-DATABINDER_SELF=[DATABINDER_COMPONENTS, group("databinder","databinder-dispatch", "databinder-auth-components", "databinder-models", :under => "net.databinder", :version => "1.1-SNAPSHOT")]
+DATABINDER_COMPONENTS="net.databinder:databinder-components:jar:1.1"
+DATABINDER_SELF=[DATABINDER_COMPONENTS, group("databinder","databinder-dispatch", "databinder-auth-components", "databinder-models", :under => "net.databinder", :version => "1.1")]
 XML_RPC = ["org.apache.ws.commons:ws-commons-util:jar:1.0.1","org.apache.xmlrpc:xmlrpc-client:jar:3.0","org.apache.xmlrpc:xmlrpc-common:jar:3.0", "commons-httpclient:commons-httpclient:jar:3.0.1", "commons-codec:commons-codec:jar:1.2"]
 DATABINDER=[DATABINDER_SELF, WICKET, HIBERNATE, XML_RPC, C3P0]
 
