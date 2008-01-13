@@ -79,7 +79,7 @@ public class DataUser extends UserBase implements IUser.CookieAuth, Serializable
 
 	/**
 	 * Performs hash on given password and compares it to the correct hash.
-	 * @true if hashed password is correct
+	 * @return true if hashed password is correct
 	 */
 	public boolean checkPassword(String password){
 		return passwordHash.equals(getHash(password));

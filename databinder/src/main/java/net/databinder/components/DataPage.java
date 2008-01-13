@@ -75,8 +75,7 @@ public abstract class DataPage extends WebPage {
 	}
 
 	/**
-	 * Name to be used as a title in the page header.
-	 * @return
+	 * @return Name to be used as a title in the page header.
 	 */
 	protected abstract String getName();
 }

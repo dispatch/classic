@@ -177,7 +177,7 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, I
 	 * Cryptographic salt to be used in authentication. The default IUser
 	 * implementation uses this value. If your implementation does not require
 	 * a salt value (!), return null.
-	 * @return
+	 * @return application-specific salt
 	 */
 	public abstract byte[] getSalt();
 }
