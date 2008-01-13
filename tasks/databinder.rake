@@ -57,7 +57,7 @@ def embed_server
     params << '-Djetty.ajp.port=' + ENV['JETTY_AJP_PORT'] if ENV['JETTY_AJP_PORT']
     params << '-Djetty.contextPath=' + ENV['JETTY_CONTEXT'] if ENV['JETTY_CONTEXT']
 
-    mkpath _('target/tmp')
+    mkpath _('target/tmp'), :verbose=>false
     params << '-Djava.io.tmpdir=' + _('target/tmp')
 
     cp += [compile.target.to_s]
