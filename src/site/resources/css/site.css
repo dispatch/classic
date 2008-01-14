@@ -132,7 +132,7 @@ a:visited  {
   margin: 1.5em 0;
   line-height: 1.5;
 }
-acronym {
+acronym, abbr {
   cursor: inherit;
   border: none;
   font-size: 90%;
