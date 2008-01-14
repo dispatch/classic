@@ -101,7 +101,7 @@ public class DataForm extends DataFormBase {
 	 */
 	public DataForm setPersistentObject(Object object) {
 		getPersistentObjectModel().setObject(object);
-		updateVersion();
+		modelChanged();
 		return this;
 	}
 	
@@ -129,7 +129,7 @@ public class DataForm extends DataFormBase {
 	 */
 	public DataForm clearPersistentObject() {
 		getPersistentObjectModel().clearPersistentObject();
-		version = null;
+		modelChanged();
 		return this;
 	}
 
