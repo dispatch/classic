@@ -18,24 +18,15 @@
  */
 package net.databinder.components;
 
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ResourceReference;
-import org.apache.wicket.markup.html.form.ImageButton;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 
-public abstract class ListItemButton extends ImageButton {
+public abstract class ListItemButton extends BaseItemButton {
 	ListItem item;
 	public ListItemButton(String id, ListItem item, ResourceReference image) {
 		super(id, image);
 		this.item = item;
-		add(new AttributeModifier("class", true, new AbstractReadOnlyModel() {
-			@Override
-			public Object getObject() {
-				return isEnabled() ? null : "disabled-image";
-			}
-		}));
 	}
 	protected ListView getListView() {
 		return (ListView) item.getParent();

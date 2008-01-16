@@ -20,12 +20,11 @@ package net.databinder.components;
 
 import java.util.List;
 
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.markup.html.list.ListItem;
 
 public class RemoveItemButton extends ListItemButton {
 	public RemoveItemButton(String id, ListItem item) {
-		super(id, item, new ResourceReference(RemoveItemButton.class, "image/trash.png"));
+		super(id, item, getTrashImage());
 	}
 	@Override
 	public void onSubmit() {
