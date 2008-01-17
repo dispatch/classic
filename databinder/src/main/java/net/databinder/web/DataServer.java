@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * Optional main() class for running embedded Jetty. Client applications may pass
  * this classname to the Java runtime to serve with no other configuration. The webroot 
  * defaults to src/main/webapp, and the server to a context named after the project directory 
- * with HTTP on port 8080. <tt>jetty.warPath</tt>, <tt>jetty.contextPath</tt>,
+ * with HTTP on port 8080. <tt>jetty.warpath</tt>, <tt>jetty.contextpath</tt>,
  * <tt>jetty.port</tt>, and <tt>jetty.ajp.port</tt> system properties
  * may be used to override (e.g. <tt>-Djetty.port=80</tt> as a command line parameter). AJP
  * is enabled by specifying a port, and HTTP disabled by setting jetty.port to 0.
@@ -71,13 +71,14 @@ public class DataServer {
 
 		if (classes == null) {
 			projectDir = new File(".").getCanonicalPath();
-			log.info("project path as current directory: " + projectDir);
+			log.info("project path fram current directory: " + projectDir);
 		} else {
 			projectDir = classes.toURI().resolve("../..").getPath();
 			log.info("project path as found by classloader: " + projectDir);
 		}
 
-		String contextPath = System.getProperty("jetty.contextPath");
+		String contextPath = System.getProperty("jetty.contextpath", 
+				System.getProperty("jetty.contextPath"));
 		if (Strings.isEmpty(contextPath)) {
 			Matcher m = Pattern.compile("(\\/[^\\/]+)/?$").matcher(projectDir);
 			if (!m.find())
@@ -89,8 +90,18 @@ public class DataServer {
 			log.info("jetty.contextPath property: " + contextPath);
 		web.setContextPath(contextPath);
 		
-		String warPath = System.getProperty("jetty.warPath");
-		if (Strings.isEmpty(warPath)) warPath = projectDir + "/src/main/webapp";
+		String warPath = System.getProperty("jetty.warpath", 
+				System.getProperty("jetty.warPath"));
+		if (Strings.isEmpty(warPath)) warPath = projectDir + "src/main/webapp";
+		
+		if (!new File(warPath).isDirectory()) {
+			log.error("Unable to find webapps path: " + warPath +
+				" \nPlease ensure that this project is the first on its " +
+				"classpath, or set a valid jetty.warpath JVM property.");
+			return;
+		}
+
+		
 		else log.info("jetty.warPath property: " + warPath);
 		web.setWar(warPath);
 		
