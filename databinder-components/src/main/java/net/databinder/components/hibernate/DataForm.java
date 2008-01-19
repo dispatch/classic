@@ -164,7 +164,6 @@ public class DataForm extends DataFormBase {
 		Session session = getHibernateSession();
 		if (!session.contains(modelObject)) {
 			session.save(modelObject);
-			setPersistentObject(modelObject);	// tell model this object is now bound
 		}
 		super.onSubmit();	// flush and commit session
 		// if version is present it should have changed

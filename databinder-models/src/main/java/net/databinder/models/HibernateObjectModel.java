@@ -301,6 +301,21 @@ public class HibernateObjectModel extends LoadableWritableModel {
 			throw new QueryException("Returned no results", queryString);
 		return o;
 	}
+	
+	@Override
+	/**
+	 * Checks if the model is retaining an object this has since become a
+	 * persisent entity. If so, the ID is fetched and the reference discarded.  
+	 */
+	protected void onDetach() {
+		Session sess = DataStaticService.getHibernateSession(factoryKey);
+		if (!isBound() && retainedObject != null  && sess.contains(retainedObject)) {
+			objectId = sess.getIdentifier(retainedObject);
+			// the entityName, rather than the objectClass, will be used to load
+			entityName = getEntityName(sess, retainedObject);
+			retainedObject = null;
+		}
+	}
 
 	/**
 	 * Uses version annotation to find version for this Model's object.
