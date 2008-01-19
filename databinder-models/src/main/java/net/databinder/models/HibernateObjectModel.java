@@ -305,7 +305,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	@Override
 	/**
 	 * Checks if the model is retaining an object this has since become a
-	 * persisent entity. If so, the ID is fetched and the reference discarded.  
+	 * persistent entity. If so, the ID is fetched and the reference discarded.  
 	 */
 	protected void onDetach() {
 		Session sess = DataStaticService.getHibernateSession(factoryKey);
