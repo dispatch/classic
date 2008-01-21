@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
  <modelVersion>4.0.0</modelVersion>
- <artifactId>databinder-models</artifactId>
- <name>Databinder models</name>
+ <artifactId>databinder-models-hib</artifactId>
+ <name>Databinder models for Hibernate</name>
  <description>Wicket models for Hibernate.</description>
  <parent>
   <groupId>net.databinder</groupId>
@@ -10,6 +10,11 @@
   <version>1.1.1-SNAPSHOT</version>
  </parent>
  <dependencies>
+  <dependency>
+   <groupId>${pom.groupId}</groupId>
+   <version>${pom.version}</version>
+   <artifactId>databinder-models</artifactId>
+  </dependency>
   <dependency>
    <groupId>org.hibernate</groupId>
    <artifactId>hibernate</artifactId>

@@ -18,10 +18,13 @@
  <packaging>pom</packaging>
  <modules>
   <module>databinder-models</module>
+  <module>databinder-models-hib</module>
+  <module>databinder-models-ao</module>
   <module>databinder-components</module>
   <module>databinder-auth-components</module>
   <module>databinder-app</module>
   <module>databinder</module>
+  <module>databinder-app-ao</module>
   <module>databinder-dispatch</module>
  </modules>
  <scm>
