@@ -3,7 +3,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 
 	modelVersion: "4.0.0"
 	artifactId: "databinder-models"
-	name: "Databinder core"
+	name: "Databinder models"
 
 	parent:
 		groupId: "net.databinder"

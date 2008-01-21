@@ -2,8 +2,8 @@
 project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://maven.apache.org/POM/4.0.0",xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"):
 
 	modelVersion(): "4.0.0"
-	artifactId: "databinder"
-	name: "Databinder toolkit"
+	artifactId: "databinder-app-hib"
+	name: "Databinder appkit / Hibernate"
 	parent:
 		groupId: "net.databinder"
 		artifactId: "databinder-parent"

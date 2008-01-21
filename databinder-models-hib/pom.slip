@@ -3,8 +3,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 
 	modelVersion: "4.0.0"
 	artifactId: "databinder-models-hib"
-	name: "Databinder models for Hibernate"""
-	description: "Wicket models for Hibernate."
+	name: "Databinder models / Hibernate"
 
 	parent:
 		groupId: "net.databinder"
