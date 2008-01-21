@@ -20,8 +20,6 @@ package net.databinder.web;
 
 import javax.servlet.http.HttpServletResponse;
 
-import net.databinder.DataApplication;
-
 import org.apache.wicket.Application;
 import org.apache.wicket.protocol.http.BufferedWebResponse;
 import org.apache.wicket.protocol.http.WebResponse;

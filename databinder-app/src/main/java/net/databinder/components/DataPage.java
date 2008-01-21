@@ -31,6 +31,7 @@ import org.apache.wicket.model.IModel;
  *  HTML template. This is an optional, starter class that may not be useful in larger applications.
  *  @author Nathan Hamblen
  */
+@Deprecated
 public abstract class DataPage extends WebPage {
 
 	/**

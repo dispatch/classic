@@ -15,6 +15,11 @@
    <artifactId>databinder-auth-components</artifactId>
   </dependency>
   <dependency>
+   <groupId>${pom.groupId}</groupId>
+   <version>${pom.version}</version>
+   <artifactId>databinder-app</artifactId>
+  </dependency>
+  <dependency>
    <groupId>javax.servlet</groupId>
    <artifactId>servlet-api</artifactId>
    <version>2.3</version>

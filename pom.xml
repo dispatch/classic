@@ -20,6 +20,7 @@
   <module>databinder-models</module>
   <module>databinder-components</module>
   <module>databinder-auth-components</module>
+  <module>databinder-app</module>
   <module>databinder</module>
   <module>databinder-dispatch</module>
  </modules>
