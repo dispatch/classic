@@ -8,7 +8,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 	parent:
 		groupId: "net.databinder"
 		artifactId: "databinder-parent"
-		version: "1.1.1-SNAPSHOT"
+		version: "1.2-SNAPSHOT"
 
 	dependencies:
 		dependency:
@@ -19,7 +19,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		dependency:
 			groupId: "${pom.groupId}"
 			version: "${pom.version}"
-			artifactId: "databinder-core"
+			artifactId: "databinder-models"
 
 		dependency:
 			groupId: "org.apache.wicket"

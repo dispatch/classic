@@ -6,7 +6,7 @@
  <parent>
   <groupId>net.databinder</groupId>
   <artifactId>databinder-parent</artifactId>
-  <version>1.1.1-SNAPSHOT</version>
+  <version>1.2-SNAPSHOT</version>
  </parent>
  <dependencies>
   <dependency>
@@ -17,7 +17,7 @@
   <dependency>
    <groupId>${pom.groupId}</groupId>
    <version>${pom.version}</version>
-   <artifactId>databinder-core</artifactId>
+   <artifactId>databinder-models</artifactId>
   </dependency>
   <dependency>
    <groupId>org.apache.wicket</groupId>
