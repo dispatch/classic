@@ -17,33 +17,21 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.databinder;
+package net.databinder.hib;
 
-import java.awt.Color;
-import java.net.URI;
-import java.net.URL;
 import java.util.HashMap;
 
-import javax.servlet.http.HttpServletResponse;
-
-import net.databinder.components.PageExpiredCookieless;
+import net.databinder.DataApplicationBase;
+import net.databinder.DataRequestCycle;
+import net.databinder.IDataApplication;
 import net.databinder.components.hibernate.DataBrowser;
-import net.databinder.util.ColorConverter;
-import net.databinder.util.URIConverter;
-import net.databinder.util.URLConverter;
-import net.databinder.web.NorewriteWebResponse;
 
 import org.apache.wicket.Application;
-import org.apache.wicket.IConverterLocator;
 import org.apache.wicket.Request;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.Response;
 import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.markup.html.pages.PageExpiredErrorPage;
-import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
-import org.apache.wicket.protocol.http.WebResponse;
-import org.apache.wicket.util.convert.ConverterLocator;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 
@@ -52,7 +40,7 @@ import org.hibernate.cfg.AnnotationConfiguration;
  * Supports multiple session factories with key objects.
  * @author Nathan Hamblen
  */
-public abstract class DataApplication extends WebApplication implements IDataApplication {
+public abstract class DataApplication extends DataApplicationBase implements IDataApplication {
 	
 	/** App-wide session factories */
 	private HashMap<Object, SessionFactory> hibernateSessionFactories = new HashMap<Object, SessionFactory>();
@@ -190,22 +178,10 @@ public abstract class DataApplication extends WebApplication implements IDataApp
 	}
 	
 	/**
-	 * Reports if the program is running in a development environment, as determined by the
-	 * "wicket.configuration" environment variable or context/init parameter. If that variable 
-	 * is unset or set to "development", the app is considered to be running in development.  
-	 * @return true if running in a development environment
-	 */
-	protected boolean isDevelopment() {
-		return  getConfigurationType().equalsIgnoreCase(DEVELOPMENT);
-	}
-	
-	/**
 	 * Returns true if development mode is enabled. Override for other behavior.
 	 * @return true if the Data Browser page should be enabled
 	 */
 	protected boolean isDataBrowserAllowed() {
 		return isDevelopment();
 	}
-	
-
 }

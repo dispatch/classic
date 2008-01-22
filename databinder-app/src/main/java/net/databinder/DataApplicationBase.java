@@ -33,8 +33,6 @@ public abstract class DataApplicationBase extends WebApplication {
 	}
 	
 	abstract protected void dataInit();
-
-	
 	
 	/**
 	 * Adds converters to Wicket's base locator.
@@ -91,5 +89,15 @@ public abstract class DataApplicationBase extends WebApplication {
 		if (getApplicationSettings().getPageExpiredErrorPage().equals(expected))
 			getApplicationSettings().setPageExpiredErrorPage(cookielessSupported ?
 					PageExpiredErrorPage.class : PageExpiredCookieless.class);
+	}
+	
+	/**
+	 * Reports if the program is running in a development environment, as determined by the
+	 * "wicket.configuration" environment variable or context/init parameter. If that variable 
+	 * is unset or set to "development", the app is considered to be running in development.  
+	 * @return true if running in a development environment
+	 */
+	protected boolean isDevelopment() {
+		return  getConfigurationType().equalsIgnoreCase(DEVELOPMENT);
 	}
 }

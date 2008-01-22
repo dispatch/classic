@@ -1,19 +1,45 @@
 package net.databinder.ao;
 
-import org.apache.wicket.protocol.http.WebApplication;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import net.databinder.DataApplicationBase;
+import net.java.ao.DatabaseProvider;
 import net.java.ao.EntityManager;
 
-public abstract class DataApplication extends WebApplication implements ActiveObjectsApplication {
+public abstract class DataApplication extends DataApplicationBase implements ActiveObjectsApplication {
+	
+	private Logger logger = LoggerFactory.getLogger(DataApplication.class);
 
-	@Override
-	protected void init() {
-		// TODO Auto-generated method stub
-		super.init();
+	private Map<Object, EntityManager> entityManagers = new HashMap<Object, EntityManager>();
+
+	protected void dataInit() {
+		buildEntityManager(null);
 	}
-		
+	
+	protected void buildEntityManager(Object key) {
+		EntityManager entityManager = new EntityManager(buildDatabaseProvider(key));
+		setEntityManager(key, entityManager);
+		if (isDevelopment()) try {
+			generateSchema(entityManager);
+		} catch (SQLException e) {
+			logger.error("Error generating schema", e);
+		}
+	}
+	
+	protected void generateSchema(EntityManager entityManager) throws SQLException { }
+	
+	protected void setEntityManager(Object key, EntityManager entityManager) {
+		entityManagers.put(key, entityManager);
+	}
+	
+	protected abstract DatabaseProvider buildDatabaseProvider(Object key);
+	
 	public EntityManager getEntityManager(Object key) {
-		// TODO Auto-generated method stub
-		return null;
+		return entityManagers.get(key);
 	}
 }

@@ -20,10 +20,10 @@ package net.databinder.auth;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.databinder.DataApplication;
 import net.databinder.auth.data.IUser;
 import net.databinder.auth.data.UserBase;
 import net.databinder.auth.data.IUser.CookieAuth;
+import net.databinder.hib.DataApplication;
 import net.databinder.models.ICriteriaBuilder;
 
 import org.apache.wicket.Component;

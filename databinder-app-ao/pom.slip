@@ -19,3 +19,8 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 			groupId: "${pom.groupId}"
 			version: "${pom.version}"
 			artifactId: "databinder-models-ao"
+
+		dependency:
+			groupId: "javax.servlet"
+			artifactId: "servlet-api"
+			version: "2.3"
