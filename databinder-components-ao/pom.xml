@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
  <modelVersion>4.0.0</modelVersion>
- <artifactId>databinder-app-ao</artifactId>
- <name>Databinder appkit / ActiveObjects</name>
+ <artifactId>databinder-components-ao</artifactId>
+ <name>Databinder components / ActiveObjects</name>
  <parent>
   <groupId>net.databinder</groupId>
   <artifactId>databinder-parent</artifactId>
@@ -12,17 +12,7 @@
   <dependency>
    <groupId>${pom.groupId}</groupId>
    <version>${pom.version}</version>
-   <artifactId>databinder-app</artifactId>
-  </dependency>
-  <dependency>
-   <groupId>${pom.groupId}</groupId>
-   <version>${pom.version}</version>
-   <artifactId>databinder-components-ao</artifactId>
-  </dependency>
-  <dependency>
-   <groupId>javax.servlet</groupId>
-   <artifactId>servlet-api</artifactId>
-   <version>2.3</version>
+   <artifactId>databinder-models-ao</artifactId>
   </dependency>
  </dependencies>
 </project>

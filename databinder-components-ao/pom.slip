@@ -1,9 +1,10 @@
 """<?xml version="1.0" encoding="UTF-8" ?>"""
 project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://maven.apache.org/POM/4.0.0",xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"):
 
-	modelVersion(): "4.0.0"
-	artifactId: "databinder-app"
-	name: "Databinder appkit"
+	modelVersion: "4.0.0"
+	artifactId: "databinder-components-ao"
+	name: "Databinder components / ActiveObjects"""
+
 	parent:
 		groupId: "net.databinder"
 		artifactId: "databinder-parent"
@@ -13,11 +14,4 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		dependency:
 			groupId: "${pom.groupId}"
 			version: "${pom.version}"
-			artifactId: "databinder-models"
-
-		dependency:
-			groupId: "org.mortbay.jetty"
-			artifactId: "jetty-ajp"
-			version: "6.1.7"
-			optional: "true"
-
+			artifactId: "databinder-models-ao"
