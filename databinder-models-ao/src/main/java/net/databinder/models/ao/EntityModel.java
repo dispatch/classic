@@ -11,10 +11,6 @@ public class EntityModel<T extends RawEntity<K>, K> extends LoadableWritableMode
 	private K id;
 	private Class<T> entityType;
 	
-	public EntityModel(Class<T> entityType) {
-		this.entityType = entityType;
-	}
-	
 	public EntityModel(Class<T> entityType, K id) {
 		this.entityType = entityType;
 		this.id = id;
@@ -22,8 +18,6 @@ public class EntityModel<T extends RawEntity<K>, K> extends LoadableWritableMode
 	
 	@Override
 	protected Object load() {
-		if (id == null)
-			return new HashMap<String, Object>();
 		return Databinder.getEntityManager().get(entityType, id);
 	}
 	@SuppressWarnings("unchecked")
