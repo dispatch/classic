@@ -123,9 +123,14 @@ EHCACHE=child_artifact("net.sf.ehcache:ehcache:jar:1.2.3", HB_CORE_ZIP, "hiberna
 C3P0='c3p0:c3p0:jar:0.9.0.4'
 HIBERNATE=[HIBERNATE_SELF, JTA, EHCACHE, CGLIB, "javax.persistence:persistence-api:jar:1.0", "dom4j:dom4j:jar:1.6.1", "asm:asm-attrs:jar:1.5.3", "asm:asm:jar:1.5.3", "antlr:antlr:jar:2.7.6", "commons-logging:commons-logging:jar:1.0.4"]
 
-DATABINDER_COMPONENTS="net.databinder:databinder-components:jar:1.2-SNAPSHOT"
-DATABINDER_SELF=[DATABINDER_COMPONENTS, group("databinder","databinder-dispatch", "databinder-auth-components", "databinder-models", :under => "net.databinder", :version => "1.2-SNAPSHOT")]
+ACTIVE_OBJECTS=['net.java.dev.activeobjects:activeobjects:jar:0.8-SNAPSHOT']
+
+DB_VERS='1.2-SNAPSHOT'
+DATABINDER_COMPONENTS="net.databinder:databinder-components:jar:#{DB_VERS}"
+DATABINDER_SELF=[DATABINDER_COMPONENTS, group("databinder-app","databinder-dispatch", "databinder-auth-components", "databinder-models", :under => "net.databinder", :version => DB_VERS)]
 XML_RPC = ["org.apache.ws.commons:ws-commons-util:jar:1.0.1","org.apache.xmlrpc:xmlrpc-client:jar:3.0","org.apache.xmlrpc:xmlrpc-common:jar:3.0", "commons-httpclient:commons-httpclient:jar:3.0.1", "commons-codec:commons-codec:jar:1.2"]
-DATABINDER=[DATABINDER_SELF, WICKET, HIBERNATE, XML_RPC, C3P0]
+DATABINDER_CORE=[DATABINDER_SELF, WICKET, XML_RPC, C3P0]
+DATABINDER_HIB=[DATABINDER_CORE, HIBERNATE, group("databinder-models-hib","databinder-components-hib", "databinder-app-hib", :under => "net.databinder", :version => DB_VERS)]
+DATABINDER_AO=[DATABINDER_CORE, ACTIVE_OBJECTS, group("databinder-models-ao","databinder-components-ao", "databinder-app-ao", :under => "net.databinder", :version => DB_VERS)]
 
 JETTY = group('jetty','jetty-util','jetty-ajp', 'servlet-api-2.5', :under=>'org.mortbay.jetty', :version=>'6.1.7')
