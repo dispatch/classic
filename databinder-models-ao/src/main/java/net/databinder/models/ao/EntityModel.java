@@ -1,30 +1,30 @@
 package net.databinder.models.ao;
 
-import java.util.HashMap;
+import java.io.Serializable;
 
 import net.databinder.ao.Databinder;
 import net.databinder.models.LoadableWritableModel;
 import net.java.ao.Common;
 import net.java.ao.RawEntity;
 
-public class EntityModel<T extends RawEntity<K>, K> extends LoadableWritableModel {
-	private K id;
-	private Class<T> entityType;
+public class EntityModel extends LoadableWritableModel {
+	private Serializable id;
+	private Class entityType;
 	
-	public EntityModel(Class<T> entityType, K id) {
+	public EntityModel(Class entityType, Serializable id) {
 		this.entityType = entityType;
 		this.id = id;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	protected Object load() {
 		return Databinder.getEntityManager().get(entityType, id);
 	}
-	@SuppressWarnings("unchecked")
 	public void setObject(Object object) {
-		T entity = (T) object;
-		entityType = (Class<T>) entity.getEntityType();
-		id = Common.getPrimaryKeyValue(entity);
+		RawEntity<?> entity = (RawEntity<?>) object;
+		entityType = entity.getEntityType();
+		id = (Serializable) Common.getPrimaryKeyValue(entity);
 		setTempModelObject(entity);
 	}
 }

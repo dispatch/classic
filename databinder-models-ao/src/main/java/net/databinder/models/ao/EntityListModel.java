@@ -6,26 +6,26 @@ import java.util.List;
 
 import net.databinder.ao.Databinder;
 import net.java.ao.Query;
-import net.java.ao.RawEntity;
 
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.model.LoadableDetachableModel;
 
-public class EntityListModel<T extends RawEntity<K>, K> extends LoadableDetachableModel {
+public class EntityListModel extends LoadableDetachableModel {
 
-	private Class<T> entityType;
+	private Class entityType;
 	private Query query;
 	
-	public EntityListModel(Class<T>entityType) {
+	public EntityListModel(Class entityType) {
 		this (entityType, Query.select());
 	}
-	public EntityListModel(Class<T>entityType, Query query) {
+	public EntityListModel(Class entityType, Query query) {
 		this.entityType = entityType;
 		this.query = query;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	protected List<T> load() {
+	protected List load() {
 		try {
 			return Arrays.asList(Databinder.getEntityManager().find(entityType, query));
 		} catch (SQLException e) {

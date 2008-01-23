@@ -12,7 +12,7 @@
   <dependency>
    <groupId>${pom.groupId}</groupId>
    <version>${pom.version}</version>
-   <artifactId>databinder-components</artifactId>
+   <artifactId>databinder-components-hib</artifactId>
   </dependency>
   <dependency>
    <groupId>org.apache.wicket</groupId>

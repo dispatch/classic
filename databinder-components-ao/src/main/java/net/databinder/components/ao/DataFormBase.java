@@ -21,8 +21,9 @@ public abstract class DataFormBase extends Form {
 		try {
 			new Transaction(Databinder.getEntityManager()) {
 				@Override
-				protected void run() throws SQLException {
+				protected Object run() throws SQLException {
 					onSubmit(Databinder.getEntityManager());
+					return null;
 				}
 			}.execute();
 		} catch (SQLException e) {
