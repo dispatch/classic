@@ -6,10 +6,12 @@ import java.util.List;
 
 import net.databinder.ao.Databinder;
 import net.java.ao.Query;
+import net.java.ao.RawEntity;
 
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.model.LoadableDetachableModel;
 
+@SuppressWarnings("unchecked")
 public class EntityListModel extends LoadableDetachableModel {
 
 	private Class entityType;
@@ -23,13 +25,12 @@ public class EntityListModel extends LoadableDetachableModel {
 		this.query = query;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
-	protected List load() {
+	protected List<RawEntity> load() {
 		try {
 			return Arrays.asList(Databinder.getEntityManager().find(entityType, query));
 		} catch (SQLException e) {
-			throw new WicketRuntimeException("", e);
+			throw new WicketRuntimeException("Error loading list", e);
 		}
 	}
 }

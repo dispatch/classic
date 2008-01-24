@@ -13,6 +13,7 @@ import net.databinder.util.URLConverter;
 import net.databinder.web.NorewriteWebResponse;
 
 import org.apache.wicket.IConverterLocator;
+import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.pages.PageExpiredErrorPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebResponse;
@@ -81,7 +82,7 @@ public abstract class DataApplicationBase extends WebApplication {
 	 * @see net.databinder.components.PageExpiredCookieless
 	 */
 	protected void setCookielessSupported(boolean cookielessSupported) {
-		Class expected = this.cookielessSupported ? 
+		Class<? extends Page> expected = this.cookielessSupported ? 
 				PageExpiredErrorPage.class : PageExpiredCookieless.class;
 		
 		this.cookielessSupported = cookielessSupported;
