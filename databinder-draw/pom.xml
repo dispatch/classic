@@ -3,7 +3,7 @@
  <modelVersion>4.0.0</modelVersion>
  <artifactId>databinder-draw</artifactId>
  <name>Databinder draw</name>
- <description>Leverage rendering libaries for server-side graphics.</description>
+ <description>Leverage rendering libraries for server-side graphics.</description>
  <parent>
   <groupId>net.databinder</groupId>
   <artifactId>databinder-parent</artifactId>
