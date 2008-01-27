@@ -19,6 +19,12 @@ import org.apache.batik.gvt.text.TextPaintInfo;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.Strings;
 
+/**
+ * Renders text without font hinting, which can be better for some fonts
+ * at larger sizes. The standard Java pipeline does not allow hinting to
+ * be disabled; Batik does.
+ * @author Nathan Hamblen
+ */
 public class BatikRenderedLabel extends RenderedLabel {
 	public BatikRenderedLabel(String id) {
 		super(id);

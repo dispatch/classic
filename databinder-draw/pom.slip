@@ -4,7 +4,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 	modelVersion: "4.0.0"
 	artifactId: "databinder-draw"
 	name: "Databinder draw"
-	description: "Leverage rendering libaries for server-side graphics."
+	description: "Leverage rendering libraries for server-side graphics."
 
 	parent:
 		groupId: "net.databinder"
