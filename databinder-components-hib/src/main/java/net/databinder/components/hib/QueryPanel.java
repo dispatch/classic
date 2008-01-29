@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.databinder.hib.Databinder;
-import net.databinder.models.HibernateObjectModel;
+import net.databinder.models.hib.HibernateObjectModel;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;

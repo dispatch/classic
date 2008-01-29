@@ -21,7 +21,7 @@ package net.databinder.components.hib;
 
 import java.io.Serializable;
 
-import net.databinder.models.HibernateObjectModel;
+import net.databinder.models.hib.HibernateObjectModel;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;

@@ -17,23 +17,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.databinder.models;
+package net.databinder.models.hib;
 
 import java.io.Serializable;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
+import org.hibernate.Criteria;
 
 /**
- * Interface for callback that builds a Hibernate Query and binds it to parameters if necessary.
- * Use for SQL queries, named queries, etc.
+ * Interface for callback that sets parameters for a Hibernate Creteria object and 
+ * any necessary sub-criteria.
  * @author Nathan Hamblen
  */
-public interface IQueryBuilder extends Serializable {
-	/**
-	 * Create query from session and bind it to parameters.
-	 * @param hibernateSession session for the current request cycle
-	 * @return ready-to-use query
-	 */
-	Query build(Session hibernateSession);
+public interface CriteriaBuilder extends Serializable {
+	/** Add properties, set projections, etc.  */
+	void build(Criteria criteria);
 }

@@ -20,7 +20,8 @@ package net.databinder.components.hib;
 
 import java.util.Iterator;
 
-import net.databinder.models.HibernateObjectModel;
+import net.databinder.models.hib.HibernateObjectModel;
+
 import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.model.BoundCompoundPropertyModel;
 import org.apache.wicket.model.IModel;

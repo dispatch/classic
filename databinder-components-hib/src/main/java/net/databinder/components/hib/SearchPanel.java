@@ -3,7 +3,7 @@ package net.databinder.components.hib;
 import net.databinder.components.AjaxOnKeyPausedUpdater;
 import net.databinder.components.StyleLink;
 import net.databinder.components.Wrapper;
-import net.databinder.models.QueryBinder;
+import net.databinder.models.hib.QueryBinder;
 
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;

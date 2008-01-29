@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.databinder.models;
+package net.databinder.models.hib;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -26,6 +26,7 @@ import java.lang.reflect.Method;
 import javax.persistence.Version;
 
 import net.databinder.hib.Databinder;
+import net.databinder.models.LoadableWritableModel;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
