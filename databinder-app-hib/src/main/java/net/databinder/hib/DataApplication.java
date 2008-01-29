@@ -22,7 +22,6 @@ package net.databinder.hib;
 import java.util.HashMap;
 
 import net.databinder.DataApplicationBase;
-import net.databinder.DataRequestCycle;
 import net.databinder.components.hib.DataBrowser;
 
 import org.apache.wicket.Application;

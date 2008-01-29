@@ -1,4 +1,4 @@
-package net.databinder.conv.components;
+package net.databinder.hib.conv.components;
 
 import org.hibernate.classic.Session;
 

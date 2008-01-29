@@ -21,7 +21,7 @@
  * Note: this class contains code adapted from wicket-contrib-database. 
  */
 
-package net.databinder;
+package net.databinder.hib;
 
 import java.util.HashMap;
 import java.util.HashSet;
