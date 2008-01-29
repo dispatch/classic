@@ -10,10 +10,11 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		version: "1.2-SNAPSHOT"
 
 	dependencies:
+
 		dependency:
 			groupId: "${pom.groupId}"
 			version: "${pom.version}"
-			artifactId: "databinder-models"
+			artifactId: "databinder-components"
 
 		dependency:
 			groupId: "org.mortbay.jetty"

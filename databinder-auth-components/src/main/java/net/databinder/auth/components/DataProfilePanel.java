@@ -21,14 +21,14 @@ package net.databinder.auth.components;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.databinder.DataStaticService;
 import net.databinder.auth.IAuthSession;
 import net.databinder.auth.IAuthSettings;
 import net.databinder.auth.components.DataSignInPage.ReturnPage;
 import net.databinder.auth.data.IUser;
 import net.databinder.auth.valid.EqualPasswordConvertedInputValidator;
 import net.databinder.components.NullPlug;
-import net.databinder.components.hibernate.DataForm;
+import net.databinder.components.hib.DataForm;
+import net.databinder.hib.Databinder;
 import net.databinder.models.HibernateObjectModel;
 
 import org.apache.wicket.Application;
@@ -85,7 +85,7 @@ public class DataProfilePanel extends Panel {
 		}
 		
 		boolean existing() {
-			return DataStaticService.getHibernateSession().contains(getUser());
+			return Databinder.getHibernateSession().contains(getUser());
 		}
 		
 		public ProfileForm(String id, HibernateObjectModel userModel) {
@@ -141,7 +141,7 @@ public class DataProfilePanel extends Panel {
 	}
 
 	public static boolean isAvailable(String username) {
-		Session session = DataStaticService.getHibernateSession();
+		Session session = Databinder.getHibernateSession();
 		IAuthSettings authSettings = (IAuthSettings)Application.get();
 		Criteria c = session.createCriteria(authSettings.getUserClass());
 		authSettings.getUserCriteriaBuilder(username).build(c);

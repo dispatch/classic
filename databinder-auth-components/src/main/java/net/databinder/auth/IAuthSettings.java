@@ -1,8 +1,9 @@
 package net.databinder.auth;
 
-import org.apache.wicket.markup.html.WebPage;
 import net.databinder.auth.data.IUser;
-import net.databinder.models.ICriteriaBuilder;
+import net.databinder.models.CriteriaBuilder;
+
+import org.apache.wicket.markup.html.WebPage;
 
 /**
  * Application-specific authorization settings. Many components of Databinder authentication
@@ -17,7 +18,7 @@ public interface IAuthSettings {
 	/** 
 	 * @return criteria builder that will match a single IUser for the given username. 
 	 */
-	public ICriteriaBuilder getUserCriteriaBuilder(String username);
+	public CriteriaBuilder getUserCriteriaBuilder(String username);
 	/**
 	 * @return page to sign in users
 	 */

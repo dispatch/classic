@@ -17,7 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.databinder;
+package net.databinder.hib;
+
 
 
 import org.apache.wicket.Application;
@@ -32,17 +33,17 @@ import org.hibernate.context.ManagedSessionContext;
  * <a href="http://www.hibernate.org/hib_docs/v3/api/org/hibernate/context/ManagedSessionContext.html">ManagedSessionContext</a>
  * and IDataRequestCycle listener when present, but neither is required so long as a
  * "current" session is available from the session factory supplied by the application.
- * @see IDataApplication
+ * @see HibernateApplication
  * @author Nathan Hamblen
  */
-public class DataStaticService {
+public class Databinder {
 	@Deprecated
 	private static SessionFactory hibernateSessionFactory;
 	
 	/**
 	 * @return default session factory, as returned by the application
 	 * @throws WicketRuntimeException if session factory can not be found 
-	 * @see IDataApplication
+	 * @see HibernateApplication
 	 */
 	public static SessionFactory getHibernateSessionFactory() {
 		return getHibernateSessionFactory(null);
@@ -51,12 +52,12 @@ public class DataStaticService {
 	 * @param key object, or null for the default factory
 	 * @return session factory, as returned by the application
 	 * @throws WicketRuntimeException if session factory can not be found 
-	 * @see IDataApplication
+	 * @see HibernateApplication
 	 */
 	public static SessionFactory getHibernateSessionFactory(Object key) {
 		Application app = Application.get();
-		if (app instanceof IDataApplication)
-			return ((IDataApplication)app).getHibernateSessionFactory(key);
+		if (app instanceof HibernateApplication)
+			return ((HibernateApplication)app).getHibernateSessionFactory(key);
 		if (hibernateSessionFactory != null)
 			return hibernateSessionFactory;
 		throw new WicketRuntimeException("Please implement IDataApplication in your Application subclass.");
@@ -95,21 +96,21 @@ public class DataStaticService {
 	 * Notifies current request cycle that a data session was requested, if a session factory
 	 * was not already bound for this thread and the request cycle is an IDataRequestCycle.
 	 * @param factory key, or null for the default factory
-	 * @see IDataRequestCycle
+	 * @see HibernateRequestCycle
 	 */
 	private static void dataSessionRequested(Object key) {
 		if (!hasBoundSession(key)) {
 			// if session is unavailable, it could be a late-loaded conversational cycle
 			RequestCycle cycle = RequestCycle.get();
-			if (cycle instanceof IDataRequestCycle)
-				((IDataRequestCycle)cycle).dataSessionRequested(key);
+			if (cycle instanceof HibernateRequestCycle)
+				((HibernateRequestCycle)cycle).dataSessionRequested(key);
 		}
 	}
 	
 	/**
 	 * Please implement IDataApplication in your application class instead of calling this method.
 	 * @deprecated
-	 * @see IDataApplication
+	 * @see HibernateApplication
 	 */
 	public static void setSessionFactory(SessionFactory sessionFactory) {
 		hibernateSessionFactory = sessionFactory;

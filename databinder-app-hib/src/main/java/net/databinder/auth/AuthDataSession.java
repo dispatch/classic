@@ -33,8 +33,8 @@ import java.net.URLEncoder;
 import javax.servlet.http.Cookie;
 
 import net.databinder.DataRequestCycle;
-import net.databinder.DataStaticService;
 import net.databinder.auth.data.IUser;
+import net.databinder.hib.Databinder;
 import net.databinder.models.HibernateObjectModel;
 
 import org.apache.wicket.Application;
@@ -53,12 +53,6 @@ public class AuthDataSession extends WebSession implements IAuthSession {
 	private Serializable userId;
 	private static final String CHARACTER_ENCODING = "UTF-8";
 
-	/**
-	 * @deprecated use AuthDataSession(Request request)
-	 */
-	public AuthDataSession(IAuthSettings application, Request request) {
-		this(request);
-	}
 	/**
 	 * Initialize new session.
 	 * @see WebApplication
@@ -145,7 +139,7 @@ public class AuthDataSession extends WebSession implements IAuthSession {
 	 * @param setCookie if true, sets cookie to remember user
 	 */
 	public void signIn(IUser user, boolean setCookie) {
-		userId = DataStaticService.getHibernateSession().getIdentifier(user);
+		userId = Databinder.getHibernateSession().getIdentifier(user);
 		if (setCookie)
 			setCookie();
 	}
@@ -186,7 +180,7 @@ public class AuthDataSession extends WebSession implements IAuthSession {
 	protected IUser getUser(final String username) {
 		try {
 			IAuthSettings app = (IAuthSettings)getApplication();
-			Criteria criteria = DataStaticService.getHibernateSession().createCriteria(app.getUserClass());
+			Criteria criteria = Databinder.getHibernateSession().createCriteria(app.getUserClass());
 			app.getUserCriteriaBuilder(username).build(criteria);
 			return (IUser) criteria.uniqueResult();
 		} catch (NonUniqueResultException e){
@@ -200,7 +194,7 @@ public class AuthDataSession extends WebSession implements IAuthSession {
 	 */
 	protected IUser getUser(final Serializable userId) {
 		IAuthSettings app = (IAuthSettings)getApplication();
-		return (IUser) DataStaticService.getHibernateSession().load(app.getUserClass(), userId);
+		return (IUser) Databinder.getHibernateSession().load(app.getUserClass(), userId);
 	}
 	
 	public static String getUserCookieName() {

@@ -1,6 +1,6 @@
-package net.databinder.components.hibernate;
+package net.databinder.components.hib;
 
-import net.databinder.DataStaticService;
+import net.databinder.hib.Databinder;
 
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
@@ -33,7 +33,7 @@ public class DataFormBase extends Form {
 	}
 	
 	protected Session getHibernateSession() {
-		return DataStaticService.getHibernateSession(factoryKey);
+		return Databinder.getHibernateSession(factoryKey);
 	}
 	
 	/**
@@ -42,7 +42,7 @@ public class DataFormBase extends Form {
 	protected void onSubmit() {
 		try {
 			if (!hasError()) {
-				Session session = DataStaticService.getHibernateSession(factoryKey);
+				Session session = Databinder.getHibernateSession(factoryKey);
 				session.flush(); // needed for conv. sessions, harmless otherwise
 				session.getTransaction().commit();
 			}

@@ -20,8 +20,8 @@ package net.databinder.components;
 
 import java.util.Locale;
 
-import net.databinder.util.URIConverter;
-import net.databinder.util.URIValidator;
+import net.databinder.converters.URIConverter;
+import net.databinder.validators.URIValidator;
 
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.convert.IConverter;

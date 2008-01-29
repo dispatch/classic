@@ -24,7 +24,7 @@ import net.databinder.auth.data.IUser;
 import net.databinder.auth.data.UserBase;
 import net.databinder.auth.data.IUser.CookieAuth;
 import net.databinder.hib.DataApplication;
-import net.databinder.models.ICriteriaBuilder;
+import net.databinder.models.CriteriaBuilder;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Request;
@@ -124,12 +124,10 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, I
 	 * @return class to be used for signed in users
 	 */
 	@SuppressWarnings("deprecation")
-	public Class< ? extends IUser> getUserClass() {
-		return net.databinder.auth.data.DataUser.class;
-	}
+	public abstract Class< ? extends IUser> getUserClass();
 	
 	/** Default user criteria builder, binds to "username" property. */
-	private static class UsernameCriteriaBuilder implements ICriteriaBuilder {
+	private static class UsernameCriteriaBuilder implements CriteriaBuilder {
 		private String username;
 		public UsernameCriteriaBuilder(String username) { this.username = username; }
 		public void build(Criteria criteria) {
@@ -145,7 +143,7 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, I
 	 * @return builder to match on the username
 	 * @see AuthDataSession
 	 */
-	public ICriteriaBuilder getUserCriteriaBuilder(String username) {
+	public CriteriaBuilder getUserCriteriaBuilder(String username) {
 		return new UsernameCriteriaBuilder(username);
 	}
 

@@ -16,32 +16,25 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+package net.databinder.hib;
 
-package net.databinder.util;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Locale;
-
-import org.apache.wicket.util.convert.ConversionException;
-import org.apache.wicket.util.convert.converters.AbstractConverter;
-import org.apache.wicket.util.string.Strings;
+import org.hibernate.Session;
 
 /**
- * Convert an object to a java.net.URI.
+ * Unit of work to be used with DataStaticService.ensureSession()
+ * when a session is required but might not be bound to the current thread.
+ * @see Databinder#ensureSession(SessionUnit)
  * @author Nathan Hamblen
  */
-public class URIConverter extends AbstractConverter {
-
-	@Override
-	protected Class getTargetType() {
-		return URI.class;
-	}
-	public Object convertToObject(String value, Locale locale) {
-		try {
-			return Strings.isEmpty(value) ? null : new URI(value);
-		} catch (URISyntaxException e) {
-			throw new ConversionException(e);
-		}
-	}
+public interface SessionUnit {
+	/**
+	 * Perform work with a thread-bound session available thorugh 
+	 * DataStaticService.getHibernateSession(). Be careful of returning lazy loaded collections
+	 * in objects whose sessions may have been closed.
+	 * @param sess Hibernate session, for convenience
+	 * @return object to be returned by DataStaticService.ensureSession()
+	 * @see Databinder
+	 */
+	Object run(Session sess); 
 }

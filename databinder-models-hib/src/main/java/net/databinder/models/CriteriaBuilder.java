@@ -28,7 +28,7 @@ import org.hibernate.Criteria;
  * any necessary sub-criteria.
  * @author Nathan Hamblen
  */
-public interface ICriteriaBuilder extends Serializable {
+public interface CriteriaBuilder extends Serializable {
 	/** Add properties, set projections, etc.  */
 	void build(Criteria criteria);
 }

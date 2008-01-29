@@ -23,8 +23,7 @@ import java.util.HashMap;
 
 import net.databinder.DataApplicationBase;
 import net.databinder.DataRequestCycle;
-import net.databinder.IDataApplication;
-import net.databinder.components.hibernate.DataBrowser;
+import net.databinder.components.hib.DataBrowser;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.Request;
@@ -40,7 +39,7 @@ import org.hibernate.cfg.AnnotationConfiguration;
  * Supports multiple session factories with key objects.
  * @author Nathan Hamblen
  */
-public abstract class DataApplication extends DataApplicationBase implements IDataApplication {
+public abstract class DataApplication extends DataApplicationBase implements HibernateApplication {
 	
 	/** App-wide session factories */
 	private HashMap<Object, SessionFactory> hibernateSessionFactories = new HashMap<Object, SessionFactory>();

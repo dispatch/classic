@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.databinder.components.hibernate;
+package net.databinder.components.hib;
 
 import java.io.Serializable;
 

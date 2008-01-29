@@ -2,14 +2,12 @@ package net.databinder;
 
 import java.awt.Color;
 import java.net.URI;
-import java.net.URL;
 
 import javax.servlet.http.HttpServletResponse;
 
 import net.databinder.components.PageExpiredCookieless;
-import net.databinder.util.ColorConverter;
-import net.databinder.util.URIConverter;
-import net.databinder.util.URLConverter;
+import net.databinder.converters.ColorConverter;
+import net.databinder.converters.URIConverter;
 import net.databinder.web.NorewriteWebResponse;
 
 import org.apache.wicket.IConverterLocator;
@@ -42,7 +40,6 @@ public abstract class DataApplicationBase extends WebApplication {
 	protected IConverterLocator newConverterLocator() {
 		// register converters
 		ConverterLocator converterLocator = new ConverterLocator();
-		converterLocator.set(URL.class, new URLConverter());
 		converterLocator.set(URI.class, new URIConverter());
 		converterLocator.set(Color.class, new ColorConverter());
 		return converterLocator;

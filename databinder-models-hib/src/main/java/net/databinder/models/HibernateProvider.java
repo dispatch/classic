@@ -20,16 +20,15 @@ package net.databinder.models;
 
 import java.util.Iterator;
 
-import net.databinder.DataStaticService;
-
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.criterion.Projections;
+import net.databinder.hib.Databinder;
 
 import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.model.BoundCompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
 
 /**
  * Provides query results to DataView and related components. Like the Hibernate model classes,
@@ -41,11 +40,11 @@ import org.apache.wicket.model.IModel;
  * other time you do not want a compound property model.
  * @author Nathan Hamblen
  */
-public class DatabinderProvider implements IDataProvider  {
+public class HibernateProvider implements IDataProvider  {
 	private Class objectClass;
-	private ICriteriaBuilder criteriaBuilder, sortCriteriaBuilder;
+	private CriteriaBuilder criteriaBuilder, sortCriteriaBuilder;
 	private String queryString, countQueryString;
-	private IQueryBinder queryBinder, countQueryBinder;
+	private QueryBinder queryBinder, countQueryBinder;
 	private IQueryBuilder queryBuilder, countQueryBuilder;
 	/** Controls wrapping with a compound property model. */
 	private boolean wrapWithPropertyModel = true;
@@ -55,14 +54,14 @@ public class DatabinderProvider implements IDataProvider  {
 	/**
 	 * Provides all entities of the given class.
 	 */
-	public DatabinderProvider(Class objectClass) {
+	public HibernateProvider(Class objectClass) {
 		this.objectClass = objectClass;
 	}
 	
 	/**
 	 * Provides entities of the given class meeting the supplied criteria.
 	 */
-	public DatabinderProvider(Class objectClass, ICriteriaBuilder criteriaBuilder) {
+	public HibernateProvider(Class objectClass, CriteriaBuilder criteriaBuilder) {
 		this(objectClass);
 		this.criteriaBuilder = criteriaBuilder;
 	}
@@ -75,7 +74,7 @@ public class DatabinderProvider implements IDataProvider  {
 	 * @param criteriaBuilder standard criteria applied to both the count and actual results
 	 * @param sortCriteriaBuilder sort criteria applied only to the actual results
 	 */
-	public DatabinderProvider(Class objectClass, ICriteriaBuilder criteriaBuilder, ICriteriaBuilder sortCriteriaBuilder) {
+	public HibernateProvider(Class objectClass, CriteriaBuilder criteriaBuilder, CriteriaBuilder sortCriteriaBuilder) {
 		this(objectClass, criteriaBuilder);
 		this.sortCriteriaBuilder = sortCriteriaBuilder;
 	}
@@ -85,14 +84,14 @@ public class DatabinderProvider implements IDataProvider  {
 	 * is derived by prefixing "select count(*)" to the given query; this will fail if 
 	 * the supplied query has a select clause.
 	 */
-	public DatabinderProvider(String query) {
+	public HibernateProvider(String query) {
 		this.queryString = query;
 	}
 	
 	/**
 	 * Provides entities matching the given queries.
 	 */
-	public DatabinderProvider(String query, String countQuery) {
+	public HibernateProvider(String query, String countQuery) {
 		this.queryString = query;
 		this.countQueryString = countQuery;
 	}
@@ -102,7 +101,7 @@ public class DatabinderProvider implements IDataProvider  {
 	 * is derived by prefixing "select count(*)" to the given query; this will fail if 
 	 * the supplied query has a select clause.
 	 */
-	public DatabinderProvider(String query, IQueryBinder queryBinder) {
+	public HibernateProvider(String query, QueryBinder queryBinder) {
 		this(query);
 		this.queryBinder = queryBinder;
 	}
@@ -114,13 +113,13 @@ public class DatabinderProvider implements IDataProvider  {
 	 * @param countQuery query to return count of entities
 	 * @param countQueryBinder binder for the count query (may be same as queryBinder)
 	 */
-	public DatabinderProvider(String query, IQueryBinder queryBinder, String countQuery, IQueryBinder countQueryBinder) {
+	public HibernateProvider(String query, QueryBinder queryBinder, String countQuery, QueryBinder countQueryBinder) {
 		this(query, queryBinder);
 		this.countQueryString = countQuery;
 		this.countQueryBinder = countQueryBinder;
 	}
 	
-	public DatabinderProvider(IQueryBuilder queryBuilder, IQueryBuilder countQueryBuilder) {
+	public HibernateProvider(IQueryBuilder queryBuilder, IQueryBuilder countQueryBuilder) {
 		this.queryBuilder = queryBuilder;
 		this.countQueryBuilder = countQueryBuilder;
 	}
@@ -135,31 +134,16 @@ public class DatabinderProvider implements IDataProvider  {
 	 * @param session factory key
 	 * @return this, for chaining
 	 */
-	public DatabinderProvider setFactoryKey(Object key) {
+	public HibernateProvider setFactoryKey(Object key) {
 		this.factoryKey = key;
 		return this;
 	}
 	
-	/** Used only by deprecated subclasses. Please ignore.  */
-	protected void setCriteriaBuilder(ICriteriaBuilder criteriaBuilder) {
-		this.criteriaBuilder = criteriaBuilder;
-	}
-
-	/** Used only by deprecated subclasses. Please ignore.  */
-	protected void setSortCriteriaBuilder(ICriteriaBuilder sortCriteriaBuilder) {
-		this.sortCriteriaBuilder = sortCriteriaBuilder;
-	}
-	
-	/** Used only by deprecated subclasses. Please ignore.  */
-	protected void setQueryBinder(IQueryBinder queryBinder) {
-		this.queryBinder = queryBinder;
-	}
-
 	/**
 	 * It should not be necessary to override (or call) this default implementation.
 	 */
 	public final Iterator iterator(int first, int count) {
-		Session sess =  DataStaticService.getHibernateSession(factoryKey);
+		Session sess =  Databinder.getHibernateSession(factoryKey);
 		
 		if(queryBuilder != null) {
 			org.hibernate.Query q = queryBuilder.build(sess);
@@ -193,7 +177,7 @@ public class DatabinderProvider implements IDataProvider  {
 	 * It should not be necessary to override (or call) this default implementation.
 	 */
 	public final int size() {
-		Session sess =  DataStaticService.getHibernateSession(factoryKey);
+		Session sess =  Databinder.getHibernateSession(factoryKey);
 
 		if(countQueryBuilder != null) {
 			org.hibernate.Query q = countQueryBuilder.build(sess);
@@ -247,54 +231,6 @@ public class DatabinderProvider implements IDataProvider  {
 	public IModel model(Object object) {
 		HibernateObjectModel model = new HibernateObjectModel(object);
 		return  wrapWithPropertyModel ? new BoundCompoundPropertyModel(model) : model;
-	}
-	
-	/**
-	 * Please use the base DatabinderProvider with independent criteria builders. This subclass
-	 * will be removed in a future release.
-	 * @deprecated
-	 */
-	public static abstract class CriteriaBuilder extends DatabinderProvider implements ICriteriaBuilder {
-		public CriteriaBuilder(Class objectClass) {
-			super(objectClass);
-			setCriteriaBuilder(this);
-			setSortCriteriaBuilder(new ICriteriaBuilder() {
-				public void build(Criteria criteria) {
-					sort(criteria);
-				}
-			});
-			setWrapWithPropertyModel(false);
-		}
-		protected void sort(Criteria crit) {
-		}
-	}
-	/**
-	 * Please use the base DatabinderProvider with independent query binders. This subclass
-	 * will be removed from a future release.
-	 * @deprecated
-	 */
-	public static abstract class QueryBinder extends DatabinderProvider implements IQueryBinder {
-		String queryString;
-		
-		public QueryBinder(String queryString) {
-			super(queryString);
-			setQueryBinder(this);
-			setWrapWithPropertyModel(false);
-		}
-		
-		/**
-		 * This method will not be called. Please use the base DatabinderProvider.
-		 */
-		protected final String count (String queryString) {
-			return null;
-		}
-		
-		/**
-		 * This method will not be called. Please use the base DatabinderProvider.
-		 */
-		protected final String sort(String queryString) {
-			return null;
-		}
 	}
 	
 	/** This provider has nothing to detach. */

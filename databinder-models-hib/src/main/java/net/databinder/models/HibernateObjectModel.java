@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
 
 import javax.persistence.Version;
 
-import net.databinder.DataStaticService;
+import net.databinder.hib.Databinder;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
@@ -54,9 +54,9 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	private Class objectClass;
 	private Serializable objectId;
 	private String queryString;
-	private IQueryBinder queryBinder;
+	private QueryBinder queryBinder;
 	private IQueryBuilder queryBuilder;
-	private ICriteriaBuilder criteriaBuilder;
+	private CriteriaBuilder criteriaBuilder;
 	/** May store unsaved objects between requests. */
 	private Serializable retainedObject;
 	/** Enable retaining unsaved objects between requests. */
@@ -103,7 +103,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	 * @param queryBinder bind id or other parameters
 	 * @throws org.hibernate.HibernateException on load error
 	 */
-	public HibernateObjectModel(String queryString, IQueryBinder queryBinder) {
+	public HibernateObjectModel(String queryString, QueryBinder queryBinder) {
 		this.queryString = queryString;
 		this.queryBinder = queryBinder;
 		getObject();	// loads & retains object
@@ -117,7 +117,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	 * @param criteriaBuilder builder to apply criteria restrictions
 	 * @throws org.hibernate.HibernateException on load error
 	 */
-	public HibernateObjectModel(Class objectClass, ICriteriaBuilder criteriaBuilder) {
+	public HibernateObjectModel(Class objectClass, CriteriaBuilder criteriaBuilder) {
 		this.objectClass = objectClass;
 		this.criteriaBuilder = criteriaBuilder;
 		getObject();	// loads & retains object
@@ -172,7 +172,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 			// clear out completely
 			objectClass = null;
 		else {
-			Session sess = DataStaticService.getHibernateSession(factoryKey);
+			Session sess = Databinder.getHibernateSession(factoryKey);
 			if (sess.contains(object)) {
 				objectId = sess.getIdentifier(object);
 				// the entityName, rather than the objectClass, will be used to load
@@ -214,7 +214,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 
 	
 	public Serializable getIdentifier() {
-		return DataStaticService.getHibernateSession(factoryKey).getIdentifier(getObject());
+		return Databinder.getHibernateSession(factoryKey).getIdentifier(getObject());
 	}
 	
 	/**
@@ -268,7 +268,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 		} catch (Throwable e) {
 			throw new RuntimeException("Unable to instantiate object. Does it have a default constructor?", e);
 		}
-		Session sess = DataStaticService.getHibernateSession(factoryKey);
+		Session sess = Databinder.getHibernateSession(factoryKey);
 		if (objectId != null) {
 			Object obj;
 			if (entityName != null) {
@@ -308,7 +308,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	 * persistent entity. If so, the ID is fetched and the reference discarded.  
 	 */
 	protected void onDetach() {
-		Session sess = DataStaticService.getHibernateSession(factoryKey);
+		Session sess = Databinder.getHibernateSession(factoryKey);
 		if (!isBound() && retainedObject != null  && sess.contains(retainedObject)) {
 			objectId = sess.getIdentifier(retainedObject);
 			// the entityName, rather than the objectClass, will be used to load

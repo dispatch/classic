@@ -29,6 +29,9 @@ import java.util.Map;
 
 import javax.servlet.http.Cookie;
 
+import net.databinder.hib.Databinder;
+import net.databinder.hib.HibernateRequestCycle;
+
 import org.apache.wicket.Page;
 import org.apache.wicket.Response;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -44,7 +47,7 @@ import org.hibernate.context.ManagedSessionContext;
  * @see DataStaticService
  * @author Nathan Hamblen
  */
-public class DataRequestCycle extends WebRequestCycle implements IDataRequestCycle {
+public class DataRequestCycle extends WebRequestCycle implements HibernateRequestCycle {
 	/** cache of cookies from request */ 
 	private Map<String, Cookie> cookies;
 	
@@ -55,18 +58,9 @@ public class DataRequestCycle extends WebRequestCycle implements IDataRequestCyc
 		super(application, request, response);
 	}
 
-	/**
-	 * Call DataStaticService.getHibernateSession() instead of this method.
-	 * @see DataStaticService#getHibernateSession()
-	 * @deprecated
-	 */
-	public static Session getHibernateSession() {
-		return DataStaticService.getHibernateSession();
-	}
-	
 	/** Roll back active transactions and close session. */
 	protected void closeSession(Object key) {
-		Session sess = DataStaticService.getHibernateSession(key);
+		Session sess = Databinder.getHibernateSession(key);
 		
 		if (sess.isOpen())
 			try {
@@ -91,7 +85,7 @@ public class DataRequestCycle extends WebRequestCycle implements IDataRequestCyc
 	 * @return newly opened session
 	 */
 	protected org.hibernate.classic.Session openHibernateSession(Object key) {
-		org.hibernate.classic.Session sess = DataStaticService.getHibernateSessionFactory(key).openSession();
+		org.hibernate.classic.Session sess = Databinder.getHibernateSessionFactory(key).openSession();
 		sess.beginTransaction();
 		ManagedSessionContext.bind(sess);
 		keys.add(key);
@@ -106,10 +100,10 @@ public class DataRequestCycle extends WebRequestCycle implements IDataRequestCyc
 	@Override
 	protected void onEndRequest() {
 		for (Object key : keys) {
-			if (!ManagedSessionContext.hasBind(DataStaticService.getHibernateSessionFactory(key)))
+			if (!ManagedSessionContext.hasBind(Databinder.getHibernateSessionFactory(key)))
 				return;
 			closeSession(key);
-			ManagedSessionContext.unbind(DataStaticService.getHibernateSessionFactory(key));
+			ManagedSessionContext.unbind(Databinder.getHibernateSessionFactory(key));
 		}
 	}
 

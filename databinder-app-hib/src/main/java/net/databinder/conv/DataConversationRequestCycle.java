@@ -24,9 +24,8 @@
 package net.databinder.conv;
 
 import net.databinder.DataRequestCycle;
-import net.databinder.DataStaticService;
-import net.databinder.IDataRequestCycle;
 import net.databinder.conv.components.IConversationPage;
+import net.databinder.hib.Databinder;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.Response;
@@ -46,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * until the session is flushed the changes are not made to persistent storage.   
  * @author Nathan Hamblen
  */
-public class DataConversationRequestCycle extends DataRequestCycle implements IDataRequestCycle {	
+public class DataConversationRequestCycle extends DataRequestCycle {	
 	private static final Logger log = LoggerFactory.getLogger(DataConversationRequestCycle.class);
 
 	public DataConversationRequestCycle(WebApplication application, WebRequest request, Response response) {
@@ -77,7 +76,7 @@ public class DataConversationRequestCycle extends DataRequestCycle implements ID
 				openHibernateSession(key);
 				// set to manual if we are going to a conv. page
 				if (IConversationPage.class.isAssignableFrom(pageClass))
-					DataStaticService.getHibernateSession(key).setFlushMode(FlushMode.MANUAL);
+					Databinder.getHibernateSession(key).setFlushMode(FlushMode.MANUAL);
 			}
 			return;
 		}
@@ -116,9 +115,9 @@ public class DataConversationRequestCycle extends DataRequestCycle implements ID
 	@Override
 	protected void onEndRequest() {
 		for (Object key : keys) {
-			if (!ManagedSessionContext.hasBind(DataStaticService.getHibernateSessionFactory(key)))
+			if (!ManagedSessionContext.hasBind(Databinder.getHibernateSessionFactory(key)))
 				return;
-			org.hibernate.classic.Session sess = DataStaticService.getHibernateSession(key);
+			org.hibernate.classic.Session sess = Databinder.getHibernateSession(key);
 			boolean transactionComitted = false;
 			if (sess.getTransaction().isActive())
 				sess.getTransaction().rollback();
@@ -140,7 +139,7 @@ public class DataConversationRequestCycle extends DataRequestCycle implements ID
 				} else
 					sess.close();
 			}		
-			ManagedSessionContext.unbind(DataStaticService.getHibernateSessionFactory(key));
+			ManagedSessionContext.unbind(Databinder.getHibernateSessionFactory(key));
 		}
 	}
 
@@ -151,14 +150,14 @@ public class DataConversationRequestCycle extends DataRequestCycle implements ID
 	@Override
 	public Page onRuntimeException(Page page, RuntimeException e) {
 		for (Object key : keys) {
-			if (DataStaticService.hasBoundSession(key)) {
-				Session sess = DataStaticService.getHibernateSession(key);
+			if (Databinder.hasBoundSession(key)) {
+				Session sess = Databinder.getHibernateSession(key);
 				try {
 					if (sess.getTransaction().isActive())
 						sess.getTransaction().rollback();
 				} finally {
 					sess.close();
-					ManagedSessionContext.unbind(DataStaticService.getHibernateSessionFactory(key));
+					ManagedSessionContext.unbind(Databinder.getHibernateSessionFactory(key));
 				}
 			}
 			openHibernateSession(key);

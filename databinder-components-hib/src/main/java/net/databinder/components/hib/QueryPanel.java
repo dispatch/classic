@@ -17,14 +17,14 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package net.databinder.components.hibernate;
+package net.databinder.components.hib;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import net.databinder.DataStaticService;
+import net.databinder.hib.Databinder;
 import net.databinder.models.HibernateObjectModel;
 
 import org.apache.wicket.Component;
@@ -147,7 +147,7 @@ public class QueryPanel extends Panel {
 				}
 			
 				public int size() {
-					Session sess = DataStaticService.getHibernateSession();
+					Session sess = Databinder.getHibernateSession();
 					Query query = sess.createQuery(getQuery());
 					return query.list().size();
 				}
@@ -161,7 +161,7 @@ public class QueryPanel extends Panel {
 				}
 			
 				public Iterator iterator(int first, int count) {
-					Session sess =  DataStaticService.getHibernateSession();
+					Session sess =  Databinder.getHibernateSession();
 					long start = System.nanoTime();
 					try {
 						Query q = sess.createQuery(getQuery());
@@ -175,7 +175,7 @@ public class QueryPanel extends Panel {
 				}
 			};
 			IColumn[] columns;
-			Session sess =  DataStaticService.getHibernateSession();
+			Session sess =  Databinder.getHibernateSession();
 			Query q = sess.createQuery(query.getQuery());
 			String[] aliases;
 			Type[] returnTypes;
@@ -205,7 +205,7 @@ public class QueryPanel extends Panel {
 				Type returnType = returnTypes[0];
 				if (returnType.isEntityType()) {
 					Class clss = returnType.getReturnedClass();
-					ClassMetadata metadata = DataStaticService.getHibernateSessionFactory().getClassMetadata(clss);
+					ClassMetadata metadata = Databinder.getHibernateSessionFactory().getClassMetadata(clss);
 					List<IColumn> cols = new ArrayList<IColumn>();
 					String idProp = metadata.getIdentifierPropertyName();
 					cols.add(new PropertyColumn(new Model(idProp), idProp));

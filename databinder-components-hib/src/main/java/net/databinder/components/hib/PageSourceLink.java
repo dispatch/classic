@@ -1,6 +1,6 @@
-package net.databinder.components.hibernate;
+package net.databinder.components.hib;
 
-import net.databinder.DataStaticService;
+import net.databinder.hib.Databinder;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -56,6 +56,6 @@ public class PageSourceLink extends BookmarkablePageLink {
 	/** Sets the id parameter to  the identifier given by Hibernate*/
 	protected void setParameters() {
 		setParameter(idParameter, 
-			DataStaticService.getHibernateSession().getIdentifier(getModelObject()).toString());
+				Databinder.getHibernateSession().getIdentifier(getModelObject()).toString());
 	}
 }

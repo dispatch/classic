@@ -19,7 +19,7 @@
 
 package net.databinder.models;
 
-import net.databinder.DataStaticService;
+import net.databinder.hib.Databinder;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -34,10 +34,10 @@ import org.apache.wicket.model.LoadableDetachableModel;
  */
 public class HibernateListModel extends LoadableDetachableModel {
 	private String queryString;
-	private IQueryBinder queryBinder;
+	private QueryBinder queryBinder;
 	private IQueryBuilder queryBuilder;
 	private Class objectClass;
-	private ICriteriaBuilder criteriaBuilder;
+	private CriteriaBuilder criteriaBuilder;
 	private boolean cacheable = false;
 	
 	private Object factoryKey;
@@ -65,7 +65,7 @@ public class HibernateListModel extends LoadableDetachableModel {
 	 * @param queryString Query with parameters
 	 * @param queryBinder object that binds the query parameters
 	 */
-	public HibernateListModel(String queryString, IQueryBinder queryBinder) {
+	public HibernateListModel(String queryString, QueryBinder queryBinder) {
 		this(queryString);
 		this.queryBinder = queryBinder;
 	}
@@ -84,7 +84,7 @@ public class HibernateListModel extends LoadableDetachableModel {
 	 * @param objectClass class for root criteria
 	 * @param criteriaBuilder builder to apply criteria restrictions
 	 */
-	public HibernateListModel(Class objectClass, ICriteriaBuilder criteriaBuilder) {
+	public HibernateListModel(Class objectClass, CriteriaBuilder criteriaBuilder) {
 		this.objectClass = objectClass;
 		this.criteriaBuilder = criteriaBuilder;
 	}
@@ -117,7 +117,7 @@ public class HibernateListModel extends LoadableDetachableModel {
 	 */
 	@Override
 	protected Object load() {
-		Session session = DataStaticService.getHibernateSession(factoryKey);
+		Session session = Databinder.getHibernateSession(factoryKey);
 		if (queryString != null) {
 			Query query = session.createQuery(queryString);
 			if (queryBinder != null)

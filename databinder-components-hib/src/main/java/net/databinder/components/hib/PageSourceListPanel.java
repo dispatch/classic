@@ -1,4 +1,4 @@
-package net.databinder.components.hibernate;
+package net.databinder.components.hib;
 
 import net.databinder.components.SourceListPanel;
 

@@ -1,7 +1,7 @@
 /*
  * Databinder: a simple bridge from Wicket to Hibernate
  * Copyright (C) 2006  Nathan Hamblen nathan@technically.us
-
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -17,20 +17,39 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.databinder.models;
+package net.databinder.converters;
 
-import java.io.Serializable;
+import java.awt.Color;
+import java.util.Locale;
 
-import org.hibernate.Query;
+import org.apache.wicket.util.convert.ConversionException;
+import org.apache.wicket.util.convert.converters.AbstractConverter;
+import org.apache.wicket.util.string.Strings;
 
 /**
- * Interface for object that binds Hibernate query parameters to values.
+ * Convert between a HTML hex color string and java.awt.Color.
  * @author Nathan Hamblen
+ * @see Color
  */
-public interface IQueryBinder extends Serializable {
-	/**
-	 * Set values for parameters in the query.
-	 * @param query Hibernate query
-	 */
-	void bind(Query query);
+public class ColorConverter extends AbstractConverter {
+
+	@Override
+	protected Class getTargetType() {
+		return Color.class;
+	}
+
+	public Object convertToObject(String str, Locale loc) {
+		try {
+			if (Strings.isEmpty(str)) return null;
+			return Color.decode(str.toString());
+		} catch (NumberFormatException e) {
+			throw new ConversionException(e);
+		}
+	}
+	@Override
+	public String convertToString(Object value, Locale locale) {
+		if (value == null) return null;
+		Color c = (Color) value;
+		return "#" + Integer.toHexString(c.getRGB()).substring(2);
+	}
 }

@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.databinder.components.hibernate;
+package net.databinder.components.hib;
 
 import java.util.ArrayList;
 
-import net.databinder.DataStaticService;
 import net.databinder.components.DataStyleLink;
+import net.databinder.hib.Databinder;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -53,7 +53,7 @@ public class DataBrowser extends WebPage {
 				@Override
 				protected Object load() {
 					return new ArrayList(
-							DataStaticService.getHibernateSessionFactory().getAllClassMetadata().keySet());
+							Databinder.getHibernateSessionFactory().getAllClassMetadata().keySet());
 				}
 			}) {
 				@Override

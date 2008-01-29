@@ -1,11 +1,9 @@
-package net.databinder.components.hibernate;
+package net.databinder.components.hib;
 
 import net.databinder.components.AjaxOnKeyPausedUpdater;
 import net.databinder.components.StyleLink;
 import net.databinder.components.Wrapper;
-import net.databinder.models.IQueryBinder;
-
-import org.hibernate.Query;
+import net.databinder.models.QueryBinder;
 
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -15,6 +13,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.hibernate.Query;
 
 /**
  * Panel for a "live" search field with a clear button. The SearchPanel's model object
@@ -53,8 +52,8 @@ public abstract class SearchPanel extends Panel {
 	 * to your own IQueryBinder instance; this is a convenience method. 
 	 * @return binder for a "search" parameter
 	 */
-	public IQueryBinder getQueryBinder() {
-		return new IQueryBinder() {
+	public QueryBinder getQueryBinder() {
+		return new QueryBinder() {
 			public void bind(Query query) {
 				query.setString("search", getModelObject() == null ? 
 						null : "%" + getModelObject() + "%");
