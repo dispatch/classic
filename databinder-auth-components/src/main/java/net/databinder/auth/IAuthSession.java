@@ -1,7 +1,7 @@
 package net.databinder.auth;
 
 import net.databinder.auth.data.IUser;
-import net.databinder.models.HibernateObjectModel;
+import net.databinder.models.hib.HibernateObjectModel;
 
 public interface IAuthSession {
 	public boolean signIn(String username, String password);

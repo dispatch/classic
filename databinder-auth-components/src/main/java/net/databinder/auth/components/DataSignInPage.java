@@ -23,7 +23,7 @@ import net.databinder.auth.IAuthSettings;
 import net.databinder.auth.data.IUser;
 import net.databinder.components.DataStyleLink;
 import net.databinder.components.SourceList;
-import net.databinder.models.HibernateObjectModel;
+import net.databinder.models.hib.HibernateObjectModel;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;

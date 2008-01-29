@@ -37,7 +37,7 @@ import net.databinder.auth.IAuthSettings;
 import net.databinder.auth.data.IUser;
 import net.databinder.hib.DataRequestCycle;
 import net.databinder.hib.Databinder;
-import net.databinder.models.HibernateObjectModel;
+import net.databinder.models.hib.HibernateObjectModel;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.Request;

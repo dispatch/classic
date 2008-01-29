@@ -35,7 +35,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 public class HibernateListModel extends LoadableDetachableModel {
 	private String queryString;
 	private QueryBinder queryBinder;
-	private IQueryBuilder queryBuilder;
+	private QueryBuilder queryBuilder;
 	private Class objectClass;
 	private CriteriaBuilder criteriaBuilder;
 	private boolean cacheable = false;
@@ -93,7 +93,7 @@ public class HibernateListModel extends LoadableDetachableModel {
 	 * Constructor for a custom query that is built by the calling application.
 	 * @param queryBuilder builder to create and bind query object
 	 */
-	public HibernateListModel(IQueryBuilder queryBuilder) {
+	public HibernateListModel(QueryBuilder queryBuilder) {
 		this.queryBuilder = queryBuilder;
 	}
 

@@ -45,7 +45,7 @@ public class HibernateProvider implements IDataProvider  {
 	private CriteriaBuilder criteriaBuilder, sortCriteriaBuilder;
 	private String queryString, countQueryString;
 	private QueryBinder queryBinder, countQueryBinder;
-	private IQueryBuilder queryBuilder, countQueryBuilder;
+	private QueryBuilder queryBuilder, countQueryBuilder;
 	/** Controls wrapping with a compound property model. */
 	private boolean wrapWithPropertyModel = true;
 	
@@ -119,7 +119,7 @@ public class HibernateProvider implements IDataProvider  {
 		this.countQueryBinder = countQueryBinder;
 	}
 	
-	public HibernateProvider(IQueryBuilder queryBuilder, IQueryBuilder countQueryBuilder) {
+	public HibernateProvider(QueryBuilder queryBuilder, QueryBuilder countQueryBuilder) {
 		this.queryBuilder = queryBuilder;
 		this.countQueryBuilder = countQueryBuilder;
 	}

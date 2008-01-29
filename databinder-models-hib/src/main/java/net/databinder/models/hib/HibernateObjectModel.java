@@ -56,7 +56,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	private Serializable objectId;
 	private String queryString;
 	private QueryBinder queryBinder;
-	private IQueryBuilder queryBuilder;
+	private QueryBuilder queryBuilder;
 	private CriteriaBuilder criteriaBuilder;
 	/** May store unsaved objects between requests. */
 	private Serializable retainedObject;
@@ -130,7 +130,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	 * @param queryBuilder builder to create and bind query object
 	 * @throws org.hibernate.HibernateException on load error
 	 */
-	public HibernateObjectModel(IQueryBuilder queryBuilder) {
+	public HibernateObjectModel(QueryBuilder queryBuilder) {
 		this.queryBuilder = queryBuilder;
 		getObject();	// loads & retains object
 	}

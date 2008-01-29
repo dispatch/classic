@@ -26,7 +26,7 @@ import net.databinder.auth.data.IUser;
 import net.databinder.auth.data.UserBase;
 import net.databinder.auth.data.IUser.CookieAuth;
 import net.databinder.hib.DataApplication;
-import net.databinder.models.CriteriaBuilder;
+import net.databinder.models.hib.CriteriaBuilder;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Request;

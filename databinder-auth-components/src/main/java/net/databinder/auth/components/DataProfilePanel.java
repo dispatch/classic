@@ -29,7 +29,7 @@ import net.databinder.auth.valid.EqualPasswordConvertedInputValidator;
 import net.databinder.components.NullPlug;
 import net.databinder.components.hib.DataForm;
 import net.databinder.hib.Databinder;
-import net.databinder.models.HibernateObjectModel;
+import net.databinder.models.hib.HibernateObjectModel;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.AttributeModifier;

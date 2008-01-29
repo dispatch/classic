@@ -1,7 +1,7 @@
 package net.databinder.auth;
 
 import net.databinder.auth.data.IUser;
-import net.databinder.models.CriteriaBuilder;
+import net.databinder.models.hib.CriteriaBuilder;
 
 import org.apache.wicket.markup.html.WebPage;
 
