@@ -31,14 +31,12 @@ import org.hibernate.context.ManagedSessionContext;
  * Provides access to application-bound Hibernate session factories and current sessions.
  * This class will work with a
  * <a href="http://www.hibernate.org/hib_docs/v3/api/org/hibernate/context/ManagedSessionContext.html">ManagedSessionContext</a>
- * and IDataRequestCycle listener when present, but neither is required so long as a
+ * and DataRequestCycle listener when present, but neither is required so long as a
  * "current" session is available from the session factory supplied by the application.
  * @see HibernateApplication
  * @author Nathan Hamblen
  */
 public class Databinder {
-	@Deprecated
-	private static SessionFactory hibernateSessionFactory;
 	
 	/**
 	 * @return default session factory, as returned by the application
@@ -58,9 +56,7 @@ public class Databinder {
 		Application app = Application.get();
 		if (app instanceof HibernateApplication)
 			return ((HibernateApplication)app).getHibernateSessionFactory(key);
-		if (hibernateSessionFactory != null)
-			return hibernateSessionFactory;
-		throw new WicketRuntimeException("Please implement IDataApplication in your Application subclass.");
+		throw new WicketRuntimeException("Please implement HibernateApplication in your Application subclass.");
 	}
 	
 	/**
@@ -94,7 +90,7 @@ public class Databinder {
 	
 	/**
 	 * Notifies current request cycle that a data session was requested, if a session factory
-	 * was not already bound for this thread and the request cycle is an IDataRequestCycle.
+	 * was not already bound for this thread and the request cycle is an DataRequestCycle.
 	 * @param factory key, or null for the default factory
 	 * @see HibernateRequestCycle
 	 */
@@ -105,15 +101,6 @@ public class Databinder {
 			if (cycle instanceof HibernateRequestCycle)
 				((HibernateRequestCycle)cycle).dataSessionRequested(key);
 		}
-	}
-	
-	/**
-	 * Please implement IDataApplication in your application class instead of calling this method.
-	 * @deprecated
-	 * @see HibernateApplication
-	 */
-	public static void setSessionFactory(SessionFactory sessionFactory) {
-		hibernateSessionFactory = sessionFactory;
 	}
 	
 	/**
