@@ -6,15 +6,12 @@ import net.databinder.ao.Databinder;
 import net.databinder.models.ao.EntityModel;
 import net.java.ao.EntityManager;
 import net.java.ao.RawEntity;
-import net.java.ao.Transaction;
 
-import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.CompoundPropertyModel;
 
 @SuppressWarnings("unchecked")
-public class DataForm extends DataFormBase {
+public class DataForm extends TransactionalForm {
 	private Class entityType;
 	
 	public DataForm(String id, Class entityType) {
@@ -27,7 +24,8 @@ public class DataForm extends DataFormBase {
 		this.entityType = entityModel.getEntityType();
 	}
 	
-	protected void onSubmit(EntityManager entityManager) throws SQLException {
+	@Override
+	protected void inSubmitTransaction(EntityManager entityManager) throws SQLException {
 		if (getEntityModel().isBound())
 			((RawEntity)getModelObject()).save();
 		else
@@ -42,28 +40,23 @@ public class DataForm extends DataFormBase {
 		getEntityModel().clear();
 	}
 	
-	public class DeleteButton extends Button {
-		 public DeleteButton(String id) {
+	public class DeleteButton extends TransactionalButton {
+		public DeleteButton(String id) {
 			super(id);
 			setDefaultFormProcessing(false);
 		}
-		 @Override
+		@Override
+		protected void inSubmitTransaction(EntityManager entityManager) throws SQLException {
+			Databinder.getEntityManager().delete((RawEntity)DataForm.this.getModelObject());
+		}
+		@Override
+		protected void afterSubmit() {
+			clear();
+		}
+		@Override
 		public boolean isEnabled() {
 			return getEntityModel().isBound();
 		}
-		 @Override
-		public void onSubmit() {
-				try {
-					new Transaction<Object>(Databinder.getEntityManager()) {
-						@Override
-						protected Object run() throws SQLException {
-							Databinder.getEntityManager().delete((RawEntity)DataForm.this.getModelObject());
-							return null;
-						}
-					}.execute();
-				} catch (SQLException e) { throw new WicketRuntimeException(e); }
-				clear();
-		 }
 	}
 	
 	public class ClearLink extends Link {
