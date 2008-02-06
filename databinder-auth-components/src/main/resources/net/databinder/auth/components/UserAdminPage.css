@@ -1,0 +1,15 @@
+div#nav {
+	float: left;
+	padding-right: 1em;
+	width: 10em;
+}
+div#edit {
+	float: left;
+}
+div#userStatus {
+	float: right;
+}
+div#roles label {
+	display: inline;
+	text-transform: lowercase;
+}
