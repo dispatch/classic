@@ -25,6 +25,6 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		dependency:
 			groupId: "org.apache.wicket"
 			artifactId: "wicket"
-			version: "1.3.0"
+			version: "1.3.1"
 
 
