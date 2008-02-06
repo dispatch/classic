@@ -1,4 +1,4 @@
-package deafel.helpers.datatree;
+package net.databinder.components.hibernate.datatree;
 
 import java.util.Collection;
 

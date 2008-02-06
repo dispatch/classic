@@ -1,4 +1,4 @@
-package deafel.helpers.datatree;
+package net.databinder.components.hibernate.datatree;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -81,6 +81,7 @@ public abstract class DataTree<T extends IDataTreeNode<T>> extends BaseTree {
 	 *            a tree node
 	 * @return the object represented by node
 	 */
+	@SuppressWarnings("unchecked")
 	public T getObjectFromNode(DefaultMutableTreeNode node) {
 		return (T) getModelFromNode(node).getObject();
 	}
