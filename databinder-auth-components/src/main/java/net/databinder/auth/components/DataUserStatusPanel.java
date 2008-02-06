@@ -21,11 +21,14 @@ package net.databinder.auth.components;
 import net.databinder.auth.IAuthSession;
 import net.databinder.auth.IAuthSettings;
 import net.databinder.auth.components.DataSignInPage.ReturnPage;
+import net.databinder.auth.data.IUser;
 
 import org.apache.wicket.Page;
+import org.apache.wicket.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
@@ -64,6 +67,18 @@ public class DataUserStatusPanel extends Panel {
 			}
 		});
 
+		wrapper.add(new BookmarkablePageLink("admin", adminPageClass()) {
+			@Override
+			public boolean isEnabled() {
+				return !adminPageClass().isInstance(getPage());
+			}
+			@Override
+			public boolean isVisible() {
+				IUser user = ((IAuthSession) getSession()).getUser();
+				return user != null && user.hasAnyRole(new Roles(Roles.ADMIN));
+			}
+		});
+
 		wrapper.add(new Link("signOut") {
 			@Override
 			public void onClick() {
@@ -81,6 +96,10 @@ public class DataUserStatusPanel extends Panel {
 				return DataUserStatusPanel.this.getPage();
 			}
 		});
+	}
+	
+	protected Class<? extends WebPage> adminPageClass() {
+		return UserAdminPage.class;
 	}
 
 	/**
