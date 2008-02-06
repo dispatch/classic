@@ -302,13 +302,12 @@ public class HibernateObjectModel extends LoadableWritableModel {
 			throw new QueryException("Returned no results", queryString);
 		return o;
 	}
-	
-	@Override
+
 	/**
 	 * Checks if the model is retaining an object this has since become a
 	 * persistent entity. If so, the ID is fetched and the reference discarded.  
 	 */
-	protected void onDetach() {
+	public void checkBinding() {
 		Session sess = Databinder.getHibernateSession(factoryKey);
 		if (!isBound() && retainedObject != null  && sess.contains(retainedObject)) {
 			objectId = sess.getIdentifier(retainedObject);
@@ -318,6 +317,12 @@ public class HibernateObjectModel extends LoadableWritableModel {
 		}
 	}
 
+	@Override
+	/** Checks binding before detaching. */
+	protected void onDetach() {
+		checkBinding();
+	}
+	
 	/**
 	 * Uses version annotation to find version for this Model's object.
 	 * @return Persistent storage version number if available, null otherwise
