@@ -164,6 +164,9 @@ public class DataForm extends DataFormBase {
 		Session session = getHibernateSession();
 		if (!session.contains(modelObject)) {
 			session.save(modelObject);
+			// updating binding status; though it will happen on detach
+			// some UI components may like to know sooner.
+			getPersistentObjectModel().checkBinding();
 		}
 		super.onSubmit();	// flush and commit session
 		// if version is present it should have changed
