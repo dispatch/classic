@@ -27,7 +27,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.BoundCompoundPropertyModel;
-import org.apache.wicket.model.ComponentPropertyModel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.hibernate.Session;
@@ -133,15 +132,6 @@ public class DataForm extends DataFormBase {
 		return this;
 	}
 
-	/**
-	 * Binding models to be phased out.
-	 * @deprecated
-	 * @see ComponentPropertyModel
-	 */
-	protected BoundCompoundPropertyModel getBindingModel() {
-		return (BoundCompoundPropertyModel) getModel();
-	}
-	
 	protected CompoundPropertyModel getCompoundModel() {
 		IModel model = getModel();
 		Component cur = this;
