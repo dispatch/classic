@@ -26,7 +26,6 @@ import net.databinder.models.hib.HibernateObjectModel;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.link.Link;
-import org.apache.wicket.model.BoundCompoundPropertyModel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.hibernate.Session;
@@ -49,11 +48,11 @@ public class DataForm extends DataFormBase {
 	 * @see HibernateObjectModel#setRetainUnsaved(boolean)
 	 */
 	public DataForm(String id, Class modelClass) {
-		super(id, new BoundCompoundPropertyModel(new HibernateObjectModel(modelClass)));
+		super(id, new CompoundPropertyModel(new HibernateObjectModel(modelClass)));
 	}
 
 	public DataForm(String id, HibernateObjectModel model) {
-		super(id, new BoundCompoundPropertyModel(model));
+		super(id, new CompoundPropertyModel(model));
 		setFactoryKey(model.getFactoryKey());
 	}
 
@@ -64,7 +63,7 @@ public class DataForm extends DataFormBase {
 	 * @param persistentObjectId id of the persistent object
 	 */
 	public DataForm(String id, Class modelClass, Serializable persistentObjectId) {
-		super(id, new BoundCompoundPropertyModel(new HibernateObjectModel(modelClass, persistentObjectId)));
+		super(id, new CompoundPropertyModel(new HibernateObjectModel(modelClass, persistentObjectId)));
 	}
 
 	/**
