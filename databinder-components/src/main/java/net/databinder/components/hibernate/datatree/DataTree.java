@@ -7,11 +7,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 
+import net.databinder.DataStaticService;
 import net.databinder.models.HibernateObjectModel;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.tree.BaseTree;
 import org.apache.wicket.model.Model;
+import org.hibernate.Session;
 
 
 /**
@@ -29,34 +31,42 @@ public abstract class DataTree<T extends IDataTreeNode<T>> extends BaseTree {
 	 * @param id
 	 *            as usual
 	 * @param root
-	 *            a domain object serving as root - if your tree is rootless,
-	 *            create a dummy one (or consider using {@link SimpleDataTree})
-	 * @param firstLevelChildren
-	 *            The first level in the tree, below the root; the further
-	 *            levels are included recursively from there. If your tree is
-	 *            not rootless, this will be <code>root.getChildren()</code>.
+	 *            a domain object serving as root; if your tree is rootless,
+	 *            create it manually
 	 */
-	public DataTree(String id, T root, Collection<T> firstLevelChildren) {
+	public DataTree(String id, T root) {
 		super(id);
 		
-		DefaultMutableTreeNode fakeRoot = 
-				new DefaultMutableTreeNode(root);
-		populateTree(fakeRoot, firstLevelChildren);
-		TreeModel treeModel = new DefaultTreeModel(fakeRoot);
+		Session session = DataStaticService.getHibernateSession();
+		session.saveOrUpdate(root);
+		
+		HibernateObjectModel rootModel = new HibernateObjectModel(root);
+
+		init(root, rootModel);
+	}
+	
+	
+	private void init(T root, HibernateObjectModel rootModel) {
+		DefaultMutableTreeNode rootNode = 
+				new DefaultMutableTreeNode(rootModel);
+		populateTree(rootNode, root.getChildren());
+		TreeModel treeModel = new DefaultTreeModel(rootNode);
 		setModel(new Model((Serializable) treeModel));
+	}
+	
+	public DefaultMutableTreeNode clear(AjaxRequestTarget target) {
+		T newObject = createNewUserObject();
+		DefaultMutableTreeNode newRootNode = new DefaultMutableTreeNode(
+				new HibernateObjectModel(newObject));
+		TreeModel treeModel = new DefaultTreeModel(newRootNode);
+		setModel(new Model((Serializable) treeModel));
+		repaint(target);
+		return newRootNode; 
 	}
 	
 	/**
 	 * Recursively build the tree nodes according to the structure given by the
 	 * beans.
-	 * <p>
-	 * The parent and its children are separate parameters instead of calling
-	 * <code>parent.getChildren()</code>, because for rootless trees, the
-	 * parent is a "fake" one for the first level, i.e., it is not a domain
-	 * object and thus must not be persisted. Therefore, it cannot be connected
-	 * to the top-level set of elements via the parent/child relationship,
-	 * because Hibernate would pick this up when cascading.
-	 * </p>
 	 * 
 	 * @param parent
 	 *            a tree node serving as parent to the newly created nodes for
@@ -81,7 +91,6 @@ public abstract class DataTree<T extends IDataTreeNode<T>> extends BaseTree {
 	 *            a tree node
 	 * @return the object represented by node
 	 */
-	@SuppressWarnings("unchecked")
 	public T getObjectFromNode(DefaultMutableTreeNode node) {
 		return (T) getModelFromNode(node).getObject();
 	}
@@ -102,7 +111,29 @@ public abstract class DataTree<T extends IDataTreeNode<T>> extends BaseTree {
 	 */
 	public DefaultMutableTreeNode getRootNode() {
 		DefaultTreeModel treeModel = (DefaultTreeModel) getModelObject();
-		return (DefaultMutableTreeNode) treeModel.getRoot();
+		if (treeModel.getRoot() == null) {
+			return null;
+		}
+		return (DefaultMutableTreeNode) treeModel.getRoot();		
+	}
+	
+	/**
+	 * Create a new user object using {@link #createNewUserObject()} and add it
+	 * to the tree as a child of parentNode.
+	 * 
+	 * @param parentNode
+	 *            to node serving as parent of the new object
+	 * @return the newly created tree node
+	 */
+	public DefaultMutableTreeNode createAndAddNewChildNode(DefaultMutableTreeNode parentNode) {
+		T newObject = createNewUserObject();
+		T parent = getObjectFromNode(parentNode);
+		parent.addChild(newObject);
+		
+		DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
+				new HibernateObjectModel(newObject)); 
+		parentNode.add(newNode);
+		return newNode;
 	}
 	
 	/**
@@ -114,5 +145,25 @@ public abstract class DataTree<T extends IDataTreeNode<T>> extends BaseTree {
 	public void repaint(AjaxRequestTarget target) {
 		invalidateAll();
 		updateTree(target);
+	}
+
+	/**
+	 * Create a new instance of T. Used to create the backing objects of new
+	 * tree nodes.
+	 * 
+	 * @return a new instance of T
+	 */
+	protected abstract T createNewUserObject();
+
+	/**
+	 * Override to update components when another tree node is selected. Does
+	 * nothing by default.
+	 * 
+	 * @param target
+	 * @param selectedNode
+	 *            the currently selected node
+	 */
+	public void updateDependentComponents(AjaxRequestTarget target, DefaultMutableTreeNode selectedNode) {
+		// Do nothing by default
 	}
 }
