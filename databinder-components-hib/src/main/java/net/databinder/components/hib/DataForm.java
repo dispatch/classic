@@ -232,9 +232,4 @@ public class DataForm extends DataFormBase {
 			DataForm.this.setVisible(true);
 		}
 	}
-
-	/** @deprecated retain unsaved is now the default behavior; this method does nothing */
-	public DataForm retainUnsaved() {
-		return this;
-	}
 }
