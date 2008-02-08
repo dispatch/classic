@@ -12,6 +12,7 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.lang.Objects;
 
 @SuppressWarnings("unchecked")
 public class EntityProvider implements IDataProvider {
@@ -32,7 +33,11 @@ public class EntityProvider implements IDataProvider {
 	
 	public Iterator iterator(int first, int count) {
 		try {
-			return Arrays.asList(Databinder.getEntityManager().find(entityType, query)).iterator();
+			Query q = (Query) Objects.cloneObject(query);
+			q.setOffset(first);
+			q.setLimit(count);
+			
+			return Arrays.asList(Databinder.getEntityManager().find(entityType, q)).iterator();
 		} catch (SQLException e) {
 			throw new WicketRuntimeException(e);
 		}
