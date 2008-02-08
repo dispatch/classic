@@ -24,6 +24,7 @@ public class EntityProvider implements IDataProvider {
 	public EntityProvider(Class entityType) {
 		this (entityType, Query.select());
 	}
+	
 	public EntityProvider(Class entityType, Query query) {
 		this.entityType = entityType;
 		this.query = query;
@@ -36,6 +37,7 @@ public class EntityProvider implements IDataProvider {
 			throw new WicketRuntimeException(e);
 		}
 	}
+	
 	public int size() {
 		try {
 			return Databinder.getEntityManager().count(entityType, query);
