@@ -5,12 +5,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.databinder.ao.Databinder;
+import net.databinder.models.BindingModel;
 import net.databinder.models.LoadableWritableModel;
 import net.java.ao.Common;
 import net.java.ao.RawEntity;
 
 @SuppressWarnings("unchecked")
-public class EntityModel extends LoadableWritableModel {
+public class EntityModel extends LoadableWritableModel implements BindingModel {
 	private Serializable id;
 	private Class entityType;
 	private Map<String, Object> propertyStore;
@@ -36,7 +37,7 @@ public class EntityModel extends LoadableWritableModel {
 	}
 	
 	public void setObject(Object object) {
-		clear();
+		unbind();
 		RawEntity entity = (RawEntity) object;
 		entityType = entity.getEntityType();
 		id = (Serializable) Common.getPrimaryKeyValue(entity);
@@ -45,7 +46,7 @@ public class EntityModel extends LoadableWritableModel {
 	
 	protected void putDefaultProperties(Map<String, Object> propertyStore) { }
 	
-	public void clear() {
+	public void unbind() {
 		id = null;
 		propertyStore = null; 
 		detach();
