@@ -23,7 +23,7 @@ import java.util.Iterator;
 import net.databinder.hib.Databinder;
 
 import org.apache.wicket.markup.repeater.data.IDataProvider;
-import org.apache.wicket.model.BoundCompoundPropertyModel;
+import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -223,14 +223,14 @@ public class HibernateProvider implements IDataProvider  {
 	}
 
 	/**
-	 * Wraps object in HiberanteObjectModel, and also BoundCompoundPropertyModel if 
+	 * Wraps object in HiberanteObjectModel, and also CompoundPropertyModel if 
 	 * wrapInCompoundModel is true.
 	 * @param object object DataView would like to wrap
-	 * @return object wrapped in a HibernateObjectModel and possibly BoundCompoundPropertyModel
+	 * @return object wrapped in a HibernateObjectModel and possibly CompoundPropertyModel
 	 */
 	public IModel model(Object object) {
 		HibernateObjectModel model = new HibernateObjectModel(object);
-		return  wrapWithPropertyModel ? new BoundCompoundPropertyModel(model) : model;
+		return  wrapWithPropertyModel ? new CompoundPropertyModel(model) : model;
 	}
 	
 	/** This provider has nothing to detach. */

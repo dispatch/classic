@@ -25,6 +25,10 @@ public class EntityModel extends LoadableWritableModel implements BindingModel {
 		this.entityType = entityType;
 	}
 	
+	public EntityModel(RawEntity<?> entity) {
+		setObject(entity);
+	}
+	
 	public boolean isBound() {
 		return id != null;
 	}
