@@ -3,16 +3,15 @@ package net.databinder.auth.components;
 import java.util.Arrays;
 import java.util.List;
 
-import net.databinder.auth.IAuthSession;
-import net.databinder.auth.IAuthSettings;
-import net.databinder.auth.data.IUser;
+import net.databinder.auth.AuthSession;
+import net.databinder.auth.AuthApplication;
+import net.databinder.auth.data.DataUser;
 import net.databinder.auth.valid.EqualPasswordConvertedInputValidator;
 import net.databinder.components.DataStyleLink;
 import net.databinder.components.ModelSourceListPanel;
 import net.databinder.components.NullPlug;
-import net.databinder.components.hib.DataForm;
-import net.databinder.hib.Databinder;
-import net.databinder.models.hib.HibernateListModel;
+import net.databinder.components.UnbindLink;
+import net.databinder.models.BindingModel;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.authorization.strategies.role.Roles;
@@ -21,12 +20,14 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBoxMultipleChoice;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.SimpleFormComponentLabel;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.model.IChainingModel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 
@@ -41,19 +42,19 @@ import org.apache.wicket.model.ResourceModel;
  * data.auth.roles
  * data.auth.save
  * data.auth.delete</pre>
- * @see IAuthSession
+ * @see AuthSession
  */
 @AuthorizeInstantiation(Roles.ADMIN)
-public class UserAdminPage extends WebPage {
-	protected DataForm form;
-	public UserAdminPage() {
+public abstract class UserAdminPageBase extends WebPage {
+	protected Form form;
+	public UserAdminPageBase() {
 		add(new DataStyleLink("css"));
 		add(new Label("title", new ResourceModel("data.auth.user_admin", "User Administration")));
-		Class<? extends IUser> userClass = ((IAuthSettings) getApplication()).getUserClass();
+		Class<? extends DataUser> userClass = ((AuthApplication) getApplication()).getUserClass();
 		
-		add(new DataUserStatusPanel("userStatus"));
+		add(statusPanel("userStatus"));
 		
-		form = new DataForm("form", userClass);
+		form = adminForm("form", userClass);
 		add(form);
 		
 		TextField username = new RequiredTextField("username");
@@ -64,7 +65,7 @@ public class UserAdminPage extends WebPage {
 		TextField password = new RSAPasswordTextField("password", form) {
 			@Override
 			public boolean isRequired() {
-				return !form.getPersistentObjectModel().isBound();
+				return !isBound();
 			}
 		};
 		password.setLabel(new ResourceModel("data.auth.password", "Password"));
@@ -72,7 +73,7 @@ public class UserAdminPage extends WebPage {
 		form.add(password);
 		TextField passwordConfirm = new RSAPasswordTextField("passwordConfirm", new Model(), form) {
 			public boolean isRequired() {
-				return !form.getPersistentObjectModel().isBound();
+				return !isBound();
 			}
 		};
 		form.add(new EqualPasswordConvertedInputValidator(password, passwordConfirm));
@@ -88,31 +89,30 @@ public class UserAdminPage extends WebPage {
 
 		form.add(lowFormSocket("lowForm"));
 
-		form.add(new Button("delete") {
-			@Override
-			public void onSubmit() {
-				Databinder.getHibernateSession().delete(form.getModelObject());
-				Databinder.getHibernateSession().getTransaction().commit();
-				form.clearPersistentObject();
-			}
-			@Override
-			public boolean isEnabled() {
-				return !((IAuthSession)getSession()).getUser().equals(form.getModelObject())
-					&& form.getPersistentObjectModel().isBound();
-			}
-		}.setDefaultFormProcessing(false));
+		form.add(deleteButton("delete"));
+
 		form.add(new FeedbackPanel("feedback"));
 		
-		add(new Link("add") {
-			public void onClick() {
-				form.clearPersistentObject();
-			}
-			public boolean isEnabled() {
-				return form.getPersistentObjectModel().isBound();
-			}
-		});
-		add(new ModelSourceListPanel("users", form, "username", new HibernateListModel(userClass)));
+		add(new UnbindLink("add", getBindingModel()));
+				
+		add(new ModelSourceListPanel("users", form, "username", userList(userClass)));
 	}
+	
+	protected BindingModel getBindingModel() {
+		return (BindingModel) ((IChainingModel)form.getModel()).getChainedModel();
+	}
+	
+	protected boolean isBound() {
+		return getBindingModel().isBound();
+	}
+	
+	protected abstract Form adminForm(String id, Class<? extends DataUser> userClass);
+	
+	protected abstract Button deleteButton(String id);
+	
+	protected abstract DataUserStatusPanelBase statusPanel(String id);
+
+	protected abstract IModel userList(Class<? extends DataUser> userClass);
 	
 	protected Component lowFormSocket(String id) {
 		return new NullPlug(id);

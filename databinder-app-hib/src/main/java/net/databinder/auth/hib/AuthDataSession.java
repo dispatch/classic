@@ -32,9 +32,9 @@ import java.net.URLEncoder;
 
 import javax.servlet.http.Cookie;
 
-import net.databinder.auth.IAuthSession;
-import net.databinder.auth.IAuthSettings;
-import net.databinder.auth.data.IUser;
+import net.databinder.auth.AuthApplication;
+import net.databinder.auth.AuthSession;
+import net.databinder.auth.data.DataUser;
 import net.databinder.hib.DataRequestCycle;
 import net.databinder.hib.Databinder;
 import net.databinder.models.hib.HibernateObjectModel;
@@ -47,10 +47,9 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.util.time.Duration;
-import org.hibernate.Criteria;
 import org.hibernate.NonUniqueResultException;
 
-public class AuthDataSession extends WebSession implements IAuthSession {
+public class AuthDataSession extends WebSession implements AuthSession {
 	/** Effective signed in state. */
 	private Serializable userId;
 	private static final String CHARACTER_ENCODING = "UTF-8";
@@ -71,12 +70,16 @@ public class AuthDataSession extends WebSession implements IAuthSession {
 		return (AuthDataSession) WebSession.get();
 	}
 	
+	protected static AuthApplication getApp() {
+		return (AuthApplication) Application.get();
+	}
+	
 	/**
 	 * @return IUser object for current user, or null if none signed in.
 	 */
-	public IUser getUser() {
+	public DataUser getUser() {
 		if  (isSignedIn()) {
-			IUser user = getUser(userId);
+			DataUser user = getUser(userId);
 			return user;
 		}
 		return null;
@@ -86,8 +89,7 @@ public class AuthDataSession extends WebSession implements IAuthSession {
 	 * @return model for current user
 	 */
 	public HibernateObjectModel getUserModel() {
-		IAuthSettings app = (IAuthSettings)getApplication();
-		return isSignedIn() ? new HibernateObjectModel(app.getUserClass(), userId) : null;
+		return isSignedIn() ? new HibernateObjectModel(getApp().getUserClass(), userId) : null;
 	}
 	
 	/**
@@ -111,7 +113,7 @@ public class AuthDataSession extends WebSession implements IAuthSession {
 	 * @return true if application's user class implements <tt>IUser.CookieAuthentication</tt>.  
 	 */
 	protected boolean cookieSignInSupported() {
-		return IUser.CookieAuth.class.isAssignableFrom(((IAuthSettings)Application.get()).getUserClass());
+		return DataUser.CookieAuth.class.isAssignableFrom(getApp().getUserClass());
 	}
 
 	/**
@@ -127,7 +129,7 @@ public class AuthDataSession extends WebSession implements IAuthSession {
 	 */
 	public boolean signIn(final String username, final String password, boolean setCookie) {
 		signOut();
-		IUser potential = getUser(username);
+		DataUser potential = getUser(username);
 		if (potential != null && (potential).checkPassword(password))
 			signIn(potential, setCookie);
 		
@@ -140,7 +142,7 @@ public class AuthDataSession extends WebSession implements IAuthSession {
 	 * @param user validated and persisted user, must be in current Hibernate session
 	 * @param setCookie if true, sets cookie to remember user
 	 */
-	public void signIn(IUser user, boolean setCookie) {
+	public void signIn(DataUser user, boolean setCookie) {
 		userId = Databinder.getHibernateSession().getIdentifier(user);
 		if (setCookie)
 			setCookie();
@@ -156,15 +158,15 @@ public class AuthDataSession extends WebSession implements IAuthSession {
 			token = requestCycle.getCookie(getAuthCookieName());
 
 		if (userCookie != null && token != null) {
-			IUser potential;
+			DataUser potential;
 			try {
 				potential = getUser(URLDecoder.decode(userCookie.getValue(), CHARACTER_ENCODING));
 			} catch (UnsupportedEncodingException e) {
 				throw new WicketRuntimeException(e);
 			}
-			if (potential != null && potential instanceof IUser.CookieAuth) {
-				IAuthSettings app = (IAuthSettings)getApplication();
-				String correctToken = app.getToken((IUser.CookieAuth)potential);
+			if (potential != null && potential instanceof DataUser.CookieAuth) {
+				AuthApplication app = (AuthApplication)getApplication();
+				String correctToken = app.getToken((DataUser.CookieAuth)potential);
 				if (correctToken.equals(token.getValue()))
 					signIn(potential, false);
 			}
@@ -179,12 +181,9 @@ public class AuthDataSession extends WebSession implements IAuthSession {
 	 * @return user object from persistent storage
 	 * @see IAuthSettings
 	 */
-	protected IUser getUser(final String username) {
+	protected DataUser getUser(final String username) {
 		try {
-			IAuthSettings app = (IAuthSettings)getApplication();
-			Criteria criteria = Databinder.getHibernateSession().createCriteria(app.getUserClass());
-			app.getUserCriteriaBuilder(username).build(criteria);
-			return (IUser) criteria.uniqueResult();
+			return getApp().getUser(username);
 		} catch (NonUniqueResultException e){
 			throw new WicketRuntimeException("Multiple users returned for query", e); 
 		}
@@ -194,9 +193,8 @@ public class AuthDataSession extends WebSession implements IAuthSession {
 	 * @param userId Hibernate entity identifier
 	 * @return user with given userId
 	 */
-	protected IUser getUser(final Serializable userId) {
-		IAuthSettings app = (IAuthSettings)getApplication();
-		return (IUser) Databinder.getHibernateSession().load(app.getUserClass(), userId);
+	protected DataUser getUser(final Serializable userId) {
+		return (DataUser) Databinder.getHibernateSession().load(getApp().getUserClass(), userId);
 	}
 	
 	public static String getUserCookieName() {
@@ -216,10 +214,8 @@ public class AuthDataSession extends WebSession implements IAuthSession {
 		if (!cookieSignInSupported())
 			throw new UnsupportedOperationException("Must use an implementation of IUser.CookieAuth");
 		
-		IUser.CookieAuth cookieUser = (IUser.CookieAuth) getUser();
+		DataUser.CookieAuth cookieUser = (DataUser.CookieAuth) getUser();
 		WebResponse resp = (WebResponse) RequestCycle.get().getResponse();
-		
-		IAuthSettings app = (IAuthSettings)getApplication();
 		
 		int  maxAge = (int) getSignInCookieMaxAge().seconds();
 		
@@ -227,7 +223,7 @@ public class AuthDataSession extends WebSession implements IAuthSession {
 		try {
 			name = new Cookie(getUserCookieName(), 
 					URLEncoder.encode(cookieUser.getUsername(), CHARACTER_ENCODING));
-			auth = new Cookie(getAuthCookieName(), app.getToken(cookieUser));
+			auth = new Cookie(getAuthCookieName(), getApp().getToken(cookieUser));
 		} catch (UnsupportedEncodingException e) {
 			throw new WicketRuntimeException(e);
 		}

@@ -18,10 +18,10 @@
  */
 package net.databinder.auth.components;
 
-import net.databinder.auth.IAuthSession;
-import net.databinder.auth.IAuthSettings;
-import net.databinder.auth.components.DataSignInPage.ReturnPage;
-import net.databinder.auth.data.IUser;
+import net.databinder.auth.AuthSession;
+import net.databinder.auth.AuthApplication;
+import net.databinder.auth.components.DataSignInPageBase.ReturnPage;
+import net.databinder.auth.data.DataUser;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.authorization.strategies.role.Roles;
@@ -41,12 +41,12 @@ import org.apache.wicket.model.AbstractReadOnlyModel;
  * data.auth.status.sign_out
  * data.auth.status.sign_in</pre>
  */
-public class DataUserStatusPanel extends Panel {
+public abstract class DataUserStatusPanelBase extends Panel {
 	/**
 	 * Constructs sign in and out links.
 	 * @param id Wicket id
 	 */
-	public DataUserStatusPanel(String id) {
+	public DataUserStatusPanelBase(String id) {
 		super(id);
 
 		WebMarkupContainer wrapper = new WebMarkupContainer("signedInWrapper") {
@@ -64,7 +64,11 @@ public class DataUserStatusPanel extends Panel {
 		wrapper.add(new Link("profile") {
 			@Override
 			public void onClick() {
-				setResponsePage(profilePage());
+				setResponsePage(profilePage(new DataSignInPageBase.ReturnPage() {
+					public Page get() {
+						return DataUserStatusPanelBase.this.getPage();
+					}
+				}));
 			}
 		});
 
@@ -75,7 +79,7 @@ public class DataUserStatusPanel extends Panel {
 			}
 			@Override
 			public boolean isVisible() {
-				IUser user = ((IAuthSession) getSession()).getUser();
+				DataUser user = ((AuthSession) getSession()).getUser();
 				return user != null && user.hasAnyRole(new Roles(Roles.ADMIN));
 			}
 		});
@@ -91,17 +95,9 @@ public class DataUserStatusPanel extends Panel {
 		add(getSignInLink("signIn"));
 	}
 	
-	protected WebPage profilePage() {
-		return new DataProfilePage(new ReturnPage() {
-			public Page get() {
-				return DataUserStatusPanel.this.getPage();
-			}
-		});
-	}
+	protected abstract WebPage profilePage(ReturnPage returnPage);
 	
-	protected Class<? extends WebPage> adminPageClass() {
-		return UserAdminPage.class;
-	}
+	protected abstract Class<? extends WebPage> adminPageClass();
 
 	/**
 	 * Returns link to sign-in page from <tt>AuthDataApplication</tt> subclass. Uses redirect
@@ -113,7 +109,7 @@ public class DataUserStatusPanel extends Panel {
 			@Override
 			public void onClick() {
 				redirectToInterceptPage(getPageFactory().newPage(
-						((IAuthSettings)getApplication()).getSignInPageClass()));
+						((AuthApplication)getApplication()).getSignInPageClass()));
 			}
 			@Override
 			public boolean isVisible() {
@@ -123,7 +119,7 @@ public class DataUserStatusPanel extends Panel {
 	}
 
 	/** @return casted web session*/
-	protected IAuthSession getAuthSession() {
-		return (IAuthSession) getSession();
+	protected AuthSession getAuthSession() {
+		return (AuthSession) getSession();
 	}
 }

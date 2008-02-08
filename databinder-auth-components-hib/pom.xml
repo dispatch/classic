@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
  <modelVersion>4.0.0</modelVersion>
- <artifactId>databinder-auth-components</artifactId>
- <name>Databinder authentication components</name>
+ <artifactId>databinder-auth-components-hib</artifactId>
+ <name>Databinder authentication components / Hibernate</name>
  <parent>
   <groupId>net.databinder</groupId>
   <artifactId>databinder-parent</artifactId>
@@ -12,7 +12,12 @@
   <dependency>
    <groupId>${pom.groupId}</groupId>
    <version>${pom.version}</version>
-   <artifactId>databinder-components</artifactId>
+   <artifactId>databinder-auth-components</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>${pom.groupId}</groupId>
+   <version>${pom.version}</version>
+   <artifactId>databinder-components-hib</artifactId>
   </dependency>
   <dependency>
    <groupId>org.apache.wicket</groupId>

@@ -23,9 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 
-import javax.persistence.Transient;
-
-import net.databinder.auth.IAuthSettings;
+import net.databinder.auth.AuthApplication;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.authorization.strategies.role.Roles;
@@ -37,7 +35,7 @@ import org.apache.wicket.util.crypt.Base64UrlSafe;
  * utility methods.
  * @author Nathan Hamblen
  */
-public abstract class UserBase implements IUser.CookieAuth, Serializable {
+public abstract class UserBase implements DataUser.CookieAuth, Serializable {
 	public abstract Set<String> getRoles();
 	
 	public abstract String getPasswordHash();
@@ -67,10 +65,9 @@ public abstract class UserBase implements IUser.CookieAuth, Serializable {
 	 * @param location IP address or other identifier
 	 * @return restricted token as URL-safe hash for user, password, and location parameter
 	 */
-	@Transient
 	public String getToken(String location) {
 		MessageDigest md = getMessageDigest();
-		md.update(((IAuthSettings)Application.get()).getSalt());
+		md.update(((AuthApplication)Application.get()).getSalt());
 		md.update(getPasswordHash().getBytes());
 		md.update(location.getBytes());
 		byte[] hash = md.digest(getUsername().getBytes());
@@ -86,7 +83,7 @@ public abstract class UserBase implements IUser.CookieAuth, Serializable {
 	 */
 	public static String getHash(String password) {
 		MessageDigest md = getMessageDigest();
-		md.update(((IAuthSettings)Application.get()).getSalt());
+		md.update(((AuthApplication)Application.get()).getSalt());
 		byte[] hash = md.digest(password.getBytes());
 		// using a Base64 string for the hash because putting a 
 		// byte[] into a blob isn't working consistently.

@@ -20,13 +20,13 @@ package net.databinder.auth.hib;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.databinder.auth.IAuthSession;
-import net.databinder.auth.IAuthSettings;
-import net.databinder.auth.data.IUser;
+import net.databinder.auth.AuthApplication;
+import net.databinder.auth.AuthSession;
+import net.databinder.auth.components.hib.DataSignInPage;
+import net.databinder.auth.data.DataUser;
 import net.databinder.auth.data.UserBase;
-import net.databinder.auth.data.IUser.CookieAuth;
 import net.databinder.hib.DataApplication;
-import net.databinder.models.hib.CriteriaBuilder;
+import net.databinder.hib.Databinder;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Request;
@@ -41,7 +41,6 @@ import org.apache.wicket.authorization.strategies.role.RoleAuthorizationStrategy
 import org.apache.wicket.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebRequest;
-import org.hibernate.Criteria;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.criterion.Restrictions;
 
@@ -62,7 +61,7 @@ import org.hibernate.criterion.Restrictions;
  * @author Nathan Hamblen
  */
 public abstract class AuthDataApplication extends DataApplication 
-implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, IAuthSettings {
+implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, AuthApplication {
 
 	/**
 	 * Internal initialization. Client applications should not normally override
@@ -104,7 +103,7 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, I
 	 * Sends to sign in page if not signed in, otherwise throws UnauthorizedInstantiationException.
 	 */
 	public void onUnauthorizedInstantiation(Component component) {
-		if (((IAuthSession)Session.get()).isSignedIn()) {
+		if (((AuthSession)Session.get()).isSignedIn()) {
 			throw new UnauthorizedInstantiationException(component.getClass());
 		}
 		else {
@@ -116,7 +115,7 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, I
 	 * Passes query on to the IUser object if signed in.
 	 */
 	public final boolean hasAnyRole(Roles roles) {
-		IUser user = ((IAuthSession)Session.get()).getUser();
+		DataUser user = ((AuthSession)Session.get()).getUser();
 		return user == null ? false : user.hasAnyRole(roles);
 	}
 
@@ -126,27 +125,16 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, I
 	 * @return class to be used for signed in users
 	 */
 	@SuppressWarnings("deprecation")
-	public abstract Class< ? extends IUser> getUserClass();
+	public abstract Class< ? extends DataUser> getUserClass();
 	
-	/** Default user criteria builder, binds to "username" property. */
-	private static class UsernameCriteriaBuilder implements CriteriaBuilder {
-		private String username;
-		public UsernameCriteriaBuilder(String username) { this.username = username; }
-		public void build(Criteria criteria) {
-			criteria.add(Restrictions.eq("username", username));
-		}
-	}
 	/**
-	 * Get a criteria builder to find users by username, needed for retrieving users in 
-	 * 	<tt>AuthDataSession</tt>. The default implementation matches on a
-	 * "username" property. Override to match on an e-mail address or other 
-	 * property name.
-	 * @param username username to look up
-	 * @return builder to match on the username
-	 * @see AuthDataSession
+	 * Return user object by matching against a "username" property. Override
+	 * if you have a differently named property.
+	 * @return IUser for the given username. 
 	 */
-	public CriteriaBuilder getUserCriteriaBuilder(String username) {
-		return new UsernameCriteriaBuilder(username);
+	public DataUser getUser(String username) {
+		return (DataUser) Databinder.getHibernateSession().createCriteria(getUserClass())
+			.add(Restrictions.eq("username", username)).uniqueResult();
 	}
 
 	/**
@@ -154,7 +142,7 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, I
 	 * @return page to sign in users
 	 */
 	public Class< ? extends WebPage> getSignInPageClass() {
-		return net.databinder.auth.components.DataSignInPage.class;
+		return DataSignInPage.class;
 	}
 	
 	/**
@@ -165,7 +153,7 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, I
 	 * @param user source of token
 	 * @return restricted token
 	 */
-	public String getToken(CookieAuth user) {
+	public String getToken(DataUser.CookieAuth user) {
 		HttpServletRequest req = ((WebRequest) RequestCycle.get().getRequest()).getHttpServletRequest();
 		String fwd = req.getHeader("X-Forwarded-For");
 		if (fwd == null)

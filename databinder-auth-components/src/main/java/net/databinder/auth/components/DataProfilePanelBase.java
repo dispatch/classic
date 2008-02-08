@@ -21,33 +21,33 @@ package net.databinder.auth.components;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.databinder.auth.IAuthSession;
-import net.databinder.auth.IAuthSettings;
-import net.databinder.auth.components.DataSignInPage.ReturnPage;
-import net.databinder.auth.data.IUser;
+import net.databinder.auth.AuthSession;
+import net.databinder.auth.AuthApplication;
+import net.databinder.auth.components.DataSignInPageBase.ReturnPage;
+import net.databinder.auth.data.DataUser;
 import net.databinder.auth.valid.EqualPasswordConvertedInputValidator;
 import net.databinder.components.NullPlug;
-import net.databinder.components.hib.DataForm;
-import net.databinder.hib.Databinder;
-import net.databinder.models.hib.HibernateObjectModel;
+import net.databinder.models.BindingModel;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.SimpleFormComponentLabel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.model.IChainingModel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.validator.StringValidator;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
 
 /**
  * Registration with username, password, and password confirmation.
@@ -61,53 +61,53 @@ import org.hibernate.Session;
  * data.auth.username.taken * </pre> * Must be overriden in a containing page
  * or a subclass of this panel.
  */
-public class DataProfilePanel extends Panel {
+public abstract class DataProfilePanelBase extends Panel {
 	private ReturnPage returnPage;
-	private ProfileForm form;
+	private Form form;
+	private RequiredTextField username;
+	private RSAPasswordTextField password, passwordConfirm;
+	private CheckBox rememberMe;
 
-	public DataProfilePanel(String id, ReturnPage returnPage) {
+	public DataProfilePanelBase(String id, ReturnPage returnPage) {
 		super(id);
 		this.returnPage = returnPage;
 		add(new FeedbackPanel("feedback"));
-		HibernateObjectModel userModel = DataSignInPage.getAuthSession().getUserModel();
-		if (userModel == null) 
-			userModel = new HibernateObjectModel(((IAuthSettings)getApplication()).getUserClass());
-		add(form = new ProfileForm("registerForm", userModel));
+		add(form = getProfileForm("registerForm", DataSignInPageBase.getAuthSession().getUserModel()));
+		form.add(new Profile("profile"));
 	}
 	
-	protected class ProfileForm extends DataForm {
-		private RequiredTextField username;
-		private RSAPasswordTextField password, passwordConfirm;
-		private CheckBox rememberMe;
+	protected abstract Form getProfileForm(String id, IModel userModel);
+	
+	DataUser getUser() {
+		return (DataUser) form.getModelObject();
+	}
+
+	protected boolean existing() {
+		return ((BindingModel)((IChainingModel)form.getModel()).getChainedModel()).isBound();
+	}
+
+	protected class Profile extends WebMarkupContainer {
 		
-		IUser getUser() {
-			return (IUser) getPersistentObjectModel().getObject();
-		}
-		
-		boolean existing() {
-			return Databinder.getHibernateSession().contains(getUser());
-		}
-		
-		public ProfileForm(String id, HibernateObjectModel userModel) {
-			super(id, userModel);
+		public Profile(String id) {
+			super(id);
 			add(highFormSocket("highFormSocket"));
 			add(username = new RequiredTextField("username"));
 			username.add(new UsernameValidator());
 			username.setLabel(new ResourceModel("data.auth.username", "Username"));
 			add(new SimpleFormComponentLabel("username-label", username));
-			add(password = new RSAPasswordTextField("password", this) {
+			add(password = new RSAPasswordTextField("password", form) {
 				public boolean isRequired() {
 					return !existing();
 				}
 			});
 			password.setLabel(new ResourceModel("data.auth.password", "Password"));
 			add(new SimpleFormComponentLabel("password-label", password));
-			add(passwordConfirm = new RSAPasswordTextField("passwordConfirm", new Model(), this) {
+			add(passwordConfirm = new RSAPasswordTextField("passwordConfirm", new Model(), form) {
 				public boolean isRequired() {
 					return !existing();
 				}
 			});
-			add(new EqualPasswordConvertedInputValidator(password, passwordConfirm));
+			form.add(new EqualPasswordConvertedInputValidator(password, passwordConfirm));
 			passwordConfirm.setLabel(new ResourceModel("data.auth.passwordConfirm", "Retype Password"));
 			add(new SimpleFormComponentLabel("passwordConfirm-label", passwordConfirm));
 			
@@ -119,36 +119,33 @@ public class DataProfilePanel extends Panel {
 			
 			add(lowFormSocket("lowFormSocket"));
 			
-			add(new WebMarkupContainer("submit").add(new AttributeModifier("value", new AbstractReadOnlyModel() {
+			add(new Button("submit").add(new AttributeModifier("value", new AbstractReadOnlyModel() {
 				public Object getObject() {
-					return existing() ? getString("auth.data.update", null, "Update Account") : getString("data.auth.register", null, "Register");
+					return existing() ? getString("auth.data.update", null, "Update Account") : 
+						getString("data.auth.register", null, "Register");
 				}
 			})));
 		}
+	}
+	
+	protected void afterSubmit() {
+		DataSignInPageBase.getAuthSession().signIn(getUser(), (Boolean) rememberMe.getModelObject());
 
-		@Override
-		protected void onSubmit() {
-			super.onSubmit();
-			
-			DataSignInPage.getAuthSession().signIn(getUser(), (Boolean) rememberMe.getModelObject());
-
-			if (returnPage == null) {
-				if (!continueToOriginalDestination())
-					setResponsePage(getApplication().getHomePage());
-			} else
-				setResponsePage(returnPage.get());
-		}
+		if (returnPage == null) {
+			if (!continueToOriginalDestination())
+				setResponsePage(getApplication().getHomePage());
+		} else
+			setResponsePage(returnPage.get());
 	}
 
 	public static boolean isAvailable(String username) {
-		Session session = Databinder.getHibernateSession();
-		IAuthSettings authSettings = (IAuthSettings)Application.get();
-		Criteria c = session.createCriteria(authSettings.getUserClass());
-		authSettings.getUserCriteriaBuilder(username).build(c);
-		IUser found = (IUser) c.uniqueResult(), 
-			current = ((IAuthSession)WebSession.get()).getUser();
+		AuthApplication authSettings = (AuthApplication)Application.get();
+		
+		DataUser found = (DataUser) authSettings.getUser(username), 
+			current = ((AuthSession)WebSession.get()).getUser();
 		return found == null || found.equals(current);
 	}
+	
 	public static class UsernameValidator extends StringValidator {
 		@Override
 		protected void onValidate(IValidatable validatable) {
@@ -169,7 +166,7 @@ public class DataProfilePanel extends Panel {
 		return new NullPlug(id);
 	}
 
-	public ProfileForm getForm() {
+	public Form form() {
 		return form;
 	}
 

@@ -18,8 +18,8 @@
  */
 package net.databinder.auth.components;
 
-import net.databinder.auth.IAuthSession;
-import net.databinder.auth.components.DataSignInPage.ReturnPage;
+import net.databinder.auth.AuthSession;
+import net.databinder.auth.components.DataSignInPageBase.ReturnPage;
 
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
@@ -38,7 +38,7 @@ import org.apache.wicket.model.ResourceModel;
  * data.auth.password
  * data.auth.remember
  * data.auth.sign_in</pre>
- * @see IAuthSession
+ * @see AuthSession
  */
 public class DataSignInPanel extends Panel {
 	private ReturnPage returnPage;
@@ -64,7 +64,7 @@ public class DataSignInPanel extends Panel {
 		}
 		@Override
 		protected void onSubmit() {
-			if (DataSignInPage.getAuthSession().signIn((String)username.getModelObject(), (String)password.getModelObject(), 
+			if (DataSignInPageBase.getAuthSession().signIn((String)username.getModelObject(), (String)password.getModelObject(), 
 					(Boolean)rememberMe.getModelObject()))
 			{
 				if (returnPage == null) {

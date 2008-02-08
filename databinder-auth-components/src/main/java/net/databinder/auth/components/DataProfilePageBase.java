@@ -18,7 +18,7 @@
  */
 package net.databinder.auth.components;
 
-import net.databinder.auth.components.DataSignInPage.ReturnPage;
+import net.databinder.auth.components.DataSignInPageBase.ReturnPage;
 import net.databinder.components.DataStyleLink;
 
 import org.apache.wicket.Component;
@@ -32,13 +32,11 @@ import org.apache.wicket.model.ResourceModel;
  * data.auth.update
  * data.auth.title.update
  */
-public class DataProfilePage extends WebPage {
-	public DataProfilePage(ReturnPage returnPage) {
+public abstract class DataProfilePageBase extends WebPage {
+	public DataProfilePageBase(ReturnPage returnPage) {
 		add(new Label("title", new ResourceModel("data.auth.title.update", "Update Account")));
 		add(new DataStyleLink("dataStylesheet"));
 		add(profileSocket("profileSocket", returnPage));
 	}
-	protected Component profileSocket(String id, ReturnPage returnPage) {
-		return new DataProfilePanel(id, returnPage);
-	}
+	protected abstract Component profileSocket(String id, ReturnPage returnPage);
 }

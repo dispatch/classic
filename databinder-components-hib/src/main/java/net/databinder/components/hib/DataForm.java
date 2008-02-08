@@ -126,7 +126,7 @@ public class DataForm extends DataFormBase {
 	 * @return this form, for chaining
 	 */
 	public DataForm clearPersistentObject() {
-		getPersistentObjectModel().clearPersistentObject();
+		getPersistentObjectModel().unbind();
 		modelChanged();
 		return this;
 	}

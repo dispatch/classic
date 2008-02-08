@@ -1,7 +1,6 @@
 package net.databinder.auth;
 
-import net.databinder.auth.data.IUser;
-import net.databinder.models.hib.CriteriaBuilder;
+import net.databinder.auth.data.DataUser;
 
 import org.apache.wicket.markup.html.WebPage;
 
@@ -10,15 +9,15 @@ import org.apache.wicket.markup.html.WebPage;
  * require that this be implemented by the current WebApplication instance.
  * @author Nathan Hamblen
  */
-public interface IAuthSettings {
+public interface AuthApplication {
 	/**
 	 * @return class to be used for signed in users
 	 */
-	public Class< ? extends IUser> getUserClass();
+	public Class< ? extends DataUser> getUserClass();
 	/** 
-	 * @return criteria builder that will match a single IUser for the given username. 
+	 * @return IUser for the given username. 
 	 */
-	public CriteriaBuilder getUserCriteriaBuilder(String username);
+	public DataUser getUser(String username);
 	/**
 	 * @return page to sign in users
 	 */
@@ -36,5 +35,5 @@ public interface IAuthSettings {
 	 * @param user source of token
 	 * @return restricted token
 	 */
-	public String getToken(IUser.CookieAuth user);
+	public String getToken(DataUser.CookieAuth user);
 }

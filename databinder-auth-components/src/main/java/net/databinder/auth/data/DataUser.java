@@ -24,7 +24,7 @@ import org.apache.wicket.authorization.strategies.role.Roles;
  * Base user interface.
  * @author Nathan Hamblen
  */
-public interface IUser {
+public interface DataUser {
 	/** @return ture if user has any role matching those given */
 	public boolean hasAnyRole(Roles roles);
 	/** @return true if password is valid for this user. */
@@ -33,7 +33,7 @@ public interface IUser {
 	/**
 	 * Sub-interface for user classes supporting cookie authentication.
 	 */
-	public interface CookieAuth extends IUser {
+	public interface CookieAuth extends DataUser {
 		/**
 		 * @return value used to identify user; may be e-mail or other identifier.
 		 */

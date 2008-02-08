@@ -26,6 +26,7 @@ import java.lang.reflect.Method;
 import javax.persistence.Version;
 
 import net.databinder.hib.Databinder;
+import net.databinder.models.BindingModel;
 import net.databinder.models.LoadableWritableModel;
 
 import org.apache.wicket.Component;
@@ -48,7 +49,7 @@ import org.hibernate.proxy.LazyInitializer;
  * object, or null.
  * @author Nathan Hamblen
  */
-public class HibernateObjectModel extends LoadableWritableModel {
+public class HibernateObjectModel extends LoadableWritableModel implements BindingModel {
 	/** Used preferentially in loading objects. */
 	private String entityName;
 	/** Used if entityName unavailable, or for new objects. */
@@ -219,26 +220,10 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	}
 	
 	/**
-	 * Disassociates this object from any persitant object, but retains the class
-	 * for contructing a blank copy if requested.
-	 * @see HibernateObjectModel(Class objectClass)
+	 * @deprecated use {@link #unbind()}
 	 */
 	public void clearPersistentObject() {
-		Object o = getObject();
-		if (o != null)
-			if (o instanceof HibernateProxy)
-				objectClass = ((HibernateProxy)o).getHibernateLazyInitializer()
-					.getImplementation().getClass();
-			else
-				objectClass = o.getClass();
-		entityName = null;
-		objectId = null;
-		queryBinder = null;
-		queryBuilder = null;
-		queryString = null;
-		criteriaBuilder = null;
-		retainedObject = null;
-		detach();
+		unbind();
 	}
 
 	/**
@@ -362,6 +347,30 @@ public class HibernateObjectModel extends LoadableWritableModel {
 		if (target == null)
 			return super.hashCode();
 		return target.hashCode();
+	}
+	
+
+	/**
+	 * Disassociates this object from any persistent object, but retains the class
+	 * for constructing a blank copy if requested.
+	 * @see HibernateObjectModel(Class objectClass)
+	 */
+	public void unbind() {
+		Object o = getObject();
+		if (o != null)
+			if (o instanceof HibernateProxy)
+				objectClass = ((HibernateProxy)o).getHibernateLazyInitializer()
+					.getImplementation().getClass();
+			else
+				objectClass = o.getClass();
+		entityName = null;
+		objectId = null;
+		queryBinder = null;
+		queryBuilder = null;
+		queryString = null;
+		criteriaBuilder = null;
+		retainedObject = null;
+		detach();
 	}
 
 	/**

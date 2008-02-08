@@ -18,12 +18,11 @@
  */
 package net.databinder.auth.components;
 
-import net.databinder.auth.IAuthSession;
-import net.databinder.auth.IAuthSettings;
-import net.databinder.auth.data.IUser;
+import net.databinder.auth.AuthSession;
+import net.databinder.auth.AuthApplication;
+import net.databinder.auth.data.DataUser;
 import net.databinder.components.DataStyleLink;
 import net.databinder.components.SourceList;
-import net.databinder.models.hib.HibernateObjectModel;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
@@ -47,7 +46,7 @@ import org.apache.wicket.model.ResourceModel;
  * data.auth.sign_in_link
  * or a subclass of this panel.
  */
-public class DataSignInPage extends WebPage {
+public abstract class DataSignInPageBase extends WebPage {
 	private SourceList sourceList;
 	
 	private Component profileSocket, signinSocket;
@@ -60,29 +59,27 @@ public class DataSignInPage extends WebPage {
 	/**
 	 * Displays sign in page.
 	 */
-	public DataSignInPage(PageParameters params) {
+	public DataSignInPageBase(PageParameters params) {
 		this(params, null);
 	}
 	
-	public DataSignInPage(ReturnPage returnPage) {
+	public DataSignInPageBase(ReturnPage returnPage) {
 		this(null, returnPage);
 	}
 	
-	public DataSignInPage(PageParameters params, ReturnPage returnPage) {
-		IAuthSettings app = null;
-		try { app = ((IAuthSettings)Application.get()); } catch (ClassCastException e) { }
+	public DataSignInPageBase(PageParameters params, ReturnPage returnPage) {
+		AuthApplication app = null;
+		try { app = ((AuthApplication)Application.get()); } catch (ClassCastException e) { }
 		// make sure the user is not trying to sign in or register with the wrong page
 		if (app == null || !app.getSignInPageClass().isInstance(this))
-			throw new UnauthorizedInstantiationException(DataSignInPage.class);
+			throw new UnauthorizedInstantiationException(DataSignInPageBase.class);
 
 		if (params != null) {
 			String username = params.getString("username");
 			String token = params.getString("token");
 			// e-mail auth, for example
 			if (username != null && token != null) {
-				HibernateObjectModel userModel = new HibernateObjectModel(app.getUserClass(),
-						app.getUserCriteriaBuilder(username));  
-				IUser.CookieAuth user = (IUser.CookieAuth) userModel.getObject();
+				DataUser.CookieAuth user = (DataUser.CookieAuth) app.getUser(username);
 				
 				if (user != null && app.getToken(user).equals(token))
 					getAuthSession().signIn(user, true);
@@ -128,11 +125,9 @@ public class DataSignInPage extends WebPage {
 	 * Default returns DataProfilePanel.
 	 * @return component to display for profile / registration
 	 */
-	protected Component profileSocket(String id, ReturnPage returnPage) {
-		return new DataProfilePanel(id, returnPage);
-	}
+	protected abstract Component profileSocket(String id, ReturnPage returnPage);
 	
-	protected static  IAuthSession getAuthSession() {
-		return (IAuthSession) Session.get();
+	protected static  AuthSession getAuthSession() {
+		return (AuthSession) Session.get();
 	}
 }

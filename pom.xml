@@ -24,6 +24,7 @@
   <module>databinder-components-hib</module>
   <module>databinder-components-ao</module>
   <module>databinder-auth-components</module>
+  <module>databinder-auth-components-hib</module>
   <module>databinder-app</module>
   <module>databinder-app-hib</module>
   <module>databinder-app-ao</module>

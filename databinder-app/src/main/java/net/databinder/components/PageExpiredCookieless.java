@@ -18,19 +18,17 @@
  */
 package net.databinder.components;
 
+import org.apache.wicket.markup.html.WebPage;
+
 /**
  * This page is set as the default session expired page when cookieless browsing is
  * disabled. It explains that cookies are required to interact with this application.
  * @author Nathan Hamblen
  */
-public class PageExpiredCookieless extends DataPage {
+public class PageExpiredCookieless extends WebPage {
 
-	@Override
-	protected String getName() {
-		return "Page Expired";
-	}
-	
 	public PageExpiredCookieless() {
+		add(new DataStyleLink("css"));
 		add(homePageLink("homePageLink"));
 	}
 
