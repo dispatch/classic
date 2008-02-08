@@ -22,7 +22,8 @@ public class ModelSourceListPanel extends SourceListPanel {
 		super(id, bodyProperty, listModel);
 		this.target = target;
 	}
-	/** Called from super-class to construct source links . */
+	/** Called from super-class to construct source links. Note: subclasses my override
+	 * to add attribute modifiers to the Link object constructed here, for example. */
 	@Override
 	protected Link sourceLink(String id, IModel model) {
 		return new ModelSourceLink("link", target, model);
