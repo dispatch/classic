@@ -7,7 +7,6 @@ import net.databinder.models.ao.EntityModel;
 import net.java.ao.EntityManager;
 import net.java.ao.RawEntity;
 
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.CompoundPropertyModel;
 
 @SuppressWarnings("unchecked")
@@ -36,10 +35,6 @@ public class DataForm extends TransactionalForm {
 		return (EntityModel) ((CompoundPropertyModel) getModel()).getChainedModel();
 	}
 	
-	public void clear() {
-		getEntityModel().clear();
-	}
-	
 	public class DeleteButton extends TransactionalButton {
 		public DeleteButton(String id) {
 			super(id);
@@ -51,25 +46,11 @@ public class DataForm extends TransactionalForm {
 		}
 		@Override
 		protected void afterSubmit() {
-			clear();
+			getEntityModel().unbind();
 		}
 		@Override
 		public boolean isEnabled() {
 			return getEntityModel().isBound();
-		}
-	}
-	
-	public class ClearLink extends Link {
-		public ClearLink(String id) {
-			super(id);
-		}
-		@Override
-		public boolean isEnabled() {
-			return getEntityModel().isBound();
-		}
-		@Override
-		public void onClick() {
-			clear();
 		}
 	}
 	
