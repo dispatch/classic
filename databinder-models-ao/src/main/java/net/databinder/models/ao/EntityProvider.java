@@ -43,16 +43,18 @@ public class EntityProvider implements IDataProvider {
 			throw new WicketRuntimeException(e);
 		}
 	}
+	
 	public IModel model(Object object) {
 		IModel model = new EntityModel((RawEntity)object);
 		if (wrapWithPropertyModel)
 			model = new CompoundPropertyModel(model);
 		return model;
 	}
-	public void detach() { }
 	
 	public EntityProvider setWrapWithPropertyModel(boolean wrapWithPropertyModel) {
 		this.wrapWithPropertyModel = wrapWithPropertyModel;
 		return this;
 	}
+
+	public void detach() { }
 }
