@@ -26,6 +26,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		module: "databinder-components-ao"
 		module: "databinder-auth-components"
 		module: "databinder-auth-components-hib"
+		module: "databinder-auth-components-ao"
 		module: "databinder-app"
 		module: "databinder-app-hib"
 		module: "databinder-app-ao"
