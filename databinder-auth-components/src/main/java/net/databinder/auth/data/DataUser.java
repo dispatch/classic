@@ -25,7 +25,7 @@ import org.apache.wicket.authorization.strategies.role.Roles;
  * @author Nathan Hamblen
  */
 public interface DataUser {
-	/** @return ture if user has any role matching those given */
+	/** @return true if user has any role matching those given */
 	public boolean hasAnyRole(Roles roles);
 	/** @return true if password is valid for this user. */
 	public boolean checkPassword(String password);
