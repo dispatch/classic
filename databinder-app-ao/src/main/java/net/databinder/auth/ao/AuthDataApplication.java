@@ -86,9 +86,7 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 	@SuppressWarnings("unchecked")
 	public DataUser getUser(String username) {
 		try {
-			Query q = Query.select();
-			q.setWhereClause("username");
-			q.setWhereParams(new Object[] {username});
+			Query q = Query.select().where("username = ?", username).limit(1);
 			return (DataUser) Databinder.getEntityManager().find(
 					(Class<? extends RawEntity>)getUserClass(),q)[0];
 		} catch (SQLException e) {
