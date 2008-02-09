@@ -1,32 +1,17 @@
-/*
- * Databinder: a simple bridge from Wicket to Hibernate
- * Copyright (C) 2006  Nathan Hamblen nathan@technically.us
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
-package net.databinder.auth.hib;
+package net.databinder.auth.ao;
+
+import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.databinder.ao.DataApplication;
+import net.databinder.ao.Databinder;
 import net.databinder.auth.AuthApplication;
 import net.databinder.auth.AuthSession;
-import net.databinder.auth.components.hib.DataSignInPage;
+import net.databinder.auth.components.ao.DataSignInPage;
 import net.databinder.auth.data.DataUser;
-import net.databinder.auth.data.UserBase;
-import net.databinder.hib.DataApplication;
-import net.databinder.hib.Databinder;
+import net.java.ao.Query;
+import net.java.ao.RawEntity;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Request;
@@ -34,6 +19,7 @@ import org.apache.wicket.RequestCycle;
 import org.apache.wicket.Response;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.Session;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.authorization.IUnauthorizedComponentInstantiationListener;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authorization.strategies.role.IRoleCheckingStrategy;
@@ -41,28 +27,9 @@ import org.apache.wicket.authorization.strategies.role.RoleAuthorizationStrategy
 import org.apache.wicket.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebRequest;
-import org.hibernate.cfg.AnnotationConfiguration;
-import org.hibernate.criterion.Restrictions;
 
-/**
- * Adds basic authentication functionality to DataApplication. This class is a derivative
- * of Wicket's AuthenticatedWebApplication, brought into the DataApplication hierarchy
- * and including light user specifications in IUser. You are encouraged to override
- * getUserClass() to implement your own user entity, possibly by extending UserBase.
- * It is also possible to use Databinder authentication without extending this base class 
- * by implementing IAuthSettings.
- * <p>Text appearing in authentication components can be overriden for any language, using
- * resource keys listed in their documentation. Except as otherwise noted, these resources
- * can be housed in the application class's properties file, so that subclasses of  the pages
- * and panels are not necessarily required.
- * @see IAuthSettings
- * @see IUser
- * @see UserBase
- * @author Nathan Hamblen
- */
-public abstract class AuthDataApplication extends DataApplication 
-implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, AuthApplication {
-
+public abstract class AuthDataApplication extends DataApplication implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, AuthApplication {
+	
 	/**
 	 * Internal initialization. Client applications should not normally override
 	 * or call this method.
@@ -88,15 +55,7 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, A
 	 */
 	@Override
 	public Session newSession(Request request, Response response) {
-		return new AuthDataSession(request);
-	}
-	/**
-	 * Adds to the configuration whatever IUser class is defined.
-	 */
-	@Override
-	protected void configureHibernate(AnnotationConfiguration config) {
-		super.configureHibernate(config);
-		config.addAnnotatedClass(getUserClass());
+		return new AuthDataSession((WebRequest) request);
 	}
 	
 	/**
@@ -124,9 +83,17 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, A
 	 * if you have a differently named property.
 	 * @return IUser for the given username. 
 	 */
+	@SuppressWarnings("unchecked")
 	public DataUser getUser(String username) {
-		return (DataUser) Databinder.getHibernateSession().createCriteria(getUserClass())
-			.add(Restrictions.eq("username", username)).uniqueResult();
+		try {
+			Query q = Query.select();
+			q.setWhereClause("username");
+			q.setWhereParams(new Object[] {username});
+			return (DataUser) Databinder.getEntityManager().find(
+					(Class<? extends RawEntity>)getUserClass(),q)[0];
+		} catch (SQLException e) {
+			throw new WicketRuntimeException(e);
+		}
 	}
 
 	/**
@@ -152,12 +119,4 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, A
 			fwd = "nil";
 		return user.getToken(fwd + "-" + req.getRemoteAddr());
 	}
-	
-	/**
-	 * Cryptographic salt to be used in authentication. The default IUser
-	 * implementation uses this value. If your implementation does not require
-	 * a salt value (!), return null.
-	 * @return application-specific salt
-	 */
-	public abstract byte[] getSalt();
 }

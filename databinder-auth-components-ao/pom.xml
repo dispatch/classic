@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
  <modelVersion>4.0.0</modelVersion>
- <artifactId>databinder-app</artifactId>
- <name>Databinder appkit</name>
+ <artifactId>databinder-auth-components-ao</artifactId>
+ <name>Databinder authentication components / ActiveObjects</name>
  <parent>
   <groupId>net.databinder</groupId>
   <artifactId>databinder-parent</artifactId>
@@ -12,13 +12,12 @@
   <dependency>
    <groupId>${pom.groupId}</groupId>
    <version>${pom.version}</version>
-   <artifactId>databinder-auth-components</artifactId>
+   <artifactId>databinder-components-ao</artifactId>
   </dependency>
   <dependency>
-   <groupId>org.mortbay.jetty</groupId>
-   <artifactId>jetty-ajp</artifactId>
-   <version>6.1.7</version>
-   <optional>true</optional>
+   <groupId>${pom.groupId}</groupId>
+   <version>${pom.version}</version>
+   <artifactId>databinder-auth-components</artifactId>
   </dependency>
  </dependencies>
 </project>

@@ -12,8 +12,12 @@ import net.databinder.web.NorewriteWebResponse;
 
 import org.apache.wicket.IConverterLocator;
 import org.apache.wicket.Page;
+import org.apache.wicket.Request;
+import org.apache.wicket.RequestCycle;
+import org.apache.wicket.Response;
 import org.apache.wicket.markup.html.pages.PageExpiredErrorPage;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.util.convert.ConverterLocator;
 
@@ -44,6 +48,7 @@ public abstract class DataApplicationBase extends WebApplication {
 		converterLocator.set(Color.class, new ColorConverter());
 		return converterLocator;
 	}
+	
 	/**
 	 * If <code>isCookielessSupported()</code> returns false, this method returns
 	 * a custom WebResponse that disables URL rewriting.
@@ -54,6 +59,11 @@ public abstract class DataApplicationBase extends WebApplication {
 		if (isCookielessSupported())
 			return super.newWebResponse(servletResponse);
 		return NorewriteWebResponse.getNew(this, servletResponse);
+	}
+	
+	@Override
+	public RequestCycle newRequestCycle(Request request, Response response) {
+		return new CookieRequestCycle(this, (WebRequest) request, (WebResponse) response);
 	}
 
 	/**
