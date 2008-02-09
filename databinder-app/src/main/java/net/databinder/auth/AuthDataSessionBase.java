@@ -36,6 +36,10 @@ public abstract class AuthDataSessionBase extends WebSession implements AuthSess
 		return (AuthApplication) Application.get();
 	}
 	
+	public static AuthDataSessionBase get() {
+		return (AuthDataSessionBase) WebSession.get();
+	}
+	
 	/**
 	 * @return IUser object for current user, or null if none signed in.
 	 */
