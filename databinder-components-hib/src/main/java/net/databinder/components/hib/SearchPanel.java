@@ -1,7 +1,6 @@
 package net.databinder.components.hib;
 
 import net.databinder.components.AjaxOnKeyPausedUpdater;
-import net.databinder.components.StyleLink;
 import net.databinder.components.Wrapper;
 import net.databinder.models.hib.QueryBinder;
 
@@ -31,7 +30,6 @@ public abstract class SearchPanel extends Panel {
 	public SearchPanel(String id, IModel searchModel) {
 		super(id, searchModel);
 		add(new SearchForm("searchForm", searchModel));
-		add(new StyleLink("searchStylesheet", SearchPanel.class));
 	}
 
 	
