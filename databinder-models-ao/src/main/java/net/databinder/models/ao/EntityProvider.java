@@ -33,9 +33,7 @@ public class EntityProvider implements IDataProvider {
 	
 	public Iterator iterator(int first, int count) {
 		try {
-			Query q = (Query) Objects.cloneObject(query);
-			q.setOffset(first);
-			q.setLimit(count);
+			Query q = ((Query) Objects.cloneObject(query)).offset(first).limit(count);
 			
 			return Arrays.asList(Databinder.getEntityManager().find(entityType, q)).iterator();
 		} catch (SQLException e) {
