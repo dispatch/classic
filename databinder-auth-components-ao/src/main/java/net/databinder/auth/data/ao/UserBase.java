@@ -1,14 +1,14 @@
 package net.databinder.auth.data.ao;
 
 import net.databinder.auth.data.DataUser;
-import net.java.ao.RawEntity;
+import net.java.ao.Entity;
 import net.java.ao.schema.Ignore;
 import net.java.ao.schema.NotNull;
-import net.java.ao.schema.PrimaryKey;
+import net.java.ao.schema.Unique;
 
 import org.apache.wicket.authorization.strategies.role.Roles;
 
-public interface UserBase extends DataUser, RawEntity<String> {
+public interface UserBase extends DataUser, Entity {
 
 	@Ignore
 	public String getPassword();
@@ -18,7 +18,7 @@ public interface UserBase extends DataUser, RawEntity<String> {
 	public void setPasswordHash(byte[] passwordHash);
 	
 	@NotNull
-	@PrimaryKey
+	@Unique
 	public String getUsername();
 	public void setUsername(String username);
 	
