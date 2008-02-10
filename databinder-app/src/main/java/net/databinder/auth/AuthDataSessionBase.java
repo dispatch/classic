@@ -71,18 +71,11 @@ public abstract class AuthDataSessionBase extends WebSession implements AuthSess
 	 * @return true if signed in or cookie sign in is possible and successful
 	 */
 	public boolean isSignedIn() {
-		if (userModel == null && cookieSignInSupported())
+		if (userModel == null)
 			cookieSignIn();
 		return userModel != null; 
 	}
 	
-	/** 
-	 * @return true if application's user class implements <tt>IUser.CookieAuthentication</tt>.  
-	 */
-	protected boolean cookieSignInSupported() {
-		return DataUser.CookieAuth.class.isAssignableFrom(getApp().getUserClass());
-	}
-
 	/**
 	 * @return true if signed in, false if credentials incorrect
 	 */
@@ -131,9 +124,9 @@ public abstract class AuthDataSessionBase extends WebSession implements AuthSess
 			} catch (UnsupportedEncodingException e) {
 				throw new WicketRuntimeException(e);
 			}
-			if (potential != null && potential instanceof DataUser.CookieAuth) {
+			if (potential != null && potential instanceof DataUser) {
 				AuthApplication app = (AuthApplication)getApplication();
-				String correctToken = app.getToken((DataUser.CookieAuth)potential);
+				String correctToken = app.getToken((DataUser)potential);
 				if (correctToken.equals(token.getValue()))
 					signIn(potential, false);
 			}
@@ -168,10 +161,8 @@ public abstract class AuthDataSessionBase extends WebSession implements AuthSess
 	protected void setCookie() {
 		if (userModel == null)
 			throw new WicketRuntimeException("User must be signed in when calling this method");
-		if (!cookieSignInSupported())
-			throw new UnsupportedOperationException("Must use an implementation of IUser.CookieAuth");
 		
-		DataUser.CookieAuth cookieUser = (DataUser.CookieAuth) getUser();
+		DataUser cookieUser = (DataUser) getUser();
 		WebResponse resp = (WebResponse) RequestCycle.get().getResponse();
 		
 		int  maxAge = (int) getSignInCookieMaxAge().seconds();

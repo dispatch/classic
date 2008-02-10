@@ -18,13 +18,16 @@
  */
 package net.databinder.auth.hib;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import javax.servlet.http.HttpServletRequest;
 
 import net.databinder.auth.AuthApplication;
 import net.databinder.auth.AuthSession;
 import net.databinder.auth.components.hib.DataSignInPage;
 import net.databinder.auth.data.DataUser;
-import net.databinder.auth.data.UserBase;
+import net.databinder.auth.data.hib.UserBase;
 import net.databinder.hib.DataApplication;
 import net.databinder.hib.Databinder;
 
@@ -41,6 +44,7 @@ import org.apache.wicket.authorization.strategies.role.RoleAuthorizationStrategy
 import org.apache.wicket.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.util.crypt.Base64UrlSafe;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.criterion.Restrictions;
 
@@ -138,6 +142,19 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, A
 	}
 	
 	/**
+	 * @return app-salted MessageDigest.  
+	 */
+	public MessageDigest getDigest() {
+		try {
+			MessageDigest digest = MessageDigest.getInstance("SHA");
+			digest.update(getSalt());
+			return digest;
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException("SHA Hash algorithm not found.", e);
+		}
+	}
+
+	/**
 	 * Get the restricted token for a user, using IP addresses as location parameter. This implementation
 	 * combines the "X-Forwarded-For" header with the remote address value so that unique
 	 * values result with and without proxying. (The forwarded header is not trusted on its own
@@ -145,19 +162,15 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, A
 	 * @param user source of token
 	 * @return restricted token
 	 */
-	public String getToken(DataUser.CookieAuth user) {
+	public String getToken(DataUser user) {
 		HttpServletRequest req = ((WebRequest) RequestCycle.get().getRequest()).getHttpServletRequest();
 		String fwd = req.getHeader("X-Forwarded-For");
 		if (fwd == null)
 			fwd = "nil";
-		return user.getToken(fwd + "-" + req.getRemoteAddr());
+		MessageDigest digest = getDigest();
+		user.update(digest);
+		digest.update((fwd + "-" + req.getRemoteAddr()).getBytes());
+		byte[] hash = digest.digest(user.getUsername().getBytes());
+		return new String(Base64UrlSafe.encodeBase64(hash));
 	}
-	
-	/**
-	 * Cryptographic salt to be used in authentication. The default IUser
-	 * implementation uses this value. If your implementation does not require
-	 * a salt value (!), return null.
-	 * @return application-specific salt
-	 */
-	public abstract byte[] getSalt();
 }

@@ -83,7 +83,8 @@ public abstract class DataProfilePanelBase extends Panel {
 	}
 
 	protected boolean existing() {
-		return ((BindingModel)((IChainingModel)form.getModel()).getChainedModel()).isBound();
+		BindingModel model = ((BindingModel)((IChainingModel)form.getModel()).getChainedModel());
+		return model != null && model.isBound();
 	}
 
 	protected class Profile extends WebMarkupContainer {

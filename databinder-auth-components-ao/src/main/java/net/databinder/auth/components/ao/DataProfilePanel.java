@@ -1,12 +1,13 @@
 package net.databinder.auth.components.ao;
 
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.model.IModel;
-
+import net.databinder.auth.AuthApplication;
 import net.databinder.auth.components.DataProfilePanelBase;
 import net.databinder.auth.components.DataSignInPageBase.ReturnPage;
 import net.databinder.components.ao.DataForm;
 import net.databinder.models.ao.EntityModel;
+
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.model.IModel;
 
 public class DataProfilePanel extends DataProfilePanelBase {
 	
@@ -16,7 +17,14 @@ public class DataProfilePanel extends DataProfilePanelBase {
 	
 	@Override
 	protected Form getProfileForm(String id, IModel userModel) {
-		return new DataForm(id, (EntityModel) userModel);
+		if (userModel == null) 
+			userModel = new EntityModel(((AuthApplication)getApplication()).getUserClass());
+		return new DataForm(id, (EntityModel) userModel) {
+			@Override
+			protected void afterSubmit() {
+				DataProfilePanel.this.afterSubmit();
+			}
+		};
 	}
 
 }

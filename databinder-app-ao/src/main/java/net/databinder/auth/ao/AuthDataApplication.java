@@ -1,5 +1,6 @@
 package net.databinder.auth.ao;
 
+import java.security.MessageDigest;
 import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +28,7 @@ import org.apache.wicket.authorization.strategies.role.RoleAuthorizationStrategy
 import org.apache.wicket.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.util.crypt.Base64UrlSafe;
 
 public abstract class AuthDataApplication extends DataApplication implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, AuthApplication {
 	
@@ -87,8 +89,11 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 	public DataUser getUser(String username) {
 		try {
 			Query q = Query.select().where("username = ?", username).limit(1);
-			return (DataUser) Databinder.getEntityManager().find(
-					(Class<? extends RawEntity>)getUserClass(),q)[0];
+			DataUser[] users = (DataUser[]) Databinder.getEntityManager().find(
+					(Class<? extends RawEntity>)getUserClass(),q);
+			if (users.length == 0)
+				return null;
+			return users[0];
 		} catch (SQLException e) {
 			throw new WicketRuntimeException(e);
 		}
@@ -110,11 +115,16 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 	 * @param user source of token
 	 * @return restricted token
 	 */
-	public String getToken(DataUser.CookieAuth user) {
+	public String getToken(DataUser user) {
 		HttpServletRequest req = ((WebRequest) RequestCycle.get().getRequest()).getHttpServletRequest();
 		String fwd = req.getHeader("X-Forwarded-For");
 		if (fwd == null)
 			fwd = "nil";
-		return user.getToken(fwd + "-" + req.getRemoteAddr());
+		MessageDigest digest = getDigest();
+		user.updateDigest(digest);
+		digest.update((fwd + "-" + req.getRemoteAddr()).getBytes());
+		byte[] hash = digest.digest(user.getUsername().getBytes());
+		return new String(Base64UrlSafe.encodeBase64(hash));
 	}
+	
 }

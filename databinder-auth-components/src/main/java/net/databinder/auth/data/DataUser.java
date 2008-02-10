@@ -18,6 +18,8 @@
  */
 package net.databinder.auth.data;
 
+import java.security.MessageDigest;
+
 import org.apache.wicket.authorization.strategies.role.Roles;
 
 /**
@@ -27,22 +29,13 @@ import org.apache.wicket.authorization.strategies.role.Roles;
 public interface DataUser {
 	/** @return true if user has any role matching those given */
 	public boolean hasAnyRole(Roles roles);
+	
 	/** @return true if password is valid for this user. */
 	public boolean checkPassword(String password);
 	
-	/**
-	 * Sub-interface for user classes supporting cookie authentication.
-	 */
-	public interface CookieAuth extends DataUser {
-		/**
-		 * @return value used to identify user; may be e-mail or other identifier.
-		 */
-		public String getUsername();
-
-		/** 
-		 * @param location IP address or other identifier
-		 * @return restricted token as URL-safe hash for user, password, and location parameter
-		 */
-		public String getToken(String location);
-	}
+	/** @return value used to identify user; may be e-mail or other identifier. */
+	public String getUsername();
+	
+	/** Update digest with password, to bind it to the cookie token. */
+	public void update(MessageDigest digest);
 }

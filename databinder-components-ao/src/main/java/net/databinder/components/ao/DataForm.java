@@ -11,16 +11,13 @@ import org.apache.wicket.model.CompoundPropertyModel;
 
 @SuppressWarnings("unchecked")
 public class DataForm extends TransactionalForm {
-	private Class entityType;
 	
 	public DataForm(String id, Class entityType) {
 		super(id, new CompoundPropertyModel(new EntityModel(entityType)));
-		this.entityType = entityType;
 	}
 	
 	public DataForm(String id, EntityModel entityModel) {
 		super(id, new CompoundPropertyModel(entityModel));
-		this.entityType = entityModel.getEntityType();
 	}
 	
 	@Override
@@ -28,7 +25,7 @@ public class DataForm extends TransactionalForm {
 		if (getEntityModel().isBound())
 			((RawEntity)getModelObject()).save();
 		else
-			setModelObject(entityManager.create(entityType, getEntityModel().getPropertyStore()));
+			setModelObject(entityManager.create(getEntityModel().getEntityType(), getEntityModel().getPropertyStore()));
 	}
 	
 	public EntityModel getEntityModel() {

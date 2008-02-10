@@ -79,7 +79,7 @@ public abstract class DataSignInPageBase extends WebPage {
 			String token = params.getString("token");
 			// e-mail auth, for example
 			if (username != null && token != null) {
-				DataUser.CookieAuth user = (DataUser.CookieAuth) app.getUser(username);
+				DataUser user = (DataUser) app.getUser(username);
 				
 				if (user != null && app.getToken(user).equals(token))
 					getAuthSession().signIn(user, true);

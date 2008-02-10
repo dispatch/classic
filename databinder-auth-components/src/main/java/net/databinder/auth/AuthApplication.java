@@ -1,5 +1,7 @@
 package net.databinder.auth;
 
+import java.security.MessageDigest;
+
 import net.databinder.auth.data.DataUser;
 
 import org.apache.wicket.markup.html.WebPage;
@@ -23,17 +25,19 @@ public interface AuthApplication {
 	 */
 	public Class< ? extends WebPage> getSignInPageClass();
 	/**
-	 * Cryptographic salt to be used in authentication. The default IUser
-	 * implementation uses this value. If your imlementation does not require
-	 * a salt value (!), return null.
+	 * Cryptographic salt to be used in authentication. The default getDigest()
+	 * implementation uses this value.
 	 * @return
 	 */
 	public abstract byte[] getSalt();
+	
+	/** @return application-salted hashing digest */
+	public MessageDigest getDigest();
 	
 	/**
 	 * Get the restricted token for a user, passing an appropriate location parameter. 
 	 * @param user source of token
 	 * @return restricted token
 	 */
-	public String getToken(DataUser.CookieAuth user);
+	public String getToken(DataUser user);
 }
