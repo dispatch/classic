@@ -44,6 +44,7 @@ public class DataForm extends TransactionalForm {
 		@Override
 		protected void afterSubmit() {
 			getEntityModel().unbind();
+			DataForm.this.modelChanged();
 		}
 		@Override
 		public boolean isEnabled() {

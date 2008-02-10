@@ -3,8 +3,8 @@ package net.databinder.auth.components;
 import java.util.Arrays;
 import java.util.List;
 
-import net.databinder.auth.AuthSession;
 import net.databinder.auth.AuthApplication;
+import net.databinder.auth.AuthSession;
 import net.databinder.auth.data.DataUser;
 import net.databinder.auth.valid.EqualPasswordConvertedInputValidator;
 import net.databinder.components.DataStyleLink;
@@ -81,9 +81,9 @@ public abstract class UserAdminPageBase extends WebPage {
 		form.add(new SimpleFormComponentLabel("passwordConfirm-label", passwordConfirm));
 		form.add(passwordConfirm);
 		
-		form.add(new CheckBoxMultipleChoice("roles", new AbstractReadOnlyModel() {
+		form.add(new CheckBoxMultipleChoice("roles", rolesModel(), new AbstractReadOnlyModel() {
 			public Object getObject() {
-				return getRoles();
+				return getRoleChoices();
 			}
 		}));
 
@@ -118,7 +118,11 @@ public abstract class UserAdminPageBase extends WebPage {
 		return new NullPlug(id);
 	}
 	
-	protected List<String> getRoles() {
+	protected IModel rolesModel() {
+		return null;
+	}
+	
+	protected List<String> getRoleChoices() {
 		return Arrays.asList(new String[] {Roles.USER, Roles.ADMIN});
 	}
 }

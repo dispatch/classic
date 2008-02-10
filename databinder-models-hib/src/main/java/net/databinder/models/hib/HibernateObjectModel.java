@@ -293,12 +293,15 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 	 * persistent entity. If so, the ID is fetched and the reference discarded.  
 	 */
 	public void checkBinding() {
-		Session sess = Databinder.getHibernateSession(factoryKey);
-		if (!isBound() && retainedObject != null  && sess.contains(retainedObject)) {
-			objectId = sess.getIdentifier(retainedObject);
-			// the entityName, rather than the objectClass, will be used to load
-			entityName = getEntityName(sess, retainedObject);
-			retainedObject = null;
+		if (!isBound() && retainedObject != null) {
+			Session sess = Databinder.getHibernateSession(factoryKey);
+			
+			if (sess.contains(retainedObject)) {
+				objectId = sess.getIdentifier(retainedObject);
+				// the entityName, rather than the objectClass, will be used to load
+				entityName = getEntityName(sess, retainedObject);
+				retainedObject = null;
+			}
 		}
 	}
 

@@ -13,9 +13,11 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 
 public class UserAdminPage extends UserAdminPageBase {
+	private DataForm form;
+	
 	@Override
 	protected Form adminForm(String id, Class<? extends DataUser> userClass) {
-		return new DataForm(id, userClass);
+		return form = new DataForm(id, userClass);
 	}
 	
 	@Override
@@ -25,7 +27,7 @@ public class UserAdminPage extends UserAdminPageBase {
 			public void onSubmit() {
 				Databinder.getHibernateSession().delete(form.getModelObject());
 				Databinder.getHibernateSession().getTransaction().commit();
-				getBindingModel().unbind();
+				form.clearPersistentObject();
 			}
 			@Override
 			public boolean isEnabled() {

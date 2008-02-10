@@ -1,6 +1,7 @@
 package net.databinder.auth.ao;
 
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +12,7 @@ import net.databinder.auth.AuthApplication;
 import net.databinder.auth.AuthSession;
 import net.databinder.auth.components.ao.DataSignInPage;
 import net.databinder.auth.data.DataUser;
+import net.databinder.auth.data.ao.UserBase;
 import net.java.ao.Query;
 import net.java.ao.RawEntity;
 
@@ -79,6 +81,8 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 		DataUser user = ((AuthSession)Session.get()).getUser();
 		return user == null ? false : user.hasAnyRole(roles);
 	}
+	
+	public abstract Class<? extends UserBase> getUserClass();
 
 	/**
 	 * Return user object by matching against a "username" property. Override
@@ -108,6 +112,19 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 	}
 	
 	/**
+	 * @return app-salted MessageDigest.  
+	 */
+	public MessageDigest getDigest() {
+		try {
+			MessageDigest digest = MessageDigest.getInstance("SHA");
+			digest.update(getSalt());
+			return digest;
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException("SHA Hash algorithm not found.", e);
+		}
+	}
+	
+	/**
 	 * Get the restricted token for a user, using IP addresses as location parameter. This implementation
 	 * combines the "X-Forwarded-For" header with the remote address value so that unique
 	 * values result with and without proxying. (The forwarded header is not trusted on its own
@@ -121,7 +138,7 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 		if (fwd == null)
 			fwd = "nil";
 		MessageDigest digest = getDigest();
-		user.updateDigest(digest);
+		user.update(digest);
 		digest.update((fwd + "-" + req.getRemoteAddr()).getBytes());
 		byte[] hash = digest.digest(user.getUsername().getBytes());
 		return new String(Base64UrlSafe.encodeBase64(hash));

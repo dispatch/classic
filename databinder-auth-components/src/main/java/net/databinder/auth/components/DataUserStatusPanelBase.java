@@ -58,7 +58,7 @@ public abstract class DataUserStatusPanelBase extends Panel {
 		wrapper.add(new Label("username", new AbstractReadOnlyModel() {
 			@Override
 			public Object getObject() {
-				return getAuthSession().getUser().toString();
+				return getAuthSession().getUser().getUsername();
 			}
 		}));
 		wrapper.add(new Link("profile") {

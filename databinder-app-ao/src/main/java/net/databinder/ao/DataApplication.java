@@ -23,15 +23,18 @@ public abstract class DataApplication extends DataApplicationBase implements Act
 	
 	protected void buildEntityManager(Object key) {
 		EntityManager entityManager = new EntityManager(buildDatabaseProvider(key));
+		configureEntityManager(entityManager, key);
 		setEntityManager(key, entityManager);
 		if (isDevelopment()) try {
-			generateSchema(entityManager);
+			generateSchema(entityManager, key);
 		} catch (SQLException e) {
 			logger.error("Error generating schema", e);
 		}
 	}
 	
-	protected void generateSchema(EntityManager entityManager) throws SQLException { }
+	protected void generateSchema(EntityManager entityManager, Object key) throws SQLException { }
+	
+	protected void configureEntityManager(EntityManager entityManager, Object key) { }
 	
 	protected void setEntityManager(Object key, EntityManager entityManager) {
 		entityManagers.put(key, entityManager);

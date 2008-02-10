@@ -1,21 +1,43 @@
 package net.databinder.auth.components.ao;
 
-import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.model.IModel;
+import java.util.Map;
 
 import net.databinder.auth.components.DataUserStatusPanelBase;
 import net.databinder.auth.components.UserAdminPageBase;
 import net.databinder.auth.data.DataUser;
+import net.databinder.auth.data.ao.UserHelper;
 import net.databinder.components.ao.DataForm;
 import net.databinder.models.ao.EntityListModel;
+import net.databinder.models.ao.EntityModel;
+
+import org.apache.wicket.authorization.strategies.role.Roles;
+import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.model.IModel;
 
 public class UserAdminPage extends UserAdminPageBase {
 	private DataForm form;
 	
 	@Override
 	protected Form adminForm(String id, Class<? extends DataUser> userClass) {
-		return form = new DataForm(id, userClass);
+		return form = new DataForm(id, new EntityModel(userClass) {
+			@Override
+			protected void putDefaultProperties(
+					Map<String, Object> propertyStore) {
+				propertyStore.put("roles", new Roles(Roles.USER));
+			}			
+		}) {
+			@SuppressWarnings("unchecked")
+			@Override
+			protected void onSubmit() {
+				if (!getEntityModel().isBound()) {
+					Map<String, Object> map = (Map) getModelObject();
+					map.put("roleString", ((Roles)map.remove("roles")).toString());
+					map.put("passwordHash", UserHelper.getHash((String) map.remove("password")));
+				}
+				super.onSubmit();
+			}
+		};
 	}
 
 	@Override

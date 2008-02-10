@@ -42,11 +42,6 @@ public abstract class LoadableWritableModel  implements IModel {
 		}
 	}
 
-	@Deprecated
-	public Object getObject(Component component) {
-		return getObject();
-	}
-
 	public Object getObject() {
 		if (!attached) {
 			attached = true;

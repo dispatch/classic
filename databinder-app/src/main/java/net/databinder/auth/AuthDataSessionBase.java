@@ -145,8 +145,6 @@ public abstract class AuthDataSessionBase extends WebSession implements AuthSess
 		return getApp().getUser(username);
 	}
 
-
-	
 	public static String getUserCookieName() {
 		return Application.get().getClass().getSimpleName() + "_USER";
 	}
@@ -184,6 +182,12 @@ public abstract class AuthDataSessionBase extends WebSession implements AuthSess
 		
 		resp.addCookie(name);
 		resp.addCookie(auth);
+	}
+	
+	@Override
+	protected void detach() {
+		if (userModel != null)
+			userModel.detach();
 	}
 	
 	/** Detach user from session */
