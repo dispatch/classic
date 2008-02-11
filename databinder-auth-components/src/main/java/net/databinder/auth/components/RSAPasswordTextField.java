@@ -33,6 +33,7 @@ import net.databinder.auth.valid.EqualPasswordConvertedInputValidator;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.IHeaderContributor;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.form.Form;
@@ -40,6 +41,7 @@ import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.resources.JavascriptResourceReference;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.util.convert.ConversionException;
 import org.apache.wicket.util.crypt.Base64;
 
@@ -76,8 +78,17 @@ public class RSAPasswordTextField extends PasswordTextField implements IHeaderCo
 		super(id, model);
 		init(form);
 	}
+	@Override
+	protected void onRender(MarkupStream markupStream) {
+		getResponse().write("<noscript><div style='color: red;'>Please enable JavaScript and reload this page.</div></noscript>");
+		super.onRender(markupStream);
+		getResponse().write("<script>document.getElementById('" + getMarkupId() + "').style.visibility='visible';</script>");
+	}
+	
 	protected void init(Form form) {
 		setOutputMarkupId(true);
+		
+		add(new AttributeAppender("style", new Model("visibility:hidden"), ";"));
 
 		form.add(new AttributeAppender("onsubmit", new AbstractReadOnlyModel() {
 			public Object getObject() {
@@ -119,7 +130,7 @@ public class RSAPasswordTextField extends PasswordTextField implements IHeaderCo
 
 			return toks[1];
 		} catch (GeneralSecurityException e) {
-			throw new ConversionException(e);
+			throw new ConversionException(e).setResourceKey("RSAPasswordTextField.failed.challenge");
 		}
 	}
 	
