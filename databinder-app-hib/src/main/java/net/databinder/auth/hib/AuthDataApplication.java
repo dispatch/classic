@@ -58,9 +58,8 @@ import org.hibernate.criterion.Restrictions;
  * resource keys listed in their documentation. Except as otherwise noted, these resources
  * can be housed in the application class's properties file, so that subclasses of  the pages
  * and panels are not necessarily required.
- * @see IAuthSettings
- * @see IUser
- * @see UserBase
+ * @see AuthApplication
+ * @see DataUser
  * @author Nathan Hamblen
  */
 public abstract class AuthDataApplication extends DataApplication 
