@@ -13,7 +13,8 @@ import org.apache.wicket.Application;
 import org.apache.wicket.util.crypt.Base64;
 
 /**
- * Simple, optional implementation of {@link DataPassword}.
+ * Simple, optional implementation of {@link DataPassword}. Maps as an embedded
+ * property to the single field "passwordHash".
  * @author Nathan Hamblen
  */
 @Embeddable
