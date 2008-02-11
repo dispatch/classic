@@ -12,7 +12,6 @@ import net.databinder.auth.AuthApplication;
 import net.databinder.auth.AuthSession;
 import net.databinder.auth.components.ao.DataSignInPage;
 import net.databinder.auth.data.DataUser;
-import net.databinder.auth.data.ao.UserBase;
 import net.java.ao.Query;
 import net.java.ao.RawEntity;
 
@@ -86,7 +85,7 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 		return false;
 	}
 	
-	public abstract Class<? extends UserBase> getUserClass();
+	public abstract Class<? extends DataUser> getUserClass();
 
 	/**
 	 * Return user object by matching against a "username" property. Override
