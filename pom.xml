@@ -59,6 +59,14 @@
     </executions>
     <inherited>true</inherited>
    </plugin>
+   <plugin>
+    <artifactId>maven-javadoc-plugin</artifactId>
+    <configuration>
+     <aggregate>true</aggregate>
+     <source>1.5</source>
+     <linksource>true</linksource>
+    </configuration>
+   </plugin>
   </plugins>
  </build>
  <reporting>

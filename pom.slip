@@ -50,6 +50,12 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 						goals:
 							goal: "jar"
 				inherited: "true"
+			plugin:
+				artifactId: "maven-javadoc-plugin"
+				configuration:
+					aggregate: "true"
+					source: "1.5"
+					linksource: "true"
 	reporting:
 		plugins:
 			plugin:
