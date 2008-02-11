@@ -1,5 +1,6 @@
 package net.databinder.auth.data.ao;
 
+import net.databinder.auth.data.DataPassword;
 import net.databinder.auth.data.DataUser;
 import net.java.ao.Entity;
 import net.java.ao.schema.Ignore;
@@ -11,7 +12,7 @@ import org.apache.wicket.authorization.strategies.role.Roles;
 public interface UserBase extends DataUser, Entity {
 
 	@Ignore
-	public String getPassword();
+	public DataPassword getPassword();
 	
 	@NotNull
 	public byte[] getPasswordHash();

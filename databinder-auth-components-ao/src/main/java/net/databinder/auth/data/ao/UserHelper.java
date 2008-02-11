@@ -1,9 +1,9 @@
 package net.databinder.auth.data.ao;
 
 import java.security.MessageDigest;
-import java.util.Arrays;
 
 import net.databinder.auth.AuthApplication;
+import net.databinder.auth.data.DataPassword;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.authorization.strategies.role.Roles;
@@ -15,21 +15,23 @@ public class UserHelper {
 		this.user = user;
 	}
 	
-	public String getPassword() {
-		return null;
-	}
-		
-	public void setPassword(String password) {
-		user.setPasswordHash(getHash(password));
-	}
-	
 	public static byte[] getHash(String string) {
 		MessageDigest md = ((AuthApplication)Application.get()).getDigest();
 		return md.digest(string.getBytes());
 	}
 	
-	public boolean checkPassword(String password) {
-		return Arrays.equals(user.getPasswordHash(), getHash(password));
+	public DataPassword getPassword() {
+		return new DataPassword() {
+			public void change(String password) {
+				user.setPasswordHash(getHash(password));
+			}
+			public boolean matches(String password) {
+				return getHash(password).equals(password);
+			}
+			public void update(MessageDigest digest) {
+				digest.update(user.getPasswordHash());
+			}
+		}; 
 	}
 	
 	public void setRoleString(String roleString) {
@@ -46,8 +48,8 @@ public class UserHelper {
 		user.setRoleString(roles.toString());
 	}
 	
-	public boolean hasAnyRole(Roles roles) {
-		return getRoles().hasAnyRole(roles);
+	public boolean hasRole(String role) {
+		return getRoles().contains(role);
 	}
 	
 	public void update(MessageDigest digest) {

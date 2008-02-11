@@ -1,22 +1,32 @@
 package net.databinder.auth.data.hib;
 
+import java.io.Serializable;
 import java.security.MessageDigest;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 import net.databinder.auth.AuthApplication;
+import net.databinder.auth.data.DataPassword;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.util.crypt.Base64;
 
+/**
+ * Simple, optional implementation of {@link DataPassword}.
+ * @author Nathan Hamblen
+ */
 @Embeddable
-public class PasswordDigest {
+public class BasicPassword implements DataPassword, Serializable {
 	private String passwordHash;
 	
-	private PasswordDigest() { }
+	public BasicPassword() { }
 	
-	public PasswordDigest(String password) {
+	public BasicPassword(String password) {
+		change(password);
+	}
+	
+	public void change(String password) {
 		MessageDigest md = ((AuthApplication)Application.get()).getDigest();
 		byte[] hash = md.digest(password.getBytes());
 		passwordHash = new String(Base64.encodeBase64(hash));
@@ -31,18 +41,13 @@ public class PasswordDigest {
 		return passwordHash;
 	}
 
+	@SuppressWarnings("unused")
 	private void setPasswordHash(String passwordHash) {
 		this.passwordHash = passwordHash;
 	}
 	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof PasswordDigest))
-			return false;
-		return passwordHash.equals(((PasswordDigest)obj).getPasswordHash());
-	}
-	@Override
-	public int hashCode() {
-		return passwordHash.hashCode();
+	public boolean matches(String password) {
+		return passwordHash != null &&
+			passwordHash.equals(new BasicPassword(password).getPasswordHash());
 	}
 }

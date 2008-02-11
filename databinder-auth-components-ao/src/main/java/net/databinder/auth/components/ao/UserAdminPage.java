@@ -33,11 +33,19 @@ public class UserAdminPage extends UserAdminPageBase {
 				if (!getEntityModel().isBound()) {
 					Map<String, Object> map = (Map) getModelObject();
 					map.put("roleString", ((Roles)map.remove("roles")).toString());
-					map.put("passwordHash", UserHelper.getHash((String) map.remove("password")));
 				}
 				super.onSubmit();
 			}
 		};
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	protected void setPassword(String password) {
+		if (form.getEntityModel().isBound())
+			super.setPassword(password);
+		else
+			((Map)form.getModelObject()).put("passwordHash", UserHelper.getHash(password));
 	}
 
 	@Override

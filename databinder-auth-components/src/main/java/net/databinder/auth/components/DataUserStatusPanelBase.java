@@ -18,8 +18,8 @@
  */
 package net.databinder.auth.components;
 
-import net.databinder.auth.AuthSession;
 import net.databinder.auth.AuthApplication;
+import net.databinder.auth.AuthSession;
 import net.databinder.auth.components.DataSignInPageBase.ReturnPage;
 import net.databinder.auth.data.DataUser;
 
@@ -80,7 +80,7 @@ public abstract class DataUserStatusPanelBase extends Panel {
 			@Override
 			public boolean isVisible() {
 				DataUser user = ((AuthSession) getSession()).getUser();
-				return user != null && user.hasAnyRole(new Roles(Roles.ADMIN));
+				return user != null && user.hasRole(Roles.ADMIN);
 			}
 		});
 

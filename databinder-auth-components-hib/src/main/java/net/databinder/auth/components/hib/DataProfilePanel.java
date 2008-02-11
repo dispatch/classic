@@ -15,7 +15,7 @@ public class DataProfilePanel extends DataProfilePanelBase {
 	}
 
 	@Override
-	protected Form getProfileForm(String id, IModel userModel) {
+	protected Form profileForm(String id, IModel userModel) {
 		if (userModel == null) 
 			userModel = new HibernateObjectModel(((AuthApplication)getApplication()).getUserClass());
 

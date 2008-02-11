@@ -79,7 +79,11 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 	 */
 	public final boolean hasAnyRole(Roles roles) {
 		DataUser user = ((AuthSession)Session.get()).getUser();
-		return user == null ? false : user.hasAnyRole(roles);
+		if (user != null)
+			for (String role : roles)
+				if (user.hasRole(role))
+					return true;
+		return false;
 	}
 	
 	public abstract Class<? extends UserBase> getUserClass();
@@ -138,7 +142,7 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 		if (fwd == null)
 			fwd = "nil";
 		MessageDigest digest = getDigest();
-		user.update(digest);
+		user.getPassword().update(digest);
 		digest.update((fwd + "-" + req.getRemoteAddr()).getBytes());
 		byte[] hash = digest.digest(user.getUsername().getBytes());
 		return new String(Base64UrlSafe.encodeBase64(hash));

@@ -18,24 +18,18 @@
  */
 package net.databinder.auth.data;
 
-import java.security.MessageDigest;
-
-import org.apache.wicket.authorization.strategies.role.Roles;
 
 /**
  * Base user interface.
  * @author Nathan Hamblen
  */
 public interface DataUser {
-	/** @return true if user has any role matching those given */
-	public boolean hasAnyRole(Roles roles);
+	/** @return true if user has the corresponding role */
+	boolean hasRole(String role);
 	
-	/** @return true if password is valid for this user. */
-	public boolean checkPassword(String password);
+	/** @return password holder, should never be null */
+	DataPassword getPassword();
 	
 	/** @return value used to identify user; may be e-mail or other identifier. */
 	public String getUsername();
-	
-	/** Update digest with password, to bind it to the cookie token. */
-	public void update(MessageDigest digest);
 }

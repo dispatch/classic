@@ -27,7 +27,6 @@ import net.databinder.auth.AuthApplication;
 import net.databinder.auth.AuthSession;
 import net.databinder.auth.components.hib.DataSignInPage;
 import net.databinder.auth.data.DataUser;
-import net.databinder.auth.data.hib.UserBase;
 import net.databinder.hib.DataApplication;
 import net.databinder.hib.Databinder;
 
@@ -120,7 +119,11 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, A
 	 */
 	public final boolean hasAnyRole(Roles roles) {
 		DataUser user = ((AuthSession)Session.get()).getUser();
-		return user == null ? false : user.hasAnyRole(roles);
+		if (user != null)
+			for (String role : roles)
+				if (user.hasRole(role))
+					return true;
+		return false;
 	}
 
 	/**
@@ -168,7 +171,7 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, A
 		if (fwd == null)
 			fwd = "nil";
 		MessageDigest digest = getDigest();
-		user.update(digest);
+		user.getPassword().update(digest);
 		digest.update((fwd + "-" + req.getRemoteAddr()).getBytes());
 		byte[] hash = digest.digest(user.getUsername().getBytes());
 		return new String(Base64UrlSafe.encodeBase64(hash));

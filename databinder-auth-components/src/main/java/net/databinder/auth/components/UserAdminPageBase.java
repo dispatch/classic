@@ -62,10 +62,14 @@ public abstract class UserAdminPageBase extends WebPage {
 		form.add(new SimpleFormComponentLabel("username-label", username));
 		form.add(username);
 
-		TextField password = new RSAPasswordTextField("password", form) {
+		TextField password = new RSAPasswordTextField("password", new Model(), form) {
 			@Override
 			public boolean isRequired() {
 				return !isBound();
+			}
+			@Override
+			protected void onModelChanged() {
+				setPassword((String) getModelObject());
 			}
 		};
 		password.setLabel(new ResourceModel("data.auth.password", "Password"));
@@ -96,6 +100,15 @@ public abstract class UserAdminPageBase extends WebPage {
 		add(new UnbindLink("add", getBindingModel()));
 				
 		add(new ModelSourceListPanel("users", form, "username", userList(userClass)));
+	}
+	
+	protected DataUser getUser() {
+		return (DataUser) form.getModelObject();
+	}
+	
+	protected void setPassword(String password) {
+		if (password != null)
+			getUser().getPassword().change(password);
 	}
 	
 	protected BindingModel getBindingModel() {

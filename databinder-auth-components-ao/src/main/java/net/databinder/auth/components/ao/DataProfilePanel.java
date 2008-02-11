@@ -19,17 +19,18 @@ public class DataProfilePanel extends DataProfilePanelBase {
 		super(id, returnPage);
 	}
 	
+	private DataForm form;
+	
 	@Override
-	protected Form getProfileForm(String id, IModel userModel) {
+	protected Form profileForm(String id, IModel userModel) {
 		if (userModel == null) 
 			userModel = new EntityModel(((AuthApplication)getApplication()).getUserClass());
-		return new DataForm(id, (EntityModel) userModel) {
+		return form = new DataForm(id, (EntityModel) userModel) {
 			@SuppressWarnings("unchecked")
 			@Override
 			protected void onSubmit() {
 				if (!getEntityModel().isBound()) {
 					Map<String, Object> map = (Map) getModelObject();
-					map.put("passwordHash", UserHelper.getHash((String) map.remove("password")));
 					map.put("roleString", Roles.USER);
 				}
 				super.onSubmit();
@@ -39,6 +40,15 @@ public class DataProfilePanel extends DataProfilePanelBase {
 				DataProfilePanel.this.afterSubmit();
 			}
 		};
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	protected void setPassword(String password) {
+		if (form.getEntityModel().isBound())
+			super.setPassword(password);
+		else
+			((Map)form.getModelObject()).put("passwordHash", UserHelper.getHash(password));
 	}
 
 }

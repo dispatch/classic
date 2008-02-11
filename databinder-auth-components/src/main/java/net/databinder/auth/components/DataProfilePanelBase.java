@@ -72,13 +72,13 @@ public abstract class DataProfilePanelBase extends Panel {
 		super(id);
 		this.returnPage = returnPage;
 		add(new FeedbackPanel("feedback"));
-		add(form = getProfileForm("registerForm", DataSignInPageBase.getAuthSession().getUserModel()));
+		add(form = profileForm("registerForm", DataSignInPageBase.getAuthSession().getUserModel()));
 		form.add(new Profile("profile"));
 	}
 	
-	protected abstract Form getProfileForm(String id, IModel userModel);
+	protected abstract Form profileForm(String id, IModel userModel);
 	
-	DataUser getUser() {
+	protected DataUser getUser() {
 		return (DataUser) form.getModelObject();
 	}
 
@@ -96,7 +96,7 @@ public abstract class DataProfilePanelBase extends Panel {
 			username.add(new UsernameValidator());
 			username.setLabel(new ResourceModel("data.auth.username", "Username"));
 			add(new SimpleFormComponentLabel("username-label", username));
-			add(password = new RSAPasswordTextField("password", form) {
+			add(password = new RSAPasswordTextField("password", new Model(), form) {
 				public boolean isRequired() {
 					return !existing();
 				}
@@ -106,6 +106,10 @@ public abstract class DataProfilePanelBase extends Panel {
 			add(passwordConfirm = new RSAPasswordTextField("passwordConfirm", new Model(), form) {
 				public boolean isRequired() {
 					return !existing();
+				}
+				@Override
+				protected void onModelChanged() {
+					setPassword((String) getModelObject());
 				}
 			});
 			form.add(new EqualPasswordConvertedInputValidator(password, passwordConfirm));
@@ -120,13 +124,19 @@ public abstract class DataProfilePanelBase extends Panel {
 			
 			add(lowFormSocket("lowFormSocket"));
 			
-			add(new Button("submit").add(new AttributeModifier("value", new AbstractReadOnlyModel() {
+			add(new Button("submit") {
+			}.add(new AttributeModifier("value", new AbstractReadOnlyModel() {
 				public Object getObject() {
 					return existing() ? getString("auth.data.update", null, "Update Account") : 
 						getString("data.auth.register", null, "Register");
 				}
 			})));
 		}
+	}
+	
+	protected void setPassword(String password) {
+		if (password != null)
+			getUser().getPassword().change(password);
 	}
 	
 	protected void afterSubmit() {
