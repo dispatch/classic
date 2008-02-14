@@ -34,7 +34,6 @@ import org.apache.wicket.WicketRuntimeException;
 import org.hibernate.Criteria;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Query;
-import org.hibernate.QueryException;
 import org.hibernate.Session;
 import org.hibernate.TransientObjectException;
 import org.hibernate.engine.EntityEntry;
@@ -282,10 +281,7 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 		// if querybinder was null in constructor, that's weird, but continue
 		if (queryBinder != null)
 			queryBinder.bind(query);
-		Object o = query.uniqueResult();
-		if (o == null)
-			throw new QueryException("Returned no results", queryString);
-		return o;
+		return query.uniqueResult();
 	}
 
 	/**
