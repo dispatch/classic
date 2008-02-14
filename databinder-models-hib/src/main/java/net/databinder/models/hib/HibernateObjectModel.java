@@ -167,7 +167,7 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 	 * @param object must be an entity contained in the current Hibernate session, or Serializable, or null
 	 */
 	public void setObject(Object object) {
-		clearPersistentObject();	// clear everything but objectClass
+		unbind();	// clear everything but objectClass
 
 		if (object == null)
 			// clear out completely
