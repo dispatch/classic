@@ -31,7 +31,6 @@ import net.databinder.models.LoadableWritableModel;
 
 import org.apache.wicket.WicketRuntimeException;
 import org.hibernate.Criteria;
-import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.TransientObjectException;
@@ -65,15 +64,14 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 	private Object factoryKey;
 
 	/**
+	 * Create a model bound to the given class and entity id. If nothing matches
+	 * the id the model object will be null.
 	 * @param objectClass class to be loaded and stored by Hibernate
-	 * @param objectId id of the persistent object
-	 * @throws org.hibernate.ObjectNotFoundException if objectId is not valid
+	 * @param entityId id of the persistent object
 	 */
-	public HibernateObjectModel(Class objectClass, Serializable objectId) {
+	public HibernateObjectModel(Class objectClass, Serializable entityId) {
 		this.objectClass = objectClass;
-		this.objectId = objectId;
-		// load object early, provoking load exceptions when they can be easily caught
-		getObject();
+		this.objectId = entityId;
 	}
 
 	/**
@@ -98,40 +96,37 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 	/**
 	 * Construct with a query and binder that return exactly one result. Use this for fetch
 	 * instructions, scalar results, or if the persistent object ID is not available.
-	 * Queries that return more than one result will produce exceptions.
+	 * Queries that return more than one result will produce exceptions. Queries that return
+	 * no result will produce a null object.
 	 * @param queryString query returning one result
 	 * @param queryBinder bind id or other parameters
-	 * @throws org.hibernate.HibernateException on load error
 	 */
 	public HibernateObjectModel(String queryString, QueryBinder queryBinder) {
 		this.queryString = queryString;
 		this.queryBinder = queryBinder;
-		getObject();	// loads & retains object
 	}
 
 	/**
 	 * Construct with a class and criteria binder that return exactly one result. Use this for fetch
 	 * instructions, scalar results, or if the persistent object ID is not available. Criteria that
-	 * return more than one result will produce exceptions.
+	 * return more than one result will produce exceptions. Criteria that return no result
+	 * will produce a null object.
 	 * @param objectClass class of object for root criteria
 	 * @param criteriaBuilder builder to apply criteria restrictions
-	 * @throws org.hibernate.HibernateException on load error
 	 */
 	public HibernateObjectModel(Class objectClass, CriteriaBuilder criteriaBuilder) {
 		this.objectClass = objectClass;
 		this.criteriaBuilder = criteriaBuilder;
-		getObject();	// loads & retains object
 	}
 
 	/**
 	 * Construct with a query builder that returns exactly one result, used for custom query
-	 * objects. Queries that return more than one result will produce exceptions.
+	 * objects. Queries that return more than one result will produce exceptions.  Queries that 
+	 * return no result will produce a null object.
 	 * @param queryBuilder builder to create and bind query object
-	 * @throws org.hibernate.HibernateException on load error
 	 */
 	public HibernateObjectModel(QueryBuilder queryBuilder) {
 		this.queryBuilder = queryBuilder;
-		getObject();	// loads & retains object
 	}
 
 	/**
@@ -250,17 +245,10 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 		}
 		Session sess = Databinder.getHibernateSession(factoryKey);
 		if (objectId != null) {
-			Object obj;
-			if (entityName != null) {
-				obj = sess.get(entityName, objectId);
-				if (obj == null)
-					throw new ObjectNotFoundException(objectId, entityName);
-			} else {
-				obj =  sess.get(objectClass, objectId);
-				if (obj == null)
-					throw new ObjectNotFoundException(objectId, objectClass.toString());
-			}
-			return obj;
+			if (entityName != null)
+				return sess.get(entityName, objectId);
+			else
+				return sess.get(objectClass, objectId);
 		}
 
 		if(criteriaBuilder != null) {
