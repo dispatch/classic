@@ -74,6 +74,14 @@
      <source>1.5</source>
      <linksource>true</linksource>
     </configuration>
+    <executions>
+     <execution>
+      <id>attach-javadocs</id>
+      <goals>
+       <goal>jar</goal>
+      </goals>
+     </execution>
+    </executions>
    </plugin>
   </plugins>
  </build>
