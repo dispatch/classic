@@ -29,7 +29,6 @@ import net.databinder.hib.Databinder;
 import net.databinder.models.BindingModel;
 import net.databinder.models.LoadableWritableModel;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.hibernate.Criteria;
 import org.hibernate.ObjectNotFoundException;
@@ -155,11 +154,7 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 		this.factoryKey = key;
 		return this;
 	}
-	
-	@Deprecated
-	public void setObject(Component component, Object object) {
-		setObject(object);
-	}
+
 	/**
 	 * Change the persistent object contained in this model.
 	 * Because this method establishes a persistent object ID, queries and binders
