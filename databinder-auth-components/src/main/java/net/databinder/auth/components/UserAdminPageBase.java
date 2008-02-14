@@ -136,6 +136,6 @@ public abstract class UserAdminPageBase extends WebPage {
 	}
 	
 	protected List<String> getRoleChoices() {
-		return Arrays.asList(new String[] {Roles.USER, Roles.ADMIN});
+		return Arrays.asList(Roles.USER, Roles.ADMIN);
 	}
 }
