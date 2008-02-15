@@ -2,6 +2,7 @@ package net.databinder.components.hib;
 
 import net.databinder.components.AjaxOnKeyPausedUpdater;
 import net.databinder.components.Wrapper;
+import net.databinder.models.hib.PropertyQueryBinder;
 import net.databinder.models.hib.QueryBinder;
 
 import org.apache.wicket.ResourceReference;
@@ -11,8 +12,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
-import org.hibernate.Query;
+import org.apache.wicket.model.CompoundPropertyModel;
 
 /**
  * Panel for a "live" search field with a clear button. The SearchPanel's model object
@@ -23,13 +23,15 @@ import org.hibernate.Query;
  */
 public abstract class SearchPanel extends Panel {
 	
+	private String searchInput;
+	
 	/**
 	 * @param id Wicket id
 	 * @param searchModel model to receive search string
 	 */
-	public SearchPanel(String id, IModel searchModel) {
-		super(id, searchModel);
-		add(new SearchForm("searchForm", searchModel));
+	public SearchPanel(String id) {
+		super(id);
+		add(new SearchForm("searchForm"));
 	}
 
 	
@@ -51,22 +53,21 @@ public abstract class SearchPanel extends Panel {
 	 * @return binder for a "search" parameter
 	 */
 	public QueryBinder getQueryBinder() {
-		return new QueryBinder() {
-			public void bind(Query query) {
-				query.setString("search", getModelObject() == null ? 
-						null : "%" + getModelObject() + "%");
-			}
-		};
+		return new PropertyQueryBinder(this);
+	}
+	
+	public String getSearch() {
+		return searchInput == null ? searchInput : "%" + searchInput + "%";
 	}
 	
 	/** Form with AJAX components and their wrappers. */
 	public class SearchForm extends Form {
-		public SearchForm(String id, IModel searchModel) {
-			super(id);
+		public SearchForm(String id) {
+			super(id, new CompoundPropertyModel(SearchPanel.this));
 
 			final Wrapper searchWrap = new Wrapper("searchWrap");
 			add(searchWrap);
-			final TextField search = new TextField("search", searchModel);
+			final TextField search = new TextField("searchInput");
 			search.setOutputMarkupId(true);
 			searchWrap.add(search);
 
