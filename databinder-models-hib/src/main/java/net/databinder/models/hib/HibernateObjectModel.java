@@ -28,8 +28,10 @@ import javax.persistence.Version;
 import net.databinder.hib.Databinder;
 import net.databinder.models.BindingModel;
 import net.databinder.models.LoadableWritableModel;
+import net.databinder.models.Models;
 
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.model.IDetachable;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -288,6 +290,7 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 	/** Checks binding before detaching. */
 	protected void onDetach() {
 		checkBinding();
+		Models.checkDetach(queryBinder);
 	}
 	
 	/**

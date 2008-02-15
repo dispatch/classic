@@ -20,11 +20,13 @@
 package net.databinder.models.hib;
 
 import net.databinder.hib.Databinder;
+import net.databinder.models.Models;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+import org.apache.wicket.model.IDetachable;
 import org.apache.wicket.model.LoadableDetachableModel;
 
 /**
@@ -133,5 +135,11 @@ public class HibernateListModel extends LoadableDetachableModel {
 		if (criteriaBuilder != null)
 			criteriaBuilder.build(criteria);
 		return criteria.list();
+	}
+	
+	/** Detaches query binder if needed. */
+	@Override
+	protected void onDetach() {
+		Models.checkDetach(queryBinder);
 	}
 }
