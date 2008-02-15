@@ -1,6 +1,5 @@
-package net.databinder.models.hib.binders;
+package net.databinder.models.hib;
 
-import net.databinder.models.hib.QueryBinder;
 
 import org.apache.wicket.util.lang.PropertyResolver;
 import org.hibernate.Query;

@@ -1,4 +1,4 @@
-package net.databinder.models.hib.binders;
+package net.databinder.models.hib;
 
 import org.apache.wicket.model.IDetachable;
 import org.apache.wicket.model.IModel;
