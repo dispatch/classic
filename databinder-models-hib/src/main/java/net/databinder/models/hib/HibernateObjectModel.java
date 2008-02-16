@@ -31,7 +31,6 @@ import net.databinder.models.LoadableWritableModel;
 import net.databinder.models.Models;
 
 import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.model.IDetachable;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;

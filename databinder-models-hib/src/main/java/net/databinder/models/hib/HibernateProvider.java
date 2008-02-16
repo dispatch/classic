@@ -25,7 +25,6 @@ import net.databinder.models.Models;
 
 import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.model.CompoundPropertyModel;
-import org.apache.wicket.model.IDetachable;
 import org.apache.wicket.model.IModel;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
