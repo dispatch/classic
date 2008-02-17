@@ -1,0 +1,29 @@
+"""<?xml version="1.0" encoding="UTF-8" ?>"""
+project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://maven.apache.org/POM/4.0.0",xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"):
+
+	modelVersion: "4.0.0"
+	artifactId: "databinder-models-cay"
+	name: "Databinder models / Cayenne"""
+
+	parent:
+		groupId: "net.databinder"
+		artifactId: "databinder-parent"
+		version: "1.2-SNAPSHOT"
+
+	dependencies:
+		dependency:
+			groupId: "org.apache.cayenne"
+			artifactId: "cayenne"
+			version: "2.0.4"
+
+		dependency:
+			groupId: "${pom.groupId}"
+			version: "${pom.version}"
+			artifactId: "databinder-models"
+
+		dependency:
+			groupId: "org.apache.wicket"
+			artifactId: "wicket"
+			version: "1.3.1"
+
+

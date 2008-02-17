@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ <modelVersion>4.0.0</modelVersion>
+ <artifactId>databinder-models-cay</artifactId>
+ <name>Databinder models / Cayenne</name>
+ <parent>
+  <groupId>net.databinder</groupId>
+  <artifactId>databinder-parent</artifactId>
+  <version>1.2-SNAPSHOT</version>
+ </parent>
+ <dependencies>
+  <dependency>
+   <groupId>org.apache.cayenne</groupId>
+   <artifactId>cayenne</artifactId>
+   <version>2.0.4</version>
+  </dependency>
+  <dependency>
+   <groupId>${pom.groupId}</groupId>
+   <version>${pom.version}</version>
+   <artifactId>databinder-models</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.apache.wicket</groupId>
+   <artifactId>wicket</artifactId>
+   <version>1.3.1</version>
+  </dependency>
+ </dependencies>
+</project>

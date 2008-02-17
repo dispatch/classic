@@ -20,15 +20,18 @@
   <module>databinder-models</module>
   <module>databinder-models-hib</module>
   <module>databinder-models-ao</module>
+  <module>databinder-models-cay</module>
   <module>databinder-components</module>
   <module>databinder-components-hib</module>
   <module>databinder-components-ao</module>
+  <module>databinder-components-cay</module>
   <module>databinder-auth-components</module>
   <module>databinder-auth-components-hib</module>
   <module>databinder-auth-components-ao</module>
   <module>databinder-app</module>
   <module>databinder-app-hib</module>
   <module>databinder-app-ao</module>
+  <module>databinder-app-cay</module>
   <module>databinder-dispatch</module>
  </modules>
  <scm>
