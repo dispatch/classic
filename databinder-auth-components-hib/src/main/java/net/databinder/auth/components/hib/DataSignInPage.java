@@ -12,6 +12,9 @@ public class DataSignInPage extends DataSignInPageBase {
 	public DataSignInPage(PageParameters params) {
 		super(params);
 	}
+	public DataSignInPage(PageParameters params, ReturnPage returnPage) {
+		super(params, returnPage);
+	}
 	@Override
 	protected Component profileSocket(String id, ReturnPage returnPage) {
 		return new DataProfilePanel(id, returnPage);
