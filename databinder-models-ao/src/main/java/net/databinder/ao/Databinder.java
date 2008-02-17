@@ -6,6 +6,9 @@ import net.java.ao.EntityManager;
 
 public class Databinder {
 	public static EntityManager getEntityManager() {
-		return ((ActiveObjectsApplication)Application.get()).getEntityManager(null);
+		return getEntityManager(null);
+	}
+	public static EntityManager getEntityManager(Object managerKey) {
+		return ((ActiveObjectsApplication)Application.get()).getEntityManager(managerKey);
 	}
 }

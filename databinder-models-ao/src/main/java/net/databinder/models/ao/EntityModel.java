@@ -15,6 +15,7 @@ public class EntityModel extends LoadableWritableModel implements BindingModel {
 	private Serializable id;
 	private Class entityType;
 	private Map<String, Object> propertyStore;
+	private Object managerKey;
 	
 	public EntityModel(Class entityType, Serializable id) {
 		this(entityType);
@@ -36,7 +37,7 @@ public class EntityModel extends LoadableWritableModel implements BindingModel {
 	@Override
 	protected Object load() {
 		if (isBound())
-			return Databinder.getEntityManager().get(entityType, id);
+			return Databinder.getEntityManager(managerKey).get(entityType, id);
 		return getPropertyStore();
 	}
 	
@@ -66,6 +67,14 @@ public class EntityModel extends LoadableWritableModel implements BindingModel {
 
 	public Class getEntityType() {
 		return entityType;
+	}
+
+	public Object getManagerKey() {
+		return managerKey;
+	}
+
+	public void setManagerKey(Object managerKey) {
+		this.managerKey = managerKey;
 	}
 	
 }

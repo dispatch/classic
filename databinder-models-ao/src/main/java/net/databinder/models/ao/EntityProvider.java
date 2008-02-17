@@ -21,6 +21,7 @@ public class EntityProvider implements IDataProvider {
 	private Query query;
 	/** Controls wrapping with a compound property model. */
 	private boolean wrapWithPropertyModel = true;
+	private Object managerKey;
 	
 	public EntityProvider(Class entityType) {
 		this (entityType, Query.select());
@@ -35,7 +36,7 @@ public class EntityProvider implements IDataProvider {
 		try {
 			Query q = ((Query) Objects.cloneObject(query)).offset(first).limit(count);
 			
-			return Arrays.asList(Databinder.getEntityManager().find(entityType, q)).iterator();
+			return Arrays.asList(Databinder.getEntityManager(managerKey).find(entityType, q)).iterator();
 		} catch (SQLException e) {
 			throw new WicketRuntimeException(e);
 		}
@@ -43,7 +44,7 @@ public class EntityProvider implements IDataProvider {
 	
 	public int size() {
 		try {
-			return Databinder.getEntityManager().count(entityType, query);
+			return Databinder.getEntityManager(managerKey).count(entityType, query);
 		} catch (SQLException e) {
 			throw new WicketRuntimeException(e);
 		}
@@ -62,4 +63,12 @@ public class EntityProvider implements IDataProvider {
 	}
 
 	public void detach() { }
+
+	public Object getManagerKey() {
+		return managerKey;
+	}
+
+	public void setManagerKey(Object managerKey) {
+		this.managerKey = managerKey;
+	}
 }

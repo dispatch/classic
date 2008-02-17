@@ -16,6 +16,7 @@ public class EntityListModel extends LoadableDetachableModel {
 
 	private Class entityType;
 	private Query query;
+	private Object managerKey;
 	
 	public EntityListModel(Class entityType) {
 		this (entityType, Query.select());
@@ -28,9 +29,15 @@ public class EntityListModel extends LoadableDetachableModel {
 	@Override
 	protected List<RawEntity> load() {
 		try {
-			return Arrays.asList(Databinder.getEntityManager().find(entityType, query));
+			return Arrays.asList(Databinder.getEntityManager(managerKey).find(entityType, query));
 		} catch (SQLException e) {
 			throw new WicketRuntimeException("Error loading list", e);
 		}
+	}
+	public Object getManagerKey() {
+		return managerKey;
+	}
+	public void setManagerKey(Object managerKey) {
+		this.managerKey = managerKey;
 	}
 }
