@@ -158,12 +158,11 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 	 * @param object must be an entity contained in the current Hibernate session, or Serializable, or null
 	 */
 	public void setObject(Object object) {
-		unbind();	// clear everything but objectClass
+		unbind();	// clear everything but class, name
+		objectClass = null;
+		entityName = null;
 
-		if (object == null)
-			// clear out completely
-			objectClass = null;
-		else {
+		if (object != null) {
 			Session sess = Databinder.getHibernateSession(factoryKey);
 			if (sess.contains(object)) {
 				objectId = sess.getIdentifier(object);
@@ -340,14 +339,6 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 	 * @see HibernateObjectModel(Class objectClass)
 	 */
 	public void unbind() {
-		Object o = getObject();
-		if (o != null)
-			if (o instanceof HibernateProxy)
-				objectClass = ((HibernateProxy)o).getHibernateLazyInitializer()
-					.getImplementation().getClass();
-			else
-				objectClass = o.getClass();
-		entityName = null;
 		objectId = null;
 		queryBinder = null;
 		queryBuilder = null;
