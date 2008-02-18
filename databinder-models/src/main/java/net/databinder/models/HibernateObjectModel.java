@@ -222,14 +222,6 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	 * @see HibernateObjectModel(Class objectClass)
 	 */
 	public void clearPersistentObject() {
-		Object o = getObject();
-		if (o != null)
-			if (o instanceof HibernateProxy)
-				objectClass = ((HibernateProxy)o).getHibernateLazyInitializer()
-					.getImplementation().getClass();
-			else
-				objectClass = o.getClass();
-		entityName = null;
 		objectId = null;
 		queryBinder = null;
 		queryBuilder = null;
