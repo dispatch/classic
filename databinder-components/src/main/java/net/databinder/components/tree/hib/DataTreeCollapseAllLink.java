@@ -1,6 +1,5 @@
-package net.databinder.components.hibernate.datatree.controllinks;
+package net.databinder.components.tree.hib;
 
-import net.databinder.components.hibernate.datatree.DataTree;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;

@@ -1,8 +1,10 @@
-package net.databinder.components.hibernate.datatree;
+package net.databinder.components.tree.hib;
 
 import java.util.Collection;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import net.databinder.components.tree.data.IDataTreeNode;
 
 import org.apache.wicket.markup.html.tree.ITreeState;
 

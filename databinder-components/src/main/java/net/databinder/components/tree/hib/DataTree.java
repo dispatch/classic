@@ -1,4 +1,4 @@
-package net.databinder.components.hibernate.datatree;
+package net.databinder.components.tree.hib;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -8,6 +8,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 
 import net.databinder.DataStaticService;
+import net.databinder.components.tree.data.IDataTreeNode;
 import net.databinder.models.HibernateObjectModel;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -91,6 +92,7 @@ public abstract class DataTree<T extends IDataTreeNode<T>> extends BaseTree {
 	 *            a tree node
 	 * @return the object represented by node
 	 */
+	@SuppressWarnings("unchecked")
 	public T getObjectFromNode(DefaultMutableTreeNode node) {
 		return (T) getModelFromNode(node).getObject();
 	}

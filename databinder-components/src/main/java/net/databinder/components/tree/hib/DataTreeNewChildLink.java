@@ -1,8 +1,7 @@
-package net.databinder.components.hibernate.datatree.controllinks;
+package net.databinder.components.tree.hib;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import net.databinder.components.hibernate.datatree.SingleSelectionDataTree;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;

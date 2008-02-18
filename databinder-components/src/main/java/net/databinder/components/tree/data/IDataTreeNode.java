@@ -1,7 +1,6 @@
-package net.databinder.components.hibernate.datatree;
+package net.databinder.components.tree.data;
 
 import java.util.Collection;
-
 
 /**
  * Classes used as the concrete type of a {@link DataTree}, i.e., the type of
