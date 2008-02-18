@@ -165,12 +165,11 @@ public class HibernateObjectModel extends LoadableWritableModel {
 	 * @param object must be an entity contained in the current Hibernate session, or Serializable, or null
 	 */
 	public void setObject(Object object) {
-		clearPersistentObject();	// clear everything but objectClass
-
-		if (object == null)
-			// clear out completely
-			objectClass = null;
-		else {
+		clearPersistentObject();	// clear everything but class /name
+		objectClass = null;
+		entityName = null;
+		
+		if (object != null) {
 			Session sess = DataStaticService.getHibernateSession(factoryKey);
 			if (sess.contains(object)) {
 				objectId = sess.getIdentifier(object);
