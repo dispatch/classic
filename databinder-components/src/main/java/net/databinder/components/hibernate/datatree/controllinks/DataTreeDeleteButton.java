@@ -2,11 +2,14 @@ package net.databinder.components.hibernate.datatree.controllinks;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import net.databinder.DataStaticService;
+import net.databinder.components.hibernate.datatree.DataTree;
 import net.databinder.components.hibernate.datatree.IDataTreeNode;
 import net.databinder.components.hibernate.datatree.SingleSelectionDataTree;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.html.form.Form;
 
 
 /**
@@ -24,20 +27,20 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
  * @param <T>
  *            see {@link DataTree}
  */
-public class DataTreeDeleteLink<T extends IDataTreeNode<T>> extends AjaxLink {
+public class DataTreeDeleteButton<T extends IDataTreeNode<T>> extends AjaxButton {
 
 	private SingleSelectionDataTree<T> tree;
 	private boolean deleteOnlyLeafs = true;
 	
-	public DataTreeDeleteLink(String id, SingleSelectionDataTree<T> tree) {
+	public DataTreeDeleteButton(String id, SingleSelectionDataTree<T> tree) {
 		super(id);
 		this.tree = tree;
+		setDefaultFormProcessing(false);
 	}
 
-	public DataTreeDeleteLink(String id, SingleSelectionDataTree<T> tree,
+	public DataTreeDeleteButton(String id, SingleSelectionDataTree<T> tree,
 			boolean deleteOnlyLeafs) {
-		super(id);
-		this.tree = tree;
+		this(id, tree);
 		this.deleteOnlyLeafs = deleteOnlyLeafs;
 	}
 
@@ -58,19 +61,22 @@ public class DataTreeDeleteLink<T extends IDataTreeNode<T>> extends AjaxLink {
 	}
 
 	@Override
-	public void onClick(AjaxRequestTarget target) {
+	protected void onSubmit(AjaxRequestTarget target, Form form) {
 		DefaultMutableTreeNode selectedNode = tree.getSelectedTreeNode();
 		T selected = tree.getSelectedUserObject();
 	
 		DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) 
 				selectedNode.getParent();
 		T parent = tree.getObjectFromNode(parentNode);
+
+		parentNode.remove(selectedNode);
 		parent.removeChild(selected);
-		
-		selectedNode.removeFromParent();
+		DataStaticService.getHibernateSession().delete(selected);
 		
 		tree.getTreeState().selectNode(parentNode, true);
 		tree.repaint(target);
 		tree.updateDependentComponents(target, parentNode);
+		
+		DataStaticService.getHibernateSession().getTransaction().commit();
 	}
 }
