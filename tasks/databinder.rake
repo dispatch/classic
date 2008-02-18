@@ -109,7 +109,7 @@ def embed_server
 end
 
 WICKET_SELF = group("wicket", "wicket-auth-roles", "wicket-extensions", :under=>"org.apache.wicket", :version=>"1.3.1")
-WICKET=[WICKET_SELF, "commons-collections:commons-collections:jar:2.1.1","org.slf4j:slf4j-api:jar:1.4.2"]
+WICKET=[WICKET_SELF, "commons-collections:commons-collections:jar:3.2","org.slf4j:slf4j-api:jar:1.4.2"]
 MAIL = ["javax.mail:mail:jar:1.4", "javax.activation:activation:jar:1.1"]
 LOG4J = ["org.slf4j:slf4j-log4j12:jar:1.4.2","log4j:log4j:jar:1.2.14", MAIL]
 JDK_LOG = ["org.slf4j:slf4j-jdk14:jar:1.4.2"]
@@ -125,12 +125,16 @@ HIBERNATE=[HIBERNATE_SELF, JTA, EHCACHE, CGLIB, "javax.persistence:persistence-a
 
 ACTIVE_OBJECTS=['net.java.dev.activeobjects:activeobjects:jar:0.8-SNAPSHOT']
 
+CAYENNE=['org.apache.cayenne:cayenne:jar:2.0.4']
+
 DB_VERS='1.2-SNAPSHOT'
 DATABINDER_COMPONENTS="net.databinder:databinder-components:jar:#{DB_VERS}"
 DATABINDER_SELF=[DATABINDER_COMPONENTS, group("databinder-app","databinder-dispatch", "databinder-auth-components", "databinder-models", :under => "net.databinder", :version => DB_VERS)]
 XML_RPC = ["org.apache.ws.commons:ws-commons-util:jar:1.0.1","org.apache.xmlrpc:xmlrpc-client:jar:3.0","org.apache.xmlrpc:xmlrpc-common:jar:3.0", "commons-httpclient:commons-httpclient:jar:3.0.1", "commons-codec:commons-codec:jar:1.2"]
 DATABINDER_CORE=[DATABINDER_SELF, WICKET, XML_RPC, C3P0]
+
 DATABINDER_HIB=[DATABINDER_CORE, HIBERNATE, group("databinder-models-hib","databinder-auth-components-hib","databinder-components-hib", "databinder-app-hib", :under => "net.databinder", :version => DB_VERS)]
 DATABINDER_AO=[DATABINDER_CORE, ACTIVE_OBJECTS, group("databinder-models-ao","databinder-auth-components-ao","databinder-components-ao","databinder-app-ao", :under => "net.databinder", :version => DB_VERS)]
+DATABINDER_CAY=[DATABINDER_CORE, CAYENNE, group("databinder-models-cay","databinder-components-cay","databinder-app-cay", :under => "net.databinder", :version => DB_VERS)]
 
 JETTY = group('jetty','jetty-util','jetty-ajp', 'servlet-api-2.5', :under=>'org.mortbay.jetty', :version=>'6.1.7')
