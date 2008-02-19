@@ -41,7 +41,7 @@ public class DataTreeNewToplevelLink extends AjaxLink {
 	public void onClick(AjaxRequestTarget target) {
 		/* Conditions synchronized with isEnabled() */
 		if (tree.isRootLess()) {
-			DefaultMutableTreeNode newNode = tree.createAndAddNewChildNode(tree.getRootNode());
+			DefaultMutableTreeNode newNode = tree.addNewChildNode(tree.getRootNode());
 			tree.getTreeState().selectNode(newNode, true);
 			tree.repaint(target);
 			tree.updateDependentComponents(target, newNode);

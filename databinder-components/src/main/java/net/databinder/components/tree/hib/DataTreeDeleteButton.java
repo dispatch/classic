@@ -8,6 +8,7 @@ import net.databinder.components.tree.data.IDataTreeNode;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.form.Form;
+import org.hibernate.Session;
 
 
 /**
@@ -65,16 +66,20 @@ public class DataTreeDeleteButton<T extends IDataTreeNode<T>> extends AjaxButton
 	
 		DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) 
 				selectedNode.getParent();
-		T parent = tree.getObjectFromNode(parentNode);
+		T parent = tree.getDataTreeNode(parentNode);
 
+		if (parent != null)
+			parent.removeChild(selected);
 		parentNode.remove(selectedNode);
-		parent.removeChild(selected);
-		DataStaticService.getHibernateSession().delete(selected);
+		
+		Session session = DataStaticService.getHibernateSession();
+		if (session.contains(selected)) {
+			session.delete(selected);
+			session.getTransaction().commit();
+		}
 		
 		tree.getTreeState().selectNode(parentNode, true);
 		tree.repaint(target);
 		tree.updateDependentComponents(target, parentNode);
-		
-		DataStaticService.getHibernateSession().getTransaction().commit();
 	}
 }

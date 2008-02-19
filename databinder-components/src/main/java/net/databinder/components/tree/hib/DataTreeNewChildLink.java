@@ -28,7 +28,7 @@ public class DataTreeNewChildLink extends AjaxLink {
 
 	@Override
 	public void onClick(AjaxRequestTarget target) {
-		DefaultMutableTreeNode newNode = tree.createAndAddNewChildNode(tree.getSelectedTreeNode());
+		DefaultMutableTreeNode newNode = tree.addNewChildNode(tree.getSelectedTreeNode());
 		tree.getTreeState().selectNode(newNode, true);
 		tree.repaint(target);
 		tree.updateDependentComponents(target, newNode);

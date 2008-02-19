@@ -2,19 +2,23 @@ package net.databinder.components.tree.hib;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 
-import net.databinder.DataStaticService;
 import net.databinder.components.tree.data.IDataTreeNode;
+import net.databinder.models.HibernateListModel;
 import net.databinder.models.HibernateObjectModel;
+import net.databinder.models.ICriteriaBuilder;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.tree.BaseTree;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.hibernate.Session;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Property;
 
 
 /**
@@ -24,35 +28,46 @@ import org.hibernate.Session;
  * 
  * @author Thomas Kappler
  * 
- * @param <T> the type of the objects being represented by the tree nodes
+ * @param <T> the IDataTreeNode implementation being represented by the tree nodes
  */
 public abstract class DataTree<T extends IDataTreeNode<T>> extends BaseTree {
-	
 	/**
-	 * @param id
-	 *            as usual
-	 * @param root
-	 *            a domain object serving as root; if your tree is rootless,
-	 *            create it manually
+	 * Construct a tree with a root entity.
+	 * @param id Wicket id
+	 * @param rootModel must contain a root of type T
 	 */
-	public DataTree(String id, T root) {
+	@SuppressWarnings("unchecked")
+	public DataTree(String id, HibernateObjectModel rootModel) {
 		super(id);
-		
-		Session session = DataStaticService.getHibernateSession();
-		session.saveOrUpdate(root);
-		
-		HibernateObjectModel rootModel = new HibernateObjectModel(root);
-
-		init(root, rootModel);
+		DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(rootModel);
+		populateTree(rootNode, ((T)rootModel.getObject()).getChildren());
+		setModel(new Model(new DefaultTreeModel(rootNode)));
 	}
 	
+	/**
+	 * Construct a rootless tree based on a list of top level nodes. 
+	 * @param id
+	 * @param topLevelModel must contain a List<T> of top level children
+	 */
+	@SuppressWarnings("unchecked")
+	public DataTree(String id, HibernateListModel topLevelModel) {
+		super(id);
+		setRootLess(true);
+		DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(topLevelModel);
+		populateTree(rootNode, (List<T>)topLevelModel.getObject());
+		setModel(new Model(new DefaultTreeModel(rootNode)));
+	}
 	
-	private void init(T root, HibernateObjectModel rootModel) {
-		DefaultMutableTreeNode rootNode = 
-				new DefaultMutableTreeNode(rootModel);
-		populateTree(rootNode, root.getChildren());
-		TreeModel treeModel = new DefaultTreeModel(rootNode);
-		setModel(new Model((Serializable) treeModel));
+	/**
+	 * Convenience criteria builder for fetching top-level entities.
+	 */
+	public static class TopLevelCriteriaBuilder implements ICriteriaBuilder {
+		/**
+		 * @return criteria for a null "parent" property
+		 */
+		public void build(Criteria criteria) {
+			criteria.add(Property.forName("parent").isNull());
+		}
 	}
 	
 	public DefaultMutableTreeNode clear(AjaxRequestTarget target) {
@@ -86,28 +101,20 @@ public abstract class DataTree<T extends IDataTreeNode<T>> extends BaseTree {
 	}
 
 	/**
-	 * Get the object of type T represented by the given node.
+	 * Get the IDataTreeNode instance behind this node, or null if the node is the
+	 * root of a tree with no root entity.
 	 * 
 	 * @param node
 	 *            a tree node
 	 * @return the object represented by node
 	 */
 	@SuppressWarnings("unchecked")
-	public T getObjectFromNode(DefaultMutableTreeNode node) {
-		return (T) getModelFromNode(node).getObject();
+	public T getDataTreeNode(DefaultMutableTreeNode node) {
+		Object nodeObject = ((IModel) node.getUserObject()).getObject();
+		return (nodeObject instanceof IDataTreeNode<?>) ?
+			(T) nodeObject : null;
 	}
 	
-	/**
-	 * Get the {@link HibernateObjectModel} behind a tree node.
-	 * 
-	 * @param node
-	 *            a tree node
-	 * @return the model
-	 */
-	public HibernateObjectModel getModelFromNode(DefaultMutableTreeNode node) {
-		return (HibernateObjectModel) node.getUserObject();
-	}
-
 	/**
 	 * @return the root node of the tree
 	 */
@@ -127,10 +134,12 @@ public abstract class DataTree<T extends IDataTreeNode<T>> extends BaseTree {
 	 *            to node serving as parent of the new object
 	 * @return the newly created tree node
 	 */
-	public DefaultMutableTreeNode createAndAddNewChildNode(DefaultMutableTreeNode parentNode) {
+	public DefaultMutableTreeNode addNewChildNode(DefaultMutableTreeNode parentNode) {
 		T newObject = createNewUserObject();
-		T parent = getObjectFromNode(parentNode);
-		parent.addChild(newObject);
+		
+		T parent = getDataTreeNode(parentNode);
+		if (parent != null)
+			parent.addChild(newObject);
 		
 		DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
 				new HibernateObjectModel(newObject)); 

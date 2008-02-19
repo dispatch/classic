@@ -5,6 +5,8 @@ import java.util.Collection;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import net.databinder.components.tree.data.IDataTreeNode;
+import net.databinder.models.HibernateListModel;
+import net.databinder.models.HibernateObjectModel;
 
 import org.apache.wicket.markup.html.tree.ITreeState;
 
@@ -21,12 +23,15 @@ import org.apache.wicket.markup.html.tree.ITreeState;
  */
 public abstract class SingleSelectionDataTree<T extends IDataTreeNode<T>> extends DataTree<T> {
 
-	public SingleSelectionDataTree(String id, T root) {
-		super(id, root);
-		
+	public SingleSelectionDataTree(String id, HibernateObjectModel rootModel) {
+		super(id, rootModel);
 		getTreeState().setAllowSelectMultiple(false);
 	}
-
+	
+	public SingleSelectionDataTree(String id, HibernateListModel childrenModel) {
+		super(id, childrenModel);
+		getTreeState().setAllowSelectMultiple(false);
+	}
 
 	/**
 	 * Depends on the tree disallowing multiple selection, which we
@@ -56,6 +61,6 @@ public abstract class SingleSelectionDataTree<T extends IDataTreeNode<T>> extend
 		if (selectedNode == null) {
 			return null;
 		}
-		return getObjectFromNode(selectedNode);
+		return getDataTreeNode(selectedNode);
 	}
 }
