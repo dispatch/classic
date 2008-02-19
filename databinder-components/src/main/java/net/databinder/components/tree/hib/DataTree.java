@@ -177,4 +177,11 @@ public abstract class DataTree<T extends IDataTreeNode<T>> extends BaseTree {
 	public void updateDependentComponents(AjaxRequestTarget target, DefaultMutableTreeNode selectedNode) {
 		// Do nothing by default
 	}
+	
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		// in a root less tree it's not bound to any component
+		((IModel)getRootNode().getUserObject()).detach();
+	}
 }
