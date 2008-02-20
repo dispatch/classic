@@ -34,11 +34,7 @@ import org.apache.wicket.WicketRuntimeException;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.TransientObjectException;
-import org.hibernate.engine.EntityEntry;
-import org.hibernate.impl.SessionImpl;
 import org.hibernate.proxy.HibernateProxy;
-import org.hibernate.proxy.LazyInitializer;
 
 /**
  * Model loaded and persisted by Hibernate. This central Databinder class can be initialized with an
