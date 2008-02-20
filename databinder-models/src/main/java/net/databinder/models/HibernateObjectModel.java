@@ -170,6 +170,10 @@ public class HibernateObjectModel extends LoadableWritableModel {
 		entityName = null;
 		
 		if (object != null) {
+			objectClass = (object instanceof HibernateProxy) ?
+				((HibernateProxy)object).getHibernateLazyInitializer().getImplementation().getClass()
+					: object.getClass();
+
 			Session sess = DataStaticService.getHibernateSession(factoryKey);
 			if (sess.contains(object)) {
 				objectId = sess.getIdentifier(object);
