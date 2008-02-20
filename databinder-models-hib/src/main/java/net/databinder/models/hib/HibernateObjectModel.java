@@ -48,9 +48,6 @@ import org.hibernate.proxy.LazyInitializer;
  * @author Nathan Hamblen
  */
 public class HibernateObjectModel extends LoadableWritableModel implements BindingModel {
-	/** Used preferentially in loading objects. */
-	private String entityName;
-	/** Used if entityName unavailable, or for new objects. */
 	private Class objectClass;
 	private Serializable objectId;
 	private String queryString;
@@ -160,50 +157,21 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 	public void setObject(Object object) {
 		unbind();	// clear everything but class, name
 		objectClass = null;
-		entityName = null;
 
 		if (object != null) {
+			objectClass = (object instanceof HibernateProxy) ?
+				((HibernateProxy)object).getHibernateLazyInitializer().getImplementation().getClass()
+					: object.getClass();
+
 			Session sess = Databinder.getHibernateSession(factoryKey);
-			if (sess.contains(object)) {
+			if (sess.contains(object))
 				objectId = sess.getIdentifier(object);
-				// the entityName, rather than the objectClass, will be used to load
-				entityName = getEntityName(sess, object);
-			} else {
-				objectClass = object.getClass();
-				if (retainUnsaved)
+			else if (retainUnsaved)
 					retainedObject = (Serializable) object;
-			}
 			setTempModelObject(object);	// skip calling load later
 		}
 	}
-	
-	/**
-	 * Get entity name from Hibernate session.
-	 * @param sess Hibernate session
-	 * @param object entity whose name we need
-	 * @return name of entity
-	 * @see <a href="http://opensource.atlassian.com/projects/hibernate/browse/HHH-961">HHH-961</a>
-	 */
-	private String getEntityName(Session sess, Object object) { 
-		if (object instanceof HibernateProxy) { 
-			LazyInitializer li = ((HibernateProxy) object).getHibernateLazyInitializer(); 
-			if ( li.getSession() != sess) { 
-				throw new TransientObjectException( "The proxy was not associated with this session" ); 
-			} 
-			object = li.getImplementation(); 
-		} 
-		try {
-			// hate to use SessionImpl but we have little choice here
-			EntityEntry entry = ((SessionImpl)sess).getPersistenceContext().getEntry(object);
-			if (entry==null) throw new TransientObjectException("Entry in persistence context not found for object"); 
-			return entry.getPersister().getEntityName(); 
-		} catch (ClassCastException e) {
-			// if this is was not the SessionImpl we expected
-			return sess.getEntityName(object);
-		}
-	}
 
-	
 	public Serializable getIdentifier() {
 		return Databinder.getHibernateSession(factoryKey).getIdentifier(getObject());
 	}
@@ -217,14 +185,12 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 
 	/**
 	 * Load the object through Hibernate, contruct a new instance if it is not
-	 * bound to an id, or use unsaved retained object. This method uses the entityName
-	 * to load when possible. A correct  (unproxied) objectClass is always available for
-	 * contructing empty objects.
-	 * @throws org.hibernate.HibernateException on load error
+	 * bound to an id, or use unsaved retained object. Returns null if no
+	 * criteria needed to load or construct an object are available.
 	 */
 	@Override
 	protected Object load() {
-		if (objectClass == null && entityName == null && queryString == null && queryBuilder == null)
+		if (objectClass == null && queryString == null && queryBuilder == null)
 			return null;	// can't load without one of these
 		try {
 			if (!isBound()) {
@@ -245,10 +211,7 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 		}
 		Session sess = Databinder.getHibernateSession(factoryKey);
 		if (objectId != null) {
-			if (entityName != null)
-				return sess.get(entityName, objectId);
-			else
-				return sess.get(objectClass, objectId);
+			return sess.get(objectClass, objectId);
 		}
 
 		if(criteriaBuilder != null) {
@@ -277,8 +240,6 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 			
 			if (sess.contains(retainedObject)) {
 				objectId = sess.getIdentifier(retainedObject);
-				// the entityName, rather than the objectClass, will be used to load
-				entityName = getEntityName(sess, retainedObject);
 				retainedObject = null;
 			}
 		}
