@@ -34,7 +34,7 @@ import org.apache.wicket.WicketRuntimeException;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.proxy.HibernateProxyHelper;
 
 /**
  * Model loaded and persisted by Hibernate. This central Databinder class can be initialized with an
@@ -155,9 +155,7 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 		objectClass = null;
 
 		if (object != null) {
-			objectClass = (object instanceof HibernateProxy) ?
-				((HibernateProxy)object).getHibernateLazyInitializer().getImplementation().getClass()
-					: object.getClass();
+			objectClass = HibernateProxyHelper.getClassWithoutInitializingProxy(object);
 
 			Session sess = Databinder.getHibernateSession(factoryKey);
 			if (sess.contains(object))
