@@ -5,23 +5,25 @@
 <body>
 <wicket:panel>
 
-<div class="feedback" wicket:id="feedback">
-</div>
-
 <form wicket:id="signInForm" class="labelAbove">
+
+	<div wicket:id="highFormSocket" />
 
 	<div class="row">
 		<label wicket:id="username-label">Username</label>
-		<input wicket:id="username" type="text" value="foo@goo.moo" />
+		<span wicket:id="username-border"><input wicket:id="username" type="text" value="foo@goo.moo" /></span>
 	</div>
 	<div class="row">
 		<label wicket:id="password-label">Password</label>
-		<input wicket:id="password" type="password" value="password" />
+		<span wicket:id="password-border"><input wicket:id="password" type="password" value="password" /></span>
 	</div>
 	<div class="row">
 		<input wicket:id="rememberMe" id="rememberMe"type="checkbox" />
 		<label style="display:inline" for="rememberMe"><wicket:message key="data.auth.remember">Always sign in automatically</wicket:message></label>
 	</div>
+
+	<div wicket:id="lowFormSocket" />
+
 	<p> <input type="submit" name="submit" wicket:message="value:data.auth.sign_in" value="Sign in"/> </p>
 
 </form>

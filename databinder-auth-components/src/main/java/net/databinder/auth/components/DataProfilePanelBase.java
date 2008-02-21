@@ -34,10 +34,12 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.border.Border;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.SimpleFormComponentLabel;
+import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
@@ -71,7 +73,6 @@ public abstract class DataProfilePanelBase extends Panel {
 	public DataProfilePanelBase(String id, ReturnPage returnPage) {
 		super(id);
 		this.returnPage = returnPage;
-		add(new FeedbackPanel("feedback"));
 		add(form = profileForm("registerForm", DataSignInPageBase.getAuthSession().getUserModel()));
 		form.add(new Profile("profile"));
 	}
@@ -92,18 +93,21 @@ public abstract class DataProfilePanelBase extends Panel {
 		public Profile(String id) {
 			super(id);
 			add(highFormSocket("highFormSocket"));
-			add(username = new RequiredTextField("username"));
+			add(feedbackBorder("username-border")
+					.add(username = new RequiredTextField("username")));
 			username.add(new UsernameValidator());
 			username.setLabel(new ResourceModel("data.auth.username", "Username"));
 			add(new SimpleFormComponentLabel("username-label", username));
-			add(password = new RSAPasswordTextField("password", new Model(), form) {
+			add(feedbackBorder("password-border")
+					.add(password = new RSAPasswordTextField("password", new Model(), form) {
 				public boolean isRequired() {
 					return !existing();
 				}
-			});
+			}));
 			password.setLabel(new ResourceModel("data.auth.password", "Password"));
 			add(new SimpleFormComponentLabel("password-label", password));
-			add(passwordConfirm = new RSAPasswordTextField("passwordConfirm", new Model(), form) {
+			add(feedbackBorder("passwordConfirm-border")
+					.add(passwordConfirm = new RSAPasswordTextField("passwordConfirm", new Model(), form) {
 				public boolean isRequired() {
 					return !existing();
 				}
@@ -111,7 +115,7 @@ public abstract class DataProfilePanelBase extends Panel {
 				protected void onModelChanged() {
 					setPassword((String) getModelObject());
 				}
-			});
+			}));
 			form.add(new EqualPasswordConvertedInputValidator(password, passwordConfirm));
 			passwordConfirm.setLabel(new ResourceModel("data.auth.passwordConfirm", "Retype Password"));
 			add(new SimpleFormComponentLabel("passwordConfirm-label", passwordConfirm));
@@ -170,11 +174,16 @@ public abstract class DataProfilePanelBase extends Panel {
 	}
 	
 	protected Component highFormSocket(String id) {
-		return new NullPlug(id);
+		return new FeedbackPanel(id)
+			.add(new AttributeModifier("class", true, new Model("feedback")));
 	}
 
 	protected Component lowFormSocket(String id) {
 		return new NullPlug(id);
+	}
+
+	protected Border feedbackBorder(String id) {
+		return new FormComponentFeedbackBorder(id);
 	}
 
 	public Form form() {
