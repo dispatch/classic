@@ -6,24 +6,21 @@
 
 <wicket:panel>
 
-<div class="feedback" wicket:id="feedback">
-</div>
-
 <form wicket:id="registerForm" class="labelAbove">
 
 	<div wicket:id="highFormSocket" />
 
 	<div class="row">
 		<label wicket:id="username-label">Username</label>
-		<input wicket:id="username" type="text" value="foo" />
+		<span wicket:id="username-border"><input wicket:id="username" type="text" value="foo" /></span>
 	</div>
 	<div class="row">
 		<label wicket:id="password-label">Password</label>
-		<input wicket:id="password" type="password" value="password" />
+		<span wicket:id="password-border"><input wicket:id="password" type="password" value="password" /></span>
 	</div>
 	<div class="row">
 		<label wicket:id="passwordConfirm-label">Retype Password</label>
-		<input wicket:id="passwordConfirm" type="password" />
+		<span wicket:id="passwordConfirm-border"><input wicket:id="passwordConfirm" type="password" /></span>
 	</div>
 	<div class="row" wicket:id="rememberMeRow">
 		<input wicket:id="rememberMe" id="rememberMe"type="checkbox" />
