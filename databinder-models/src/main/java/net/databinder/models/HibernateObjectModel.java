@@ -37,6 +37,7 @@ import org.hibernate.TransientObjectException;
 import org.hibernate.engine.EntityEntry;
 import org.hibernate.impl.SessionImpl;
 import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.proxy.HibernateProxyHelper;
 import org.hibernate.proxy.LazyInitializer;
 
 /**
@@ -170,9 +171,7 @@ public class HibernateObjectModel extends LoadableWritableModel {
 		entityName = null;
 		
 		if (object != null) {
-			objectClass = (object instanceof HibernateProxy) ?
-				((HibernateProxy)object).getHibernateLazyInitializer().getImplementation().getClass()
-					: object.getClass();
+			objectClass = HibernateProxyHelper.getClassWithoutInitializingProxy(object);
 
 			Session sess = DataStaticService.getHibernateSession(factoryKey);
 			if (sess.contains(object)) {
