@@ -16,8 +16,23 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package net.databinder.cay;
+package net.databinder.models.cay;
 
-public interface CayenneRequestCycle {
-	public void contextRequested();
+import net.databinder.cay.Databinder;
+
+import org.apache.cayenne.query.Query;
+import org.apache.wicket.model.LoadableDetachableModel;
+
+public class DataListModel extends LoadableDetachableModel {
+	
+	private Query query;
+
+	public DataListModel(Query query) {
+		this.query = query;
+	}
+	
+	@Override
+	protected Object load() {
+		return Databinder.getContext().performQuery(query);
+	}
 }

@@ -22,9 +22,8 @@ import java.util.Iterator;
 
 import net.databinder.hib.Databinder;
 import net.databinder.models.Models;
+import net.databinder.models.PropertyDataProvider;
 
-import org.apache.wicket.markup.repeater.data.IDataProvider;
-import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -41,14 +40,12 @@ import org.hibernate.criterion.Projections;
  * other time you do not want a compound property model.
  * @author Nathan Hamblen
  */
-public class HibernateProvider implements IDataProvider  {
+public class HibernateProvider extends PropertyDataProvider  {
 	private Class objectClass;
 	private CriteriaBuilder criteriaBuilder, sortCriteriaBuilder;
 	private String queryString, countQueryString;
 	private QueryBinder queryBinder, countQueryBinder;
 	private QueryBuilder queryBuilder, countQueryBuilder;
-	/** Controls wrapping with a compound property model. */
-	private boolean wrapWithPropertyModel = true;
 	
 	private Object factoryKey;
 	
@@ -209,29 +206,10 @@ public class HibernateProvider implements IDataProvider  {
 		return size == null ? 0 : size;
 	}
 
-	/**
-	 * @return true if wrapping items with a compound property model (the default)
-	 */
-	public boolean getWrapWithPropertyModel() {
-		return wrapWithPropertyModel;
-	}
 
-	/**
-	 * @param wrapInCompoundModel false to not wrap items in a compound property model (true is default)
-	 */
-	public void setWrapWithPropertyModel(boolean wrapInCompoundModel) {
-		this.wrapWithPropertyModel = wrapInCompoundModel;
-	}
-
-	/**
-	 * Wraps object in HiberanteObjectModel, and also CompoundPropertyModel if 
-	 * wrapInCompoundModel is true.
-	 * @param object object DataView would like to wrap
-	 * @return object wrapped in a HibernateObjectModel and possibly CompoundPropertyModel
-	 */
-	public IModel model(Object object) {
-		HibernateObjectModel model = new HibernateObjectModel(object);
-		return  wrapWithPropertyModel ? new CompoundPropertyModel(model) : model;
+	@Override
+	protected IModel dataModel(Object object) {
+		return new HibernateObjectModel(object);
 	}
 	
 	/** Detaches query binder if needed. */

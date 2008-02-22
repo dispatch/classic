@@ -5,22 +5,19 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import net.databinder.ao.Databinder;
+import net.databinder.models.PropertyDataProvider;
 import net.java.ao.Query;
 import net.java.ao.RawEntity;
 
 import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.markup.repeater.data.IDataProvider;
-import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Objects;
 
 @SuppressWarnings("unchecked")
-public class EntityProvider implements IDataProvider {
+public class EntityProvider extends PropertyDataProvider {
 	
 	private Class entityType;
 	private Query query;
-	/** Controls wrapping with a compound property model. */
-	private boolean wrapWithPropertyModel = true;
 	private Object managerKey;
 	
 	public EntityProvider(Class entityType) {
@@ -50,16 +47,9 @@ public class EntityProvider implements IDataProvider {
 		}
 	}
 	
-	public IModel model(Object object) {
-		IModel model = new EntityModel((RawEntity)object);
-		if (wrapWithPropertyModel)
-			model = new CompoundPropertyModel(model);
-		return model;
-	}
-	
-	public EntityProvider setWrapWithPropertyModel(boolean wrapWithPropertyModel) {
-		this.wrapWithPropertyModel = wrapWithPropertyModel;
-		return this;
+	@Override
+	protected IModel dataModel(Object object) {
+		return new EntityModel((RawEntity)object);
 	}
 
 	public void detach() { }
