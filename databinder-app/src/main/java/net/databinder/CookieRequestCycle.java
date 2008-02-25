@@ -8,9 +8,8 @@ import javax.servlet.http.Cookie;
 import org.apache.wicket.Response;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
-import org.apache.wicket.protocol.http.WebRequestCycle;
 
-public class CookieRequestCycle extends WebRequestCycle {
+public class CookieRequestCycle extends ExceptionFilteringRequestCycle {
 	/** cache of cookies from request */ 
 	private Map<String, Cookie> cookies;
 	
