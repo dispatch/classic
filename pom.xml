@@ -5,7 +5,7 @@
  <artifactId>databinder-parent</artifactId>
  <name>Databinder parent</name>
  <version>1.2-SNAPSHOT</version>
- <description>A simple bridge from Wicket to Hibernate</description>
+ <description>A persistence toolkit for Wicket</description>
  <url>http://databinder.net/</url>
  <inceptionYear>2005</inceptionYear>
  <licenses>
@@ -79,7 +79,6 @@
     </configuration>
     <executions>
      <execution>
-      <id>attach-javadocs</id>
       <goals>
        <goal>jar</goal>
       </goals>

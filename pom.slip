@@ -6,7 +6,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 	artifactId:"databinder-parent"
 	name: "Databinder parent"
 	version: "1.2-SNAPSHOT"
-	description: "A simple bridge from Wicket to Hibernate"
+	description: "A persistence toolkit for Wicket"
 	url: "http://databinder.net/"
 	inceptionYear: "2005"
 
@@ -69,7 +69,6 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 					linksource: "true"
 				executions:
 					execution:
-						id: "attach-javadocs"
 						goals:
 							goal: "jar"
 	reporting:
