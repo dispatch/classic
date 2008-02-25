@@ -16,12 +16,12 @@
    <artifactId>databinder-components</artifactId>
   </dependency>
   <dependency>
-   <groupId>org.apache.batik</groupId>
+   <groupId>org.apache.xmlgraphics</groupId>
    <artifactId>batik-gvt</artifactId>
    <version>1.7</version>
   </dependency>
   <dependency>
-   <groupId>org.apache.batik</groupId>
+   <groupId>org.apache.xmlgraphics</groupId>
    <artifactId>batik-awt-util</artifactId>
    <version>1.7</version>
   </dependency>
