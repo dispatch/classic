@@ -22,6 +22,7 @@
   <module>databinder-auth-components</module>
   <module>databinder</module>
   <module>databinder-dispatch</module>
+  <module>databinder-draw</module>
  </modules>
  <scm>
   <connection>scm:svn:svn://localhost/databinder/trunk</connection>

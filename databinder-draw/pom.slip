@@ -18,11 +18,11 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 			artifactId: "databinder-components"
 
 		dependency:
-			groupId: "org.apache.batik"
+			groupId: "org.apache.xmlgraphics"
 			artifactId: "batik-gvt"
 			version: "1.7"
 
 		dependency:
-			groupId: "org.apache.batik"
+			groupId: "org.apache.xmlgraphics"
 			artifactId: "batik-awt-util"
 			version: "1.7"
