@@ -78,13 +78,6 @@
      <source>1.5</source>
      <linksource>true</linksource>
     </configuration>
-    <executions>
-     <execution>
-      <goals>
-       <goal>jar</goal>
-      </goals>
-     </execution>
-    </executions>
    </plugin>
   </plugins>
  </build>

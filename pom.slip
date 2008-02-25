@@ -68,10 +68,6 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 					aggregate: "true"
 					source: "1.5"
 					linksource: "true"
-				executions:
-					execution:
-						goals:
-							goal: "jar"
 	reporting:
 		plugins:
 			plugin:
