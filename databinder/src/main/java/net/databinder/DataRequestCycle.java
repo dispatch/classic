@@ -33,7 +33,6 @@ import org.apache.wicket.Page;
 import org.apache.wicket.Response;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
-import org.apache.wicket.protocol.http.WebRequestCycle;
 import org.hibernate.Session;
 import org.hibernate.context.ManagedSessionContext;
 
@@ -44,7 +43,7 @@ import org.hibernate.context.ManagedSessionContext;
  * @see DataStaticService
  * @author Nathan Hamblen
  */
-public class DataRequestCycle extends WebRequestCycle implements IDataRequestCycle {
+public class DataRequestCycle extends ExceptionFilteringRequestCycle implements IDataRequestCycle {
 	/** cache of cookies from request */ 
 	private Map<String, Cookie> cookies;
 	
