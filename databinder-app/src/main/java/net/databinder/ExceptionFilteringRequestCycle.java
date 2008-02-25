@@ -36,7 +36,7 @@ public abstract class ExceptionFilteringRequestCycle extends WebRequestCycle {
 	
 	private static final Logger log = LoggerFactory.getLogger(ExceptionFilteringRequestCycle.class);
 	/** Default pattern is ".*UrlCodingStrategy" */
-	private static Pattern warnOnlySource = Pattern.compile(".*UrlCodingStrategy");
+	private static Pattern warnOnlySource = Pattern.compile(".*CodingStrategy");
 	
 	public ExceptionFilteringRequestCycle(WebApplication application, WebRequest request, Response response) {
 		super(application, request, response);
