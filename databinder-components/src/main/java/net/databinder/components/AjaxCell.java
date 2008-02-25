@@ -1,6 +1,6 @@
 /*
  * Databinder: a simple bridge from Wicket to Hibernate
- * Copyright (C) 2006  Nathan Hamblen nathan@technically.us
+ * Copyright (C) 2008  Nathan Hamblen nathan@technically.us
 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,20 +22,18 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 
 /**
- * Please ues AjaxCell
+ * Extention of WebMarkupContainer that outputs a markup ID and placeholder tag
+ * if invisible by default. Handy for targets of ajax event handlers.
+ * @author Nathan Hamblen
+ *
  */
-@Deprecated
-public class Wrapper extends WebMarkupContainer {
-	/** 
-	 * Creates a wrapping component with a markup ID, normally used as an
-	 * ajax target.
-	 * @param id Wicket ID
-	 */
-	public Wrapper(String id) {
-		super(id);
-		setOutputMarkupId(true);
-	}
-	public Wrapper(String id, IModel model) {
+public class AjaxCell extends WebMarkupContainer {
+	public AjaxCell(String id, IModel model) {
 		super(id, model);
+		setOutputMarkupId(true);
+		setOutputMarkupPlaceholderTag(true);
+	}
+	public AjaxCell(String id) {
+		this(id, null);
 	}
 }
