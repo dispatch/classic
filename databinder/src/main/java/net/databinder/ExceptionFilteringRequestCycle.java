@@ -35,8 +35,8 @@ import org.slf4j.LoggerFactory;
 public abstract class ExceptionFilteringRequestCycle extends WebRequestCycle {
 	
 	private static final Logger log = LoggerFactory.getLogger(ExceptionFilteringRequestCycle.class);
-	/** Default pattern is ".*UrlCodingStrategy" */
-	private static Pattern warnOnlySource = Pattern.compile(".*UrlCodingStrategy");
+	/** Default pattern is ".*CodingStrategy" */
+	private static Pattern warnOnlySource = Pattern.compile(".*CodingStrategy");
 	
 	public ExceptionFilteringRequestCycle(WebApplication application, WebRequest request, Response response) {
 		super(application, request, response);
