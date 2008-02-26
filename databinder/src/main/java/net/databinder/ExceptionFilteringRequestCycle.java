@@ -29,13 +29,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Request cycle that logs runtime exceptions as warnings if their origin matches
- * a pattern.
+ * a pattern. RequestCycle logs any uncaught exception as an error.
  * @author Nathan Hamblen
  */
 public abstract class ExceptionFilteringRequestCycle extends WebRequestCycle {
 	
 	private static final Logger log = LoggerFactory.getLogger(ExceptionFilteringRequestCycle.class);
-	/** Default pattern is ".*CodingStrategy" */
+	/** Default pattern is ".*CodingStrategy". */
 	private static Pattern warnOnlySource = Pattern.compile(".*CodingStrategy");
 	
 	public ExceptionFilteringRequestCycle(WebApplication application, WebRequest request, Response response) {
@@ -44,17 +44,21 @@ public abstract class ExceptionFilteringRequestCycle extends WebRequestCycle {
 	
 	/**
 	 * Logs runtime exception as warning if it matches the warnOnlySource pattern.
+	 * Passes to super otherwise.
 	 */
 	@Override
 	protected void logRuntimeException(RuntimeException e) {
-		if (warnOnlySource.matcher(e.getStackTrace()[0].getClassName()).matches())
+		if (warnOnlySource != null &&
+				warnOnlySource.matcher(e.getStackTrace()[0].getClassName()).matches())
 			log.warn(e.getMessage(), e);
 		else
 			super.logRuntimeException(e);
 	}
 	
 	/**
-	 * Change the warn testing pattern used by all instances of this class.
+	 * Change the warn testing pattern used by all instances of this class. An exception
+	 * thrown by a class (found by stack trace) matching this pattern is logged as a
+	 * warning. Set this to null to disable filtering and log all exceptions in super.
 	 * @param pattern to match against fully qualified class name of exception origin
 	 */
 	public static void setWarnOnlySource(Pattern pattern) {
