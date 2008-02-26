@@ -3,7 +3,7 @@ package net.databinder.components.tree.hib;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import net.databinder.DataStaticService;
-import net.databinder.components.tree.data.IDataTreeNode;
+import net.databinder.components.tree.data.DataTreeObject;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -26,7 +26,7 @@ import org.hibernate.Session;
  * @param <T>
  *            see {@link DataTree}
  */
-public class DataTreeDeleteButton<T extends IDataTreeNode<T>> extends AjaxButton {
+public class DataTreeDeleteButton<T extends DataTreeObject<T>> extends AjaxButton {
 
 	private SingleSelectionDataTree<T> tree;
 	private boolean deleteOnlyLeafs = true;
@@ -69,7 +69,7 @@ public class DataTreeDeleteButton<T extends IDataTreeNode<T>> extends AjaxButton
 		T parent = tree.getDataTreeNode(parentNode);
 
 		if (parent != null)
-			parent.removeChild(selected);
+			parent.getChildren().remove(selected);
 		parentNode.remove(selectedNode);
 		
 		Session session = DataStaticService.getHibernateSession();

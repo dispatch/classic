@@ -11,28 +11,19 @@ import java.util.Collection;
  * @param <T>
  *            the concrete type this tree node is representing
  */
-public interface IDataTreeNode<T> {
+public interface DataTreeObject<T> {
 
 	/**
 	 * @return the children of this tree node
 	 */
 	public Collection<T> getChildren();
 	
+	/** Add new child node */
+	public void addChild(T child);
+	
 	/**
 	 * @return the parent of this tree node
 	 */
 	public T getParent();
-
-	/**
-	 * @param child
-	 *            an object of type T to be added to the children of this node
-	 */
-	public void addChild(T child);
-	/**
-	 * @param child
-	 *            an object of type T to be removed from the children of this
-	 *            node
-	 */
-	public void removeChild(T child);
 
 }

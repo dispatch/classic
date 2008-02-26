@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import net.databinder.components.tree.data.IDataTreeNode;
+import net.databinder.components.tree.data.DataTreeObject;
 import net.databinder.models.HibernateListModel;
 import net.databinder.models.HibernateObjectModel;
 
@@ -21,7 +21,7 @@ import org.apache.wicket.markup.html.tree.ITreeState;
  * @param <T>
  *            see {@link DataTree}
  */
-public abstract class SingleSelectionDataTree<T extends IDataTreeNode<T>> extends DataTree<T> {
+public abstract class SingleSelectionDataTree<T extends DataTreeObject<T>> extends DataTree<T> {
 
 	public SingleSelectionDataTree(String id, HibernateObjectModel rootModel) {
 		super(id, rootModel);

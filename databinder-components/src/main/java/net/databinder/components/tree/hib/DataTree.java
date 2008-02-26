@@ -8,7 +8,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 
-import net.databinder.components.tree.data.IDataTreeNode;
+import net.databinder.components.tree.data.DataTreeObject;
 import net.databinder.models.HibernateListModel;
 import net.databinder.models.HibernateObjectModel;
 import net.databinder.models.ICriteriaBuilder;
@@ -30,7 +30,7 @@ import org.hibernate.criterion.Property;
  * 
  * @param <T> the IDataTreeNode implementation being represented by the tree nodes
  */
-public abstract class DataTree<T extends IDataTreeNode<T>> extends BaseTree {
+public abstract class DataTree<T extends DataTreeObject<T>> extends BaseTree {
 	/**
 	 * Construct a tree with a root entity.
 	 * @param id Wicket id
@@ -111,7 +111,7 @@ public abstract class DataTree<T extends IDataTreeNode<T>> extends BaseTree {
 	@SuppressWarnings("unchecked")
 	public T getDataTreeNode(DefaultMutableTreeNode node) {
 		Object nodeObject = ((IModel) node.getUserObject()).getObject();
-		return (nodeObject instanceof IDataTreeNode<?>) ?
+		return (nodeObject instanceof DataTreeObject<?>) ?
 			(T) nodeObject : null;
 	}
 	
