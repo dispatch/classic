@@ -71,7 +71,7 @@ public abstract class DataTree<T extends DataTreeObject<T>> extends BaseTree {
 	}
 	
 	public DefaultMutableTreeNode clear(AjaxRequestTarget target) {
-		T newObject = createNewUserObject();
+		T newObject = createNewObject();
 		DefaultMutableTreeNode newRootNode = new DefaultMutableTreeNode(
 				new HibernateObjectModel(newObject));
 		TreeModel treeModel = new DefaultTreeModel(newRootNode);
@@ -127,7 +127,7 @@ public abstract class DataTree<T extends DataTreeObject<T>> extends BaseTree {
 	}
 	
 	/**
-	 * Create a new user object using {@link #createNewUserObject()} and add it
+	 * Create a new user object using {@link #createNewObject()} and add it
 	 * to the tree as a child of parentNode.
 	 * 
 	 * @param parentNode
@@ -135,7 +135,7 @@ public abstract class DataTree<T extends DataTreeObject<T>> extends BaseTree {
 	 * @return the newly created tree node
 	 */
 	public DefaultMutableTreeNode addNewChildNode(DefaultMutableTreeNode parentNode) {
-		T newObject = createNewUserObject();
+		T newObject = createNewObject();
 		
 		T parent = getDataTreeNode(parentNode);
 		if (parent != null)
@@ -164,7 +164,7 @@ public abstract class DataTree<T extends DataTreeObject<T>> extends BaseTree {
 	 * 
 	 * @return a new instance of T
 	 */
-	protected abstract T createNewUserObject();
+	protected abstract T createNewObject();
 
 	/**
 	 * Override to update components when another tree node is selected. Does
