@@ -108,7 +108,7 @@ public abstract class AuthDataSessionBase extends WebSession implements AuthSess
 	public boolean signIn(final String username, final String password, boolean setCookie) {
 		signOut();
 		DataUser potential = getUser(username);
-		if (potential != null && (potential).getPassword().matches(password));
+		if (potential != null && (potential).getPassword().matches(password))
 			signIn(potential, setCookie);
 		
 		return userModel != null;
