@@ -1,6 +1,7 @@
 package net.databinder.auth.data.ao;
 
 import java.security.MessageDigest;
+import java.util.Arrays;
 
 import net.databinder.auth.AuthApplication;
 import net.databinder.auth.data.DataPassword;
@@ -26,7 +27,7 @@ public class UserHelper {
 				user.setPasswordHash(getHash(password));
 			}
 			public boolean matches(String password) {
-				return getHash(password).equals(password);
+				return Arrays.equals(getHash(password), user.getPasswordHash());
 			}
 			public void update(MessageDigest digest) {
 				digest.update(user.getPasswordHash());
