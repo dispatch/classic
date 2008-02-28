@@ -6,13 +6,20 @@ http://databinder.net/
 
 Version History
 
+1.1.1 Adds modelChanged() calls to DataForm to prevent stale UI state when
+	clearing or changing model object, and checks model binding on detach
+	(if unbound) so that a manual call after saving an entity is unnecessary.
+
+	All-new DataTree class and companion components facilitate persistance
+	of Wicket/Swing rendered trees.
+
 1.1 Compatible with Wicket 1.3.0, this version improves upon Databinder's 
-interface with Hibernate such that an external session and transaction 
-manager (such as Spring) can be use with Databinder's model and component 
-classes. The runnable DataServer class provides a simple embedded Jetty 
-configuration that can be used in development and production. Several new 
-data-oriented components are available, such as the DataBrowser (contributed 
-by Xavier Hanin---merci !) and SourceList components.
+	interface with Hibernate such that an external session and transaction 
+	manager (such as Spring) can be use with Databinder's model and component 
+	classes. The runnable DataServer class provides a simple embedded Jetty 
+	configuration that can be used in development and production. Several new 
+	data-oriented components are available, such as the DataBrowser (contributed 
+	by Xavier Hanin---merci !) and SourceList components.
 
 * Centralization of session-fetching in DataStaticService rather than 
   DataRequestCycle

@@ -25,8 +25,8 @@
   <module>databinder-draw</module>
  </modules>
  <scm>
-  <connection>scm:svn:svn://localhost/databinder/trunk</connection>
-  <developerConnection>scm:svn:svn://localhost/databinder/trunk</developerConnection>
+  <connection>scm:svn:svn://localhost/databinder/branches/r1.1.1</connection>
+  <developerConnection>scm:svn:svn://localhost/databinder/branches/r1.1.1</developerConnection>
  </scm>
  <organization>
   <name>Nathan Hamblen</name>
