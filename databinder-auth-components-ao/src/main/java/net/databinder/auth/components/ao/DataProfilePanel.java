@@ -31,7 +31,7 @@ public class DataProfilePanel extends DataProfilePanelBase {
 			protected void onSubmit() {
 				if (!getEntityModel().isBound()) {
 					Map<String, Object> map = (Map) getModelObject();
-					map.put("roleString", Roles.USER);
+					map.put(UserHelper.getRoleStringField(), Roles.USER);
 				}
 				super.onSubmit();
 			}
@@ -48,7 +48,7 @@ public class DataProfilePanel extends DataProfilePanelBase {
 		if (form.getEntityModel().isBound())
 			super.setPassword(password);
 		else
-			((Map)form.getModelObject()).put("passwordHash", UserHelper.getHash(password));
+			((Map)form.getModelObject()).put(UserHelper.getPasswordHashField(), UserHelper.getHash(password));
 	}
 
 }

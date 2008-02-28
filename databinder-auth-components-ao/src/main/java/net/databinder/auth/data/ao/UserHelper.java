@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import net.databinder.auth.AuthApplication;
 import net.databinder.auth.data.DataPassword;
+import net.databinder.ao.Databinder;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.authorization.strategies.role.Roles;
@@ -55,5 +56,22 @@ public class UserHelper {
 	
 	public void update(MessageDigest digest) {
 		digest.update(user.getPasswordHash());
+	}
+	
+	private static String getUserBaseField(String property) {
+		try {
+			return Databinder.getEntityManager().getFieldNameConverter().getName(
+				UserBase.class.getMethod(property));
+		} catch (NoSuchMethodException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static String getPasswordHashField() {
+		return getUserBaseField("getPasswordHash");
+	}
+	
+	public static String getRoleStringField() {
+		return getUserBaseField("getRoleString");
 	}
 }
