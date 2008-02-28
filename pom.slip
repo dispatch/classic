@@ -76,6 +76,3 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 			name: "Databinder snapshot repository"
 			url: "file:///var/dbwww/snapshot"
 			uniqueVersion: "false"
-		site:
-			id: "website"
-			url: "file:///var/dbwww"
