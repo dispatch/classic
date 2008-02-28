@@ -12,6 +12,9 @@ Version History
 
 	All-new DataTree class and companion components facilitate persistance
 	of Wicket/Swing rendered trees.
+	
+	Databinder-draw is now distributed through the central Maven repository,
+	as are the Batik libraries it depends upon.
 
 1.1 Compatible with Wicket 1.3.0, this version improves upon Databinder's 
 	interface with Hibernate such that an external session and transaction 
