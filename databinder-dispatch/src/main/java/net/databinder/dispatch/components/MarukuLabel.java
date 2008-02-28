@@ -31,14 +31,14 @@ import org.apache.wicket.model.IModel;
 public class MarukuLabel extends TextFormattedLabel {
 
 	/**
-	 * @param Wicket id
+	 * @param id Wicket id
 	 */
 	public MarukuLabel(String id) {
 		super(id, TextFormat.Markdown);
 	}
 /**
- * @param Wicket id
- * @param String model
+ * @param id Wicket id
+ * @param model string model
  */
 	public MarukuLabel(String id, IModel model) {
 		super(id, model, TextFormat.Markdown);

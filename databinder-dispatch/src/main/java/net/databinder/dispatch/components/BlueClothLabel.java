@@ -31,15 +31,15 @@ import org.apache.wicket.model.IModel;
 public class BlueClothLabel extends XmlRpcLabel {
 
 	/**
-	 * @param Wicket id
+	 * @param id Wicket id
 	 */
 	public BlueClothLabel(String id) {
 		super(id, new BlueClothConverter());
 		setEscapeModelStrings(false);
 	}
 /**
- * @param Wicket id
- * @param String model
+ * @param id Wicket id
+ * @param model String model
  */
 	public BlueClothLabel(String id, IModel model) {
 		super(id, model, new BlueClothConverter());
@@ -60,15 +60,15 @@ public class BlueClothLabel extends XmlRpcLabel {
 	 */
 	public static class Smarty extends XmlRpcLabel {
 		/**
-		 * @param Wicket id
+		 * @param id Wicket id
 		 */
 		public Smarty(String id) {
 			super(id, new SmartyConverter());
 			setEscapeModelStrings(false);
 		}
 	/**
-	 * @param Wicket id
-	 * @param String model
+	 * @param id Wicket id
+	 * @param model String model
 	 */
 		public Smarty(String id, IModel model) {
 			super(id, model, new SmartyConverter());

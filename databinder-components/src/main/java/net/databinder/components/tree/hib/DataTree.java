@@ -63,7 +63,7 @@ public abstract class DataTree<T extends DataTreeObject<T>> extends BaseTree {
 	 */
 	public static class TopLevelCriteriaBuilder implements ICriteriaBuilder {
 		/**
-		 * @return criteria for a null "parent" property
+		 * build criteria for a null "parent" property
 		 */
 		public void build(Criteria criteria) {
 			criteria.add(Property.forName("parent").isNull());

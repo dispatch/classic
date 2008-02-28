@@ -71,8 +71,7 @@ public class DataForm extends DataFormBase {
 	/**
 	 * Form that is nested below a component with a compound model containing a Hibernate
 	 * model.
-	 * @param id
-	 * @see DataWrapper
+	 * @param id Wicket id
 	 */
 	public DataForm(String id) {
 		super(id);

@@ -78,9 +78,9 @@ public abstract class UserBase implements IUser.CookieAuth, Serializable {
 	}
 	
 	/**
-	 * Generates a hash for password using salt from AuthDataApplication.getSalt()
+	 * Generates a hash for password using salt from IAuthSettings.getSalt()
 	 * and returns the hash encoded as a Base64 String.
-	 * @see AuthDataApplication.getSalt();
+	 * @see IAuthSettings#getSalt()
 	 * @param password to encode
 	 * @return base64 encoded SHA hash, 28 characters 
 	 */

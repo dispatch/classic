@@ -3,8 +3,8 @@ package net.databinder.components.tree.data;
 import java.util.Collection;
 
 /**
- * Classes used as the concrete type of a {@link DataTree}, i.e., the type of
- * objects being represented by the tree nodes, must implement this interface.
+ * Classes used as the concrete type of a {@link net.databinder.components.tree.hib.DataTree}, 
+ * i.e., the type of objects being represented by the tree nodes, must implement this interface.
  * 
  * @author Thomas Kappler
  * 

@@ -69,7 +69,7 @@ public class DataStaticService {
 		return getHibernateSession(null);
 	}
 	/**
-	 * @param factory key, or null for the default factory
+	 * @param key factory key, or null for the default factory
 	 * @return Hibernate session bound to current thread
 	 */
 	public static org.hibernate.classic.Session getHibernateSession(Object key) {
@@ -84,7 +84,7 @@ public class DataStaticService {
 	}
 	
 	/**
-	 * @param factory key, or null for the default factory
+	 * @param key factory key, or null for the default factory
 	 * @return true if a session is bound for the keyed factory
 	 */
 	public static boolean hasBoundSession(Object key) {
@@ -94,7 +94,7 @@ public class DataStaticService {
 	/**
 	 * Notifies current request cycle that a data session was requested, if a session factory
 	 * was not already bound for this thread and the request cycle is an IDataRequestCycle.
-	 * @param factory key, or null for the default factory
+	 * @param key factory key, or null for the default factory
 	 * @see IDataRequestCycle
 	 */
 	private static void dataSessionRequested(Object key) {
@@ -142,7 +142,7 @@ public class DataStaticService {
 	 * or other forms of current session lookup a wrapping session will not be
 	 * detected and a new one will always be created. 
 	 * @param unit work to be performed in thread-bound session
-	 * @param factory key, or null for the default factory
+	 * @param key factory key, or null for the default factory
 	 * @see SessionUnit
 	 */
 	public static Object ensureSession(SessionUnit unit, Object key) {

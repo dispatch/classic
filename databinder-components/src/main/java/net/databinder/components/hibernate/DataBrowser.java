@@ -40,7 +40,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
  * isDataBrowserAllowed(). To use this page from an application that does not extend
  * DataApplication, make a bookmarkable subclass and call super(true), 
  * or link to the class with PageLink.
- * @see DataApplication#BmarkDataBrowser
+ * @see net.databinder.DataApplication.BmarkDataBrowser
  * @author Nathan Hamblen
  */
 public class DataBrowser extends WebPage {

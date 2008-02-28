@@ -30,14 +30,14 @@ import org.apache.wicket.model.IModel;
 public class RedClothLabel extends TextFormattedLabel {
 
 	/**
-	 * @param Wicket id
+	 * @param id Wicket id
 	 */
 	public RedClothLabel(String id) {
 		super(id, TextFormat.Textile);
 	}
 /**
- * @param Wicket id
- * @param String model
+ * @param id Wicket id
+ * @param model string model
  */
 	public RedClothLabel(String id, IModel model) {
 		super(id, model, TextFormat.Textile);

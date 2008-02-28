@@ -56,7 +56,7 @@ public class DataPanel extends Panel {
 	 * Create panel without a model. Use this constructor only if the intended model
 	 * is not available at construction time of DataPanel subclass.
 	 * @param id Wicket id
-	 * @see DataPanel.setPersistentObject(Object object)
+	 * @see DataPanel#setPersistentObject(Object object)
 	 */
 	protected DataPanel(String id) {
 		super(id);
