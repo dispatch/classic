@@ -32,7 +32,7 @@ public class UserAdminPage extends UserAdminPageBase {
 			protected void onSubmit() {
 				if (!getEntityModel().isBound()) {
 					Map<String, Object> map = (Map) getModelObject();
-					map.put(UserHelper.getRoleStringField(), ((Roles)map.remove("roles")).toString());
+					map.put("roleString", ((Roles)map.remove("roles")).toString());
 				}
 				super.onSubmit();
 			}
@@ -45,7 +45,7 @@ public class UserAdminPage extends UserAdminPageBase {
 		if (form.getEntityModel().isBound())
 			super.setPassword(password);
 		else
-			((Map)form.getModelObject()).put(UserHelper.getPasswordHashField(), UserHelper.getHash(password));
+			((Map)form.getModelObject()).put("passwordHash", UserHelper.getHash(password));
 	}
 
 	@Override

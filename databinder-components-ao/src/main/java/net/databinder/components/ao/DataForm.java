@@ -25,7 +25,7 @@ public class DataForm extends TransactionalForm {
 		if (getEntityModel().isBound())
 			((RawEntity)getModelObject()).save();
 		else
-			setModelObject(entityManager.create(getEntityModel().getEntityType(), getEntityModel().getPropertyStore()));
+			setModelObject(entityManager.create(getEntityModel().getEntityType(), getEntityModel().getFieldMap()));
 	}
 	
 	public EntityModel getEntityModel() {

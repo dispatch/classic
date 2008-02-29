@@ -1,14 +1,19 @@
 package net.databinder.models.ao;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.wicket.util.string.Strings;
 
 import net.databinder.ao.Databinder;
 import net.databinder.models.BindingModel;
 import net.databinder.models.LoadableWritableModel;
 import net.java.ao.Common;
 import net.java.ao.RawEntity;
+import net.java.ao.schema.FieldNameConverter;
 
 @SuppressWarnings("unchecked")
 public class EntityModel extends LoadableWritableModel implements BindingModel {
@@ -57,12 +62,35 @@ public class EntityModel extends LoadableWritableModel implements BindingModel {
 		detach();
 	}
 
+	/**
+	 * @return map of  properties to values for Wicket property models
+	 */
 	public Map<String, Object> getPropertyStore() {
 		if (propertyStore == null) {
 			propertyStore = new HashMap<String, Object>();
 			putDefaultProperties(propertyStore);
 		}
 		return propertyStore;
+	}
+
+	/**
+	 * @return map of database fields to their values for creating new entities
+	 */
+	public Map<String, Object> getFieldMap() {
+		Map<String, Object> properties = getPropertyStore(), fields = new HashMap<String, Object>();
+		FieldNameConverter conv = Databinder.getEntityManager(managerKey).getFieldNameConverter();
+		for (Entry<String, Object> e : properties.entrySet()) {
+			String field = e.getKey(), prop = Strings.capitalize(field);
+			for (Method m : entityType.getMethods()) {
+				// match getter or setter
+				if (m.getName().substring(3).equals(prop)) {
+					field = conv.getName(m);
+					break;
+				}
+			}
+			fields.put(field, e.getValue());
+		}
+		return fields;
 	}
 
 	public Class getEntityType() {
