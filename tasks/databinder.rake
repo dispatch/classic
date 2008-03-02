@@ -1,3 +1,5 @@
+repositories.remote << "http://wicketstuff.org/maven/repository/"
+
 repositories.local = ENV['M2_REPO'] if ENV['M2_REPO']
 
 def child_artifact(child_spec, parent_artifact, path)
@@ -108,7 +110,7 @@ def embed_server
   end
 end
 
-WICKET_SELF = group("wicket", "wicket-auth-roles", "wicket-extensions", :under=>"org.apache.wicket", :version=>"1.3.1")
+WICKET_SELF = group("wicket", "wicket-auth-roles", "wicket-extensions", :under=>"org.apache.wicket", :version=>"1.3-SNAPSHOT")
 WICKET=[WICKET_SELF, "commons-collections:commons-collections:jar:3.2","org.slf4j:slf4j-api:jar:1.4.2"]
 MAIL = ["javax.mail:mail:jar:1.4", "javax.activation:activation:jar:1.1"]
 LOG4J = ["org.slf4j:slf4j-log4j12:jar:1.4.2","log4j:log4j:jar:1.2.14", MAIL]
