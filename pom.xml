@@ -4,7 +4,7 @@
  <groupId>net.databinder</groupId>
  <artifactId>databinder-parent</artifactId>
  <name>Databinder parent</name>
- <version>1.1.1-SNAPSHOT</version>
+ <version>1.1.2-SNAPSHOT</version>
  <description>A simple bridge from Wicket to Hibernate</description>
  <url>http://databinder.net/</url>
  <inceptionYear>2005</inceptionYear>
@@ -97,9 +97,5 @@
    <url>file:///var/dbwww/snapshot</url>
    <uniqueVersion>false</uniqueVersion>
   </snapshotRepository>
-  <site>
-   <id>website</id>
-   <url>file:///var/dbwww</url>
-  </site>
  </distributionManagement>
 </project>
