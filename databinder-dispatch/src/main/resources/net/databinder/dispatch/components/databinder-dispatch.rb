@@ -2,45 +2,31 @@
 
 # standard libraries
 require 'webrick'
-require 'xmlrpc/server'
+include WEBrick
 
-require 'rubygems' # or otherwise obtain redcloth
+require 'rubygems' # or otherwise obtain redcloth, etc.
 
 WEBrick::Daemon.start # forks process
 
-s = XMLRPC::Server.new(8180)
+s = HTTPServer.new( :Port => 8180 )
 # listens on localhost only
 # If needed extertnally, pass in IP address as second parameter
 
-s.add_handler("redcloth.to_html") do |input|
+def input(req) req.query['input'] end
+
+s.mount_proc('/redcloth') do |req, resp|
 	require 'redcloth'
-	RedCloth.new(input).to_html
+	resp.body = RedCloth.new(input(req)).to_html
 end
 
-s.add_handler("maruku.to_html") do |input|
+s.mount_proc('/maruku') do |req, resp|
 	require 'maruku'
-	Maruku.new(input).to_html
+	resp.body = Maruku.new(input(req)).to_html
 end
 
-s.add_handler("bluecloth.to_html") do |input|
-	require 'bluecloth'
-	BlueCloth.new(input).to_html
-end
-
-s.add_handler("rubypants.to_html") do |input|
+s.mount_proc('/rubypants') do |req, resp|
 	require 'rubypants'
-	RubyPants.new(input).to_html
+	resp.body = RubyPants.new(input(req)).to_html
 end
 
-s.add_handler("bluecloth.rubypants.to_html") do |input|
-	require 'bluecloth'
-	require 'rubypants'
-	RubyPants.new(BlueCloth.new(input).to_html).to_html
-end
-
-s.set_default_handler do |name, *args|
-	raise XMLRPC::FaultException.new(-99, "Method #{name} missing" +
-																	 " or wrong number of parameters")
-end
-
-s.serve
+s.start
