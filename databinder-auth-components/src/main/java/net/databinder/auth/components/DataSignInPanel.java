@@ -55,7 +55,13 @@ public class DataSignInPanel extends Panel {
 	
 	protected class SignInForm extends Form {
 		private CheckBox rememberMe;
-		private TextField username, password;
+		private RequiredTextField username;
+		private RSAPasswordTextField password;
+		
+		protected RequiredTextField getUsername() { return username; }
+		protected RSAPasswordTextField getPassword() { return password; }
+		protected CheckBox getRememberMe() { return rememberMe; }
+		
 		protected SignInForm(String id) {
 			super(id);
 			add(highFormSocket("highFormSocket"));

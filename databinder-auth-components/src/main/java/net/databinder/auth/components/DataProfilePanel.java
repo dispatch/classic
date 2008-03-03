@@ -81,6 +81,11 @@ public class DataProfilePanel extends Panel {
 		private RSAPasswordTextField password, passwordConfirm;
 		private CheckBox rememberMe;
 		
+		protected RequiredTextField getUsername() { return username; }
+		protected RSAPasswordTextField getPassword() { return password; }
+		protected RSAPasswordTextField getPasswordConfirm() { return passwordConfirm; }
+		protected CheckBox getRememberMe() { return rememberMe; }
+		
 		IUser getUser() {
 			return (IUser) getPersistentObjectModel().getObject();
 		}
