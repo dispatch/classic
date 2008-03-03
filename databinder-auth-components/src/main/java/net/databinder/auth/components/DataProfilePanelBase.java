@@ -70,6 +70,11 @@ public abstract class DataProfilePanelBase extends Panel {
 	private RSAPasswordTextField password, passwordConfirm;
 	private CheckBox rememberMe;
 
+	protected RequiredTextField getUsername() { return username; }
+	protected RSAPasswordTextField getPassword() { return password; }
+	protected RSAPasswordTextField getPasswordConfirm() { return passwordConfirm; }
+	protected CheckBox getRememberMe() { return rememberMe; }
+
 	public DataProfilePanelBase(String id, ReturnPage returnPage) {
 		super(id);
 		this.returnPage = returnPage;
