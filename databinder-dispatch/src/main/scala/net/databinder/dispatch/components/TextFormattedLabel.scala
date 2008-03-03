@@ -11,9 +11,9 @@ import org.apache.wicket._
 
 import org.slf4j.LoggerFactory
 
-class MarukuLabel(id: String) extends TextFormattedLabel(id, Maruku())
-class TextileLabel(id: String) extends TextFormattedLabel(id, Textile())
-class SmartypantsLabel(id: String) extends TextFormattedLabel(id, Smartypants())
+class MarukuLabel(id: String) extends TextFormattedLabel(id, Maruku)
+class TextileLabel(id: String) extends TextFormattedLabel(id, Textile)
+class SmartypantsLabel(id: String) extends TextFormattedLabel(id, Smartypants)
 
 class TextFormattedLabel(id: String, format: TextFormat) extends Label(id) {
   
@@ -28,11 +28,11 @@ class TextFormattedLabel(id: String, format: TextFormat) extends Label(id) {
   override def getConverter(cl: Class) = converter
 }
 
-class TextFormat(val code: Int, val path_name: String)
+abstract class TextFormat(val code: Int, val path_name: String)
 
-case class Textile extends TextFormat(0, "redcloth")
-case class Maruku extends TextFormat(1, "maruku")
-case class Smartypants extends TextFormat(2, "rubypants")
+case object Textile extends TextFormat(0, "redcloth")
+case object Maruku extends TextFormat(1, "maruku")
+case object Smartypants extends TextFormat(2, "rubypants")
 
 class TextFormatConverter(format: => TextFormat) extends HttpPostConverter {
   def this(code: Int) = this(TextFormat.format(code))
@@ -41,8 +41,8 @@ class TextFormatConverter(format: => TextFormat) extends HttpPostConverter {
 
 object TextFormat {
   val format = Map(
-    Maruku().code -> Maruku(),
-    Textile().code -> Textile(),
-    Smartypants().code -> Smartypants(),
+    Maruku.code -> Maruku,
+    Textile.code -> Textile,
+    Smartypants.code -> Smartypants
   )
 }
