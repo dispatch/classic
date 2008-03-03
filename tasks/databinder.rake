@@ -117,6 +117,9 @@ MAIL = ["javax.mail:mail:jar:1.4", "javax.activation:activation:jar:1.1"]
 LOG4J = ["org.slf4j:slf4j-log4j12:jar:1.4.2","log4j:log4j:jar:1.2.14", MAIL]
 JDK_LOG = ["org.slf4j:slf4j-jdk14:jar:1.4.2"]
 
+BATIK = ["org.apache.xmlgraphics:batik-gvt:jar:1.7", "org.apache.xmlgraphics:batik-awt-util:jar:1.7"]
+HTTPCLIENT = ["commons-httpclient:commons-httpclient:jar:3.1","commons-codec:commons-codec:jar:1.2","org.scala-lang:scala-library:jar:2.6.1"]
+
 HB_CORE_ZIP=download(artifact("org.hibernate:hibernate:zip:3.2.5.ga")=>"http://downloads.sourceforge.net/sourceforge/hibernate/hibernate-3.2.5.ga.zip?download")
 HIBERNATE_CORE = child_artifact("org.hibernate:hibernate:jar:3.2.5.ga", HB_CORE_ZIP, "hibernate-3.2/hibernate3.jar")
 HIBERNATE_SELF = [HIBERNATE_CORE,"org.hibernate:hibernate-annotations:jar:3.3.0.ga", "org.hibernate:hibernate-commons-annotations:jar:3.3.0.ga"]
@@ -125,15 +128,15 @@ CGLIB = child_artifact("cglib:cglib:jar:2.1_3", HB_CORE_ZIP, "hibernate-3.2/lib/
 EHCACHE=child_artifact("net.sf.ehcache:ehcache:jar:1.2.3", HB_CORE_ZIP, "hibernate-3.2/lib/ehcache-1.2.3.jar")
 C3P0='c3p0:c3p0:jar:0.9.0.4'
 HIBERNATE=[HIBERNATE_SELF, JTA, EHCACHE, CGLIB, "javax.persistence:persistence-api:jar:1.0", "dom4j:dom4j:jar:1.6.1", "asm:asm-attrs:jar:1.5.3", "asm:asm:jar:1.5.3", "antlr:antlr:jar:2.7.6", "commons-logging:commons-logging:jar:1.0.4"]
-
 ACTIVE_OBJECTS=['net.java.dev.activeobjects:activeobjects:jar:0.8-SNAPSHOT']
-
 CAYENNE=['org.apache.cayenne:cayenne:jar:2.0.4']
 
 DB_VERS='1.2-SNAPSHOT'
 DATABINDER_COMPONENTS="net.databinder:databinder-components:jar:#{DB_VERS}"
 DATABINDER_SELF=[DATABINDER_COMPONENTS, group("databinder-app", "databinder-auth-components", "databinder-models", :under => "net.databinder", :version => DB_VERS)]
-DATABINDER_DISPATCH = ["net.databinder:databinder-dispatch:jar:#{DB_VERS}","commons-httpclient:commons-httpclient:jar:3.1","commons-codec:commons-codec:jar:1.2","org.scala-lang:scala-library:jar:2.6.1"]
+DATABINDER_DISPATCH = [HTTPCLIENT, "net.databinder:databinder-dispatch:jar:#{DB_VERS}"]
+DATABINDER_DRAW=[BATIK, "net.databinder:databinder-draw:jar:1.1-SNAPSHOT"]
+
 DATABINDER_CORE=[DATABINDER_SELF, WICKET, C3P0]
 
 DATABINDER_HIB=[DATABINDER_CORE, HIBERNATE, group("databinder-models-hib","databinder-auth-components-hib","databinder-components-hib", "databinder-app-hib", :under => "net.databinder", :version => DB_VERS)]
