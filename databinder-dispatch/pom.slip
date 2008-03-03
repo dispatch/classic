@@ -71,3 +71,5 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 							goal: "compile"
 				configuration:
 					scalaVersion: "2.6.1"
+					args: 
+						arg: "-deprecation"
