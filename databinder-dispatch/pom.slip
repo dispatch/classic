@@ -36,4 +36,38 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 			groupId: "net.sf.ehcache"
 			artifactId: "ehcache"
 			version: "1.2.4"
+			
+		dependency:
+			groupId: "commons-httpclient"
+			artifactId: "commons-httpclient"
+			version: "3.1"
+			
+		dependency:
+			groupId: "org.scala-lang"
+			artifactId: "scala-library"
+			version: "2.6.1"
 
+	repositories:
+		repository:
+			id: "scala-tools.org"
+			name: "Scala-tools Maven2 repository"
+			url: "http://scala-tools.org/repo-releases"
+	
+	pluginRepositories:
+		pluginRepository:
+			id: "scala-tools.org"
+			name: "Scala-tools Maven2 repository"
+			url: "http://scala-tools.org/repo-releases"
+
+	build:
+		sourceDirectory: "src/main/scala"
+		plugins:
+			plugin:
+				groupId: "org.scala-tools"
+				artifactId: "maven-scala-plugin"
+				executions:
+					execution:
+						goals:
+							goal: "compile"
+				configuration:
+					scalaVersion: "2.6.1"
