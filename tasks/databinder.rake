@@ -1,4 +1,5 @@
 repositories.remote << "http://wicketstuff.org/maven/repository/"
+repositories.remote << "http://databinder.net/snapshot/"
 
 repositories.local = ENV['M2_REPO'] if ENV['M2_REPO']
 
@@ -131,9 +132,9 @@ CAYENNE=['org.apache.cayenne:cayenne:jar:2.0.4']
 
 DB_VERS='1.2-SNAPSHOT'
 DATABINDER_COMPONENTS="net.databinder:databinder-components:jar:#{DB_VERS}"
-DATABINDER_SELF=[DATABINDER_COMPONENTS, group("databinder-app","databinder-dispatch", "databinder-auth-components", "databinder-models", :under => "net.databinder", :version => DB_VERS)]
-XML_RPC = ["org.apache.ws.commons:ws-commons-util:jar:1.0.1","org.apache.xmlrpc:xmlrpc-client:jar:3.0","org.apache.xmlrpc:xmlrpc-common:jar:3.0", "commons-httpclient:commons-httpclient:jar:3.0.1", "commons-codec:commons-codec:jar:1.2"]
-DATABINDER_CORE=[DATABINDER_SELF, WICKET, XML_RPC, C3P0]
+DATABINDER_SELF=[DATABINDER_COMPONENTS, group("databinder-app", "databinder-auth-components", "databinder-models", :under => "net.databinder", :version => DB_VERS)]
+DATABINDER_DISPATCH = ["net.databinder:databinder-dispatch:jar:#{DB_VERS}","commons-httpclient:commons-httpclient:jar:3.1","commons-codec:commons-codec:jar:1.2","org.scala-lang:scala-library:jar:2.6.1"]
+DATABINDER_CORE=[DATABINDER_SELF, WICKET, C3P0]
 
 DATABINDER_HIB=[DATABINDER_CORE, HIBERNATE, group("databinder-models-hib","databinder-auth-components-hib","databinder-components-hib", "databinder-app-hib", :under => "net.databinder", :version => DB_VERS)]
 DATABINDER_AO=[DATABINDER_CORE, ACTIVE_OBJECTS, group("databinder-models-ao","databinder-auth-components-ao","databinder-components-ao","databinder-app-ao", :under => "net.databinder", :version => DB_VERS)]
