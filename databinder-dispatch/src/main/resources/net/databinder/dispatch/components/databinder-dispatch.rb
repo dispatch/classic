@@ -38,29 +38,25 @@ def stop()
 end
 
 def run()
-  s = HTTPServer.new( :Port => 8180 )
+  srv = HTTPServer.new( :Port => 8180 )
   # listens on localhost only
   # If needed extertnally, pass in IP address as second parameter
 
-  def input(req) req.query['input'] end
 
-  s.mount_proc('/redcloth') do |req, resp|
-  	require 'redcloth'
-  	resp.body = RedCloth.new(input(req)).to_html
-  end
-
-  s.mount_proc('/maruku') do |req, resp|
-  	require 'maruku'
-  	resp.body = Maruku.new(input(req)).to_html
-  end
-
-  s.mount_proc('/rubypants') do |req, resp|
-  	require 'rubypants'
-  	resp.body = RubyPants.new(input(req)).to_html
+  def create_server(srv, name, &convert)
+    srv.mount_proc('/' + name) do |req, resp|
+    	require name
+    	resp.body = convert.call(req.query['input'])
+    	resp['Content-Type'] = 'text/html; charset=utf-8'
+    end
   end
   
-  trap("INT") { s.shutdown }
-  s.start
+  create_server(srv, 'redcloth')  { |input| RedCloth.new(input).to_html }
+  create_server(srv, 'maruku')    { |input| Maruku.new(input).to_html }
+  create_server(srv, 'rubypants') { |input| RubyPants.new(input).to_html }
+  
+  trap("INT") { srv.shutdown }
+  srv.start
 end
 
 begin
