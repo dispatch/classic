@@ -2,17 +2,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
-<title>XML-RPC Connection Error</title>
+<title>HTTP Connection Error</title>
 <wicket:link><link rel="stylesheet" type="text/css" href="ConnectionErrorPage.css" /></wicket:link>
 </head>
 <body>
 
-<h2>XML-RPC Connection Error</h2>
+<h2>HTTP Connection Error</h2>
 
 <p wicket:id="error" style="font-style:italic">Error message here.</p>
 
 <p>
-	Sorry, Databinder dispatch is unable to contact the XML-RPC server required for this
+	Sorry, Databinder dispatch is unable to contact the HTTP server required for this
 	action. You must be running a script similar to 
 	<a wicket:id="script" href="databinder-dispatch.rb">databinder.dispatch.rb</a>
 	 to use XmlRpcLabel components. Please ensure the external server is running 
@@ -20,7 +20,7 @@
 </p>
 
 <p>To invoke the script directly, you could try the following command:</p>
-<pre>curl <span wicket:id="href">http://localhost/blah</span> | ruby</pre>
+<pre>curl <span wicket:id="href">http://localhost/blah</span> | ruby - run</pre>
 
 </body>
 </html>

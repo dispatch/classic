@@ -50,11 +50,11 @@ abstract class HttpPostConverter extends AbstractConverter {
         out
       } catch {
         case e =>
-          if (Application.get().getConfigurationType().equals(Application.DEVELOPMENT))
-            throw new RuntimeException(e)//new RestartResponseAtInterceptPageException(new ConnectionErrorPage(e))
+          if (Application.get.getConfigurationType == Application.DEVELOPMENT)
+            throw new RestartResponseAtInterceptPageException(new ConnectionErrorPage(e))
           else {
             HttpPostConverter.log.error("Error posting to server", e)
-            null
+            ""
           }
       } finally {
         post_method.releaseConnection()
