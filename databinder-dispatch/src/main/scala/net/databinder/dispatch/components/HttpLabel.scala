@@ -38,6 +38,8 @@ abstract class HttpPostConverter extends AbstractConverter {
       val post_method = new PostMethod(server_base + path_name)
       try {
         post_method.setParameter("input", source.toString())
+        post_method.setRequestHeader(
+         "Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
       
         (new HttpClient).executeMethod(post_method) match {
           case 200 => ()
