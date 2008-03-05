@@ -15,16 +15,23 @@ class MarukuLabel(id: String) extends TextFormattedLabel(id, Maruku)
 class TextileLabel(id: String) extends TextFormattedLabel(id, Textile)
 class SmartypantsLabel(id: String) extends TextFormattedLabel(id, Smartypants)
 
-class TextFormattedLabel(id: String, format: => TextFormat) extends Label(id) {
+class TextFormattedLabel(id: String, converter: TextFormatConverter) extends Label(id) {
   
+  def this(id: String, format: => TextFormat) = {
+    this(id, new TextFormatConverter(format))
+  }
+
   def this(id: String, model: IModel, format: => TextFormat) = {
     this(id, format)
     setModel(model)
   }
+
+  def this(id: String, code: Int) = {
+    this(id, new TextFormatConverter(code))
+  }
   
   setEscapeModelStrings(false)
 
-  val converter = new TextFormatConverter(format)
   override def getConverter(cl: Class) = converter
 }
 
