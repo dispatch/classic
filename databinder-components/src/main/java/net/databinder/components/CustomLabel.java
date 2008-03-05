@@ -38,11 +38,4 @@ public abstract class CustomLabel extends Label {
 	public IConverter getConverter(Class type) {
 		return converter;
 	}
-	
-	/**
-	 * Please override AbstractConverter directly.
-	 * @deprecated
-	 */
-	protected abstract static class CustomConverter extends AbstractConverter {
-	}
 }
