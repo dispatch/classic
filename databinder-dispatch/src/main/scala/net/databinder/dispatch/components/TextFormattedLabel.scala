@@ -15,9 +15,9 @@ class MarukuLabel(id: String) extends TextFormattedLabel(id, Maruku)
 class TextileLabel(id: String) extends TextFormattedLabel(id, Textile)
 class SmartypantsLabel(id: String) extends TextFormattedLabel(id, Smartypants)
 
-class TextFormattedLabel(id: String, format: TextFormat) extends Label(id) {
+class TextFormattedLabel(id: String, format: => TextFormat) extends Label(id) {
   
-  def this(id: String, model: IModel, format: TextFormat) = {
+  def this(id: String, model: IModel, format: => TextFormat) = {
     this(id, format)
     setModel(model)
   }
