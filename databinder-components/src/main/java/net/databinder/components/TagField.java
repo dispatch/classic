@@ -60,7 +60,7 @@ public class TagField extends Panel {
 			}
 			public void setObject(Object object) {
 				if (object == null)
-					TagField.this.setModelObject(null);
+					TagField.this.setModelObject(new HashSet<String>());
 				else {
 					String value = ((String) object).toLowerCase();
 					String[] tagstrs = value.split(" *, *,* *"); // also consumes empty ' ,  ,' tags
