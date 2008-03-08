@@ -9,6 +9,9 @@
   <artifactId>databinder-parent</artifactId>
   <version>1.2-SNAPSHOT</version>
  </parent>
+ <properties>
+  <scala.version>2.7.0</scala.version>
+ </properties>
  <dependencies>
   <dependency>
    <groupId>${pom.groupId}</groupId>
@@ -45,7 +48,7 @@
   <dependency>
    <groupId>org.scala-lang</groupId>
    <artifactId>scala-library</artifactId>
-   <version>2.6.1</version>
+   <version>${scala.version}</version>
   </dependency>
  </dependencies>
  <repositories>
@@ -76,7 +79,7 @@
      </execution>
     </executions>
     <configuration>
-     <scalaVersion>2.6.1</scalaVersion>
+     <scalaVersion>${scala.version}</scalaVersion>
      <args>
       <arg>-deprecation</arg>
      </args>
@@ -85,3 +88,9 @@
   </plugins>
  </build>
 </project>
+<!--					scaladocClassName: "org.scala_tools.vscaladoc.Main"
+					scalaJars:
+						scalaJar:
+							groupId: "org.scala-tools"
+							artifactId: "vscaladoc"
+							version: "1.0-SNAPSHOT"-->
