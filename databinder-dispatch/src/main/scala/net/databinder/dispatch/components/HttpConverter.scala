@@ -28,9 +28,9 @@ abstract class HttpPostConverter extends AbstractConverter {
   def getTargetType = classOf[String]
 
   override def convertToString(source: Object, locale: Locale) = {
-    val key = source.hashCode();
-    val cache = HttpPostConverter.cache_for(path_name);
-    val elem = cache.get(key);
+    val key = source.hashCode()
+    val cache = HttpPostConverter.cache_for(path_name)
+    val elem = cache.get(key)
     
     if (elem != null) 
       elem.getValue().asInstanceOf[String]
