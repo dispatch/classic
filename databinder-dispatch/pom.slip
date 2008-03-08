@@ -10,6 +10,9 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		groupId: "net.databinder"
 		artifactId: "databinder-parent"
 		version: "1.2-SNAPSHOT"
+	
+	properties:
+		scala.version: "2.7.0"
 
 	dependencies:
 		dependency:
@@ -45,7 +48,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		dependency:
 			groupId: "org.scala-lang"
 			artifactId: "scala-library"
-			version: "2.6.1"
+			version: "${scala.version}"
 
 	repositories:
 		repository:
@@ -70,6 +73,12 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 						goals:
 							goal: "compile"
 				configuration:
-					scalaVersion: "2.6.1"
+					scalaVersion: "${scala.version}"
 					args: 
 						arg: "-deprecation"
+#					scaladocClassName: "org.scala_tools.vscaladoc.Main"
+#					scalaJars:
+#						scalaJar:
+#							groupId: "org.scala-tools"
+#							artifactId: "vscaladoc"
+#							version: "1.0-SNAPSHOT"
