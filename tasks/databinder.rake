@@ -118,7 +118,8 @@ LOG4J = ["org.slf4j:slf4j-log4j12:jar:1.4.2","log4j:log4j:jar:1.2.14", MAIL]
 JDK_LOG = ["org.slf4j:slf4j-jdk14:jar:1.4.2"]
 
 BATIK = ["org.apache.xmlgraphics:batik-gvt:jar:1.7", "org.apache.xmlgraphics:batik-awt-util:jar:1.7"]
-HTTPCLIENT = ["commons-httpclient:commons-httpclient:jar:3.1","commons-codec:commons-codec:jar:1.2","org.scala-lang:scala-library:jar:2.6.1"]
+COMMONS_LOG="commons-logging:commons-logging:jar:1.0.4"
+HTTPCLIENT = ["commons-httpclient:commons-httpclient:jar:3.1","commons-codec:commons-codec:jar:1.2","org.scala-lang:scala-library:jar:2.6.1",COMMONS_LOG]
 
 HB_CORE_ZIP=download(artifact("org.hibernate:hibernate:zip:3.2.5.ga")=>"http://downloads.sourceforge.net/sourceforge/hibernate/hibernate-3.2.5.ga.zip?download")
 HIBERNATE_CORE = child_artifact("org.hibernate:hibernate:jar:3.2.5.ga", HB_CORE_ZIP, "hibernate-3.2/hibernate3.jar")
@@ -127,7 +128,7 @@ JTA = child_artifact("javax.transaction:jta:jar:1.0.1B", HB_CORE_ZIP, "hibernate
 CGLIB = child_artifact("cglib:cglib:jar:2.1_3", HB_CORE_ZIP, "hibernate-3.2/lib/cglib-2.1.3.jar")
 EHCACHE=child_artifact("net.sf.ehcache:ehcache:jar:1.2.3", HB_CORE_ZIP, "hibernate-3.2/lib/ehcache-1.2.3.jar")
 C3P0='c3p0:c3p0:jar:0.9.0.4'
-HIBERNATE=[HIBERNATE_SELF, JTA, EHCACHE, CGLIB, "javax.persistence:persistence-api:jar:1.0", "dom4j:dom4j:jar:1.6.1", "asm:asm-attrs:jar:1.5.3", "asm:asm:jar:1.5.3", "antlr:antlr:jar:2.7.6", "commons-logging:commons-logging:jar:1.0.4"]
+HIBERNATE=[HIBERNATE_SELF, JTA, EHCACHE, CGLIB, "javax.persistence:persistence-api:jar:1.0", "dom4j:dom4j:jar:1.6.1", "asm:asm-attrs:jar:1.5.3", "asm:asm:jar:1.5.3", "antlr:antlr:jar:2.7.6", COMMONS_LOG]
 ACTIVE_OBJECTS=['net.java.dev.activeobjects:activeobjects:jar:0.8-SNAPSHOT']
 CAYENNE=['org.apache.cayenne:cayenne:jar:2.0.4']
 
