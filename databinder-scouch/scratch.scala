@@ -6,15 +6,13 @@ import org.apache.commons.httpclient.methods._
 class RichHttpClient(host: String, port: int) extends HttpClient {
   getHostConfiguration.setHost(host, port)
   
-  def ? (m: HttpMethod)(fail: (Int)=>String) = executeMethod(m) match {
-      case 200 => {
-        val res = m.getResponseBodyAsString()
-        m.releaseConnection()
-        res
-      }
+  def ? (m: HttpMethod)(fail: (Int)=>String) = try { executeMethod(m) match {
+      case 200 => m.getResponseBodyAsString()
       case code => fail(code)
-  }
+  } } finally { m.releaseConnection() }
+  
   def ! (m: HttpMethod) = (this ? m)(code => error("Response not OK: " + code))
+  
   def apply(uri: String) = this ! new GetMethod(uri)
 }
 
