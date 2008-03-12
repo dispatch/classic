@@ -111,7 +111,7 @@ def embed_server
   end
 end
 
-WICKET_SELF = group("wicket", "wicket-auth-roles", "wicket-extensions", :under=>"org.apache.wicket", :version=>"1.3-SNAPSHOT")
+WICKET_SELF = group("wicket", "wicket-auth-roles", "wicket-extensions", :under=>"org.apache.wicket", :version=>"1.3.2")
 WICKET=[WICKET_SELF, "commons-collections:commons-collections:jar:3.2","org.slf4j:slf4j-api:jar:1.4.2"]
 MAIL = ["javax.mail:mail:jar:1.4", "javax.activation:activation:jar:1.1"]
 LOG4J = ["org.slf4j:slf4j-log4j12:jar:1.4.2","log4j:log4j:jar:1.2.14", MAIL]
@@ -136,7 +136,7 @@ DB_VERS='1.2-SNAPSHOT'
 DATABINDER_COMPONENTS="net.databinder:databinder-components:jar:#{DB_VERS}"
 DATABINDER_SELF=[DATABINDER_COMPONENTS, group("databinder-app", "databinder-auth-components", "databinder-models", :under => "net.databinder", :version => DB_VERS)]
 DATABINDER_DISPATCH = [HTTPCLIENT, "net.databinder:databinder-dispatch:jar:#{DB_VERS}"]
-DATABINDER_DRAW=[BATIK, "net.databinder:databinder-draw:jar:1.1-SNAPSHOT"]
+DATABINDER_DRAW=[BATIK, "net.databinder:databinder-draw:jar:#{DB_VERS}"]
 
 DATABINDER_CORE=[DATABINDER_SELF, WICKET, C3P0]
 
