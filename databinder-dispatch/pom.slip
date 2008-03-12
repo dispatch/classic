@@ -21,21 +21,6 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 			artifactId: "databinder-components"
 
 		dependency:
-			groupId: "org.apache.xmlrpc"
-			artifactId: "xmlrpc-client"
-			version: "3.0"
-			exclusions:
-				exclusion:
-					artifactId: "log4j"
-					groupId: "log4j"
-
-		dependency:
-			groupId: "javax.servlet"
-			artifactId: "servlet-api"
-			version: "2.5"
-			scope: "provided"
-
-		dependency:
 			groupId: "net.sf.ehcache"
 			artifactId: "ehcache"
 			version: "1.2.4"
@@ -44,6 +29,12 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 			groupId: "commons-httpclient"
 			artifactId: "commons-httpclient"
 			version: "3.1"
+			
+		dependency:
+			groupId: "javax.servlet"
+			artifactId: "servlet-api"
+			version: "2.5"
+			scope: "provided"
 			
 		dependency:
 			groupId: "org.scala-lang"
@@ -76,9 +67,3 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 					scalaVersion: "${scala.version}"
 					args: 
 						arg: "-deprecation"
-#					scaladocClassName: "org.scala_tools.vscaladoc.Main"
-#					scalaJars:
-#						scalaJar:
-#							groupId: "org.scala-tools"
-#							artifactId: "vscaladoc"
-#							version: "1.0-SNAPSHOT"

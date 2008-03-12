@@ -16,6 +16,9 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 			url: "http://www.gnu.org/copyleft/lesser.txt"
 			distribution: "repo"
 
+	properties:
+		wicket.version: "1.3.2"
+
 	packaging: "pom"
 	modules:
 		module: "databinder-models"
