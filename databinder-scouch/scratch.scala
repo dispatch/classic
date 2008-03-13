@@ -23,12 +23,12 @@ class RichHttpClient(host: String, port: int) extends HttpClient {
 
 val couch = new RichHttpClient("localhost", 5984)
 
-implicit def stream2reader(input: InputStream) = 
-  scala.util.parsing.input.StreamReader(new java.io.InputStreamReader(input))
+import scala.util.parsing.input.{Reader,StreamReader}
+import java.io.{InputStream, InputStreamReader}
 
-object JSON extends Parser {
-  def parse(input: scala.util.parsing.input.Reader[Char]) =
-    phrase(root)(new lexical.Scanner(input)) match {
+object Json extends Parser {
+  def parse(input: InputStream) = 
+    phrase(root)(new lexical.Scanner(StreamReader(new InputStreamReader(input)))) match {
       case Success(list: List[Tuple2[String, Any]], _) => mapify(list head, list tail)
       case _ => Map[String, Option[Any]]()
     }
@@ -57,7 +57,8 @@ object JSON extends Parser {
 
 trait JsObject {
   val store = load
-  def load: Map[String,Option[Any]]
+  def load = Json parse stream
+  def stream: InputStream
   
   private def resolve[T](s: Symbol)(fetch: (Any) => T) = fetch(store(s.name))
   
