@@ -29,25 +29,31 @@ implicit def stream2reader(input: InputStream) =
 object JSON extends Parser {
   def parse(input: scala.util.parsing.input.Reader[Char]) =
     phrase(root)(new lexical.Scanner(input)) match {
-      case Success(list: List[Tuple2[String, Any]], _) => mapify(list).asInstanceOf[Map[String, Option[Any]]]
+      case Success(list: List[Tuple2[String, Any]], _) => mapify(list head, list tail)
       case _ => Map[String, Option[Any]]()
     }
-    
-  def mapify(input: Any): Any = {
-    input match {
+
+  def mapify(tup: (String, Any), list: List[Tuple2[String, Any]]): Map[String, Option[Any]] =
+    (list match {
+      case Nil => Map[String, Option[Any]]()
+      case _ => mapify(list head, list tail)
+    }) + (tup._1 -> resolve(tup._2))
+
+  def listify(value: Any, list: List[Any]): List[Any] = 
+    resolve(value) :: (list match {
       case Nil => Nil
-      case list: List[_] => list.head match {
-        case (key: String, value) => mapify(list tail) match {
-          case map: Map[String, Any] => map ++ Map((key, mapify(value)))
-          case Nil => Map((key, mapify(value)))
-        }
-        case head => Some(head) :: mapify(list tail).asInstanceOf[List[Any]]
-      }
-      case value => Some(value)
-    }
+      case list => listify(list head, list tail)
+    })
+
+  def resolve(value: Any) = value match {
+    case list: List[Any] => Some(list.head match {
+      case tup:(String, Any) => mapify(tup, (list tail).asInstanceOf[List[Tuple2[String, Any]]])
+      case value => listify(value, list tail)
+    })
+    case null => None
+    case value => Some(value)
   }
 }
-
 
 trait JsObject {
   val store = load
@@ -57,11 +63,11 @@ trait JsObject {
   
   def string(s: Symbol) = resolve(s) { case value: Option[String] => value }
   def number(s: Symbol) = resolve(s) { case value: Option[Number] => value }
-  def list(s: Symbol)   = resolve(s) { case value: Option[List[Any]] => value }
+  def list[T](s: Symbol) = resolve(s) { case value: Option[List[T]] => value }
 }
 
 trait Person extends JsObject {
   def name = string('name)
   def age = number('age)
-  def pets = list('pets)
+  def pets = list[Any]('pets)
 }
