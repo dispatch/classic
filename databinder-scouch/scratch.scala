@@ -5,9 +5,10 @@ val couch = new Http("localhost", 5984)
 import net.databinder.json._
 
 object Person extends JsObject {
-  val name = my('name) as new JsString
-  val obj = my('objective) as new JsObject {
-    val acc = my('accomplished) as new JsString
+  val name = JsString('name) 
+  
+  val obj = new JsObject('objective) {
+    val acc = JsString('accomplished)
   }
 }
 
