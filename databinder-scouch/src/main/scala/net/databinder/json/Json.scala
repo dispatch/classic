@@ -8,14 +8,14 @@ object Json extends Parser {
   def parse(input: InputStream) = 
     phrase(root)(new lexical.Scanner(StreamReader(new InputStreamReader(input)))) match {
       case Success(list: List[_], _) => mapify(list head, list tail)
-      case _ => Map[String, Option[Any]]()
+      case _ => Map[Symbol, Option[Any]]()
     }
 
-  def mapify(tup: Any, list: List[Any]): Map[String, Option[Any]] =
+  def mapify(tup: Any, list: List[Any]): Map[Symbol, Option[Any]] =
     (list match {
-      case Nil => Map[String, Option[Any]]()
+      case Nil => Map[Symbol, Option[Any]]()
       case _ => mapify(list head, list tail)
-    }) + (tup match { case (key: String, value) => key -> resolve(value) })
+    }) + (tup match { case (key: String, value) => Symbol(key) -> resolve(value) })
 
   def listify(value: Any, list: List[Any]): List[Any] = 
     resolve(value) :: (list match {

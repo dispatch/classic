@@ -4,11 +4,13 @@ val couch = new Http("localhost", 5984)
 
 import net.databinder.json._
 
-object Person extends JsObject {
-  val name = JsString('name) 
+object Person extends JsonSchema {
+  val name = String('name) 
+  val age = Int('age)
+  val pets = List[java.lang.String]('pets)
   
-  val obj = new JsObject('objective) {
-    val acc = JsString('accomplished)
+  val obj = new Object('objective) {
+    val acc = String('accomplished)
   }
 }
 
