@@ -4,7 +4,7 @@ val couch = new Http("localhost", 5984)
 
 import net.databinder.json._
 
-object Person extends JsonSchema {
+object Person extends Schema {
   val name = String('name) 
   val age = Int('age)
   val pets = List[java.lang.String]('pets)
@@ -14,4 +14,4 @@ object Person extends JsonSchema {
   }
 }
 
-val p = couch("/people/nathan")(new JsStore(_))
+val p = couch("/people/nathan")(new Store(_))
