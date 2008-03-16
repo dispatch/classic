@@ -19,7 +19,7 @@ object Revise extends Schema {
     (source << Doc._rev)(new Store(stream)(rev))
     
   def apply(source: Store) = new {
-    def <> (act: Http#Action) =
+    def <<: (act: Http#Action) =
       (act << source) >> (update(_, source))
   }
 }
