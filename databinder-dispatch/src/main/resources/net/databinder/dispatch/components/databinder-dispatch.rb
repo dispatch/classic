@@ -45,9 +45,9 @@ def run()
 
   def create_server(srv, name, &convert)
     srv.mount_proc('/' + name) do |req, resp|
-    	require name
-    	resp.body = convert.call(req.query['input'])
-    	resp['Content-Type'] = 'text/html; charset=utf-8'
+      require name
+      resp.body = convert.call(req.query['input'])
+      resp['Content-Type'] = 'text/html; charset=utf-8'
     end
   end
   
