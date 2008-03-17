@@ -9,8 +9,6 @@ import org.apache.wicket.model.IModel
 import org.apache.wicket.util.io.Streams
 import org.apache.wicket._
 
-import org.apache.commons.httpclient.methods.PostMethod
-
 import org.slf4j.LoggerFactory
 
 import net.sf.ehcache.CacheManager
