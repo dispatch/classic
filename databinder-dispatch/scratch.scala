@@ -14,3 +14,6 @@ object Person extends Doc {
 
 var p = couch("/people/nathan") >> { new Store(_) }
 
+p = (p << Person.name)(Some("Nathan"))
+
+p = couch("/people/nathan") <<: Revise(p)
