@@ -8,27 +8,29 @@ import org.apache.commons.httpclient.methods._
 class Http(host: String, port: int) extends HttpClient {
   getHostConfiguration.setHost(host, port)
   
-  def exec [T] (m: HttpMethod)(thunk: (Int) => T) = try {
-    thunk(executeMethod(m))
-  } finally { m.releaseConnection() }
+  def exec [T] (m: HttpMethod) = new {
+    def apply(thunk: (Int) => T) = try {
+      thunk(executeMethod(m))
+    } finally { m.releaseConnection() }
 
-  def exec_if [T] (m: HttpMethod)(chk: (Int) => Boolean)(ok: (HttpMethod) => T) = 
-    (this exec m) { code =>
-      if (chk(code))
-        ok(m)
-      else
-        error("Response not OK: " + code) }
-  
-  def exec_if_ok [T] (m: HttpMethod)(ok: (HttpMethod) => T) = 
-    (this exec_if m){ code => code >= 200 && code < 300 }(ok)
-  
+    def when (chk: (Int) => Boolean)(thunk: (HttpMethod) => T) = 
+      this { code =>
+        if (chk(code))
+          thunk(m)
+        else
+          error("Response not OK: " + code)
+      }
+    
+    def ok (thunk: HttpMethod => T) = 
+        (this  when { code => code >= 200 && code < 300 })(thunk)
+  }
   def apply(uri: String) = new Request(uri)
   
   class Request(uri: String) {
-    def >> [T] (ok: (InputStream) => T) =
-      (Http.this exec_if_ok new GetMethod(uri))(m => ok(m.getResponseBodyAsStream))
+    def >> [T] (thunk: (InputStream) => T) =
+      exec(new GetMethod(uri)) ok (m => thunk(m.getResponseBodyAsStream))
 
-    def >> = (Http.this exec_if_ok new GetMethod(uri))(m => m.getResponseBodyAsString)
+    def >> = exec(new GetMethod(uri)) ok (m => m.getResponseBodyAsString)
     
     def << [T] (body: T) = {
       val m = new PutMethod(uri)
@@ -43,8 +45,8 @@ class Http(host: String, port: int) extends HttpClient {
       new Response(m)
     }
     class Response(m: HttpMethod) {
-      def >> [T] (ok: (InputStream) => T) = (Http.this exec_if_ok m)(m => ok(m.getResponseBodyAsStream))
-      def as_str = (Http.this exec_if_ok m)(m => m.getResponseBodyAsString)
+      def >> [T] (thunk: (InputStream) => T) = (Http.this exec m) ok (m => thunk(m.getResponseBodyAsStream))
+      def as_str = exec(m) ok (m => m.getResponseBodyAsString)
     }
   }
 
