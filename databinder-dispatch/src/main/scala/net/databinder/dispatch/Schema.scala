@@ -1,4 +1,4 @@
-package net.databinder.json
+package net.databinder.dispatch
 
 trait Schema {
   def loc(base: Option[Map[Symbol, Option[Any]]], sub_sym: Symbol) = 

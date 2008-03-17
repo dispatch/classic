@@ -1,4 +1,4 @@
-package net.databinder.couch
+package net.databinder.dispatch
 
 import java.io.InputStream
 import net.databinder.http.Http
