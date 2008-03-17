@@ -22,7 +22,7 @@ class Http(host: String, port: int) extends HttpClient {
       }
     
     def ok (thunk: HttpMethod => T) = 
-        (this  when { code => code >= 200 && code < 300 })(thunk)
+        (this when { code => code >= 200 && code < 300 })(thunk)
   }
   def apply(uri: String) = new Request(uri)
   
