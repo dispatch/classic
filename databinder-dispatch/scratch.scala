@@ -1,9 +1,6 @@
-import net.databinder.http.Http
+import net.databinder.dispatch._
 
 val couch = new Http("localhost", 5984)
-
-import net.databinder.json.{Schema,Store}
-import net.databinder.couch.Doc
 
 object Person extends Doc {
   val name = String('name) 
@@ -17,4 +14,3 @@ object Person extends Doc {
 
 var p = couch("/people/nathan") >> { new Store(_) }
 
-import net.databinder.couch._
