@@ -1,8 +1,6 @@
 package net.databinder.dispatch
 
 import java.io.InputStream
-import net.databinder.http.Http
-import net.databinder.json.{Schema,Store}
 
 trait Doc extends Schema {
   val _id = String(new Symbol("_id")) 
@@ -19,7 +17,7 @@ object Revise extends Schema {
     (source << Doc._rev)(new Store(stream)(rev))
     
   def apply(source: Store) = new {
-    def <<: (act: Http#Action) =
-      (act << source) >> (update(_, source))
+    def <<: (req: Http#Request) =
+      (req << source) >> (update(_, source))
   }
 }

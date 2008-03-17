@@ -4,7 +4,7 @@ REL = "com.thimbleware:scala-rel:jar:1.0-SNAPSHOT"
 
 repositories.remote << "http://repo1.maven.org/maven2/"
 
-define "databinder-scouch" do
+define "databinder-dispatch" do
 	scalac.with HTTPCLIENT, WICKET, EHCACHE
   scalac.options.deprecation = true
   scalac.options.other = "-unchecked"
