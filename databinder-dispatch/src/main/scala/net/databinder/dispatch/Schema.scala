@@ -11,6 +11,12 @@ trait Schema {
 
   case class Int(symbol: Symbol) extends Value[scala.Int](symbol)
 
+  case class Date(symbol: Symbol) extends Value[java.util.Date](symbol) {
+    import org.apache.commons.httpclient.util.DateUtil
+    override def to_type(opt: Option[Any]) = opt map { DateUtil parseDate _.toString }
+    override def from_type(opt: Option[java.util.Date]) = opt map { DateUtil formatDate _ }
+  }
+
   case class List[T](symbol: Symbol) extends Value[scala.List[T]](symbol)
 
   case class Object(symbol: Symbol) extends Value[Map[Symbol, Option[Any]]](symbol) with Schema {
@@ -19,13 +25,16 @@ trait Schema {
     override def replace(base: Option[Map[Symbol, Option[Any]]], sub_sym: Symbol, value: Option[Any]) = 
       replace(base, super.replace(loc(base), sub_sym, value))
   }
-
+  
   class Value[T](val sym: Symbol) {
-    def loc(base: Option[Map[Symbol, Option[Any]]]) = 
-      Schema.this.loc(base, sym).asInstanceOf[Option[T]]
+    def loc(base: Option[Map[Symbol, Option[Any]]]) = to_type(Schema.this.loc(base, sym))
+      
+    def to_type(obj: Option[Any]) = obj.asInstanceOf[Option[T]]
 
     def replace(base: Option[Map[Symbol, Option[Any]]], value: Option[T]) = 
-      Schema.this.replace(base, sym, value)
+      Schema.this.replace(base, sym, from_type(value))
+    
+    def from_type(value: Option[T]):Option[Any] = value
   }
 }
 
@@ -35,6 +44,7 @@ import java.io.{InputStream, InputStreamReader}
 
 class Store (val base: Map[Symbol, Option[Any]]){
   def this(stream: InputStream) = this(Store process stream)
+  def this() = this(Map[Symbol, Option[Any]]())
 
   def apply[T](ref: Schema#Value[T]) = (ref loc Some(base))
   
