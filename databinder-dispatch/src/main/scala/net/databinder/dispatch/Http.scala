@@ -1,12 +1,16 @@
 package net.databinder.dispatch
 
-import java.io.InputStream
+import java.io.{InputStream,OutputStream,BufferedInputStream,BufferedOutputStream}
 
 import org.apache.commons.httpclient._
 import org.apache.commons.httpclient.methods._
 
-class Http(host: String, port: int) extends HttpClient {
-  getHostConfiguration.setHost(host, port)
+class Http extends HttpClient {
+  def this (host: String, port: int) = {
+    this()
+    getHostConfiguration.setHost(host, port)
+  }
+  def this (host: String) = this(host, 80)
   
   def exec [T] (m: HttpMethod) = new {
     def apply(thunk: (Int, HttpMethod) => T) = try {
@@ -31,6 +35,17 @@ class Http(host: String, port: int) extends HttpClient {
 
     def >> = exec(new GetMethod(uri)) ok (m => m.getResponseBodyAsString)
     
+    def >>> (out: OutputStream) { 
+      this >> { in =>
+        def cp(in: InputStream, out: OutputStream): Unit = in.read match {
+          case -1 => out.flush()
+          case cur => out write cur; cp(in, out)
+        }
+        val b_sz = 2048
+        cp (new BufferedInputStream(in, b_sz), new BufferedOutputStream(out, b_sz))
+      }
+    }
+
     def << [T] (body: T) = {
       val m = new PutMethod(uri)
       m setRequestEntity new StringRequestEntity(body.toString)
