@@ -26,25 +26,15 @@ abstract class HttpPostConverter extends AbstractConverter {
   
   def getTargetType = classOf[String]
 
-  override def convertToString(source: Object, locale: Locale) = {
-    val key = source.hashCode()
-    val cache = HttpPostConverter.cache_for(path_name)
-    
-    cache.get(key) match {
-      case null => try {
-        val out = (service("/" + path_name) << "input" -> source).as_str
-        cache.put(new Element(key, out))
-        out
-      } catch {
-        case e =>
-          if (Application.get.getConfigurationType == Application.DEVELOPMENT)
-            throw new RestartResponseAtInterceptPageException(new ConnectionErrorPage(e))
-          else {
-            HttpPostConverter.log.error("Error posting to server", e)
-            ""
-          }
-      }
-      case elem => elem.getValue.toString
+  override def convertToString(source: Object, locale: Locale) = try {
+    HttpPostConverter.cache(path_name, source.hashCode()) {
+      (service("/" + path_name) << "input" -> source).as_str
+    }  
+  } catch { 
+    case e => Application.get.getConfigurationType match {
+      case Application.DEVELOPMENT => 
+        throw new RestartResponseAtInterceptPageException(new ConnectionErrorPage(e))
+      case _ => HttpPostConverter.log.error("Error posting to server", e); ""
     }
   }
 }
@@ -52,15 +42,20 @@ abstract class HttpPostConverter extends AbstractConverter {
 object HttpPostConverter {
 	private val log = LoggerFactory.getLogger(classOf[HttpPostConverter])
 	
-  private def cache_for(path_name: String) = {
+  private def cache[T](path_name: String, key: Any)(create: => T) = {
+    
     val mgr = CacheManager.getInstance()
     val name = classOf[HttpPostConverter].getName() + ":" + path_name
-    val cache = mgr.getEhcache(name)
-    if (cache != null)
-      cache
-    else {
-      mgr.addCache(name)
-      mgr.getEhcache(name)
+    val cache = mgr.getEhcache(name) match {
+      case null => mgr.addCache(name); mgr.getEhcache(name)
+      case c => c
+    }
+    cache.get(key) match {
+      case null =>
+        val obj = create;
+        cache put new Element(key, obj)
+        obj
+      case elem => elem.getValue.asInstanceOf[T]
     }
   }
 }
