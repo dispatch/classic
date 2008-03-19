@@ -29,22 +29,7 @@ class Http extends HttpClient {
   }
   def apply(uri: String) = new Request(uri)
   
-  class Request(uri: String) {
-    def >> [T] (thunk: (InputStream) => T) =
-      exec(new GetMethod(uri)) ok (m => thunk(m.getResponseBodyAsStream))
-
-    def >> = exec(new GetMethod(uri)) ok (m => m.getResponseBodyAsString)
-    
-    def >>> (out: OutputStream) { 
-      this >> { in =>
-        def cp(in: InputStream, out: OutputStream): Unit = in.read match {
-          case -1 => out.flush()
-          case cur => out write cur; cp(in, out)
-        }
-        cp (new BufferedInputStream(in, 2048), new BufferedOutputStream(out, 2048))
-      }
-    }
-
+  class Request(uri: String) extends Response(new GetMethod(uri)) {
     def << [T] (body: T) = {
       val m = new PutMethod(uri)
       m setRequestEntity new StringRequestEntity(body.toString)
@@ -56,10 +41,16 @@ class Http extends HttpClient {
       m.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
       new Response(m)
     }
-    class Response(m: HttpMethod) {
-      def >> [T] (thunk: InputStream => T) = exec(m) ok (m => thunk(m.getResponseBodyAsStream))
-      def as_str = exec(m) ok (m => m.getResponseBodyAsString)
+  }
+  class Response(m: HttpMethod) {
+    def >> [T] (thunk: InputStream => T) = exec(m) ok (m => thunk(m.getResponseBodyAsStream))
+    def as_str = exec(m) ok (m => m.getResponseBodyAsString)
+    def >>> (out: OutputStream): Unit = this >> { in =>
+      def cp(in: InputStream, out: OutputStream): Unit = in.read match {
+        case -1 => out.flush()
+        case cur => out write cur; cp(in, out)
+      }
+      cp (new BufferedInputStream(in, 2048), new BufferedOutputStream(out, 2048))
     }
   }
-
 }
