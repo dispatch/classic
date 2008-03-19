@@ -41,8 +41,7 @@ class Http extends HttpClient {
           case -1 => out.flush()
           case cur => out write cur; cp(in, out)
         }
-        val b_sz = 2048
-        cp (new BufferedInputStream(in, b_sz), new BufferedOutputStream(out, b_sz))
+        cp (new BufferedInputStream(in, 2048), new BufferedOutputStream(out, 2048))
       }
     }
 
