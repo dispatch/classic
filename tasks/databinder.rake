@@ -118,8 +118,9 @@ LOG4J = ["org.slf4j:slf4j-log4j12:jar:1.4.2","log4j:log4j:jar:1.2.14", MAIL]
 JDK_LOG = ["org.slf4j:slf4j-jdk14:jar:1.4.2"]
 
 BATIK = ["org.apache.xmlgraphics:batik-gvt:jar:1.7", "org.apache.xmlgraphics:batik-awt-util:jar:1.7"]
-COMMONS_LOG="commons-logging:commons-logging:jar:1.0.4"
-HTTPCLIENT = ["commons-httpclient:commons-httpclient:jar:3.1","commons-codec:commons-codec:jar:1.2",COMMONS_LOG]
+COMMONS_LOG="commons-logging:commons-logging:jar:1.1.1"
+HTTPCLIENT = ["org.apache.httpcomponents:httpclient:jar:4.0-alpha3", \
+  "org.apache.httpcomponents:httpcore:jar:4.0-beta1", "commons-codec:commons-codec:jar:1.3", COMMONS_LOG]
 
 HB_CORE_ZIP=download(artifact("org.hibernate:hibernate:zip:3.2.5.ga")=>"http://downloads.sourceforge.net/sourceforge/hibernate/hibernate-3.2.5.ga.zip?download")
 HIBERNATE_CORE = child_artifact("org.hibernate:hibernate:jar:3.2.5.ga", HB_CORE_ZIP, "hibernate-3.2/hibernate3.jar")
