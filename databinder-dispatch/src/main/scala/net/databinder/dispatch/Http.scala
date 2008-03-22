@@ -2,55 +2,74 @@ package net.databinder.dispatch
 
 import java.io.{InputStream,OutputStream,BufferedInputStream,BufferedOutputStream}
 
-import org.apache.commons.httpclient._
-import org.apache.commons.httpclient.methods._
+import org.apache.http._
+import org.apache.http.client._
+import org.apache.http.client.methods._
 
-class Http extends HttpClient {
-  def this (host: String, port: int) = {
-    this()
-    getHostConfiguration.setHost(host, port)
-  }
-  def this (host: String) = this(host, 80)
+import org.apache.http.entity.StringEntity
+import org.apache.http.message.BasicNameValuePair
+import org.apache.http.protocol.{HTTP, BasicHttpContext}
+import org.apache.http.params.{HttpProtocolParams, BasicHttpParams}
+import org.apache.http.util.EntityUtils
+
+class Http(host: Option[HttpHost]) extends org.apache.http.impl.client.DefaultHttpClient {
+  def this() = this(None)
+  def this(hostname: String) = this(Some(new HttpHost(hostname)))
+  def this(hostname: String, port: Int) = this(Some(new HttpHost(hostname, port)))
+  def this(host: HttpHost) = this(Some(host))
   
-  def exec [T] (m: HttpMethod) = new {
-    def apply(thunk: (Int, HttpMethod) => T) = try {
-      thunk(executeMethod(m), m)
-    } finally { m.releaseConnection() }
-
-    def when (chk: (Int) => Boolean)(thunk: HttpMethod => T) = 
-      this { (code, m) =>
-        if (chk(code))
-          thunk(m)
-        else
-          error("Response not OK: " + code)
+  override def createHttpParams = {
+    val params = new BasicHttpParams
+    HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1)
+    HttpProtocolParams.setContentCharset(params, HTTP.UTF_8)
+    HttpProtocolParams.setUseExpectContinue(params, false)
+    params
+  }
+  
+  def x [T](req: HttpUriRequest) = new {
+    def apply(thunk: (Int, HttpResponse, HttpEntity) => T) = {
+      val res = host match {
+        case None => execute(req)
+        case Some(host) => execute(host, req)
       }
-      
-    def ok = (this when { code => code >= 200 && code < 300 }) _
+      res.getEntity match {
+        case null => error("no response message")
+        case ent => try { 
+            thunk(res.getStatusLine.getStatusCode, res, ent)
+          } finally { ent.consumeContent() }
+      }
+    }
+    
+    def when(chk: Int => Boolean)(thunk: HttpEntity => T) = this { (code, res, ent) => 
+      if (chk(code))
+        thunk(ent)
+      else 
+        error("Response not OK: " + code)
+    }
+    
+    def ok = (this when {code => (200 to 204) contains code}) _
   }
   def apply(uri: String) = new Request(uri)
   
-  class Request(uri: String) extends Response(new GetMethod(uri)) {
-    def << [T] (body: T) = {
-      val m = new PutMethod(uri)
-      m setRequestEntity new StringRequestEntity(body.toString)
-      new Response(m)
+  class Request(uri: String) extends Respond(new HttpGet(uri)) {
+    def << (body: Any) = {
+      val m = new HttpPut(uri)
+      m setEntity new StringEntity(body.toString, HTTP.UTF_8)
+      HttpProtocolParams.setUseExpectContinue(m.getParams, false)
+      new Respond(m)
     }
-    def << [T] (values: (String, Any)*) = {
-      val m = new PostMethod(uri)
-      values foreach { tup => m.setParameter(tup._1, tup._2.toString) }
-      m.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
-      new Response(m)
+    def << (values: (String, Any)*) = {
+      val m = new HttpPost(uri)
+      m setEntity new UrlEncodedFormEntity(
+        (values map) { tup => new BasicNameValuePair(tup._1, tup._2.toString) }.toArray,
+        HTTP.UTF_8
+      )
+      new Respond(m)
     }
   }
-  class Response(m: HttpMethod) {
-    def >> [T] (thunk: InputStream => T) = exec(m) ok (m => thunk(m.getResponseBodyAsStream))
-    def as_str = exec(m) ok (m => m.getResponseBodyAsString)
-    def >>> (out: OutputStream): Unit = this >> { in =>
-      def cp(in: InputStream, out: OutputStream): Unit = in.read match {
-        case -1 => out.flush()
-        case cur => out write cur; cp(in, out)
-      }
-      cp (new BufferedInputStream(in, 2048), new BufferedOutputStream(out, 2048))
-    }
+  class Respond(req: HttpUriRequest) {
+    def >> [T] (thunk: InputStream => T) = x (req) ok (res => thunk(res.getContent))
+    def as_str = x (req) ok { EntityUtils.toString(_) }
+    def >>> (out: OutputStream): Unit = x (req) ok { _.writeTo(out) }
   }
 }

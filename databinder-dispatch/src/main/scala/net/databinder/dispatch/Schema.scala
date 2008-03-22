@@ -12,9 +12,9 @@ trait Schema {
   case class Int(symbol: Symbol) extends Value[scala.Int](symbol)
 
   case class Date(symbol: Symbol) extends Value[java.util.Date](symbol) {
-    import org.apache.commons.httpclient.util.DateUtil
-    override def to_type(opt: Option[Any]) = opt map { DateUtil parseDate _.toString }
-    override def from_type(opt: Option[java.util.Date]) = opt map { DateUtil formatDate _ }
+    import org.apache.http.impl.cookie.DateUtils
+    override def to_type(opt: Option[Any]) = opt map { DateUtils parseDate _.toString }
+    override def from_type(opt: Option[java.util.Date]) = opt map { DateUtils formatDate _ }
   }
 
   case class List[T](symbol: Symbol) extends Value[scala.List[T]](symbol)
