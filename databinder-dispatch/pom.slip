@@ -26,9 +26,9 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 			version: "1.2.4"
 			
 		dependency:
-			groupId: "commons-httpclient"
-			artifactId: "commons-httpclient"
-			version: "3.1"
+			groupId: "org.apache.httpcomponents"
+			artifactId: "httpclient"
+			version: "4.0-alpha3"
 			
 		dependency:
 			groupId: "javax.servlet"
