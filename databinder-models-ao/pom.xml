@@ -12,7 +12,7 @@
   <dependency>
    <groupId>net.java.dev.activeobjects</groupId>
    <artifactId>activeobjects</artifactId>
-   <version>0.8-SNAPSHOT</version>
+   <version>0.8</version>
   </dependency>
   <dependency>
    <groupId>${pom.groupId}</groupId>
@@ -25,4 +25,10 @@
    <version>${wicket.version}</version>
   </dependency>
  </dependencies>
+ <repositories>
+  <repository>
+   <id>dev.java.net</id>
+   <url>http://download.java.net/maven/2/</url>
+  </repository>
+ </repositories>
 </project>
