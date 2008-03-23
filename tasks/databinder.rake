@@ -1,4 +1,4 @@
-repositories.remote << "http://wicketstuff.org/maven/repository/"
+repositories.remote << "http://download.java.net/maven/2/"
 repositories.remote << "http://databinder.net/snapshot/"
 
 repositories.local = ENV['M2_REPO'] if ENV['M2_REPO']
@@ -130,7 +130,7 @@ CGLIB = child_artifact("cglib:cglib:jar:2.1_3", HB_CORE_ZIP, "hibernate-3.2/lib/
 EHCACHE=child_artifact("net.sf.ehcache:ehcache:jar:1.2.3", HB_CORE_ZIP, "hibernate-3.2/lib/ehcache-1.2.3.jar")
 C3P0='c3p0:c3p0:jar:0.9.0.4'
 HIBERNATE=[HIBERNATE_SELF, JTA, EHCACHE, CGLIB, "javax.persistence:persistence-api:jar:1.0", "dom4j:dom4j:jar:1.6.1", "asm:asm-attrs:jar:1.5.3", "asm:asm:jar:1.5.3", "antlr:antlr:jar:2.7.6", COMMONS_LOG]
-ACTIVE_OBJECTS=['net.java.dev.activeobjects:activeobjects:jar:0.8-SNAPSHOT']
+ACTIVE_OBJECTS=['net.java.dev.activeobjects:activeobjects:jar:0.8']
 CAYENNE=['org.apache.cayenne:cayenne:jar:2.0.4']
 
 DB_VERS='1.2-SNAPSHOT'
