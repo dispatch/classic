@@ -19,7 +19,7 @@ import net.databinder.dispatch.Http
 
 abstract class HttpPostConverter extends AbstractConverter {
 
-  val service = new Http("localhost", 8180)
+  def service = new Http("localhost", 8180)
   def path_name: String
   
   def convertToObject(value: String, locale: Locale): Object = null
