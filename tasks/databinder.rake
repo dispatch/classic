@@ -1,5 +1,6 @@
 repositories.remote << "http://download.java.net/maven/2/"
 repositories.remote << "http://databinder.net/snapshot/"
+repositories.remote << "http://scala-tools.org/repo-releases"
 
 repositories.local = ENV['M2_REPO'] if ENV['M2_REPO']
 
@@ -136,7 +137,8 @@ CAYENNE=['org.apache.cayenne:cayenne:jar:2.0.4']
 DB_VERS='1.2-SNAPSHOT'
 DATABINDER_COMPONENTS="net.databinder:databinder-components:jar:#{DB_VERS}"
 DATABINDER_SELF=[DATABINDER_COMPONENTS, group("databinder-app", "databinder-auth-components", "databinder-models", :under => "net.databinder", :version => DB_VERS)]
-DATABINDER_DISPATCH = [HTTPCLIENT, "net.databinder:databinder-dispatch:jar:#{DB_VERS}"]
+DATABINDER_DISPATCH = [HTTPCLIENT, "net.databinder:databinder-dispatch:jar:#{DB_VERS}", \
+  'org.scala-lang:scala-library:jar:2.7.0']
 DATABINDER_DRAW=[BATIK, "net.databinder:databinder-draw:jar:#{DB_VERS}"]
 
 DATABINDER_CORE=[DATABINDER_SELF, WICKET, C3P0]
