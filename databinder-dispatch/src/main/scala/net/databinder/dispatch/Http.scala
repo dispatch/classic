@@ -14,9 +14,9 @@ import org.apache.http.util.EntityUtils
 
 class Http(host: Option[HttpHost]) extends org.apache.http.impl.client.DefaultHttpClient {
   def this() = this(None)
-  def this(hostname: String) = this(Some(new HttpHost(hostname)))
-  def this(hostname: String, port: Int) = this(Some(new HttpHost(hostname, port)))
   def this(host: HttpHost) = this(Some(host))
+  def this(hostname: String) = this(new HttpHost(hostname))
+  def this(hostname: String, port: Int) = this(new HttpHost(hostname, port))
   
   override def createHttpParams = {
     val params = new BasicHttpParams
