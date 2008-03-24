@@ -73,3 +73,16 @@ class Http(host: Option[HttpHost]) extends org.apache.http.impl.client.DefaultHt
     def >>> (out: OutputStream): Unit = x (req) ok { _.writeTo(out) }
   }
 }
+
+import org.apache.http.conn.{Scheme,SchemeRegistry,PlainSocketFactory}
+import org.apache.http.conn.ssl.SSLSocketFactory
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
+
+object Http extends Http {
+  override def createClientConnectionManager() = {
+    val registry = new SchemeRegistry()
+    registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80))
+    registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443))
+    new ThreadSafeClientConnManager(getParams(), registry)
+  }
+}
