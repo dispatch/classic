@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ <modelVersion>4.0.0</modelVersion>
+ <artifactId>databinder-dispatch-components</artifactId>
+ <name>Databinder dispatch components</name>
+ <description>Wicket components using Databinder dispatch.</description>
+ <parent>
+  <groupId>net.databinder</groupId>
+  <artifactId>databinder-parent</artifactId>
+  <version>1.2-SNAPSHOT</version>
+ </parent>
+ <properties>
+  <scala.version>2.7.0</scala.version>
+ </properties>
+ <dependencies>
+  <dependency>
+   <groupId>${pom.groupId}</groupId>
+   <version>${pom.version}</version>
+   <artifactId>databinder-components</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>${pom.groupId}</groupId>
+   <version>${pom.version}</version>
+   <artifactId>databinder-dispatch</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>net.sf.ehcache</groupId>
+   <artifactId>ehcache</artifactId>
+   <version>1.2.4</version>
+  </dependency>
+  <dependency>
+   <groupId>org.apache.httpcomponents</groupId>
+   <artifactId>httpclient</artifactId>
+   <version>4.0-alpha3</version>
+  </dependency>
+  <dependency>
+   <groupId>javax.servlet</groupId>
+   <artifactId>servlet-api</artifactId>
+   <version>2.5</version>
+   <scope>provided</scope>
+  </dependency>
+ </dependencies>
+ <pluginRepositories>
+  <pluginRepository>
+   <id>scala-tools.org</id>
+   <name>Scala-tools Maven2 repository</name>
+   <url>http://scala-tools.org/repo-releases</url>
+  </pluginRepository>
+ </pluginRepositories>
+ <build>
+  <sourceDirectory>src/main/scala</sourceDirectory>
+  <plugins>
+   <plugin>
+    <groupId>org.scala-tools</groupId>
+    <artifactId>maven-scala-plugin</artifactId>
+    <executions>
+     <execution>
+      <goals>
+       <goal>compile</goal>
+      </goals>
+     </execution>
+    </executions>
+    <configuration>
+     <scalaVersion>${scala.version}</scalaVersion>
+     <args>
+      <arg>-deprecation</arg>
+     </args>
+    </configuration>
+   </plugin>
+  </plugins>
+ </build>
+</project>

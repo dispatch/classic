@@ -37,6 +37,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		module: "databinder-app-ao"
 		module: "databinder-app-cay"
 		module: "databinder-dispatch"
+		module: "databinder-dispatch-components"
 		module: "databinder-draw"
 	scm:
 		connection: "scm:svn:svn://localhost/databinder/trunk"
