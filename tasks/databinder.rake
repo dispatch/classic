@@ -139,7 +139,7 @@ DATABINDER_COMPONENTS="net.databinder:databinder-components:jar:#{DB_VERS}"
 DATABINDER_SELF=[DATABINDER_COMPONENTS, group("databinder-app", "databinder-auth-components", "databinder-models", :under => "net.databinder", :version => DB_VERS)]
 DATABINDER_DISPATCH = [HTTPCLIENT, "net.databinder:databinder-dispatch:jar:#{DB_VERS}", \
   'org.scala-lang:scala-library:jar:2.7.0']
-DATABINDER_DISPATCH_COMPONENTS = [DATABINDER_DISPATCH, "net.databinder:databinder-dispatch-components:jar:#{DB_VERS}"]
+DATABINDER_DISPATCH_COMP = [DATABINDER_DISPATCH, "net.databinder:databinder-dispatch-components:jar:#{DB_VERS}"]
 DATABINDER_DRAW=[BATIK, "net.databinder:databinder-draw:jar:#{DB_VERS}"]
 
 DATABINDER_CORE=[DATABINDER_SELF, WICKET, C3P0]
