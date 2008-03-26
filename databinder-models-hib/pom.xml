@@ -17,7 +17,7 @@
   <dependency>
    <groupId>org.hibernate</groupId>
    <artifactId>hibernate</artifactId>
-   <version>3.2.5.ga</version>
+   <version>3.2.6.ga</version>
   </dependency>
   <dependency>
    <groupId>javax.persistence</groupId>
@@ -30,4 +30,10 @@
    <version>${wicket.version}</version>
   </dependency>
  </dependencies>
+ <repositories>
+  <repository>
+   <id>com.jboss</id>
+   <url>http://repository.jboss.com/maven2/</url>
+  </repository>
+ </repositories>
 </project>

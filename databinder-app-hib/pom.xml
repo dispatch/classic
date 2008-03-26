@@ -27,18 +27,18 @@
   <dependency>
    <groupId>org.hibernate</groupId>
    <artifactId>hibernate-annotations</artifactId>
-   <version>3.3.0.ga</version>
-  </dependency>
-<!--hib-com-anno should be transitive, but central hib-anno POM is wrong-->
-  <dependency>
-   <groupId>org.hibernate</groupId>
-   <artifactId>hibernate-commons-annotations</artifactId>
-   <version>3.3.0.ga</version>
+   <version>3.3.1.GA</version>
   </dependency>
   <dependency>
    <groupId>c3p0</groupId>
    <artifactId>c3p0</artifactId>
-   <version>0.9.0.4</version>
+   <version>0.9.1</version>
   </dependency>
  </dependencies>
+ <repositories>
+  <repository>
+   <id>com.jboss</id>
+   <url>http://repository.jboss.com/maven2/</url>
+  </repository>
+ </repositories>
 </project>

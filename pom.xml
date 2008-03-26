@@ -103,7 +103,7 @@
   <repository>
    <id>databinder</id>
    <name>Databinder repository</name>
-   <url>file:///var/dbwww/maven</url>
+   <url>file:///var/dbwww/repo</url>
   </repository>
   <snapshotRepository>
    <id>databinder-snapshots</id>

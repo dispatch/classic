@@ -19,7 +19,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		dependency:
 			groupId: "org.hibernate"
 			artifactId: "hibernate"
-			version: "3.2.5.ga"
+			version: "3.2.6.ga"
 
 		dependency:
 			groupId: "javax.persistence"
@@ -31,4 +31,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 			artifactId: "wicket"
 			version: "${wicket.version}"
 
-
+	repositories:
+		repository:
+			id: "com.jboss"
+			url: "http://repository.jboss.com/maven2/"

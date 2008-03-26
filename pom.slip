@@ -84,7 +84,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		repository:
 			id: "databinder"
 			name: "Databinder repository"
-			url: "file:///var/dbwww/maven"
+			url: "file:///var/dbwww/repo"
 		snapshotRepository:
 			id: "databinder-snapshots"
 			name: "Databinder snapshot repository"
