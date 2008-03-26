@@ -28,7 +28,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 
 		dependency:
 			groupId: "org.apache.wicket"
-			artifactId: "wicket"
+			artifactId: "wicket-extensions"
 			version: "${wicket.version}"
 
 	repositories:
