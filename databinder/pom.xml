@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
  <modelVersion>4.0.0</modelVersion>
  <artifactId>databinder</artifactId>
  <name>Databinder toolkit</name>
@@ -19,26 +20,26 @@
    <version>2.3</version>
   </dependency>
   <dependency>
-   <groupId>org.hibernate</groupId>
-   <artifactId>hibernate-annotations</artifactId>
-   <version>3.3.0.ga</version>
-  </dependency>
-<!--hib-com-anno should be transitive, but central hib-anno POM is wrong-->
-  <dependency>
-   <groupId>org.hibernate</groupId>
-   <artifactId>hibernate-commons-annotations</artifactId>
-   <version>3.3.0.ga</version>
-  </dependency>
-  <dependency>
-   <groupId>c3p0</groupId>
-   <artifactId>c3p0</artifactId>
-   <version>0.9.0.4</version>
-  </dependency>
-  <dependency>
    <groupId>org.mortbay.jetty</groupId>
    <artifactId>jetty-ajp</artifactId>
    <version>6.1.7</version>
    <optional>true</optional>
   </dependency>
+  <dependency>
+   <groupId>org.hibernate</groupId>
+   <artifactId>hibernate-annotations</artifactId>
+   <version>3.3.1.GA</version>
+  </dependency>
+  <dependency>
+   <groupId>c3p0</groupId>
+   <artifactId>c3p0</artifactId>
+   <version>0.9.1</version>
+  </dependency>
  </dependencies>
+ <repositories>
+  <repository>
+   <id>com.jboss</id>
+   <url>http://repository.jboss.com/maven2/</url>
+  </repository>
+ </repositories>
 </project>

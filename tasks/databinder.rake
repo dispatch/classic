@@ -1,3 +1,5 @@
+repositories.remote << "http://repository.jboss.com/maven2/"
+
 repositories.local = ENV['M2_REPO'] if ENV['M2_REPO']
 
 def child_artifact(child_spec, parent_artifact, path)
@@ -108,15 +110,15 @@ def embed_server
   end
 end
 
-WICKET_SELF = group("wicket", "wicket-auth-roles", "wicket-extensions", :under=>"org.apache.wicket", :version=>"1.3.1")
+WICKET_SELF = group("wicket", "wicket-auth-roles", "wicket-extensions", :under=>"org.apache.wicket", :version=>"1.3.2")
 WICKET=[WICKET_SELF, "commons-collections:commons-collections:jar:2.1.1","org.slf4j:slf4j-api:jar:1.4.2"]
 MAIL = ["javax.mail:mail:jar:1.4", "javax.activation:activation:jar:1.1"]
 LOG4J = ["org.slf4j:slf4j-log4j12:jar:1.4.2","log4j:log4j:jar:1.2.14", MAIL]
 JDK_LOG = ["org.slf4j:slf4j-jdk14:jar:1.4.2"]
 
-HB_CORE_ZIP=download(artifact("org.hibernate:hibernate:zip:3.2.5.ga")=>"http://downloads.sourceforge.net/sourceforge/hibernate/hibernate-3.2.5.ga.zip?download")
-HIBERNATE_CORE = child_artifact("org.hibernate:hibernate:jar:3.2.5.ga", HB_CORE_ZIP, "hibernate-3.2/hibernate3.jar")
-HIBERNATE_SELF = [HIBERNATE_CORE,"org.hibernate:hibernate-annotations:jar:3.3.0.ga", "org.hibernate:hibernate-commons-annotations:jar:3.3.0.ga"]
+HB_CORE_ZIP=download(artifact("org.hibernate:hibernate:zip:3.2.6.ga")=>"http://downloads.sourceforge.net/sourceforge/hibernate/hibernate-3.2.6.ga.zip?download")
+HIBERNATE_CORE = child_artifact("org.hibernate:hibernate:jar:3.2.6.ga", HB_CORE_ZIP, "hibernate-3.2/hibernate3.jar")
+HIBERNATE_SELF = [HIBERNATE_CORE,"org.hibernate:hibernate-annotations:jar:3.3.1.GA", "org.hibernate:hibernate-commons-annotations:jar:3.3.1.GA"]
 JTA = child_artifact("javax.transaction:jta:jar:1.0.1B", HB_CORE_ZIP, "hibernate-3.2/lib/jta.jar")
 CGLIB = child_artifact("cglib:cglib:jar:2.1_3", HB_CORE_ZIP, "hibernate-3.2/lib/cglib-2.1.3.jar")
 EHCACHE=child_artifact("net.sf.ehcache:ehcache:jar:1.2.3", HB_CORE_ZIP, "hibernate-3.2/lib/ehcache-1.2.3.jar")

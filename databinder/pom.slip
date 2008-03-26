@@ -21,24 +21,22 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 			version: "2.3"
 
 		dependency:
-			groupId: "org.hibernate"
-			artifactId: "hibernate-annotations"
-			version: "3.3.0.ga"
-
-		#hib-com-anno should be transitive, but central hib-anno POM is wrong
-		dependency:
-			groupId: "org.hibernate"
-			artifactId: "hibernate-commons-annotations"
-			version: "3.3.0.ga"
-
-		dependency:
-			groupId: "c3p0"
-			artifactId: "c3p0"
-			version: "0.9.0.4"
-
-		dependency:
 			groupId: "org.mortbay.jetty"
 			artifactId: "jetty-ajp"
 			version: "6.1.7"
 			optional: "true"
 
+		dependency:
+			groupId: "org.hibernate"
+			artifactId: "hibernate-annotations"
+			version: "3.3.1.GA"
+
+		dependency:
+			groupId: "c3p0"
+			artifactId: "c3p0"
+			version: "0.9.1"
+
+	repositories:
+		repository:
+			id: "com.jboss"
+			url: "http://repository.jboss.com/maven2/"
