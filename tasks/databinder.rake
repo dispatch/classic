@@ -1,3 +1,4 @@
+repositories.remote << "http://repository.jboss.com/maven2/"
 repositories.remote << "http://download.java.net/maven/2/"
 repositories.remote << "http://databinder.net/snapshot/"
 repositories.remote << "http://scala-tools.org/repo-releases"
@@ -123,14 +124,14 @@ COMMONS_LOG="commons-logging:commons-logging:jar:1.1.1"
 HTTPCLIENT = ["org.apache.httpcomponents:httpclient:jar:4.0-alpha3", \
   "org.apache.httpcomponents:httpcore:jar:4.0-beta1", "commons-codec:commons-codec:jar:1.3", COMMONS_LOG]
 
-HB_CORE_ZIP=download(artifact("org.hibernate:hibernate:zip:3.2.5.ga")=>"http://downloads.sourceforge.net/sourceforge/hibernate/hibernate-3.2.5.ga.zip?download")
-HIBERNATE_CORE = child_artifact("org.hibernate:hibernate:jar:3.2.5.ga", HB_CORE_ZIP, "hibernate-3.2/hibernate3.jar")
-HIBERNATE_SELF = [HIBERNATE_CORE,"org.hibernate:hibernate-annotations:jar:3.3.0.ga", "org.hibernate:hibernate-commons-annotations:jar:3.3.0.ga"]
+HB_CORE_ZIP=download(artifact("org.hibernate:hibernate:zip:3.2.6.ga")=>"http://downloads.sourceforge.net/sourceforge/hibernate/hibernate-3.2.6.ga.zip?download")
+HIBERNATE_CORE = child_artifact("org.hibernate:hibernate:jar:3.2.6.ga", HB_CORE_ZIP, "hibernate-3.2/hibernate3.jar")
+HIBERNATE_SELF = [HIBERNATE_CORE,"org.hibernate:hibernate-annotations:jar:3.3.1.GA", "org.hibernate:hibernate-commons-annotations:jar:3.0.0.ga"]
 JTA = child_artifact("javax.transaction:jta:jar:1.0.1B", HB_CORE_ZIP, "hibernate-3.2/lib/jta.jar")
 CGLIB = child_artifact("cglib:cglib:jar:2.1_3", HB_CORE_ZIP, "hibernate-3.2/lib/cglib-2.1.3.jar")
 EHCACHE=child_artifact("net.sf.ehcache:ehcache:jar:1.2.3", HB_CORE_ZIP, "hibernate-3.2/lib/ehcache-1.2.3.jar")
-C3P0='c3p0:c3p0:jar:0.9.0.4'
-HIBERNATE=[HIBERNATE_SELF, JTA, EHCACHE, CGLIB, "javax.persistence:persistence-api:jar:1.0", "dom4j:dom4j:jar:1.6.1", "asm:asm-attrs:jar:1.5.3", "asm:asm:jar:1.5.3", "antlr:antlr:jar:2.7.6", COMMONS_LOG]
+C3P0='c3p0:c3p0:jar:0.9.1'
+HIBERNATE=[HIBERNATE_SELF, JTA, EHCACHE, CGLIB, "javax.persistence:persistence-api:jar:1.0", "dom4j:dom4j:jar:1.6.1", "asm:asm-attrs:jar:1.5.3", "asm:asm:jar:1.5.3", "antlr:antlr:jar:2.7.6", "commons-logging:commons-logging:jar:1.0.4"]
 ACTIVE_OBJECTS=['net.java.dev.activeobjects:activeobjects:jar:0.8']
 CAYENNE=['org.apache.cayenne:cayenne:jar:2.0.4']
 
