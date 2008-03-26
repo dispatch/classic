@@ -16,25 +16,9 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 
 	dependencies:
 		dependency:
-			groupId: "${pom.groupId}"
-			version: "${pom.version}"
-			artifactId: "databinder-components"
-
-		dependency:
-			groupId: "net.sf.ehcache"
-			artifactId: "ehcache"
-			version: "1.2.4"
-			
-		dependency:
 			groupId: "org.apache.httpcomponents"
 			artifactId: "httpclient"
 			version: "4.0-alpha3"
-			
-		dependency:
-			groupId: "javax.servlet"
-			artifactId: "servlet-api"
-			version: "2.5"
-			scope: "provided"
 			
 		dependency:
 			groupId: "org.scala-lang"
