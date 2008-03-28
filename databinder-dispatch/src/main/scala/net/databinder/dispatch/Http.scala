@@ -43,8 +43,7 @@ class Http(host: Option[HttpHost]) extends org.apache.http.impl.client.DefaultHt
     def when(chk: Int => Boolean)(thunk: HttpEntity => T) = this { (code, res, ent) => 
       if (chk(code))
         thunk(ent)
-      else 
-        error("Response not OK: " + code)
+      else error("Response not OK: " + code)
     }
     
     def ok = (this when {code => (200 to 204) contains code}) _
@@ -52,7 +51,7 @@ class Http(host: Option[HttpHost]) extends org.apache.http.impl.client.DefaultHt
   def apply(uri: String) = new Request(uri)
   
   class Request(uri: String) extends Respond(new HttpGet(uri)) {
-    def << (body: Any) = {
+    def <<< (body: Any) = {
       val m = new HttpPut(uri)
       m setEntity new StringEntity(body.toString, HTTP.UTF_8)
       HttpProtocolParams.setUseExpectContinue(m.getParams, false)
@@ -66,6 +65,7 @@ class Http(host: Option[HttpHost]) extends org.apache.http.impl.client.DefaultHt
       )
       new Respond(m)
     }
+    def << (values: Map[String, Any]): Respond = <<(values.toList: _*)
   }
   class Respond(req: HttpUriRequest) {
     def >> [T] (thunk: InputStream => T) = x (req) ok (res => thunk(res.getContent))

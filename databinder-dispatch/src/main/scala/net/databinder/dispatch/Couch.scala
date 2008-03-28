@@ -18,6 +18,6 @@ object Revise extends Schema {
     
   def apply(source: Store) = new {
     def <<: (req: Http#Request) =
-      (req << source) >> (update(_, source))
+      (req <<< source.toString) >> (update(_, source))
   }
 }
