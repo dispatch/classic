@@ -61,6 +61,8 @@ def embed_server
     params << '-Djetty.port=' + ENV['JETTY_PORT'] if ENV['JETTY_PORT']
     params << '-Djetty.ajp.port=' + ENV['JETTY_AJP_PORT'] if ENV['JETTY_AJP_PORT']
     params << '-Djetty.contextPath=' + ENV['JETTY_CONTEXT'] if ENV['JETTY_CONTEXT']
+    # set utf-8 default charset
+    params << '-Dfile.encoding=UTF-8'
 
     mkpath _('target/tmp'), :verbose=>false
     params << '-Djava.io.tmpdir=' + _('target/tmp')
