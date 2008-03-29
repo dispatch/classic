@@ -43,7 +43,7 @@ class Http(host: Option[HttpHost]) extends org.apache.http.impl.client.DefaultHt
     def when(chk: Int => Boolean)(thunk: HttpEntity => T) = this { (code, res, ent) => 
       if (chk(code))
         thunk(ent)
-      else error("Response not OK: " + code)
+      else error("Response not OK: " + code + " , body:\n" + EntityUtils.toString(ent))
     }
     
     def ok = (this when {code => (200 to 204) contains code}) _

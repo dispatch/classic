@@ -2,7 +2,7 @@ package net.databinder.dispatch
 
 trait Schema {
   def loc(base: Option[Map[Symbol, Option[Any]]], sub_sym: Symbol) = 
-    (base flatMap { _(sub_sym) })
+    (base flatMap { _.getOrElse(sub_sym, None) })
 
   def replace(base: Option[Map[Symbol, Option[Any]]], sub_sym: Symbol, value: Option[Any]) = 
     (base map { _ + (sub_sym -> value) })
@@ -15,6 +15,12 @@ trait Schema {
     import org.apache.http.impl.cookie.DateUtils
     override def to_type(opt: Option[Any]) = opt map { DateUtils parseDate _.toString }
     override def from_type(opt: Option[java.util.Date]) = opt map { DateUtils formatDate _ }
+  }
+
+  case class Spec[T](symbol: Symbol, to: Any => T, from: T => Any) extends Value[T](symbol) {
+    import org.apache.http.impl.cookie.DateUtils
+    override def to_type(opt: Option[Any]) = opt map to
+    override def from_type(opt: Option[T]) = opt map from
   }
 
   case class List[T](symbol: Symbol) extends Value[scala.List[T]](symbol)
@@ -50,6 +56,8 @@ class Store (val base: Map[Symbol, Option[Any]]){
   
   def << [T](ref: Schema#Value[T])(value: Option[T]): Store = 
     new Store(ref.replace(Some(base), value).get)
+
+  def <<< [T](ref: Schema#Value[T])(value: T): Store = <<(ref)(Some(value))
 
   override def toString = Store.as_string(base)
 }
@@ -95,7 +103,7 @@ object Store extends Parser {
     case Some(value) => value match {
       case value: Map[_, _] => as_string(value.asInstanceOf[Map[Symbol,Option[Any]]])
       case value: List[_] => as_string(value.asInstanceOf[List[Option[Any]]])
-      case value: String => qt(value.toString)
+      case value: String => qt(value.replace("\"", "\\\""))
       case value => value.toString
     }
   }
