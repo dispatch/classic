@@ -52,4 +52,9 @@ object TextFormat {
     Textile.code -> Textile,
     Smartypants.code -> Smartypants
   )
+  val of = Map(
+    Maruku.path_name -> Maruku,
+    Textile.path_name -> Textile,
+    Smartypants.path_name -> Smartypants
+  )
 }

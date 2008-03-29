@@ -31,10 +31,12 @@ abstract class HttpPostConverter extends AbstractConverter {
       (service("/" + path_name) << "input" -> source).as_str
     }  
   } catch { 
-    case e => Application.get.getConfigurationType match {
-      case Application.DEVELOPMENT => 
-        throw new RestartResponseAtInterceptPageException(new ConnectionErrorPage(e))
-      case _ => HttpPostConverter.log.error("Error posting to server", e); ""
+    case e => 
+      HttpPostConverter.log.error("Error posting to server", e);
+      Application.get.getConfigurationType match {
+        case Application.DEVELOPMENT => 
+          throw new RestartResponseAtInterceptPageException(new ConnectionErrorPage(e))
+        case _ => ""
     }
   }
 }
