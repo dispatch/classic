@@ -32,6 +32,7 @@ import org.apache.wicket.Response;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.context.ManagedSessionContext;
 
 /**
@@ -92,10 +93,11 @@ public class DataRequestCycle extends CookieRequestCycle implements HibernateReq
 	@Override
 	protected void onEndRequest() {
 		for (Object key : keys) {
-			if (!ManagedSessionContext.hasBind(Databinder.getHibernateSessionFactory(key)))
-				return;
-			closeSession(key);
-			ManagedSessionContext.unbind(Databinder.getHibernateSessionFactory(key));
+			SessionFactory sf = Databinder.getHibernateSessionFactory(key);
+			if (ManagedSessionContext.hasBind(sf)) {
+				closeSession(key);
+				ManagedSessionContext.unbind(sf);
+			}
 		}
 	}
 
