@@ -106,7 +106,7 @@ public class DataRequestCycle extends ExceptionFilteringRequestCycle implements 
 	@Override
 	protected void onEndRequest() {
 		for (Object key : keys) {
-			SessionFactory sf = Databinder.getHibernateSessionFactory(key);
+			SessionFactory sf = DataStaticService.getHibernateSessionFactory(key);
 			if (ManagedSessionContext.hasBind(sf)) {
 				closeSession(key);
 				ManagedSessionContext.unbind(sf);
