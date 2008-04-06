@@ -34,6 +34,7 @@ import org.apache.wicket.Response;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.context.ManagedSessionContext;
 
 /**
@@ -105,10 +106,11 @@ public class DataRequestCycle extends ExceptionFilteringRequestCycle implements 
 	@Override
 	protected void onEndRequest() {
 		for (Object key : keys) {
-			if (!ManagedSessionContext.hasBind(DataStaticService.getHibernateSessionFactory(key)))
-				return;
-			closeSession(key);
-			ManagedSessionContext.unbind(DataStaticService.getHibernateSessionFactory(key));
+			SessionFactory sf = Databinder.getHibernateSessionFactory(key);
+			if (ManagedSessionContext.hasBind(sf)) {
+				closeSession(key);
+				ManagedSessionContext.unbind(sf);
+			}
 		}
 	}
 
