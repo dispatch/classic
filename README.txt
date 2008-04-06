@@ -6,8 +6,8 @@ http://databinder.net/
 
 Version History
 
-1.1.2 Depends on Wicket 1.3.3 and the latest Hibernate artifacts, to be obtained
-	directly from the Jboss repository. This is the first Databinder
+1.1.2 Depends on Wicket 1.3.3 and the latest Hibernate modules, to be obtained
+	directly from the JBoss repository. This is the first Databinder
 	release to depend on non-central repositories. As a result, this release
 	may not itself be housed on the central repository. Existing Databinder
 	applications will need to include add following to pom.xml:
