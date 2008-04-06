@@ -22,7 +22,7 @@
   <dependency>
    <groupId>org.mortbay.jetty</groupId>
    <artifactId>jetty-ajp</artifactId>
-   <version>6.1.7</version>
+   <version>6.1.9</version>
    <optional>true</optional>
   </dependency>
   <dependency>
