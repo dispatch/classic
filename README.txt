@@ -6,6 +6,28 @@ http://databinder.net/
 
 Version History
 
+1.1.2 Depends on Wicket 1.3.3 and the latest Hibernate artifacts, to be obtained
+	directly from the Jboss repository. This is the first Databinder
+	release to depend on non-central repositories. As a result, this release
+	may not itself be housed on the central repository. Existing Databinder
+	applications will need to include add following to pom.xml:
+	
+	<repositories>
+		<repository>
+			<id>databinder</id>
+			<name>Databinder repository</name>
+			<url>http://databinder.net/repo/</url>
+		</repository>
+	</repositories>
+
+*	New SortableDatabinderProvder contributed by Mark Southern, for
+	to handle DataTable and other sorting with less client code; Baseball
+	example updated to demonstrate.
+*	Access to base panel's components in subclasses of sign in and register
+	panels.
+*	Fix for multiple session factory bug; could leave a session open
+	if other sessions did not need to be closed.
+
 1.1.1 Adds modelChanged() calls to DataForm to prevent stale UI state when
 	clearing or changing model object, and checks model binding on detach
 	(if unbound) so that a manual call after saving an entity is unnecessary.
@@ -24,29 +46,29 @@ Version History
 	data-oriented components are available, such as the DataBrowser (contributed 
 	by Xavier Hanin---merci !) and SourceList components.
 
-* Centralization of session-fetching in DataStaticService rather than 
-  DataRequestCycle
-* Use of Hibernate's "current session" facility to support external session 
-  and transaction management
-* Upgrade Hibernate dependency to 3.2.5.ga
-* Experimental support of conversational Hibernate sessions
-* Retain serialized unsaved objects by default
-* Databinder dispatch, an interface to Ruby-based text processing libraries
-* IterableEntityView, an analogue for to ListView for an Collection (not 
-  position-dependent)
-* Refactoring of DatabinderProvider now that DataView is Wicket core
-* URIConverter, URIValidator, ColorConverter
-* Authorization refactor: localizable strings, extensible layout by "sockets 
-  and plugs", UserBase as unmapped base user class
-* Authorization cookies bound to IP address, and specific to servlet context
-* Authorization password encrypted by javascript
-* HibernateObjectModel#isBound method reports if entity has identifiers to 
-  be loaded from storage
-* Page versioning restored to Wicket default
-* Implementations of equals and hashcode for HibernateObjectModel that refer 
-  to target object
-* DataBrowser mounting to /dbrowse in development mode
-* DataApplication init() refactor, calling super() no longer necessary
+*	Centralization of session-fetching in DataStaticService rather than 
+	DataRequestCycle
+*	Use of Hibernate's "current session" facility to support external session 
+	and transaction management
+*	Upgrade Hibernate dependency to 3.2.5.ga
+*	Experimental support of conversational Hibernate sessions
+*	Retain serialized unsaved objects by default
+*	Databinder dispatch, an interface to Ruby-based text processing libraries
+*	IterableEntityView, an analogue for to ListView for an Collection (not 
+	position-dependent)
+*	Refactoring of DatabinderProvider now that DataView is Wicket core
+*	URIConverter, URIValidator, ColorConverter
+*	Authorization refactor: localizable strings, extensible layout by "sockets 
+	and plugs", UserBase as unmapped base user class
+*	Authorization cookies bound to IP address, and specific to servlet context
+*	Authorization password encrypted by javascript
+*	HibernateObjectModel#isBound method reports if entity has identifiers to 
+	be loaded from storage
+*	Page versioning restored to Wicket default
+*	Implementations of equals and hashcode for HibernateObjectModel that refer 
+	to target object
+*	DataBrowser mounting to /dbrowse in development mode
+*	DataApplication init() refactor, calling super() no longer necessary
 
 
 1.0	Uses Wicket's Application.getConfigurationType() rather than 
@@ -54,7 +76,7 @@ Version History
 	other methods of specifying wicket.configuration.
 
 	Removed deprecated addRegisterPanel method of DataSignInPage and 
-	deprecated RedirectServlet.  Added odd/even style definitions to 
+	deprecated RedirectServlet.	Added odd/even style definitions to 
 	DataPage.css to simplify DataTable use.
 
 	Improved HTML validity of example application pages, and changed 
@@ -169,7 +191,7 @@ Version History
 	3.2.0 cr1. Fixed bug leading to unknown entity exceptions caused
 	by Hibernate proxy classes. Added trigger for Hibernate 
 	initialization on startup rather than the first page request.
-	HibernateObjectModel now loads objects upon  instantiation so 
+	HibernateObjectModel now loads objects upon	instantiation so 
 	that object not found (and other) exceptions can be easily 
 	caught.
 
@@ -204,7 +226,7 @@ Version History
 	renders its content using JTextile (modified for Java's built-in 
 	regular expression processor) and the latter using 
 	SimpleDateFormat with a supplied format string. A new recipe book 
-	example demonstrates the Textile support, as well as some basic  
+	example demonstrates the Textile support, as well as some basic	
 	Panel use, embedded Hibernate objects, and JavaScript.
 
 	Transparent version awareness added to DataForm, following a 
