@@ -20,6 +20,11 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 			groupId: "org.hibernate"
 			artifactId: "hibernate"
 			version: "3.2.6.ga"
+			
+		dependency:
+			groupId: "javax.transaction"
+			artifactId: "jta"
+			version: "1.0.1B"
 
 		dependency:
 			groupId: "javax.persistence"
