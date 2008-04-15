@@ -104,7 +104,7 @@ public class HibernateListModel extends LoadableDetachableModel {
 
 	/**
 	 * Set a factory key other than the default (null).
-	 * @param session factory key
+	 * @param key session factory key
 	 * @return this, for chaining
 	 */
 	public HibernateListModel setFactoryKey(Object key) {

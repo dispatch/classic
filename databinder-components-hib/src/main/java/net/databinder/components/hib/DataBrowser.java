@@ -33,14 +33,13 @@ import org.apache.wicket.model.LoadableDetachableModel;
 
 /**
  * Page containing a QueryPanel for browsing data and testing Hibernate queries. This 
- * page is not bookmarkable so that it will not be inadverdantly
+ * page is not bookmarkable, so that it will not be inadverdantly
  * available from the classpath. To access the page it must be subclassed or manually
  * linked. DataApplication.BmarkDataBrowser is a subclass that requires that the
  * running application be assignable to DataApplication and return true for
  * isDataBrowserAllowed(). To use this page from an application that does not extend
  * DataApplication, make a bookmarkable subclass and call super(true), 
  * or link to the class with PageLink.
- * @see DataApplication#BmarkDataBrowser
  * @author Nathan Hamblen
  */
 public class DataBrowser extends WebPage {

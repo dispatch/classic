@@ -136,7 +136,7 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 
 	/**
 	 * Set a factory key other than the default (null).
-	 * @param session factory key
+	 * @param key session factory key
 	 * @return this, for chaining
 	 */
 	public HibernateObjectModel setFactoryKey(Object key) {
@@ -291,7 +291,7 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 	/**
 	 * Disassociates this object from any persistent object, but retains the class
 	 * for constructing a blank copy if requested.
-	 * @see HibernateObjectModel(Class objectClass)
+	 * @see HibernateObjectModel#HibernateObjectModel(Class objectClass)
 	 */
 	public void unbind() {
 		objectId = null;

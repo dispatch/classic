@@ -27,7 +27,7 @@ public interface AuthApplication {
 	/**
 	 * Cryptographic salt to be used in authentication. The default getDigest()
 	 * implementation uses this value.
-	 * @return
+	 * @return app-specific salt
 	 */
 	public abstract byte[] getSalt();
 	

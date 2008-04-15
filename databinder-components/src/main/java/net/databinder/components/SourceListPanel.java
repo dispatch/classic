@@ -16,7 +16,6 @@ import org.apache.wicket.model.IModel;
 public abstract class SourceListPanel extends Panel {
 	/**
 	 * @param id panel id
-	 * @param target sets model to this component
 	 * @param bodyProperty property to display as link body
 	 * @param listModel must  the list from which the model objects will be drawn
 	 */

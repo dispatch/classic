@@ -27,7 +27,6 @@ public abstract class SearchPanel extends Panel {
 	
 	/**
 	 * @param id Wicket id
-	 * @param searchModel model to receive search string
 	 */
 	public SearchPanel(String id) {
 		super(id);

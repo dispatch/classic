@@ -129,7 +129,7 @@ public class HibernateProvider extends PropertyDataProvider  {
 
 	/**
 	 * Set a factory key other than the default (null).
-	 * @param session factory key
+	 * @param key session factory key
 	 * @return this, for chaining
 	 */
 	public HibernateProvider setFactoryKey(Object key) {

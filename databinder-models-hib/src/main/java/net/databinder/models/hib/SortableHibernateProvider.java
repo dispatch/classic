@@ -29,7 +29,6 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.*;
  * The CriteriaBuilder that handles the sorting should also implement ISortStateLocator (such as CriteriaSorter).</p>
  * 
  * @author Mark Southern (southern at scripps dot edu)
- * @todo To be a complete extension of HibernateProvider, support for QueryBinder/QueryBuilder must be added and all of the HibernateProvider constructors covered 
  */
 
 public class SortableHibernateProvider extends HibernateProvider implements ISortableDataProvider {

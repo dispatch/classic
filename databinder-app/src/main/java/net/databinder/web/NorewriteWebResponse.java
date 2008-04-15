@@ -27,8 +27,8 @@ import org.apache.wicket.protocol.http.WebResponse;
 /**
  * Creates web response objects that do not rewrite URLs for cookieless support. Buffered or
  * basic responses are created according to the application configuration. This factory is
- * used by DataApplication when cookieless support is off, but may also be used independently.
- * @see DataApplication
+ * used by DataApplicationBase when cookieless support is off, but may also be used independently.
+ * @see net.databinder.DataApplicationBase
  * @author Nathan Hamblen
  */
 public class NorewriteWebResponse {

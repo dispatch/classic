@@ -21,8 +21,8 @@ public class TextileLabel extends CustomLabel {
 	}	
 	
 	/**
-	 * @param Wicket id
-	 * @param String model
+	 * @param id Wicket id
+	 * @param model String model
 	 */
 	public TextileLabel(String id, IModel model) {
 		super(id, model, new TextileConverter());

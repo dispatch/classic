@@ -38,8 +38,8 @@ import org.hibernate.context.ManagedSessionContext;
 /**
  * <p>Opens Hibernate sessions and transactions as required and closes them at a request's
  * end. Uncomitted transactions are rolled back. Uses keyed Hibernate session factories from
- * DataStaticService.</p>
- * @see DataStaticService
+ * Databinder service.</p>
+ * @see Databinder
  * @author Nathan Hamblen
  */
 public class DataRequestCycle extends CookieRequestCycle implements HibernateRequestCycle {
@@ -88,7 +88,7 @@ public class DataRequestCycle extends CookieRequestCycle implements HibernateReq
 	/**
 	 * Closes all Hibernate sessions opened for this request. If a transaction has
 	 * not been committed, it will be rolled back before closing the session.
-	 * @see net.databinder.components.hibernate.DataForm#onSubmit()
+	 * @see net.databinder.components.hib.DataForm#onSubmit()
 	 */
 	@Override
 	protected void onEndRequest() {

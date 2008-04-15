@@ -65,7 +65,6 @@ import org.apache.wicket.util.string.Strings;
  * that resource using loadSharedResources() as the application is starting up.
  * <p> This class is inspired by, and draws code from, Wicket's DefaultButtonImageResource. </p>
  * @author Nathan Hamblen
- * @see wicket.markup.html.image.resource.DefaultButtonImageResource
  * @see SharedResources
  */
 public class RenderedLabel extends Image  {
@@ -288,7 +287,6 @@ public class RenderedLabel extends Image  {
 
 	/**
 	 * Inner class that renders the model text into an image  resource.
-	 * @see wicket.markup.html.image.resource.DefaultButtonImageResource
 	 */
 	public static class RenderedTextImageResource extends RenderedDynamicImageResource
 	{

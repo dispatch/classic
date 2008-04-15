@@ -154,10 +154,10 @@ public abstract class AuthDataSessionBase extends WebSession implements AuthSess
 		
 	/**
 	 * Looks for a persisted IUser object matching the given username. Uses the user class
-	 * and criteria builder returned from the application subclass implementing IAuthSettings.
+	 * and criteria builder returned from the application subclass implementing AuthApplication.
 	 * @param username
 	 * @return user object from persistent storage
-	 * @see IAuthSettings
+	 * @see AuthApplication
 	 */
 	protected DataUser getUser(final String username) {
 		return getApp().getUser(username);
