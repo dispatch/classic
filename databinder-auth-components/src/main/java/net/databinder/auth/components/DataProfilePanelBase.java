@@ -129,7 +129,7 @@ public abstract class DataProfilePanelBase extends Panel {
 				public boolean isVisible() {
 					return !existing();
 				}
-			}.add(rememberMe = new CheckBox("rememberMe", new Model(Boolean.FALSE))));
+			}.add(rememberMe = new CheckBox("rememberMe", new Model(Boolean.TRUE))));
 			
 			add(lowFormSocket("lowFormSocket"));
 			

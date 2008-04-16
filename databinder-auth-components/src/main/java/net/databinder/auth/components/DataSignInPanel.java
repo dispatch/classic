@@ -74,7 +74,7 @@ public class DataSignInPanel extends Panel {
 			password.setRequired(true);
 			password.setLabel(new ResourceModel("data.auth.password", "Password"));
 			add(new SimpleFormComponentLabel("password-label", password));
-			add(rememberMe = new CheckBox("rememberMe", new Model(Boolean.FALSE)));
+			add(rememberMe = new CheckBox("rememberMe", new Model(Boolean.TRUE)));
 			
 			add(lowFormSocket("lowFormSocket"));
 		}
