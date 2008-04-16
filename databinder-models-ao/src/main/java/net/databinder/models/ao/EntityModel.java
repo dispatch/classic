@@ -88,7 +88,8 @@ public class EntityModel extends LoadableWritableModel implements BindingModel {
 					break;
 				}
 			}
-			fields.put(field, e.getValue());
+			if (e.getValue() != null)
+				fields.put(field, e.getValue());
 		}
 		return fields;
 	}
