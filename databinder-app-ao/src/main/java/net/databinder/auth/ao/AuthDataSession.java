@@ -8,6 +8,7 @@ import net.java.ao.RawEntity;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.protocol.http.WebRequest;
 
+/** Session to hold DataUser. */
 public class AuthDataSession extends AuthDataSessionBase {
 
 	public AuthDataSession(WebRequest request) {

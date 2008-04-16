@@ -24,6 +24,7 @@ import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator
 import org.apache.wicket.util.lang.Classes;
 import org.apache.wicket.util.lang.Objects;
 
+/** Compares post-conversion input, match is valid. */
 public class EqualPasswordConvertedInputValidator extends EqualPasswordInputValidator {
 	
 	public EqualPasswordConvertedInputValidator(FormComponent comp1, FormComponent comp2) {

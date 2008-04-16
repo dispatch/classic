@@ -39,6 +39,7 @@ import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.util.convert.ConverterLocator;
 
+/** Common functionality for Databinder applications. */
 public abstract class DataApplicationBase extends WebApplication {
 	/** true if cookieless use is supported through URL rewriting(defaults to true). */
 	private boolean cookielessSupported = true;
@@ -53,11 +54,10 @@ public abstract class DataApplicationBase extends WebApplication {
 		dataInit();
 	}
 	
+	/** Databinder initialization, client applications should not normally override.*/
 	abstract protected void dataInit();
 	
-	/**
-	 * Adds converters to Wicket's base locator.
-	 */
+	/** Adds converters to Wicket's base locator. */
 	@Override
 	protected IConverterLocator newConverterLocator() {
 		// register converters

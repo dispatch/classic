@@ -37,6 +37,10 @@ import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.util.time.Duration;
 
+/**
+ * Base class for Databinder implementations providing an implementation for
+ * authentication cookies and current user lookup.
+ */
 public abstract class AuthDataSessionBase extends WebSession implements AuthSession {
 	/** Effective signed in state. */
 	private IModel userModel;
@@ -59,7 +63,7 @@ public abstract class AuthDataSessionBase extends WebSession implements AuthSess
 	}
 	
 	/**
-	 * @return IUser object for current user, or null if none signed in.
+	 * @return DataUser object for current user, or null if none signed in.
 	 */
 	public DataUser getUser() {
 		if  (isSignedIn()) {
@@ -143,8 +147,7 @@ public abstract class AuthDataSessionBase extends WebSession implements AuthSess
 				throw new WicketRuntimeException(e);
 			}
 			if (potential != null && potential instanceof DataUser) {
-				AuthApplication app = (AuthApplication)getApplication();
-				String correctToken = app.getToken((DataUser)potential);
+				String correctToken = getApp().getToken((DataUser)potential);
 				if (correctToken.equals(token.getValue()))
 					signIn(potential, false);
 			}
@@ -153,7 +156,7 @@ public abstract class AuthDataSessionBase extends WebSession implements AuthSess
 	}
 		
 	/**
-	 * Looks for a persisted IUser object matching the given username. Uses the user class
+	 * Looks for a persisted DataUser object matching the given username. Uses the user class
 	 * and criteria builder returned from the application subclass implementing AuthApplication.
 	 * @param username
 	 * @return user object from persistent storage
@@ -202,13 +205,16 @@ public abstract class AuthDataSessionBase extends WebSession implements AuthSess
 		resp.addCookie(auth);
 	}
 	
+	/**
+	 * Detach userModel manually, as it isnt' attached to any component.
+	 */
 	@Override
 	protected void detach() {
 		if (userModel != null)
 			userModel.detach();
 	}
 	
-	/** Detach user from session */
+	/** Nullifies userModel and clears authentication cookies. */
 	public void signOut() {
 		userModel = null;
 		CookieRequestCycle requestCycle = (CookieRequestCycle) RequestCycle.get();

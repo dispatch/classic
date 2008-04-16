@@ -27,6 +27,9 @@ import org.apache.wicket.Response;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
 
+/**
+ * Request cycle with cookie convenience methods that reflects removal immediately.
+ */
 public class CookieRequestCycle extends ExceptionFilteringRequestCycle {
 	/** cache of cookies from request */ 
 	private Map<String, Cookie> cookies;

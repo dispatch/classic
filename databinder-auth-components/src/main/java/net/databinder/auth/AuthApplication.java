@@ -17,7 +17,7 @@ public interface AuthApplication {
 	 */
 	public Class< ? extends DataUser> getUserClass();
 	/** 
-	 * @return IUser for the given username. 
+	 * @return DataUser for the given username. 
 	 */
 	public DataUser getUser(String username);
 	/**

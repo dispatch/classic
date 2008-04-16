@@ -2,6 +2,7 @@ package net.databinder.auth.data;
 
 import java.security.MessageDigest;
 
+/** Password interface for DataUser. */
 public interface DataPassword {
 	/** @return true if the given password matches this object's */
 	boolean matches(String password);

@@ -31,6 +31,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.util.crypt.Base64UrlSafe;
 
+/** Optional base class for ActiveObjects applications using Databinder authentication. */
 public abstract class AuthDataApplication extends DataApplication implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, AuthApplication {
 	
 	/**
@@ -74,7 +75,7 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 	}
 	
 	/**
-	 * Passes query on to the IUser object if signed in.
+	 * Passes query on to the DataUser object if signed in.
 	 */
 	public final boolean hasAnyRole(Roles roles) {
 		DataUser user = ((AuthSession)Session.get()).getUser();
@@ -85,12 +86,13 @@ public abstract class AuthDataApplication extends DataApplication implements IUn
 		return false;
 	}
 	
+	/** @return DataUser implementation used by this application. */
 	public abstract Class<? extends DataUser> getUserClass();
 
 	/**
 	 * Return user object by matching against a "username" property. Override
 	 * if you have a differently named property.
-	 * @return IUser for the given username. 
+	 * @return DataUser for the given username. 
 	 */
 	@SuppressWarnings("unchecked")
 	public DataUser getUser(String username) {

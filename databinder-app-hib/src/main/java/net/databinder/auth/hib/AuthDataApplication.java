@@ -50,7 +50,7 @@ import org.hibernate.criterion.Restrictions;
 /**
  * Adds basic authentication functionality to DataApplication. This class is a derivative
  * of Wicket's AuthenticatedWebApplication, brought into the DataApplication hierarchy
- * and including light user specifications in IUser. You are encouraged to override
+ * and including light user specifications in DataUser. You are encouraged to override
  * getUserClass() to implement your own user entity, possibly by extending UserBase.
  * It is also possible to use Databinder authentication without extending this base class 
  * by implementing IAuthSettings.
@@ -93,7 +93,7 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, A
 		return new AuthDataSession(request);
 	}
 	/**
-	 * Adds to the configuration whatever IUser class is defined.
+	 * Adds to the configuration whatever DataUser class is defined.
 	 */
 	@Override
 	protected void configureHibernate(AnnotationConfiguration config) {
@@ -114,7 +114,7 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, A
 	}
 	
 	/**
-	 * Passes query on to the IUser object if signed in.
+	 * Passes query on to the DataUser object if signed in.
 	 */
 	public final boolean hasAnyRole(Roles roles) {
 		DataUser user = ((AuthSession)Session.get()).getUser();
@@ -128,7 +128,7 @@ implements IUnauthorizedComponentInstantiationListener, IRoleCheckingStrategy, A
 	/**
 	 * Return user object by matching against a "username" property. Override
 	 * if you have a differently named property.
-	 * @return IUser for the given username. 
+	 * @return DataUser for the given username. 
 	 */
 	public DataUser getUser(String username) {
 		return (DataUser) Databinder.getHibernateSession().createCriteria(getUserClass())

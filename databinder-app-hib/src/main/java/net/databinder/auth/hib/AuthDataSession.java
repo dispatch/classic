@@ -19,10 +19,10 @@
 package net.databinder.auth.hib;
 
 /**
- * Holds IUser identifier for signed in users. Remembering the user with a browser cookie
+ * Holds DataUser identifier for signed in users. Remembering the user with a browser cookie
  * allows that user to bypass login for the length of time specified in getSignInCookieMaxAge().
  * <p> In general the semantics here expect users to have a username and password, though the 
- * IUser interface itself does not require it. Use your <tt>AuthDataApplication</tt> subclass to specify
+ * DataUser interface itself does not require it. Use your <tt>AuthDataApplication</tt> subclass to specify
  * a user class and criteria builder as needed.</p>
  */
 import net.databinder.auth.AuthDataSessionBase;
@@ -34,6 +34,7 @@ import org.apache.wicket.Request;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.protocol.http.WebApplication;
 
+/** Session to hold DataUser. */
 public class AuthDataSession extends AuthDataSessionBase implements AuthSession {
 	/**
 	 * Initialize new session.
