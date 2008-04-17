@@ -9,6 +9,11 @@ import net.java.ao.schema.Unique;
 
 import org.apache.wicket.authorization.strategies.role.Roles;
 
+/** 
+ * Optional DataUser extension with ActiveObjects field annotations. 
+ * Client applications may extend this interface with an @Implementation
+ * that is an extension of UserHelper.
+ */
 public interface UserBase extends DataUser, Entity {
 
 	@Ignore

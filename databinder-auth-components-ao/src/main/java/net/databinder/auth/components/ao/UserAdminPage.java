@@ -15,6 +15,19 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 
+/**
+ * User administration page. Lists all users, allows editing usernames, passwords, and roles.
+ * Must have Role.ADMIN to view. Replaceable String resources: <pre>
+ * data.auth.user_admin
+ * data.auth.user_add
+ * data.auth.username
+ * data.auth.password
+ * data.auth.passwordConfirm
+ * data.auth.roles
+ * data.auth.save
+ * data.auth.delete</pre>
+ * @see AuthSession
+ */
 public class UserAdminPage extends UserAdminPageBase {
 	private DataForm form;
 	

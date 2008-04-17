@@ -27,7 +27,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.ResourceModel;
 
 /**
- * Display profile editing panel for logged in user. 
+ * Display profile editing page for logged in user. 
  * Replaceable String resources: <pre>
  * data.auth.update
  * data.auth.title.update
@@ -38,5 +38,6 @@ public abstract class DataProfilePageBase extends WebPage {
 		add(new DataStyleLink("dataStylesheet"));
 		add(profileSocket("profileSocket", returnPage));
 	}
+	/** @return component to appear as the body of this page. */
 	protected abstract Component profileSocket(String id, ReturnPage returnPage);
 }

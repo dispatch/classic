@@ -13,6 +13,18 @@ import org.apache.wicket.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 
+/**
+ * Registration with username, password, and password confirmation.
+ * Replaceable String resources: <pre>
+ * data.auth.username
+ * data.auth.password
+ * data.auth.passwordConfirm
+ * data.auth.remember
+ * data.auth.register
+ * data.auth.update
+ * data.auth.username.taken * </pre> * Must be overriden in a containing page
+ * or a subclass of this panel.
+ */
 public class DataProfilePanel extends DataProfilePanelBase {
 	
 	public DataProfilePanel(String id, ReturnPage returnPage) {
@@ -42,6 +54,11 @@ public class DataProfilePanel extends DataProfilePanelBase {
 		};
 	}
 	
+	/**
+	 * Uses super implementation if bound, but for new users this method must call
+	 * UserHelper.getHash(password) to set the hash in "passwordHash". If application 
+	 * uses different hasing implementation.
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void setPassword(String password) {

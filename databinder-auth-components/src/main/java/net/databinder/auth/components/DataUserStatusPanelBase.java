@@ -95,8 +95,13 @@ public abstract class DataUserStatusPanelBase extends Panel {
 		add(getSignInLink("signIn"));
 	}
 	
+	/** 
+	 * @param returnPage current page, to be returned to after profile update
+	 * @return new page instance for user profile 
+	 */
 	protected abstract WebPage profilePage(ReturnPage returnPage);
 	
+	/** @return page class for user administration */
 	protected abstract Class<? extends WebPage> adminPageClass();
 
 	/**

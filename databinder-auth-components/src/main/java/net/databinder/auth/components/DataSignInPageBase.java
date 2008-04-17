@@ -56,9 +56,8 @@ public abstract class DataSignInPageBase extends WebPage {
 	public interface ReturnPage extends IClusterable {
 		Page get();
 	}
-	/**
-	 * Displays sign in page.
-	 */
+	
+	/** Displays sign in page. */
 	public DataSignInPageBase(PageParameters params) {
 		this(params, null);
 	}
@@ -121,12 +120,10 @@ public abstract class DataSignInPageBase extends WebPage {
 		return new DataSignInPanel(id, returnPage);
 	}
 
-	/**
-	 * Default returns DataProfilePanel.
-	 * @return component to display for profile / registration
-	 */
+	/** @return new component to display for profile / registration */
 	protected abstract Component profileSocket(String id, ReturnPage returnPage);
 	
+	/** @return casted session */
 	protected static  AuthSession getAuthSession() {
 		return (AuthSession) Session.get();
 	}

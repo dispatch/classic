@@ -69,11 +69,17 @@ public abstract class DataProfilePanelBase extends Panel {
 	private RequiredTextField username;
 	private RSAPasswordTextField password, passwordConfirm;
 	private CheckBox rememberMe;
-
+	
+	/** @return component used in base page, if needed in subclass */
 	protected RequiredTextField getUsername() { return username; }
+	/** @return component used in base page, if needed in subclass */
 	protected RSAPasswordTextField getPassword() { return password; }
+	/** @return component used in base page, if needed in subclass */
 	protected RSAPasswordTextField getPasswordConfirm() { return passwordConfirm; }
+	/** @return component used in base page, if needed in subclass */
 	protected CheckBox getRememberMe() { return rememberMe; }
+	/** @return form used in base page, if needed elsewhere */
+	public Form getForm() { return form; }
 
 	public DataProfilePanelBase(String id, ReturnPage returnPage) {
 		super(id);
@@ -82,17 +88,21 @@ public abstract class DataProfilePanelBase extends Panel {
 		form.add(new Profile("profile"));
 	}
 	
+	/** @return new form component to be used within this panel */
 	protected abstract Form profileForm(String id, IModel userModel);
-	
+
+	/** @return user from form component */
 	protected DataUser getUser() {
 		return (DataUser) form.getModelObject();
 	}
 
+	/** @return true if form is bound to existing user, is not registration form */
 	protected boolean existing() {
 		BindingModel model = ((BindingModel)((IChainingModel)form.getModel()).getChainedModel());
 		return model != null && model.isBound();
 	}
 
+	/** Contents of the profile form. */
 	protected class Profile extends WebMarkupContainer {
 		
 		public Profile(String id) {
@@ -148,6 +158,7 @@ public abstract class DataProfilePanelBase extends Panel {
 			getUser().getPassword().change(password);
 	}
 	
+	/** Subclasses call this after form submission. Returns user to prior page if possible, otherwise home. */
 	protected void afterSubmit() {
 		DataSignInPageBase.getAuthSession().signIn(getUser(), (Boolean) rememberMe.getModelObject());
 
@@ -158,6 +169,7 @@ public abstract class DataProfilePanelBase extends Panel {
 			setResponsePage(returnPage.get());
 	}
 
+	/** @return true if username is available (can not load via AuthApplication, or is current user). */
 	public static boolean isAvailable(String username) {
 		AuthApplication authSettings = (AuthApplication)Application.get();
 		
@@ -166,6 +178,7 @@ public abstract class DataProfilePanelBase extends Panel {
 		return found == null || found.equals(current);
 	}
 	
+	/** Username is valid if isAvailable(username) returns true */
 	public static class UsernameValidator extends StringValidator {
 		@Override
 		protected void onValidate(IValidatable validatable) {
@@ -178,21 +191,19 @@ public abstract class DataProfilePanelBase extends Panel {
 		}
 	}
 	
+	/** @return content to appear above form, base class returns feedback panel */
 	protected Component highFormSocket(String id) {
 		return new FeedbackPanel(id)
 			.add(new AttributeModifier("class", true, new Model("feedback")));
 	}
 
+	/** @return content to appear below form, base class returns blank */
 	protected Component lowFormSocket(String id) {
 		return new NullPlug(id);
 	}
 
+	/** @return border to go around each form component, base returns FormComponentFeedbackBorder.  */
 	protected Border feedbackBorder(String id) {
 		return new FormComponentFeedbackBorder(id);
 	}
-
-	public Form form() {
-		return form;
-	}
-
 }

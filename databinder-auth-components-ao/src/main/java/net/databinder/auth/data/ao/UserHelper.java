@@ -9,6 +9,11 @@ import net.databinder.auth.data.DataPassword;
 import org.apache.wicket.Application;
 import org.apache.wicket.authorization.strategies.role.Roles;
 
+/**
+ * Helper for UserBase, handles password hashing and virtual collection of roles (from roleString).
+ * Client applications must extend this class to use it, because as an @Implementation it must have
+ * a contructor matching the mapped entity interface.
+ */
 public class UserHelper {
 	UserBase user;
 	

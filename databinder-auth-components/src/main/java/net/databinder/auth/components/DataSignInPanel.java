@@ -93,15 +93,18 @@ public class DataSignInPanel extends Panel {
 		}
 	}
 	
+	/** @return border to be added to each form component, base returns FormComponentFeedbackBorder */
 	protected Border feedbackBorder(String id) {
 		return new FormComponentFeedbackBorder(id);
 	}
 
+	/** @return content to appear above form, base return FeedbackPanel */
 	protected Component highFormSocket(String id) {
 		return new FeedbackPanel(id)
 			.add(new AttributeModifier("class", true, new Model("feedback")));
 	}
 
+	/** @return content to appear below form, base return blank */
 	protected Component lowFormSocket(String id) {
 		return new NullPlug(id);
 	}

@@ -14,7 +14,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		dependency:
 			groupId: "net.java.dev.activeobjects"
 			artifactId: "activeobjects"
-			version: "0.8"
+			version: "0.8.1"
 
 		dependency:
 			groupId: "${pom.groupId}"
