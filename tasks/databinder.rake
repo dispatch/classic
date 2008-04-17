@@ -133,7 +133,7 @@ CGLIB = "cglib:cglib:jar:2.1_3"
 EHCACHE= "net.sf.ehcache:ehcache:jar:1.2.3"
 C3P0='c3p0:c3p0:jar:0.9.1'
 HIBERNATE=[HIBERNATE_SELF, JTA, EHCACHE, CGLIB, "javax.persistence:persistence-api:jar:1.0", "dom4j:dom4j:jar:1.6.1", "asm:asm-attrs:jar:1.5.3", "asm:asm:jar:1.5.3", "antlr:antlr:jar:2.7.6", "commons-logging:commons-logging:jar:1.0.4"]
-ACTIVE_OBJECTS=['net.java.dev.activeobjects:activeobjects:jar:0.8']
+ACTIVE_OBJECTS=['net.java.dev.activeobjects:activeobjects:jar:0.8.1']
 CAYENNE=['org.apache.cayenne:cayenne:jar:2.0.4']
 
 DB_VERS='1.2-SNAPSHOT'
