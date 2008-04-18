@@ -175,7 +175,9 @@ public abstract class AuthDataSessionBase extends WebSession implements AuthSess
 	}
 
 	/**
-	 * Sets cookie to remember the currently signed-in user.
+	 * Sets cookie to remember the currently signed-in user. Sets max age to
+	 * value from getSignInCookieMaxAge().
+	 * @see AuthDataSessionBase#getSignInCookieMaxAge()
 	 */
 	protected void setCookie() {
 		if (userModel == null)
@@ -183,8 +185,6 @@ public abstract class AuthDataSessionBase extends WebSession implements AuthSess
 		
 		DataUser cookieUser = (DataUser) getUser();
 		WebResponse resp = (WebResponse) RequestCycle.get().getResponse();
-		
-		int  maxAge = (int) getSignInCookieMaxAge().seconds();
 		
 		Cookie name, auth;
 		try {
@@ -195,14 +195,24 @@ public abstract class AuthDataSessionBase extends WebSession implements AuthSess
 			throw new WicketRuntimeException(e);
 		}
 		
-		name.setPath("/");
-		auth.setPath("/");
-
+		int  maxAge = (int) getSignInCookieMaxAge().seconds();
 		name.setMaxAge(maxAge);
 		auth.setMaxAge(maxAge);
+
+		configureCookies(name, auth);
 		
 		resp.addCookie(name);
 		resp.addCookie(auth);
+	}
+	
+	/**
+	 * Set cookie parameters. Base implementation sets path to / .
+	 * @param name user name cookie
+	 * @param auth authentication token
+	 */
+	protected void configureCookies(Cookie name, Cookie auth) {
+		name.setPath("/");
+		auth.setPath("/");
 	}
 	
 	/**
