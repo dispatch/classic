@@ -20,12 +20,14 @@ package net.databinder.models.hib;
  */
 
 import java.io.Serializable;
+
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortState;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortStateLocator;
 import org.apache.wicket.extensions.markup.html.repeater.util.SingleSortState;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Property;
 
 /**
  * <h1>CriteriaSorter</h1>
@@ -100,6 +102,8 @@ public class CriteriaSorter implements ISortStateLocator, CriteriaBuilder, Seria
                     property = String.format("%s.%s", path[path.length - 2], path[path.length - 1]);
                 else
                     property = path[path.length - 1];
+                // set to not-null, hibernate will not return these results when null
+                criteria.add(Property.forName(property).isNotNull());
             }
             Order order = asc ? Order.asc(property) : Order.desc(property);
             order = cased ? order : order.ignoreCase();

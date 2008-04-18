@@ -21,7 +21,6 @@ package net.databinder.models.hib;
 import java.util.Iterator;
 
 import net.databinder.hib.Databinder;
-import net.databinder.models.Models;
 import net.databinder.models.PropertyDataProvider;
 
 import org.apache.wicket.model.IModel;
@@ -42,9 +41,7 @@ import org.hibernate.criterion.Projections;
  */
 public class HibernateProvider extends PropertyDataProvider  {
 	private Class objectClass;
-	private CriteriaBuilder criteriaBuilder, sortCriteriaBuilder;
-	private String queryString, countQueryString;
-	private QueryBinder queryBinder, countQueryBinder;
+	private CriteriaBuilder criteriaBuilder;
 	private QueryBuilder queryBuilder, countQueryBuilder;
 	
 	private Object factoryKey;
@@ -59,39 +56,38 @@ public class HibernateProvider extends PropertyDataProvider  {
 	/**
 	 * Provides entities of the given class meeting the supplied criteria.
 	 */
-	public HibernateProvider(Class objectClass, CriteriaBuilder criteriaBuilder) {
+	public HibernateProvider(Class objectClass, final CriteriaBuilder... criteriaBuilder) {
 		this(objectClass);
-		this.criteriaBuilder = criteriaBuilder;
+		this.criteriaBuilder = new CriteriaBuilder() {
+			public void build(Criteria criteria) {
+				for (CriteriaBuilder cb: criteriaBuilder)
+					cb.build(criteria);
+			}
+		};
 	}
 
-	/**
-	 * Provides entities of the given class meeting the supplied critiera and sort criteria. The
-	 * sort criteria is not applied to the count query (as it should not affect the count). When returning
-	 * results it is applied in addition to the standard criteria, so it is not necessary to duplicate
-	 * filter or other criteria in the sort criteria.
-	 * @param criteriaBuilder standard criteria applied to both the count and actual results
-	 * @param sortCriteriaBuilder sort criteria applied only to the actual results
-	 */
-	public HibernateProvider(Class objectClass, CriteriaBuilder criteriaBuilder, CriteriaBuilder sortCriteriaBuilder) {
-		this(objectClass, criteriaBuilder);
-		this.sortCriteriaBuilder = sortCriteriaBuilder;
-	}
-	
 	/**
 	 * Provides entities matching the given query. The count query
 	 * is derived by prefixing "select count(*)" to the given query; this will fail if 
 	 * the supplied query has a select clause.
 	 */
 	public HibernateProvider(String query) {
-		this.queryString = query;
+		this(query, makeCount(query));
 	}
 	
 	/**
 	 * Provides entities matching the given queries.
 	 */
-	public HibernateProvider(String query, String countQuery) {
-		this.queryString = query;
-		this.countQueryString = countQuery;
+	public HibernateProvider(final String query, final String countQuery) {
+		this(new QueryBuilder() {
+			public Query build(Session sess) {
+				return sess.createQuery(query);
+			}
+		}, new QueryBuilder() {
+			public Query build(Session sess) {
+				return sess.createQuery(countQuery);
+			}
+		});
 	}
 	
 	/**
@@ -100,8 +96,7 @@ public class HibernateProvider extends PropertyDataProvider  {
 	 * the supplied query has a select clause.
 	 */
 	public HibernateProvider(String query, QueryBinder queryBinder) {
-		this(query);
-		this.queryBinder = queryBinder;
+		this(query, queryBinder, makeCount(query), queryBinder);
 	}
 
 	/**
@@ -111,10 +106,20 @@ public class HibernateProvider extends PropertyDataProvider  {
 	 * @param countQuery query to return count of entities
 	 * @param countQueryBinder binder for the count query (may be same as queryBinder)
 	 */
-	public HibernateProvider(String query, QueryBinder queryBinder, String countQuery, QueryBinder countQueryBinder) {
-		this(query, queryBinder);
-		this.countQueryString = countQuery;
-		this.countQueryBinder = countQueryBinder;
+	public HibernateProvider(final String query, final QueryBinder queryBinder, final String countQuery, final QueryBinder countQueryBinder) {
+		this(new QueryBuilder() {
+			public Query build(Session sess) {
+				Query q = sess.createQuery(query);
+				queryBinder.bind(q);
+				return q;
+			}
+		}, new QueryBuilder() {
+			public Query build(Session sess) {
+				Query q = sess.createQuery(countQuery);
+				countQueryBinder.bind(q);
+				return q;
+			}
+		});
 	}
 	
 	public HibernateProvider(QueryBuilder queryBuilder, QueryBuilder countQueryBuilder) {
@@ -122,6 +127,11 @@ public class HibernateProvider extends PropertyDataProvider  {
 		this.countQueryBuilder = countQueryBuilder;
 	}
 
+	/** @return query with select count(*) prepended */
+	static protected String makeCount(String query) {
+		return "select count(*) " + query;
+	}
+	
 	/** @return session factory key, or null for the default factory */
 	public Object getFactoryKey() {
 		return factoryKey;
@@ -150,21 +160,9 @@ public class HibernateProvider extends PropertyDataProvider  {
 			return q.iterate();
 		}			
 		
-		if (queryString != null) {
-			org.hibernate.Query q = sess.createQuery(queryString);
-			if (queryBinder != null)
-				queryBinder.bind(q);
-			q.setFirstResult(first);
-			q.setMaxResults(count);
-			return q.iterate();
-		}
-		
 		Criteria crit = sess.createCriteria(objectClass);
 		if (criteriaBuilder != null)
 			criteriaBuilder.build(crit);
-		
-		if (sortCriteriaBuilder != null)
-			sortCriteriaBuilder.build(crit);
 		
 		crit.setFirstResult(first);
 		crit.setMaxResults(count);
@@ -183,20 +181,6 @@ public class HibernateProvider extends PropertyDataProvider  {
 			return ((Number) obj).intValue();
 		}
 		
-		if (countQueryString != null) {
-			Query query = sess.createQuery(countQueryString);
-			if (countQueryBinder != null)
-				countQueryBinder.bind(query);
-			return ((Long) query.uniqueResult()).intValue();
-		}
-		if (queryString != null) {
-			String synthCountQuery = "select count(*) " + queryString;
-			Query query = sess.createQuery(synthCountQuery);
-			if (queryBinder != null)
-				queryBinder.bind(query);
-			return ((Long) query.uniqueResult()).intValue();
-		}
-		
 		Criteria crit = sess.createCriteria(objectClass);
 		
 		if (criteriaBuilder != null)
@@ -212,8 +196,7 @@ public class HibernateProvider extends PropertyDataProvider  {
 		return new HibernateObjectModel(object);
 	}
 	
-	/** Detaches query binder if needed. */
+	/** does nothing */
 	public void detach() {
-		Models.checkDetach(queryBinder, countQueryBinder);
 	}
 }
