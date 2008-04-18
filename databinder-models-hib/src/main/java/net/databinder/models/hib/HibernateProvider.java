@@ -25,7 +25,6 @@ import net.databinder.models.PropertyDataProvider;
 
 import org.apache.wicket.model.IModel;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 
@@ -79,15 +78,7 @@ public class HibernateProvider extends PropertyDataProvider  {
 	 * Provides entities matching the given queries.
 	 */
 	public HibernateProvider(final String query, final String countQuery) {
-		this(new QueryBuilder() {
-			public Query build(Session sess) {
-				return sess.createQuery(query);
-			}
-		}, new QueryBuilder() {
-			public Query build(Session sess) {
-				return sess.createQuery(countQuery);
-			}
-		});
+		this(new QueryBinderBuilder(query), new QueryBinderBuilder(countQuery));
 	}
 	
 	/**
@@ -107,19 +98,7 @@ public class HibernateProvider extends PropertyDataProvider  {
 	 * @param countQueryBinder binder for the count query (may be same as queryBinder)
 	 */
 	public HibernateProvider(final String query, final QueryBinder queryBinder, final String countQuery, final QueryBinder countQueryBinder) {
-		this(new QueryBuilder() {
-			public Query build(Session sess) {
-				Query q = sess.createQuery(query);
-				queryBinder.bind(q);
-				return q;
-			}
-		}, new QueryBuilder() {
-			public Query build(Session sess) {
-				Query q = sess.createQuery(countQuery);
-				countQueryBinder.bind(q);
-				return q;
-			}
-		});
+		this(new QueryBinderBuilder(query, queryBinder), new QueryBinderBuilder(countQuery, countQueryBinder));
 	}
 	
 	public HibernateProvider(QueryBuilder queryBuilder, QueryBuilder countQueryBuilder) {

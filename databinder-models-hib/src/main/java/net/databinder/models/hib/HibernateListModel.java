@@ -20,7 +20,6 @@
 package net.databinder.models.hib;
 
 import net.databinder.hib.Databinder;
-import net.databinder.models.Models;
 
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.hibernate.Criteria;
@@ -33,12 +32,9 @@ import org.hibernate.Session;
  * @author Nathan Hamblen
  */
 public class HibernateListModel extends LoadableDetachableModel {
-	private String queryString;
-	private QueryBinder queryBinder;
 	private QueryBuilder queryBuilder;
 	private Class objectClass;
 	private CriteriaBuilder criteriaBuilder;
-	private boolean cacheable = false;
 	
 	private Object factoryKey;
 	
@@ -47,7 +43,7 @@ public class HibernateListModel extends LoadableDetachableModel {
 	 * @param queryString query with no parameters
 	 */
 	public HibernateListModel(String queryString) {
-		this.queryString = queryString;
+		this(new QueryBinderBuilder(queryString));
 	}
 	
 	/**
@@ -55,9 +51,12 @@ public class HibernateListModel extends LoadableDetachableModel {
 	 * @param queryString query with no parameters
 	 * @param cacheable sets query to cacheable if true 
 	 */
-	public HibernateListModel(String queryString, boolean cacheable) {
-		this(queryString);
-		this.cacheable = cacheable;
+	public HibernateListModel(String queryString, final boolean cacheable) {
+		this(queryString, new QueryBinder() {
+			public void bind(Query query) {
+				query.setCacheable(cacheable);
+			}
+		});
 	}
 	
 	/**
@@ -66,8 +65,7 @@ public class HibernateListModel extends LoadableDetachableModel {
 	 * @param queryBinder object that binds the query parameters
 	 */
 	public HibernateListModel(String queryString, QueryBinder queryBinder) {
-		this(queryString);
-		this.queryBinder = queryBinder;
+		this(new QueryBinderBuilder(queryString, queryBinder));
 	}
 
 	/**
@@ -118,14 +116,6 @@ public class HibernateListModel extends LoadableDetachableModel {
 	@Override
 	protected Object load() {
 		Session session = Databinder.getHibernateSession(factoryKey);
-		if (queryString != null) {
-			Query query = session.createQuery(queryString);
-			if (queryBinder != null)
-				queryBinder.bind(query);
-			else if (cacheable)
-				query.setCacheable(true);
-			return query.list();
-		}
 		if (queryBuilder != null) {
 			return queryBuilder.build(session).list();
 		}
@@ -133,11 +123,5 @@ public class HibernateListModel extends LoadableDetachableModel {
 		if (criteriaBuilder != null)
 			criteriaBuilder.build(criteria);
 		return criteria.list();
-	}
-	
-	/** Detaches query binder if needed. */
-	@Override
-	protected void onDetach() {
-		Models.checkDetach(queryBinder);
 	}
 }

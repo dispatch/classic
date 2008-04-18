@@ -28,11 +28,9 @@ import javax.persistence.Version;
 import net.databinder.hib.Databinder;
 import net.databinder.models.BindingModel;
 import net.databinder.models.LoadableWritableModel;
-import net.databinder.models.Models;
 
 import org.apache.wicket.WicketRuntimeException;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.proxy.HibernateProxyHelper;
 
@@ -46,8 +44,6 @@ import org.hibernate.proxy.HibernateProxyHelper;
 public class HibernateObjectModel extends LoadableWritableModel implements BindingModel {
 	private Class objectClass;
 	private Serializable objectId;
-	private String queryString;
-	private QueryBinder queryBinder;
 	private QueryBuilder queryBuilder;
 	private CriteriaBuilder criteriaBuilder;
 	/** May store unsaved objects between requests. */
@@ -96,8 +92,7 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 	 * @param queryBinder bind id or other parameters
 	 */
 	public HibernateObjectModel(String queryString, QueryBinder queryBinder) {
-		this.queryString = queryString;
-		this.queryBinder = queryBinder;
+		this(new QueryBinderBuilder(queryString, queryBinder));
 	}
 
 	/**
@@ -184,7 +179,7 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 	 */
 	@Override
 	protected Object load() {
-		if (objectClass == null && queryString == null && queryBuilder == null)
+		if (objectClass == null && queryBuilder == null)
 			return null;	// can't load without one of these
 		try {
 			if (!isBound()) {
@@ -214,14 +209,7 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 			return criteria.uniqueResult();
 		}
 
-		if (queryBuilder != null)
-			return queryBuilder.build(sess).uniqueResult();
-
-		Query query = sess.createQuery(queryString);
-		// if querybinder was null in constructor, that's weird, but continue
-		if (queryBinder != null)
-			queryBinder.bind(query);
-		return query.uniqueResult();
+		return queryBuilder.build(sess).uniqueResult();
 	}
 
 	/**
@@ -239,13 +227,6 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 		}
 	}
 
-	@Override
-	/** Checks binding before detaching. */
-	protected void onDetach() {
-		checkBinding();
-		Models.checkDetach(queryBinder);
-	}
-	
 	/**
 	 * Uses version annotation to find version for this Model's object.
 	 * @return Persistent storage version number if available, null otherwise
@@ -295,9 +276,7 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 	 */
 	public void unbind() {
 		objectId = null;
-		queryBinder = null;
 		queryBuilder = null;
-		queryString = null;
 		criteriaBuilder = null;
 		retainedObject = null;
 		detach();
@@ -311,7 +290,7 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 	 * @return true if information needed to load from Hibernate (identifier, query, or criteria) is present
 	 */
 	public boolean isBound() {
-		return objectId != null || queryString != null || criteriaBuilder != null || queryBuilder != null;
+		return objectId != null || criteriaBuilder != null || queryBuilder != null;
 	}
 
 	/**
