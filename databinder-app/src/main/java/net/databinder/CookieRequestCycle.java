@@ -62,6 +62,16 @@ public class CookieRequestCycle extends ExceptionFilteringRequestCycle {
 	public Cookie getCookie(String name) {
 		return getCookies().get(name);
 	}
+	
+	/**
+	 * Applies scope to cookies set by this application. Base implementation
+	 * sets the path to / . Override if limiting scope to a path, or expanding
+	 * it to a broader domain.
+	 * @param cookie to have its scope set
+	 */
+	public void applyScope(Cookie cookie) {
+		cookie.setPath("/");
+	}
 
 	/**
 	 * Sets a new a cookie with an expiration time of zero to an clear an old one from the 
@@ -72,7 +82,7 @@ public class CookieRequestCycle extends ExceptionFilteringRequestCycle {
 	public void clearCookie(String name) {
 		getCookies().remove(name);
 		Cookie empty = new Cookie(name, "");
-		empty.setPath("/");
+		applyScope(empty);
 		getWebResponse().clearCookie(empty);
 	}
 

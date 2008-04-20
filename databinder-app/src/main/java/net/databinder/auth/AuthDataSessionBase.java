@@ -199,20 +199,15 @@ public abstract class AuthDataSessionBase extends WebSession implements AuthSess
 		name.setMaxAge(maxAge);
 		auth.setMaxAge(maxAge);
 
-		configureCookies(name, auth);
+		RequestCycle rc = RequestCycle.get();
+		if (rc instanceof CookieRequestCycle) {
+			CookieRequestCycle cookieRc = (CookieRequestCycle) rc;
+			cookieRc.applyScope(name);
+			cookieRc.applyScope(auth);
+		}
 		
 		resp.addCookie(name);
 		resp.addCookie(auth);
-	}
-	
-	/**
-	 * Set cookie parameters. Base implementation sets path to / .
-	 * @param name user name cookie
-	 * @param auth authentication token
-	 */
-	protected void configureCookies(Cookie name, Cookie auth) {
-		name.setPath("/");
-		auth.setPath("/");
 	}
 	
 	/**
