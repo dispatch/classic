@@ -52,9 +52,7 @@ public class HibernateProvider extends PropertyDataProvider  {
 		this.objectClass = objectClass;
 	}
 	
-	/**
-	 * Provides entities of the given class meeting the supplied criteria.
-	 */
+	/** Provides entities of the given class meeting the supplied criteria combined. */
 	public HibernateProvider(Class objectClass, final CriteriaBuilder... criteriaBuilder) {
 		this(objectClass);
 		this.criteriaBuilder = new CriteriaBuilder() {
@@ -65,6 +63,7 @@ public class HibernateProvider extends PropertyDataProvider  {
 		};
 	}
 
+	/** Provides entities of the given class meeting the supplied criteria. */
 	public HibernateProvider(Class objectClass, CriteriaBuilder criteriaBuilder) {
 		this(objectClass);
 		this.criteriaBuilder = criteriaBuilder;
