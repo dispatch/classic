@@ -65,6 +65,11 @@ public class HibernateProvider extends PropertyDataProvider  {
 		};
 	}
 
+	public HibernateProvider(Class objectClass, CriteriaBuilder criteriaBuilder) {
+		this(objectClass);
+		this.criteriaBuilder = criteriaBuilder;
+	}
+
 	/**
 	 * Provides entities matching the given query. The count query
 	 * is derived by prefixing "select count(*)" to the given query; this will fail if 
