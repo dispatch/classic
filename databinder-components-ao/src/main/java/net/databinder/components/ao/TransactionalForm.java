@@ -10,12 +10,14 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 
+/** Form subclass that runs a submit callback in a transaction. */
 public abstract class TransactionalForm extends Form {
 	
 	public TransactionalForm(String id, IModel model) {
 		super(id, model);
 	}
 
+	/** Called when the form is submitted, do not override if you want transactional behavior. */
 	@Override
 	protected void onSubmit() {
 		try {
@@ -32,6 +34,11 @@ public abstract class TransactionalForm extends Form {
 		afterSubmit();
 	}
 	
+	/** 
+	 * Called inside onSubmit's database transaction.
+	 * @param entityManager associated with form, provided for convenience
+	 */
 	protected abstract void inSubmitTransaction(EntityManager entityManager) throws SQLException;
+	/** Called after onSubmit's database transaction. */
 	protected void afterSubmit() { };
 }

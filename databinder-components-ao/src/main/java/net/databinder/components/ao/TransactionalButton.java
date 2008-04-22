@@ -10,6 +10,7 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.model.IModel;
 
+/** Button that provides a submit transaction similar to TransactionalForm. */
 public abstract class TransactionalButton extends Button {
 	public TransactionalButton(String id, IModel model) {
 		super(id, model);
@@ -19,6 +20,7 @@ public abstract class TransactionalButton extends Button {
 		super(id);
 	}
 
+	/** Called when the form is submitted, do not override if you want transactional behavior. */
 	public void onSubmit() {
 		try {
 			new Transaction<Object>(Databinder.getEntityManager()) {
@@ -34,6 +36,11 @@ public abstract class TransactionalButton extends Button {
 		afterSubmit();
 	}
 	
+	/** 
+	 * Called inside onSubmit's database transaction.
+	 * @param entityManager associated with form, provided for convenience
+	 */
 	protected abstract void inSubmitTransaction(EntityManager entityManager) throws SQLException;
+	/** Called after onSubmit's database transaction. */
 	protected void afterSubmit() { };
 }

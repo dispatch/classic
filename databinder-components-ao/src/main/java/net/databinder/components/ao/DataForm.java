@@ -9,6 +9,7 @@ import net.java.ao.RawEntity;
 
 import org.apache.wicket.model.CompoundPropertyModel;
 
+/** Form to be used with a single object, wrapped in a compound property model. */
 @SuppressWarnings("unchecked")
 public class DataForm extends TransactionalForm {
 	
@@ -20,6 +21,7 @@ public class DataForm extends TransactionalForm {
 		super(id, new CompoundPropertyModel(entityModel));
 	}
 	
+	/** Default implementation saves object if bound, otherwise creates new object using model's fieldMap. */
 	@Override
 	protected void inSubmitTransaction(EntityManager entityManager) throws SQLException {
 		if (getEntityModel().isBound())
@@ -32,6 +34,7 @@ public class DataForm extends TransactionalForm {
 		return (EntityModel) ((CompoundPropertyModel) getModel()).getChainedModel();
 	}
 	
+	/** Button to delete this form's model object. */
 	public class DeleteButton extends TransactionalButton {
 		public DeleteButton(String id) {
 			super(id);
