@@ -24,6 +24,7 @@ import java.util.List;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.markup.html.list.ListItem;
 
+/** Move the given list item down in its list. */
 public class MoveDownButton extends ListItemButton {
 	public MoveDownButton(String id, ListItem item) {
 		super(id, item, new ResourceReference(MoveDownButton.class, "image/down-arrow.png"));

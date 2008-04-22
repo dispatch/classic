@@ -22,6 +22,7 @@ import org.apache.wicket.ResourceReference;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 
+/** Base class for buttons that act on list items (move, delete). */
 public abstract class ListItemButton extends BaseItemButton {
 	ListItem item;
 	public ListItemButton(String id, ListItem item, ResourceReference image) {

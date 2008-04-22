@@ -22,7 +22,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 
 /**
- * Please ues AjaxCell
+ * Please use AjaxCell
  */
 @Deprecated
 public class Wrapper extends WebMarkupContainer {

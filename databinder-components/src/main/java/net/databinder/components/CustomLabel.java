@@ -3,11 +3,11 @@ package net.databinder.components;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.convert.IConverter;
-import org.apache.wicket.util.convert.converters.AbstractConverter;
 
 /**
  * Label that alters its contents with a specific converter before display. 
  * @author Nathan Hamblen
+ * @deprecated this class isn't really necessary; just override getConverter
  */
 public abstract class CustomLabel extends Label {
 	private IConverter converter;

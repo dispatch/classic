@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.wicket.markup.html.list.ListItem;
 
+/** Removes the given item from its list. */
 public class RemoveItemButton extends ListItemButton {
 	public RemoveItemButton(String id, ListItem item) {
 		super(id, item, getTrashImage());

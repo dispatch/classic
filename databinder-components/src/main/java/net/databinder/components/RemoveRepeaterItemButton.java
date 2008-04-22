@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.apache.wicket.markup.repeater.Item;
 
+/** Removes the given item from its collection. */
 public class RemoveRepeaterItemButton extends RepeaterItemButton {
    
    public RemoveRepeaterItemButton(String id, Item item) {
