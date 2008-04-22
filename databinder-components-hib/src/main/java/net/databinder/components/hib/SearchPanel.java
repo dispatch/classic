@@ -1,7 +1,7 @@
 package net.databinder.components.hib;
 
 import net.databinder.components.AjaxOnKeyPausedUpdater;
-import net.databinder.components.Wrapper;
+import net.databinder.components.AjaxCell;
 import net.databinder.models.hib.PropertyQueryBinder;
 import net.databinder.models.hib.QueryBinder;
 
@@ -59,18 +59,18 @@ public abstract class SearchPanel extends Panel {
 		return searchInput == null ? searchInput : "%" + searchInput + "%";
 	}
 	
-	/** Form with AJAX components and their wrappers. */
+	/** Form with AJAX components and their AjaxCells. */
 	public class SearchForm extends Form {
 		public SearchForm(String id) {
 			super(id, new CompoundPropertyModel(SearchPanel.this));
 
-			final Wrapper searchWrap = new Wrapper("searchWrap");
+			final AjaxCell searchWrap = new AjaxCell("searchWrap");
 			add(searchWrap);
 			final TextField search = new TextField("searchInput");
 			search.setOutputMarkupId(true);
 			searchWrap.add(search);
 
-			final Wrapper clearWrap = new Wrapper("clearWrap");
+			final AjaxCell clearWrap = new AjaxCell("clearWrap");
 			add(clearWrap);
 			final AjaxLink clearLink = new AjaxLink("clearLink") {
 				/** Clear field and register updates. */
