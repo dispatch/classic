@@ -28,7 +28,7 @@ public class TextileLabel extends Label {
 	 * @param model String model
 	 */
 	public TextileLabel(String id, IModel model) {
-		super(id);
+		super(id, model);
 		setEscapeModelStrings(false); // since the contents will be in HTML
 	}
 	
