@@ -26,7 +26,7 @@ import org.apache.wicket.model.IModel;
  * data.auth.roles
  * data.auth.save
  * data.auth.delete</pre>
- * @see AuthSession
+ * @see net.databinder.auth.AuthSession
  */
 public class UserAdminPage extends UserAdminPageBase {
 	private DataForm form;
