@@ -18,6 +18,11 @@
  */
 package net.databinder.cay;
 
+/** Should be implemented by request cycle in an application using this module. */
 public interface CayenneRequestCycle {
+	/** 
+	 * Called every time the current context is requested. 
+	 * @see Databinder#getContext
+	 */
 	public void contextRequested();
 }

@@ -23,6 +23,7 @@ import net.databinder.cay.Databinder;
 import org.apache.cayenne.query.Query;
 import org.apache.wicket.model.LoadableDetachableModel;
 
+/** Model that returns a list for the given Query. */
 public class DataListModel extends LoadableDetachableModel {
 	
 	private Query query;
@@ -32,7 +33,7 @@ public class DataListModel extends LoadableDetachableModel {
 	}
 	
 	@Override
-	protected Object load() {
+	protected java.util.List load() {
 		return Databinder.getContext().performQuery(query);
 	}
 }

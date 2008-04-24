@@ -21,7 +21,9 @@ package net.databinder.cay;
 import org.apache.cayenne.access.DataContext;
 import org.apache.wicket.RequestCycle;
 
+/** Provides access to Cayenne context for this thread. */
 public class Databinder {
+	/** @return Cayenne context (possbly new) for this thread. */
 	public static DataContext getContext() {
 		RequestCycle cycle = RequestCycle.get();
 		if (cycle instanceof CayenneRequestCycle)

@@ -7,6 +7,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IChainingModel;
 
+/** Form to be used with a single object, wraps in a compound property model. */
 public class DataForm extends CommittingDataForm {
 	public DataForm(String id, Class<? extends DataObject> cl) {
 		super(id, new CompoundPropertyModel(new DataObjectModel(cl)));

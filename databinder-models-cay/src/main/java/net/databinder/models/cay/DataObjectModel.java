@@ -27,6 +27,10 @@ import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 
+/**
+ * Basic model mapping to a single Cayenne data object. Detaches at the end
+ * of a request *unless* the object has uncommitted changes.
+ **/
 public class DataObjectModel extends LoadableWritableModel implements BindingModel {
 	
 	private ObjectId id;
@@ -44,6 +48,7 @@ public class DataObjectModel extends LoadableWritableModel implements BindingMod
 		id = object.getObjectId();
 	}
 
+	/** Loads from storage unless the object has been retained. */
 	@Override
 	protected Object load() {
 		if (retainedObject != null) {
@@ -53,6 +58,9 @@ public class DataObjectModel extends LoadableWritableModel implements BindingMod
 		return DataObjectUtils.objectForPK(Databinder.getContext(), id);
 	}
 
+	/**
+	 * @param object must be a Cayenne DataObject
+	 */
 	public void setObject(Object object) {
 		DataObject dataObject = (DataObject) object;
 		id = dataObject.getObjectId();
@@ -68,6 +76,9 @@ public class DataObjectModel extends LoadableWritableModel implements BindingMod
 		return (DataObject) super.getObject();
 	}
 	
+	/**
+	 * Detaches any retained object that is fully commited to storage.
+	 */
 	@Override
 	protected void onDetach() {
 		if (retainedObject != null) {

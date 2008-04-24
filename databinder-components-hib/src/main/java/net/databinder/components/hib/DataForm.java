@@ -86,7 +86,6 @@ public class DataForm extends DataFormBase {
 		return this;
 	}
 
-
 	public HibernateObjectModel getPersistentObjectModel() {
 		return (HibernateObjectModel) getCompoundModel().getChainedModel();
 	}

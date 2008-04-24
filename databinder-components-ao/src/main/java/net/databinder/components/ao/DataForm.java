@@ -9,7 +9,7 @@ import net.java.ao.RawEntity;
 
 import org.apache.wicket.model.CompoundPropertyModel;
 
-/** Form to be used with a single object, wrapped in a compound property model. */
+/** Form to be used with a single object, wraps in a compound property model. */
 @SuppressWarnings("unchecked")
 public class DataForm extends TransactionalForm {
 	
