@@ -137,7 +137,7 @@ public class Databinder {
 		dataSessionRequested(key);
 		SessionFactory sf = getHibernateSessionFactory(key);
 		if (ManagedSessionContext.hasBind(sf))
-			return unit.run(getHibernateSession());
+			return unit.run(getHibernateSession(key));
 		org.hibernate.classic.Session sess = sf.openSession();
 		try {
 			sess.beginTransaction();
