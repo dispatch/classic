@@ -15,8 +15,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 
 /**
- * Panel for a "live" search field with a clear button. The SearchPanel's model object
- * is linked to the text of the search field inside it. Instances of this class must
+ * Panel for a "live" search field with a clear button. Instances of this class must
  * implement the onUpdate method to register external components for updating.
  * It is possible to override the search button text with the key "searchbutton.text" 
  * @author Nathan Hamblen
