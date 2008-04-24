@@ -131,9 +131,9 @@ public class HibernateProvider extends PropertyDataProvider  {
 	}
 	
 	/**
-	 * It should not be necessary to override (or call) this default implementation.
+	 * It should not normally be necessary to override (or call) this default implementation.
 	 */
-	public final Iterator iterator(int first, int count) {
+	public Iterator iterator(int first, int count) {
 		Session sess =  Databinder.getHibernateSession(factoryKey);
 		
 		if(queryBuilder != null) {
@@ -153,9 +153,10 @@ public class HibernateProvider extends PropertyDataProvider  {
 	}
 	
 	/**
-	 * It should not be necessary to override (or call) this default implementation.
+	 * Only override this method if a single count query or 
+	 * criteria projection is not possible.
 	 */
-	public final int size() {
+	public int size() {
 		Session sess =  Databinder.getHibernateSession(factoryKey);
 
 		if(countQueryBuilder != null) {
