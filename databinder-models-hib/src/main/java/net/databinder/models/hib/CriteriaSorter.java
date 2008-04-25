@@ -26,6 +26,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortStateLoc
 import org.apache.wicket.extensions.markup.html.repeater.util.SingleSortState;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Property;
 
@@ -94,7 +95,7 @@ public class CriteriaSorter implements ISortStateLocator, CriteriaBuilder, Seria
                             sb.append(".");
                         sb.append(path[jj]);
                     }
-                    criteria.createAlias(sb.toString(), path[ii]);
+                    criteria.createAlias(sb.toString(), path[ii], CriteriaSpecification.LEFT_JOIN);
                 }
                 // when we have a 'dot' property we want to sort by the sub tables field
                 // e.g. for the property 'orderbook.order.item.name' we need to sort by 'item.name'
@@ -102,8 +103,6 @@ public class CriteriaSorter implements ISortStateLocator, CriteriaBuilder, Seria
                     property = String.format("%s.%s", path[path.length - 2], path[path.length - 1]);
                 else
                     property = path[path.length - 1];
-                // set to not-null, hibernate will not return these results when null
-                criteria.add(Property.forName(property).isNotNull());
             }
             Order order = asc ? Order.asc(property) : Order.desc(property);
             order = cased ? order : order.ignoreCase();
