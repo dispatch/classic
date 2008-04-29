@@ -40,7 +40,7 @@ import org.hibernate.criterion.Projections;
  */
 public class HibernateProvider extends PropertyDataProvider  {
 	private Class objectClass;
-	private CriteriaBuilder criteriaBuilder;
+	private OrderingCriteriaBuilder criteriaBuilder;
 	private QueryBuilder queryBuilder, countQueryBuilder;
 	
 	private Object factoryKey;
@@ -52,21 +52,44 @@ public class HibernateProvider extends PropertyDataProvider  {
 		this.objectClass = objectClass;
 	}
 	
-	/** Provides entities of the given class meeting the supplied criteria combined. */
-	public HibernateProvider(Class objectClass, final CriteriaBuilder... criteriaBuilder) {
+	/**
+	 * Provides all entities of the given class using a distinct criteria builder for the order query.
+	 * @param objectClass
+	 * @param criteriaBuilder base criteria builder
+	 * @param criteriaOrderer add ordering information ONLY, base criteria will be called first
+	 */
+	public HibernateProvider(Class objectClass, final CriteriaBuilder criteriaBuilder, final CriteriaBuilder criteriaOrderer) {
 		this(objectClass);
-		this.criteriaBuilder = new CriteriaBuilder() {
-			public void build(Criteria criteria) {
-				for (CriteriaBuilder cb: criteriaBuilder)
-					cb.build(criteria);
+		this.criteriaBuilder = new OrderingCriteriaBuilder() {
+			public void buildOrdered(Criteria criteria) {
+				criteriaBuilder.build(criteria);
+				criteriaOrderer.build(criteria);
+			}
+			public void buildUnordered(Criteria criteria) {
+				criteriaBuilder.build(criteria);
 			}
 		};
 	}
+	
+	/**
+	 * Provides all entities of the given class.
+	 * @param objectClass
+	 * @param criteriaBuider builds different criteria objects for iterator() and size()
+	 */
+	public HibernateProvider(Class objectClass, OrderingCriteriaBuilder criteriaBuider) {
+		this.criteriaBuilder = criteriaBuider;
+	}
 
 	/** Provides entities of the given class meeting the supplied criteria. */
-	public HibernateProvider(Class objectClass, CriteriaBuilder criteriaBuilder) {
-		this(objectClass);
-		this.criteriaBuilder = criteriaBuilder;
+	public HibernateProvider(Class objectClass, final CriteriaBuilder criteriaBuilder) {
+		this(objectClass, new OrderingCriteriaBuilder() {
+			public void buildOrdered(Criteria criteria) {
+				criteriaBuilder.build(criteria);
+			}
+			public void buildUnordered(Criteria criteria) {
+				criteriaBuilder.build(criteria);
+			}
+		});
 	}
 
 	/**
@@ -145,7 +168,7 @@ public class HibernateProvider extends PropertyDataProvider  {
 		
 		Criteria crit = sess.createCriteria(objectClass);
 		if (criteriaBuilder != null)
-			criteriaBuilder.build(crit);
+			criteriaBuilder.buildOrdered(crit);
 		
 		crit.setFirstResult(first);
 		crit.setMaxResults(count);
@@ -168,7 +191,7 @@ public class HibernateProvider extends PropertyDataProvider  {
 		Criteria crit = sess.createCriteria(objectClass);
 		
 		if (criteriaBuilder != null)
-			criteriaBuilder.build(crit);
+			criteriaBuilder.buildUnordered(crit);
 		crit.setProjection(Projections.rowCount());
 		Integer size = (Integer) crit.uniqueResult();
 		return size == null ? 0 : size;
