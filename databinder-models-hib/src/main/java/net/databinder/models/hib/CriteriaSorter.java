@@ -28,7 +28,6 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Property;
 
 /**
  * <h1>CriteriaSorter</h1>
