@@ -20,7 +20,7 @@
 package net.databinder.models.hib;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import javax.persistence.Version;
@@ -31,6 +31,7 @@ import net.databinder.models.LoadableWritableModel;
 
 import org.apache.wicket.WicketRuntimeException;
 import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.proxy.HibernateProxyHelper;
 
@@ -233,20 +234,25 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 	 */
 	public Serializable getVersion() {
 		Object o = getObject();
-		if (o != null)
-			// must check superclasses; won't show on subs (incl cglib)
-			for (Class c = o.getClass(); c != null; c = c.getSuperclass())
+
+		if (o != null) {
+			Class c = Hibernate.getClass(o);
+			try {
 				for (Method m : c.getMethods())
 					if (m.isAnnotationPresent(Version.class)
 							&& m.getParameterTypes().length == 0
 							&& m.getReturnType() instanceof Serializable)
-						try {
-							return (Serializable) m.invoke(o, new Object[] {});
-						} catch (InvocationTargetException e) {
-							throw new RuntimeException(e);
-						} catch (IllegalAccessException e) {
-							throw new RuntimeException(e);
-						}
+						return (Serializable) m.invoke(o, new Object[] {});
+				for (Field f : c.getDeclaredFields())
+					if (f.isAnnotationPresent(Version.class) 
+							&& f.getType() instanceof Serializable) {
+						f.setAccessible(true);
+						return (Serializable) f.get(o);
+					}
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
 		return null;
 	}
 
