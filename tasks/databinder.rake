@@ -76,19 +76,13 @@ def embed_server
     ENV['JAVA_HOME'] + "/bin/java $JAVA_OPTIONS " << params.join(" ") << ' -cp ' << cp.uniq.join(":") << ' ' << main_class
   end
 
-  def rebel_params()
-    if ENV["JAVA_REBEL"]
-    	["-noverify", "-javaagent:$JAVA_REBEL"]
-   	else [] end
-  end
-  
   task :run => :build do
-    system java_runner(test.classpath, rebel_params)
+    system java_runner(test.classpath, ['$MAVEN_OPTS'])
   end
 
   task :play => :build do
     raise('sorry, a SCALA_HOME is required to play') if not ENV['SCALA_HOME']
-    system java_runner(test.classpath + scala_libs, rebel_params, 'scala.tools.nsc.MainGenericRunner')
+    system java_runner(test.classpath + scala_libs, ['$MAVEN_OPTS'], 'scala.tools.nsc.MainGenericRunner')
   end
 
   def pid_f() _("server.pid") end
