@@ -77,6 +77,7 @@ public class HibernateProvider extends PropertyDataProvider  {
 	 * @param criteriaBuider builds different criteria objects for iterator() and size()
 	 */
 	public HibernateProvider(Class objectClass, OrderingCriteriaBuilder criteriaBuider) {
+		this(objectClass);
 		this.criteriaBuilder = criteriaBuider;
 	}
 
