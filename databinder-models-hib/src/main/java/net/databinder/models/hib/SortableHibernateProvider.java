@@ -37,10 +37,10 @@ public class SortableHibernateProvider extends HibernateProvider implements ISor
 
     private ISortState sortState;
 
-    public SortableHibernateProvider(Class<?> objectClass, CriteriaBuilder criteriaBuilder, CriteriaBuilder sortCriteriaBuilder) {
-        super(objectClass, criteriaBuilder, sortCriteriaBuilder);
-        if (sortCriteriaBuilder instanceof ISortStateLocator)
-            sortStateLocator = (ISortStateLocator) sortCriteriaBuilder;
+    public SortableHibernateProvider(Class<?> objectClass, OrderingCriteriaBuilder criteriaBuilder) {
+        super(objectClass, criteriaBuilder);
+        if (criteriaBuilder instanceof ISortStateLocator)
+            sortStateLocator = (ISortStateLocator) criteriaBuilder;
     }
 
     public ISortState getSortState() {
