@@ -40,7 +40,7 @@ import org.hibernate.criterion.Order;
  * </pre>
  *  * @author Mark Southern (southern at scripps dot edu)
  */
-public class CriteriaSorter implements ISortStateLocator, OrderingCriteriaBuilder, Serializable {
+public class CriteriaSorter implements ISortStateLocator, CriteriaBuilder, Serializable {
 
     private SingleSortState sortState;
 
@@ -72,11 +72,7 @@ public class CriteriaSorter implements ISortStateLocator, OrderingCriteriaBuilde
         this.cased = cased;
     }
 
-	public void buildUnordered(Criteria criteria) {
-		
-	}
-
-    public void buildOrdered(Criteria criteria) {
+    public void build(Criteria criteria) {
         SortParam sort = sortState.getSort();
         String property;
         if (sort != null && sort.getProperty() != null) {
