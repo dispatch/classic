@@ -12,8 +12,9 @@ import org.hibernate.validator.ClassValidator;
 import org.hibernate.validator.InvalidValue;
 
 public class DatabinderValidator extends AbstractValidator implements IValidatorAddListener {
-	Component component;
-	String property;
+	private Component component;
+	private String property;
+	
 	public DatabinderValidator(String property) {
 		this.property = property;
 	}
@@ -31,7 +32,7 @@ public class DatabinderValidator extends AbstractValidator implements IValidator
 		Class c = Hibernate.getClass(o);
 		ClassValidator validator = new ClassValidator(c);
 		for (InvalidValue iv : validator.getPotentialInvalidValues(property, comp.getValue()))
-			comp.error(new ValidationError().setMessage(iv.getMessage()));
+			comp.error(new ValidationError().setMessage(iv.getPropertyName() + " " + iv.getMessage()));
 	}
 	
 	@Override

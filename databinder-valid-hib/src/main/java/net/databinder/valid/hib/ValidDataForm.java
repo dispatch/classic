@@ -25,12 +25,10 @@ public class ValidDataForm extends DataForm {
 	 */
 	public ValidDataForm(String id, Class modelClass) {
 		super(id, modelClass);
-		init();
 	}
 
 	public ValidDataForm(String id, HibernateObjectModel model) {
 		super(id, model);
-		init();
 	}
 
 	/**
@@ -41,7 +39,6 @@ public class ValidDataForm extends DataForm {
 	 */
 	public ValidDataForm(String id, Class modelClass, Serializable persistentObjectId) {
 		super(id, modelClass, persistentObjectId);
-		init();
 	}
 
 	/**
@@ -51,22 +48,13 @@ public class ValidDataForm extends DataForm {
 	 */
 	public ValidDataForm(String id) {
 		super(id);
-		init();
 	}
 	
-	private void init() {
-		add(new IFormValidator() {
-			public FormComponent[] getDependentFormComponents() {
-				return null;
-			}
-			@SuppressWarnings("unchecked")
-			public void validate(Form form) {
-				// TODO no the model has not been updated at this point :\
-				Object o = getPersistentObjectModel().getObject();
-				for (InvalidValue val : new ClassValidator(Hibernate.getClass(o)).getInvalidValues(o))
-					error(val.getMessage());
-			}
-		});
+	@SuppressWarnings("unchecked")
+	protected void validateModelObject() {
+		Object o = getPersistentObjectModel().getObject();
+		for (InvalidValue iv : new ClassValidator(Hibernate.getClass(o)).getInvalidValues(o))
+			error(iv.getPropertyName() + " " + iv.getMessage());
 	}
 
 	public final MarkupContainer addValid(FormComponent child, String property) {
