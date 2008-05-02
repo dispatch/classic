@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ <modelVersion>4.0.0</modelVersion>
+ <artifactId>databinder-valid-hib</artifactId>
+ <name>Databinder validation / Hibernate</name>
+ <parent>
+  <groupId>net.databinder</groupId>
+  <artifactId>databinder-parent</artifactId>
+  <version>1.2-SNAPSHOT</version>
+ </parent>
+ <dependencies>
+  <dependency>
+   <groupId>${pom.groupId}</groupId>
+   <version>${pom.version}</version>
+   <artifactId>databinder-models-hib</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.hibernate</groupId>
+   <artifactId>hibernate-validator</artifactId>
+   <version>3.0.0.ga</version>
+  </dependency>
+ </dependencies>
+</project>
