@@ -37,6 +37,7 @@
   <module>databinder-app-cay</module>
   <module>databinder-dispatch</module>
   <module>databinder-dispatch-components</module>
+  <module>databinder-valid-hib</module>
   <module>databinder-draw</module>
  </modules>
  <scm>
