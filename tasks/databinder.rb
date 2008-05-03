@@ -49,7 +49,6 @@ end
 def embed_server()
 
   compile.with JETTY
-  scalac.with JETTY if defined? scalac
   test.with JDK_LOG
 
   def scala_libs()
@@ -68,21 +67,17 @@ def embed_server()
     params << '-Djava.io.tmpdir=' + _('target/tmp')
 
     cp += [compile.target.to_s]
-    if defined? scalac then
-      cp += scalac.classpath + scala_libs
-    end
-    cp
 
     ENV['JAVA_HOME'] + "/bin/java $JAVA_OPTIONS " << params.join(" ") << ' -cp ' << cp.uniq.join(":") << ' ' << main_class
   end
 
   task :run => :build do
-    system java_runner(test.classpath, ['$MAVEN_OPTS'])
+    system java_runner(test.dependencies, ['$MAVEN_OPTS'])
   end
 
   task :play => :build do
     raise('sorry, a SCALA_HOME is required to play') if not ENV['SCALA_HOME']
-    system java_runner(test.classpath + scala_libs, ['$MAVEN_OPTS'], 'scala.tools.nsc.MainGenericRunner')
+    system java_runner(test.dependencies + scala_libs, ['$MAVEN_OPTS'], 'scala.tools.nsc.MainGenericRunner')
   end
 
   def pid_f() _("server.pid") end
@@ -90,7 +85,7 @@ def embed_server()
   def pid() File.exist?(pid_f) && IO.read(pid_f).to_i end
 
   task :start => :package do
-    cp = compile.classpath + artifacts(LOG4J).map { |a| a.name }
+    cp = compile.dependencies + artifacts(LOG4J).map { |a| a.name }
     system 'nohup ' << java_runner(cp, ['-server']) << '>/dev/null &\echo $! > ' << pid_f
     puts "started server pid: " << pid().to_s
   end
