@@ -97,7 +97,7 @@ public abstract class UserAdminPageBase extends WebPage {
 
 		form.add(new FeedbackPanel("feedback"));
 		
-		add(new UnbindLink("add", getBindingModel()));
+		add(new UnbindLink("add", form, getBindingModel()));
 				
 		add(new ModelSourceListPanel("users", form, "username", userList(userClass)));
 	}

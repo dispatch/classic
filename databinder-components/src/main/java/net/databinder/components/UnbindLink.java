@@ -2,6 +2,7 @@ package net.databinder.components;
 
 import net.databinder.models.BindingModel;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.link.Link;
 
 /**
@@ -11,13 +12,23 @@ import org.apache.wicket.markup.html.link.Link;
  * @see BindingModel
  */
 public class UnbindLink extends Link {
-	public UnbindLink(String id, BindingModel model) {
+	private Component target;
+	
+	/**
+	 * @param id this component id
+	 * @param target component to be notified when unbinding model
+	 * @param model
+	 */
+	public UnbindLink(String id, Component target, BindingModel model) {
 		super(id, model);
+		this.target = target;
 	}
 	/** unbinds model */
 	@Override
 	public void onClick() {
+		target.modelChanging();
 		((BindingModel)getModel()).unbind();
+		target.modelChanged();
 	}
 	/** @return true if model is bound */
 	@Override
