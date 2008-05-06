@@ -1,10 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
  <modelVersion>4.0.0</modelVersion>
  <groupId>net.databinder</groupId>
  <artifactId>databinder-parent</artifactId>
  <name>Databinder parent</name>
- <version>1.2-SNAPSHOT</version>
+ <version>1.2-beta2</version>
  <description>A persistence toolkit for Wicket</description>
  <url>http://databinder.net/</url>
  <inceptionYear>2005</inceptionYear>
@@ -41,8 +40,8 @@
   <module>databinder-draw</module>
  </modules>
  <scm>
-  <connection>scm:svn:svn://localhost/databinder/trunk</connection>
-  <developerConnection>scm:svn:svn://localhost/databinder/trunk</developerConnection>
+  <connection>scm:svn:svn://localhost/databinder/tags/1.2-beta2</connection>
+  <developerConnection>scm:svn:svn://localhost/databinder/tags/1.2-beta2</developerConnection>
  </scm>
  <organization>
   <name>Nathan Hamblen</name>
