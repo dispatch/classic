@@ -85,7 +85,7 @@ def embed_server()
   def pid() File.exist?(pid_f) && IO.read(pid_f).to_i end
 
   task :start => :package do
-    cp = compile.dependencies + artifacts(LOG4J).map { |a| a.name }
+    cp = compile.dependencies + artifacts(LOG4J).map { |a| a.name } << _('target/resources')
     system 'nohup ' << java_runner(cp, ['-server']) << '>/dev/null &\echo $! > ' << pid_f
     puts "started server pid: " << pid().to_s
   end
