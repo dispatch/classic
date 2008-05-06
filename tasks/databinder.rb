@@ -66,7 +66,7 @@ def embed_server()
     mkpath _('target/tmp'), :verbose=>false
     params << '-Djava.io.tmpdir=' + _('target/tmp')
 
-    cp += [compile.target.to_s]
+    cp += [compile.target.to_s, resources.target.to_s]
 
     ENV['JAVA_HOME'] + "/bin/java $JAVA_OPTIONS " << params.join(" ") << ' -cp ' << cp.uniq.join(":") << ' ' << main_class
   end
@@ -85,7 +85,7 @@ def embed_server()
   def pid() File.exist?(pid_f) && IO.read(pid_f).to_i end
 
   task :start => :package do
-    cp = compile.dependencies + artifacts(LOG4J).map { |a| a.name } << _('target/resources')
+    cp = compile.dependencies + artifacts(LOG4J).map { |a| a.name }
     system 'nohup ' << java_runner(cp, ['-server']) << '>/dev/null &\echo $! > ' << pid_f
     puts "started server pid: " << pid().to_s
   end
