@@ -63,7 +63,7 @@ def embed_server
     mkpath _('target/tmp'), :verbose=>false
     params << '-Djava.io.tmpdir=' + _('target/tmp')
 
-    cp += [compile.target.to_s]
+    cp += [compile.target.to_s, resources.target.to_s]
     if defined? scalac then
       cp += scalac.classpath + scala_libs
     end
