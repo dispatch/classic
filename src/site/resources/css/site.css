@@ -5,7 +5,7 @@ body, td, th, select, input, li {
   font-family: 'Lucida Bright', 'lucidabright', 'Lucida Serif', Georgia, serif;
 }
 #banner {
-  padding: 10px 0 14px 14px;
+  padding: 10px 0 12px 14px;
   border-bottom: 1px solid #eee;
 }
 #banner a {
