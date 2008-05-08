@@ -23,9 +23,21 @@ public class ModelSourceListPanel extends SourceListPanel {
 		this.target = target;
 	}
 	/** Called from super-class to construct source links. Note: subclasses my override
-	 * to add attribute modifiers to the Link object constructed here, for example. */
+	 * to add attribute modifiers to the ModelSourceLink object constructed here, for example. */
 	@Override
 	protected Link sourceLink(String id, IModel model) {
-		return new ModelSourceLink("link", target, model);
+		return new ModelSourceLink("link", target, model) {
+			@Override
+			public void onClick() {
+				ModelSourceListPanel.this.onClick(this);
+				super.onClick();
+			}
+		};
 	}
+	
+	/**
+	 * Called before the default ModelSourceLink's onClick. Base impl does nothing.
+	 * @param link component that was clicked
+	 */
+	protected void onClick(ModelSourceLink link) { }
 }
