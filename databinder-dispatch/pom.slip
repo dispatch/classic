@@ -11,9 +11,6 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		artifactId: "databinder-parent"
 		version: "1.2-SNAPSHOT"
 	
-	properties:
-		scala.version: "2.7.0"
-
 	dependencies:
 		dependency:
 			groupId: "org.apache.httpcomponents"
