@@ -3,8 +3,8 @@ package net.databinder.dispatch
 import java.io.InputStream
 
 trait Doc extends Schema {
-  val _id = String(new Symbol("_id")) 
-  val _rev = String(new Symbol("_rev"))
+  val _id = String(Symbol("_id")) 
+  val _rev = String(Symbol("_rev"))
 }
 
 object Doc extends Doc
