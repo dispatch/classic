@@ -114,25 +114,25 @@ JDK_LOG = ["org.slf4j:slf4j-jdk14:jar:1.4.2"]
 
 BATIK = ["org.apache.xmlgraphics:batik-gvt:jar:1.7", "org.apache.xmlgraphics:batik-awt-util:jar:1.7"]
 COMMONS_LOG="commons-logging:commons-logging:jar:1.1.1"
-HTTPCLIENT = ["org.apache.httpcomponents:httpclient:jar:4.0-alpha3", \
+HTTPCLIENT = ["org.apache.httpcomponents:httpclient:jar:4.0-alpha4", \
   "org.apache.httpcomponents:httpcore:jar:4.0-beta1", "commons-codec:commons-codec:jar:1.3", COMMONS_LOG]
 
 HIBERNATE_CORE = "org.hibernate:hibernate:jar:3.2.6.ga"
 HIBERNATE_SELF = [HIBERNATE_CORE,"org.hibernate:hibernate-annotations:jar:3.3.1.GA", "org.hibernate:hibernate-commons-annotations:jar:3.0.0.ga"]
 JTA = "javax.transaction:jta:jar:1.0.1B"
 CGLIB = "cglib:cglib:jar:2.1_3"
-EHCACHE= "net.sf.ehcache:ehcache:jar:1.2.3"
 C3P0='c3p0:c3p0:jar:0.9.1'
-HIBERNATE=[HIBERNATE_SELF, JTA, EHCACHE, CGLIB, "javax.persistence:persistence-api:jar:1.0", "dom4j:dom4j:jar:1.6.1", "asm:asm-attrs:jar:1.5.3", "asm:asm:jar:1.5.3", "antlr:antlr:jar:2.7.6", "commons-logging:commons-logging:jar:1.0.4"]
+HIBERNATE=[HIBERNATE_SELF, JTA, CGLIB, "javax.persistence:persistence-api:jar:1.0", "dom4j:dom4j:jar:1.6.1", "asm:asm-attrs:jar:1.5.3", "asm:asm:jar:1.5.3", "antlr:antlr:jar:2.7.6", "commons-logging:commons-logging:jar:1.0.4"]
 ACTIVE_OBJECTS=['net.java.dev.activeobjects:activeobjects:jar:0.8.2']
 CAYENNE=['org.apache.cayenne:cayenne:jar:2.0.4']
 
 DB_VERS='1.2-SNAPSHOT'
 DATABINDER_COMPONENTS="net.databinder:databinder-components:jar:#{DB_VERS}"
 DATABINDER_SELF=[DATABINDER_COMPONENTS, group("databinder-app", "databinder-auth-components", "databinder-models", :under => "net.databinder", :version => DB_VERS)]
-DATABINDER_DISPATCH = [HTTPCLIENT, "net.databinder:databinder-dispatch:jar:#{DB_VERS}", \
+DATABINDER_DISPATCH = [HTTPCLIENT, "net.databinder:databinder-dispatch:jar:#{DB_VERS}",
   'org.scala-lang:scala-library:jar:2.7.0']
-DATABINDER_DISPATCH_COMP = [DATABINDER_DISPATCH, "net.databinder:databinder-dispatch-components:jar:#{DB_VERS}"]
+EHCACHE= ["net.sf.ehcache:ehcache:jar:1.4.1", "backport-util-concurrent:backport-util-concurrent:jar:3.1", "net.sf.jsr107cache:jsr107cache:jar:1.0"]
+DATABINDER_DISPATCH_COMP = [DATABINDER_DISPATCH, "net.databinder:databinder-dispatch-components:jar:#{DB_VERS}", EHCACHE]
 DATABINDER_DRAW=[BATIK, "net.databinder:databinder-draw:jar:#{DB_VERS}"]
 
 DATABINDER_CORE=[DATABINDER_SELF, WICKET, C3P0]
