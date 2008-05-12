@@ -37,113 +37,138 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Optional main() class for running embedded Jetty. Client applications may pass
+ * Optional starter class for embedded Jetty. Client applications may pass
  * this classname to the Java runtime to serve with no other configuration. The webroot 
  * defaults to src/main/webapp, and the server to a context named after the project directory 
  * with HTTP on port 8080. <tt>jetty.warpath</tt>, <tt>jetty.contextpath</tt>,
  * <tt>jetty.port</tt>, and <tt>jetty.ajp.port</tt> system properties
  * may be used to override (e.g. <tt>-Djetty.port=80</tt> as a command line parameter). AJP
  * is enabled by specifying a port, and HTTP disabled by setting jetty.port to 0.
+ * 
+ * <p>Some customization can be accomplished by extending this class and overriding
+ * the {@link DataServer#configure(Server, WebAppContext)} method. The subclass
+ * will need a static main(args) method that constructs an instance of itself, similar
+ * to {@link DataServer#main(String[])}  
  * @author Nathan Hamblen
  */
 public class DataServer {
 	private static final Logger log = LoggerFactory.getLogger(DataServer.class);
 
-	public static void main(String[] args) throws Exception
+	/** Constructs DataServer, kicking off server. */
+	public static void main(String[] args)
 	{
-		Server server = new Server();
-
-		WebAppContext web = new WebAppContext();
-		
-		URL classes = null;
-		String projectDir = null;
-		try {
-			// look for project's classes directory
-			URL[] urls = ((URLClassLoader)DataServer.class.getClassLoader()).getURLs();
-			for (URL url : urls)
-				if (url.getPath().endsWith("classes/")) {
-					classes = url;
-					break;
-				}
-		} catch (Exception e) { 
-			log.info("unable to find project path by classloader", e);
-		}
-
-		if (classes == null) {
-			projectDir = new File(".").getCanonicalPath();
-			log.info("project path fram current directory: " + projectDir);
-		} else {
-			projectDir = classes.toURI().resolve("../..").getPath();
-			log.info("project path as found by classloader: " + projectDir);
-		}
-
-		String contextPath = System.getProperty("jetty.contextpath", 
-				System.getProperty("jetty.contextPath"));
-		if (Strings.isEmpty(contextPath)) {
-			Matcher m = Pattern.compile("(\\/[^\\/]+)/?$").matcher(projectDir);
-			if (!m.find())
-				throw new RuntimeException("Project path not as expected: " + projectDir);
-			contextPath = m.group(1);
-			log.info("context path by project directory: " + contextPath);
-		}
-		else
-			log.info("jetty.contextPath property: " + contextPath);
-		web.setContextPath(contextPath);
-		
-		String warPath = System.getProperty("jetty.warpath", 
-				System.getProperty("jetty.warPath"));
-		if (Strings.isEmpty(warPath)) warPath = projectDir + "src/main/webapp";
-		
-		if (!new File(warPath).isDirectory()) {
-			log.error("Unable to find webapps path: " + warPath +
-				" \nPlease ensure that this project is the first on its " +
-				"classpath, or set a valid jetty.warpath JVM property.");
-			return;
-		}
-
-		
-		else log.info("jetty.warPath property: " + warPath);
-		web.setWar(warPath);
-		
-		server.addHandler(web);
-		
-		if (!contextPath.equals("/"))
-			server.addHandler(new MovedContextHandler(server, "/", contextPath));
-
-		List<Connector> conns = new ArrayList<Connector>(2);
-		
-		int httpPort = 8080;
-		try {
-			httpPort = Integer.valueOf(System.getProperty("jetty.port"));
-			log.info("jetty.port property: " + httpPort);
-		} catch (NumberFormatException e) { }
-		
-		if (httpPort != 0) {
-			SelectChannelConnector httpConn = new SelectChannelConnector();
-			httpConn.setPort(httpPort);
-			conns.add(httpConn);
-		}
-
-		int ajpPort = 0;
-		try {
-			ajpPort = Integer.valueOf(System.getProperty("jetty.ajp.port"));
-			log.info("jetty.ajp.port property: " + ajpPort);
-		} catch (NumberFormatException e) { }
-		
-		if (ajpPort != 0) {
-			Ajp13SocketConnector ajpConn = new Ajp13SocketConnector();
-			ajpConn.setPort(ajpPort);
-			conns.add(ajpConn);
-		}
-		
-		server.setConnectors(conns.toArray(new Connector[conns.size()]));
-
-		server.start();
-		if (httpPort != 0)
-			log.info("Ready at http://localhost:" + httpPort + contextPath);
-		if (ajpPort != 0)
-			log.info("Ready at ajp://localhost:" + ajpPort + contextPath);
-		server.join();
+		new DataServer();
 	}
-
+	
+	/** Starts web sever using any parameters supplied. Calls 
+	 * {DataServer{@link #configure(Server, WebAppContext)} immediately before 
+	 * starting server.
+	 */
+	public DataServer() {
+		try {
+			Server server = new Server();
+	
+			WebAppContext web = new WebAppContext();
+			
+			URL classes = null;
+			String projectDir = null;
+			try {
+				// look for project's classes directory
+				URL[] urls = ((URLClassLoader)DataServer.class.getClassLoader()).getURLs();
+				for (URL url : urls)
+					if (url.getPath().endsWith("classes/")) {
+						classes = url;
+						break;
+					}
+			} catch (Exception e) { 
+				log.info("unable to find project path by classloader", e);
+			}
+	
+			if (classes == null) {
+				projectDir = new File(".").getCanonicalPath();
+				log.info("project path fram current directory: " + projectDir);
+			} else {
+				projectDir = classes.toURI().resolve("../..").getPath();
+				log.info("project path as found by classloader: " + projectDir);
+			}
+	
+			String contextPath = System.getProperty("jetty.contextpath", 
+					System.getProperty("jetty.contextPath"));
+			if (Strings.isEmpty(contextPath)) {
+				Matcher m = Pattern.compile("(\\/[^\\/]+)/?$").matcher(projectDir);
+				if (!m.find())
+					throw new RuntimeException("Project path not as expected: " + projectDir);
+				contextPath = m.group(1);
+				log.info("context path by project directory: " + contextPath);
+			}
+			else
+				log.info("jetty.contextPath property: " + contextPath);
+			web.setContextPath(contextPath);
+			
+			String warPath = System.getProperty("jetty.warpath", 
+					System.getProperty("jetty.warPath"));
+			if (Strings.isEmpty(warPath)) warPath = projectDir + "src/main/webapp";
+			
+			if (!new File(warPath).isDirectory()) {
+				log.error("Unable to find webapps path: " + warPath +
+					" \nPlease ensure that this project is the first on its " +
+					"classpath, or set a valid jetty.warpath JVM property.");
+				return;
+			}
+	
+			
+			else log.info("jetty.warPath property: " + warPath);
+			web.setWar(warPath);
+			
+			server.addHandler(web);
+			
+			if (!contextPath.equals("/"))
+				server.addHandler(new MovedContextHandler(server, "/", contextPath));
+	
+			List<Connector> conns = new ArrayList<Connector>(2);
+			
+			int httpPort = 8080;
+			try {
+				httpPort = Integer.valueOf(System.getProperty("jetty.port"));
+				log.info("jetty.port property: " + httpPort);
+			} catch (NumberFormatException e) { }
+			
+			if (httpPort != 0) {
+				SelectChannelConnector httpConn = new SelectChannelConnector();
+				httpConn.setPort(httpPort);
+				conns.add(httpConn);
+			}
+	
+			int ajpPort = 0;
+			try {
+				ajpPort = Integer.valueOf(System.getProperty("jetty.ajp.port"));
+				log.info("jetty.ajp.port property: " + ajpPort);
+			} catch (NumberFormatException e) { }
+			
+			if (ajpPort != 0) {
+				Ajp13SocketConnector ajpConn = new Ajp13SocketConnector();
+				ajpConn.setPort(ajpPort);
+				conns.add(ajpConn);
+			}
+			
+			server.setConnectors(conns.toArray(new Connector[conns.size()]));
+			
+			configure(server, web);
+	
+			server.start();
+			if (httpPort != 0)
+				log.info("Ready at http://localhost:" + httpPort + contextPath);
+			if (ajpPort != 0)
+				log.info("Ready at ajp://localhost:" + ajpPort + contextPath);
+			server.join();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * Override to customize the server and context objects.
+	 * @see DataServer#DataServer()
+	 */
+	protected void configure(Server server, WebAppContext context) { }
 }
