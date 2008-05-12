@@ -5,6 +5,7 @@ import java.io.{InputStream,OutputStream,BufferedInputStream,BufferedOutputStrea
 import org.apache.http._
 import org.apache.http.client._
 import org.apache.http.client.methods._
+import org.apache.http.client.entity.UrlEncodedFormEntity
 
 import org.apache.http.entity.StringEntity
 import org.apache.http.message.BasicNameValuePair
@@ -60,7 +61,9 @@ class Http(host: Option[HttpHost]) extends org.apache.http.impl.client.DefaultHt
     def << (values: (String, Any)*) = {
       val m = new HttpPost(uri)
       m setEntity new UrlEncodedFormEntity(
-        (values map) { tup => new BasicNameValuePair(tup._1, tup._2.toString) }.toArray,
+        java.util.Arrays.asList(
+          (values map) { tup => new BasicNameValuePair(tup._1, tup._2.toString) }.toArray
+        ),
         HTTP.UTF_8
       )
       new Respond(m)
@@ -74,7 +77,7 @@ class Http(host: Option[HttpHost]) extends org.apache.http.impl.client.DefaultHt
   }
 }
 
-import org.apache.http.conn.{Scheme,SchemeRegistry,PlainSocketFactory}
+import org.apache.http.conn.scheme.{Scheme,SchemeRegistry,PlainSocketFactory}
 import org.apache.http.conn.ssl.SSLSocketFactory
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
 

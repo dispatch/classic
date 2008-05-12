@@ -1,12 +1,9 @@
-require "buildr"
-require "buildr/scala"
-REL = "com.thimbleware:scala-rel:jar:1.0-SNAPSHOT"
+require "tasks/databinder.rb"
 
 repositories.remote << "http://repo1.maven.org/maven2/"
 
 define "databinder-dispatch" do
-	scalac.with HTTPCLIENT
-  scalac.options.deprecation = true
-  scalac.options.other = "-unchecked"
+	compile.with HTTPCLIENT
+  compile.options.deprecation = true
 	embed_server
 end

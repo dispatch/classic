@@ -25,12 +25,12 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		dependency:
 			groupId: "net.sf.ehcache"
 			artifactId: "ehcache"
-			version: "1.2.4"
+			version: "1.4.1"
 			
 		dependency:
 			groupId: "org.apache.httpcomponents"
 			artifactId: "httpclient"
-			version: "4.0-alpha3"
+			version: "4.0-alpha4"
 			
 		dependency:
 			groupId: "javax.servlet"
