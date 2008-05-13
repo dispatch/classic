@@ -152,6 +152,7 @@ public class DataServer {
 			}
 			
 			server.setConnectors(conns.toArray(new Connector[conns.size()]));
+			server.setStopAtShutdown(true);
 			
 			configure(server, web);
 	
