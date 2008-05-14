@@ -112,7 +112,9 @@ MAIL = ["javax.mail:mail:jar:1.4", "javax.activation:activation:jar:1.1"]
 LOG4J = ["org.slf4j:slf4j-log4j12:jar:1.4.2","log4j:log4j:jar:1.2.14", MAIL]
 JDK_LOG = ["org.slf4j:slf4j-jdk14:jar:1.4.2"]
 
-BATIK = ["org.apache.xmlgraphics:batik-gvt:jar:1.7", "org.apache.xmlgraphics:batik-awt-util:jar:1.7"]
+BATIK = group("batik-gvt", "batik-awt-util", "batik-anim", "batik-bridge", "batik-css", 
+  "batik-dom", "batik-ext", "batik-parser", "batik-svg-dom", "batik-util", "batik-xml",
+  :under => "org.apache.xmlgraphics", :version => "1.7")
 COMMONS_LOG="commons-logging:commons-logging:jar:1.1.1"
 HTTPCLIENT = ["org.apache.httpcomponents:httpclient:jar:4.0-alpha4", \
   "org.apache.httpcomponents:httpcore:jar:4.0-beta1", "commons-codec:commons-codec:jar:1.3", COMMONS_LOG]
