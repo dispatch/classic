@@ -121,14 +121,14 @@ HIBERNATE_CORE = "org.hibernate:hibernate:jar:3.2.6.ga"
 HIBERNATE_SELF = [HIBERNATE_CORE,"org.hibernate:hibernate-annotations:jar:3.3.1.GA", "org.hibernate:hibernate-commons-annotations:jar:3.0.0.ga"]
 JTA = "javax.transaction:jta:jar:1.0.1B"
 CGLIB = "cglib:cglib:jar:2.1_3"
-EHCACHE= "net.sf.ehcache:ehcache:jar:1.2.3"
+EHCACHE= ["net.sf.ehcache:ehcache:jar:1.4.1", "backport-util-concurrent:backport-util-concurrent:jar:3.1", "net.sf.jsr107cache:jsr107cache:jar:1.0"]
 C3P0='c3p0:c3p0:jar:0.9.1'
-HIBERNATE=[HIBERNATE_SELF, JTA, EHCACHE, CGLIB, "javax.persistence:persistence-api:jar:1.0", "dom4j:dom4j:jar:1.6.1", "asm:asm-attrs:jar:1.5.3", "asm:asm:jar:1.5.3", "antlr:antlr:jar:2.7.6", "commons-logging:commons-logging:jar:1.0.4"]
+HIBERNATE=[HIBERNATE_SELF, JTA, CGLIB, "javax.persistence:persistence-api:jar:1.0", "dom4j:dom4j:jar:1.6.1", "asm:asm-attrs:jar:1.5.3", "asm:asm:jar:1.5.3", "antlr:antlr:jar:2.7.6", "commons-logging:commons-logging:jar:1.0.4"]
 
 DB_VERS='1.1.2'
 DATABINDER_COMPONENTS="net.databinder:databinder-components:jar:#{DB_VERS}"
 DATABINDER_SELF=[DATABINDER_COMPONENTS, group("databinder","databinder-dispatch", "databinder-auth-components", "databinder-models", :under => "net.databinder", :version => "#{DB_VERS}")]
 XML_RPC = ["org.apache.ws.commons:ws-commons-util:jar:1.0.1","org.apache.xmlrpc:xmlrpc-client:jar:3.0","org.apache.xmlrpc:xmlrpc-common:jar:3.0", "commons-httpclient:commons-httpclient:jar:3.0.1", "commons-codec:commons-codec:jar:1.2"]
-DATABINDER=[DATABINDER_SELF, WICKET, HIBERNATE, XML_RPC, C3P0]
+DATABINDER=[DATABINDER_SELF, WICKET, HIBERNATE, XML_RPC, C3P0, EHCACHE]
 
 JETTY = group('jetty','jetty-util','jetty-ajp', 'servlet-api-2.5', :under=>'org.mortbay.jetty', :version=>'6.1.9')
