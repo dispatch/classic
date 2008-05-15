@@ -162,6 +162,8 @@ public class DataServer {
 			if (ajpPort != 0)
 				log.info("Ready at ajp://localhost:" + ajpPort + contextPath);
 			server.join();
+			
+			stopped(server, web);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -171,5 +173,11 @@ public class DataServer {
 	 * Override to customize the server and context objects.
 	 * @see DataServer#DataServer()
 	 */
-	protected void configure(Server server, WebAppContext context) { }
+	protected void configure(Server server, WebAppContext context) throws Exception { }
+	
+	/**
+	 * Override to perform action after server stops
+	 * @see DataServer#DataServer()
+	 */
+	protected void stopped(Server server, WebAppContext context) throws Exception {  }
 }
