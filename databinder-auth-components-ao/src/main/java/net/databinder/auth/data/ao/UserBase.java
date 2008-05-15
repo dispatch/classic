@@ -2,7 +2,7 @@ package net.databinder.auth.data.ao;
 
 import net.databinder.auth.data.DataPassword;
 import net.databinder.auth.data.DataUser;
-import net.java.ao.Entity;
+import net.java.ao.RawEntity;
 import net.java.ao.schema.Ignore;
 import net.java.ao.schema.NotNull;
 import net.java.ao.schema.Unique;
@@ -14,7 +14,7 @@ import org.apache.wicket.authorization.strategies.role.Roles;
  * Client applications may extend this interface with an @Implementation
  * that is an extension of UserHelper.
  */
-public interface UserBase extends DataUser, Entity {
+public interface UserBase extends DataUser {
 
 	@Ignore
 	public DataPassword getPassword();
