@@ -2,7 +2,6 @@ package net.databinder.auth.data.ao;
 
 import net.databinder.auth.data.DataPassword;
 import net.databinder.auth.data.DataUser;
-import net.java.ao.RawEntity;
 import net.java.ao.schema.Ignore;
 import net.java.ao.schema.NotNull;
 import net.java.ao.schema.Unique;
