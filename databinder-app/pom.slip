@@ -19,6 +19,6 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		dependency:
 			groupId: "org.mortbay.jetty"
 			artifactId: "jetty-ajp"
-			version: "6.1.7"
+			version: "[6.1,6.2)"
 			optional: "true"
 

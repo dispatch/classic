@@ -17,12 +17,12 @@
   <dependency>
    <groupId>org.mortbay.jetty</groupId>
    <artifactId>jetty-ajp</artifactId>
-   <version>7.0.0pre1</version>
+   <version>[7.0, 7.1)</version>
   </dependency>
   <dependency>
    <groupId>org.mortbay.jetty</groupId>
    <artifactId>jetty-wadi-session-manager</artifactId>
-   <version>7.0.0pre1</version>
+   <version>[7.0, 7.1)</version>
   </dependency>
  </dependencies>
 </project>
