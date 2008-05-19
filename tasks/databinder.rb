@@ -132,7 +132,7 @@ DB_VERS='1.2-SNAPSHOT'
 DATABINDER_COMPONENTS="net.databinder:databinder-components:jar:#{DB_VERS}"
 DATABINDER_SELF=[DATABINDER_COMPONENTS, group("databinder-app", "databinder-auth-components", "databinder-models", :under => "net.databinder", :version => DB_VERS)]
 DATABINDER_DISPATCH = [HTTPCLIENT, "net.databinder:databinder-dispatch:jar:#{DB_VERS}",
-  'org.scala-lang:scala-library:jar:2.7.0']
+  'org.scala-lang:scala-library:jar:2.7.1']
 EHCACHE= ["net.sf.ehcache:ehcache:jar:1.4.1", "backport-util-concurrent:backport-util-concurrent:jar:3.1", "net.sf.jsr107cache:jsr107cache:jar:1.0"]
 DATABINDER_DISPATCH_COMP = [DATABINDER_DISPATCH, "net.databinder:databinder-dispatch-components:jar:#{DB_VERS}", EHCACHE]
 DATABINDER_DRAW=[BATIK, "net.databinder:databinder-draw:jar:#{DB_VERS}"]
