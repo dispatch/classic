@@ -79,7 +79,7 @@ public abstract class AuthDataSessionBase extends WebSession implements AuthSess
 	/**
 	 * @return model for current user
 	 */
-	public abstract IModel getUserModel(DataUser user);
+	public abstract IModel createUserModel(DataUser user);
 
 	/**
 	 * @return length of time sign-in cookie should persist, defined here as one month
@@ -125,7 +125,7 @@ public abstract class AuthDataSessionBase extends WebSession implements AuthSess
 	 * @param setCookie if true, sets cookie to remember user
 	 */
 	public void signIn(DataUser user, boolean setCookie) {
-		userModel = getUserModel(user);
+		userModel = createUserModel(user);
 		if (setCookie)
 			setCookie();
 	}

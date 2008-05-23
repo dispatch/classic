@@ -16,7 +16,7 @@ public class AuthDataSession extends AuthDataSessionBase {
 	}
 	
 	@Override
-	public IModel getUserModel(DataUser user) {
+	public IModel createUserModel(DataUser user) {
 		return new EntityModel((RawEntity) user);
 	}
 }

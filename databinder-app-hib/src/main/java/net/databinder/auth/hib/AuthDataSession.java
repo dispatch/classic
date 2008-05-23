@@ -45,7 +45,7 @@ public class AuthDataSession extends AuthDataSessionBase implements AuthSession 
 	}
 	
 	@Override
-	public IModel getUserModel(DataUser user) {
+	public IModel createUserModel(DataUser user) {
 		return new HibernateObjectModel(user);
 	}
 }
