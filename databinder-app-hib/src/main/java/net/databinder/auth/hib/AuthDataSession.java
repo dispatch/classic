@@ -26,7 +26,6 @@ package net.databinder.auth.hib;
  * a user class and criteria builder as needed.</p>
  */
 import net.databinder.auth.AuthDataSessionBase;
-import net.databinder.auth.AuthSession;
 import net.databinder.auth.data.DataUser;
 import net.databinder.models.hib.HibernateObjectModel;
 
@@ -35,7 +34,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.protocol.http.WebApplication;
 
 /** Session to hold DataUser. */
-public class AuthDataSession extends AuthDataSessionBase implements AuthSession {
+public class AuthDataSession extends AuthDataSessionBase {
 	/**
 	 * Initialize new session.
 	 * @see WebApplication
