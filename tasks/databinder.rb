@@ -107,10 +107,10 @@ end
 WICKET_VERS='1.3.2'
 WICKET_SELF = group("wicket", "wicket-auth-roles", "wicket-extensions", :under=>"org.apache.wicket", :version=>WICKET_VERS)
 WICKET_DATETIME=["org.apache.wicket:wicket-datetime:jar:#{WICKET_VERS}", "joda-time:joda-time:jar:1.4"]
-WICKET=[WICKET_SELF, "commons-collections:commons-collections:jar:3.2","org.slf4j:slf4j-api:jar:1.4.2"]
+WICKET=[WICKET_SELF, "commons-collections:commons-collections:jar:3.2","org.slf4j:slf4j-api:jar:1.4.3"]
 MAIL = ["javax.mail:mail:jar:1.4", "javax.activation:activation:jar:1.1"]
-LOG4J = ["org.slf4j:slf4j-log4j12:jar:1.4.2","log4j:log4j:jar:1.2.14", MAIL]
-JDK_LOG = ["org.slf4j:slf4j-jdk14:jar:1.4.2"]
+LOG4J = ["org.slf4j:slf4j-log4j12:jar:1.4.3","log4j:log4j:jar:1.2.14", MAIL]
+JDK_LOG = ["org.slf4j:slf4j-jdk14:jar:1.4.3"]
 
 BATIK = group("batik-gvt", "batik-awt-util", "batik-anim", "batik-bridge", "batik-css", 
   "batik-dom", "batik-ext", "batik-parser", "batik-svg-dom", "batik-util", "batik-xml",
@@ -146,4 +146,4 @@ DATABINDER_CAY=[DATABINDER_CORE, CAYENNE, group("databinder-models-cay","databin
 DATABINDER_VALID_HIB=[DATABINDER_HIB, "net.databinder:databinder-valid-hib:jar:#{DB_VERS}",
   'org.hibernate:hibernate-validator:jar:3.0.0.GA']
 
-JETTY=group('jetty','jetty-util','jetty-ajp', 'servlet-api-2.5', :under=>'org.mortbay.jetty', :version=>'6.1.9')
+JETTY=group('jetty','jetty-util','jetty-ajp', 'servlet-api-2.5', :under=>'org.mortbay.jetty', :version=>'6.1.10')
