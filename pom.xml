@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
  <modelVersion>4.0.0</modelVersion>
  <groupId>net.databinder</groupId>
  <artifactId>databinder-parent</artifactId>
@@ -35,6 +36,7 @@
   <module>databinder-app-hib</module>
   <module>databinder-app-ao</module>
   <module>databinder-app-cay</module>
+  <module>databinder-app-cluster</module>
   <module>databinder-dispatch</module>
   <module>databinder-dispatch-components</module>
   <module>databinder-valid-hib</module>
