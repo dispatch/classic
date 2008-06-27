@@ -146,4 +146,4 @@ DATABINDER_CAY=[DATABINDER_CORE, CAYENNE, group("databinder-models-cay","databin
 DATABINDER_VALID_HIB=[DATABINDER_HIB, "net.databinder:databinder-valid-hib:jar:#{DB_VERS}",
   'org.hibernate:hibernate-validator:jar:3.0.0.GA']
 
-JETTY=group('jetty','jetty-util','jetty-ajp', 'servlet-api-2.5', :under=>'org.mortbay.jetty', :version=>'6.1.11')
+JETTY=group('jetty','jetty-util','jetty-ajp', 'servlet-api-2.5', :under=>'org.mortbay.jetty', :version=>'6.1.9')
