@@ -1,6 +1,6 @@
 repositories.remote << "http://repository.jboss.com/maven2/"
 repositories.remote << "http://download.java.net/maven/2/"
-repositories.remote << "http://databinder.net/snapshot/"
+repositories.remote << "http://databinder.net/repo/"
 repositories.remote << "http://scala-tools.org/repo-releases"
 
 repositories.local = ENV['M2_REPO'] if ENV['M2_REPO']
@@ -104,7 +104,7 @@ def embed_server()
   end
 end
 
-WICKET_VERS='1.3.2'
+WICKET_VERS='1.3.4'
 WICKET_SELF = group("wicket", "wicket-auth-roles", "wicket-extensions", :under=>"org.apache.wicket", :version=>WICKET_VERS)
 WICKET_DATETIME=["org.apache.wicket:wicket-datetime:jar:#{WICKET_VERS}", "joda-time:joda-time:jar:1.4"]
 WICKET=[WICKET_SELF, "commons-collections:commons-collections:jar:3.2","org.slf4j:slf4j-api:jar:1.4.3"]

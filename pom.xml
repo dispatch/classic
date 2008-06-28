@@ -16,7 +16,7 @@
   </license>
  </licenses>
  <properties>
-  <wicket.version>1.3.2</wicket.version>
+  <wicket.version>1.3.4</wicket.version>
   <scala.version>2.7.1</scala.version>
  </properties>
  <packaging>pom</packaging>

@@ -17,7 +17,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 			distribution: "repo"
 
 	properties:
-		wicket.version: "1.3.2"
+		wicket.version: "1.3.4"
 		scala.version: "2.7.1"
 
 
