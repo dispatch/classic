@@ -128,7 +128,7 @@ HIBERNATE=[HIBERNATE_SELF, JTA, CGLIB, "javax.persistence:persistence-api:jar:1.
 ACTIVE_OBJECTS=['net.java.dev.activeobjects:activeobjects:jar:0.8.2']
 CAYENNE=['org.apache.cayenne:cayenne:jar:2.0.4']
 
-DB_VERS='1.2-SNAPSHOT'
+DB_VERS='1.2.0'
 DATABINDER_COMPONENTS="net.databinder:databinder-components:jar:#{DB_VERS}"
 DATABINDER_SELF=[DATABINDER_COMPONENTS, group("databinder-app", "databinder-auth-components", "databinder-models", :under => "net.databinder", :version => DB_VERS)]
 DATABINDER_DISPATCH = [HTTPCLIENT, "net.databinder:databinder-dispatch:jar:#{DB_VERS}",
