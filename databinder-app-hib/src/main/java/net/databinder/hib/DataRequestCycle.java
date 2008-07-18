@@ -62,8 +62,8 @@ public class DataRequestCycle extends CookieRequestCycle implements HibernateReq
 		if (sess.isOpen())
 			try {
 				if (sess.getTransaction().isActive()) {
+					log.info("Rolling back uncomitted transaction.");
 					sess.getTransaction().rollback();
-					log.warn("Rolled back uncomitted transaction before closing session.");
 				}
 			} finally {
 				sess.close();
