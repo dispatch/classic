@@ -34,6 +34,8 @@ import org.apache.wicket.protocol.http.WebRequest;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.context.ManagedSessionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Opens Hibernate sessions and transactions as required and closes them at a request's
@@ -47,6 +49,8 @@ public class DataRequestCycle extends CookieRequestCycle implements HibernateReq
 	/** Keys for session factories that have been opened for this request */ 
 	protected HashSet<Object> keys = new HashSet<Object>();
 
+	private static final Logger log = LoggerFactory.getLogger(DataRequestCycle.class);
+
 	public DataRequestCycle(WebApplication application, WebRequest request, Response response) {
 		super(application, request, response);
 	}
@@ -57,8 +61,10 @@ public class DataRequestCycle extends CookieRequestCycle implements HibernateReq
 		
 		if (sess.isOpen())
 			try {
-				if (sess.getTransaction().isActive())
+				if (sess.getTransaction().isActive()) {
 					sess.getTransaction().rollback();
+					log.warn("Rolled back uncomitted transaction before closing session.");
+				}
 			} finally {
 				sess.close();
 			}
