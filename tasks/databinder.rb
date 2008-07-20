@@ -90,11 +90,58 @@ def embed_server
   def pid_f() _("server.pid") end
 
   def pid() File.exist?(pid_f) && IO.read(pid_f).to_i end
+    
+  def start_command()
+    cp = compile.dependencies + artifacts(LOG4J).map { |a| a.invoke; a.name }
+"
+    nohup #{ java_runner(cp, ['-server']) } >/dev/null &\\echo $! > #{ pid_f }
+    echo Started server pid: `cat #{ pid_f }`
+"
+  end
 
   task :start => :package do
-    cp = compile.dependencies + artifacts(LOG4J).map { |a| a.name }
-    system 'nohup ' << java_runner(cp, ['-server']) << '>/dev/null &\echo $! > ' << pid_f
-    puts "started server pid: " << pid().to_s
+    system start_command
+  end
+
+  def script_source()
+"#! /bin/sh
+
+set -e
+
+if [ -f /etc/default/databinder-server ]
+then
+  . /etc/default/databinder-server
+fi
+
+case \"$1\" in
+  start)
+    #{ start_command }
+    ;;
+  stop)
+    if [ -f #{ pid_f } ]
+    then
+      pid=`cat #{ pid_f }`
+      kill \"$pid\"
+      echo \"Sent TERM: $pid\"
+      rm #{ pid_f }
+    else
+      echo Sorry, no process ID is on file.
+    fi
+    ;;
+  *)
+    echo \"Usage: server.sh {start|stop}\"
+    ;;
+esac
+"
+  end
+
+  task :script => :package do
+    fname = _("server.sh")
+    File.open(fname, "w") do |f| 
+      f.write(script_source) 
+      f.chmod(0755)
+    end
+    puts "Wrote script to #{ fname }"
   end
 
   task :stop do
@@ -106,7 +153,7 @@ def embed_server
       end
       rm pid_f
     else
-      puts "no server id on record"
+      puts "Sorry, no process ID is on file."
     end
   end
 end
