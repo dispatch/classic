@@ -209,6 +209,7 @@ public class DataForm extends DataFormBase {
 	protected boolean saveIfNew(HibernateObjectModel model) {
 		Session session = getHibernateSession();
 		if (!session.contains(model.getObject())) {
+			onBeforeSave(model);
 			session.save(model.getObject());
 			// updating binding status; though it will happen on detach
 			// some UI components may like to know sooner.
@@ -217,6 +218,15 @@ public class DataForm extends DataFormBase {
 		}
 		return false;
 	}
+	
+	/**
+	 * Called before saving any new object by {@link #saveIfNew(HibernateObjectModel)}.
+	 * This is a good time to make last minute changes to new objects that
+	 * couldn't be easily serialized (adding relationships to existing persistent 
+	 * entities, for example).
+	 * @param generally, the persistent model for this form (but subclasses may also call saveIfNew)
+	 */
+	protected void onBeforeSave(HibernateObjectModel model) { };
 
 	/**
 	 * Checks that the version number, if present, is the last known version number.

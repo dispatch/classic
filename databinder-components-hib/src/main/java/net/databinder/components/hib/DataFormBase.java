@@ -50,6 +50,7 @@ public class DataFormBase extends Form {
 			if (!hasError()) {
 				Session session = Databinder.getHibernateSession(factoryKey);
 				session.flush(); // needed for conv. sessions, harmless otherwise
+				onBeforeCommit();
 				session.getTransaction().commit();
 				return true;
 			}
@@ -58,5 +59,8 @@ public class DataFormBase extends Form {
 		}
 		return false;
 	}
+	
+	/** Called before committing a transaction by {@link #commitTransactionIfValid()}. */
+	protected void onBeforeCommit() { };
 
 }
