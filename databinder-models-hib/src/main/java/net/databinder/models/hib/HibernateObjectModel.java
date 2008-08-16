@@ -279,6 +279,7 @@ public class HibernateObjectModel extends LoadableWritableModel implements Bindi
 	 * Disassociates this object from any persistent object, but retains the class
 	 * for constructing a blank copy if requested.
 	 * @see HibernateObjectModel#HibernateObjectModel(Class objectClass)
+	 * @see #isBound()
 	 */
 	public void unbind() {
 		objectId = null;

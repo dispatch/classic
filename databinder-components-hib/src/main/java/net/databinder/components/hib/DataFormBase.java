@@ -36,19 +36,27 @@ public class DataFormBase extends Form {
 		return Databinder.getHibernateSession(factoryKey);
 	}
 	
-	/**
-	 * Commits transaction if no errors are registered for any form component. 
-	 */
+	/** Default implementation calls {@link #commitTransactionIfValid()}. */
 	protected void onSubmit() {
+		commitTransactionIfValid();
+	}
+	
+	/**
+	 * Commit transaction if no errors are registered for any form component.
+	 * @return true if transaction was committed 
+	 */
+	protected boolean commitTransactionIfValid() {
 		try {
 			if (!hasError()) {
 				Session session = Databinder.getHibernateSession(factoryKey);
 				session.flush(); // needed for conv. sessions, harmless otherwise
 				session.getTransaction().commit();
+				return true;
 			}
 		} catch (StaleObjectStateException e) {
 			error(getString("version.mismatch", null)); // report error
 		}
+		return false;
 	}
 
 }

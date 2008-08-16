@@ -31,12 +31,24 @@ import org.apache.wicket.model.IModel;
 import org.hibernate.Session;
 
 /**
- * Form for a persistent model object nested in a BoundCompoundPropertyModel.
- * Saves the model object to persistent storage when a valid form is submitted. This
- * form can be a child component of any Wicket page.
+ * Provides default handling for a single {@link HibernateObjectModel} nested 
+ * in a {@link CompoundPropertyModel}. This includes saving a new model object to 
+ * persistent storage and committing the current transaction when a valid form 
+ * is submitted. For forms holding multiple independent persistent objects (when 
+ * there is no single parent that cascades saves to the others), subclasses may 
+ * override {@link #savePersistentObjectIfNew()} to save all the form's 
+ * {@link HibernateObjectModel}s. (Note that automatic {@link #version} tracking 
+ * is only available for the primary model.)
+ * <p>For very specialized forms it may be necessary to extend this class's parent,
+ * {@link DataFormBase}.</p>
  * @author Nathan Hamblen
  */
 public class DataForm extends DataFormBase {
+	/**
+	 * Retains the persistent object's version field (if it has one) between
+	 * requests to detect editing conflicts between users.
+	 * @see #validate()
+	 */
 	private Serializable version;
 
 	/**
@@ -86,6 +98,9 @@ public class DataForm extends DataFormBase {
 		return this;
 	}
 
+	/**
+	 * @return the single persistent model for this form
+	 */
 	public HibernateObjectModel getPersistentObjectModel() {
 		return (HibernateObjectModel) getCompoundModel().getChainedModel();
 	}
@@ -101,6 +116,10 @@ public class DataForm extends DataFormBase {
 		return this;
 	}
 	
+	/**
+	 * Updates the internal version number to the actual version number. 
+	 * @see #version
+	 */
 	private void updateVersion() {
 		version = getPersistentObjectModel().getVersion();
 	}
@@ -113,14 +132,16 @@ public class DataForm extends DataFormBase {
 			updateVersion();
 	}
 	
+	/** Calls {@link #updateVersion()} when model changes. */
 	@Override
 	protected void onModelChanged() {
 		updateVersion();
 	}
 
 	/**
-	 * Replaces the form's model object with a new, blank instance. Does not affect
+	 * Replaces the form's model object with a new, blank (unbound) instance. Does not affect
 	 * persistent storage.
+	 * @see HibernateObjectModel#unbind()
 	 * @return this form, for chaining
 	 */
 	public DataForm clearPersistentObject() {
@@ -129,6 +150,10 @@ public class DataForm extends DataFormBase {
 		return this;
 	}
 
+	/** 
+	 * @return the effective compound model for this form, which may be
+	 * attached to a parent component
+	 */
 	protected CompoundPropertyModel getCompoundModel() {
 		IModel model = getModel();
 		Component cur = this;
@@ -141,25 +166,52 @@ public class DataForm extends DataFormBase {
 		throw new WicketRuntimeException("DataForm has no parent compound model");
 	}
 
-	/**
-	 * Saves the form's model object to persistent storage if it is new and commits
-	 * the database transaction.
-	 */
+	/** Default implementation calls {@link #savePersistentObjectIfNew()}. */
 	@Override
 	protected void onSubmit() {
-		Object modelObject = getPersistentObjectModel().getObject();
+		updatePersistentObjectIfValid();
+	}
+	
+	/**
+	 * If no errors are registered for any form component, calls 
+	 * {@link #savePersistentObjectIfNew()()}
+	 * {@link #commitTransactionIfValid()}, and {@link #updateVersion()}.
+	 */
+	protected void updatePersistentObjectIfValid() {
+		if (!hasError()) {
+			savePersistentObjectIfNew();
+			commitTransactionIfValid();	// flush and commit session
+			// if version is present it should have changed
+			if (version != null) {
+				updateVersion();
+			}
+		}
+	}
+	
+	/**
+	 * Saves persistent model object if it is not already contained in the session.
+	 * If the a sub-class is responsible for more than one {@link HibernateObjectModel},
+	 * it may override to call {@link #saveIfNew(HibernateObjectModel)} on each.  
+	 * @return true if object was newly saved 
+	 */
+	protected boolean savePersistentObjectIfNew() {
+		return saveIfNew(getPersistentObjectModel());
+	}
+
+	/**
+	 * Saves model's entity if it is not already contained in the session.
+	 * @return true if object was newly saved 
+	 */
+	protected boolean saveIfNew(HibernateObjectModel model) {
 		Session session = getHibernateSession();
-		if (!session.contains(modelObject)) {
-			session.save(modelObject);
+		if (!session.contains(model.getObject())) {
+			session.save(model.getObject());
 			// updating binding status; though it will happen on detach
 			// some UI components may like to know sooner.
 			getPersistentObjectModel().checkBinding();
+			return true;
 		}
-		super.onSubmit();	// flush and commit session
-		// if version is present it should have changed
-		if (version != null) {
-			updateVersion();
-		}
+		return false;
 	}
 
 	/**
@@ -205,10 +257,15 @@ public class DataForm extends DataFormBase {
 		return true;
 	}
 	
+	/**
+	 * Instances of this nested class call #{@link DataForm#clearPersistentObject()}
+	 * on their instantiating DataForm when clicked.
+	 */ 
 	public class ClearLink extends Link {
 		public ClearLink(String id) {
 			super(id);
 		}
+		/** @return true if visible and the form's perisistent model is bound */
 		@Override
 		public boolean isEnabled() {
 			return !DataForm.this.isVisibleInHierarchy() || getPersistentObjectModel().isBound();
