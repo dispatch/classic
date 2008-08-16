@@ -52,6 +52,7 @@ public class DataFormBase extends Form {
 				session.flush(); // needed for conv. sessions, harmless otherwise
 				onBeforeCommit();
 				session.getTransaction().commit();
+				session.beginTransaction();
 				return true;
 			}
 		} catch (StaleObjectStateException e) {
