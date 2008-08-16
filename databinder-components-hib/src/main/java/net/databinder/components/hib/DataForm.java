@@ -166,18 +166,20 @@ public class DataForm extends DataFormBase {
 		throw new WicketRuntimeException("DataForm has no parent compound model");
 	}
 
-	/** Default implementation calls {@link #savePersistentObjectIfNew()}. */
+	/** Default implementation calls {@link #commitFormIfValid()}. */
 	@Override
 	protected void onSubmit() {
-		updatePersistentObjectIfValid();
+		commitFormIfValid();
 	}
 	
 	/**
-	 * If no errors are registered for any form component, calls 
-	 * {@link #savePersistentObjectIfNew()()}
+	 * Commits a valid form's data to persistent storage. If no errors are 
+	 * registered for any form component, this method calls 
+	 * {@link #savePersistentObjectIfNew()}
 	 * {@link #commitTransactionIfValid()}, and {@link #updateVersion()}.
+	 * @return true if committed
 	 */
-	protected void updatePersistentObjectIfValid() {
+	protected boolean commitFormIfValid() {
 		if (!hasError()) {
 			savePersistentObjectIfNew();
 			commitTransactionIfValid();	// flush and commit session
@@ -185,7 +187,9 @@ public class DataForm extends DataFormBase {
 			if (version != null) {
 				updateVersion();
 			}
+			return true;
 		}
+		return false;
 	}
 	
 	/**
