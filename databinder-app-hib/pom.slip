@@ -29,12 +29,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		dependency:
 			groupId: "org.hibernate"
 			artifactId: "hibernate-annotations"
-			version: "3.3.1.GA"
-
-		dependency:
-			groupId: "org.hibernate"
-			artifactId: "hibernate-commons-annotations"
-			version: "3.0.0.ga"
+			version: "3.4.0.GA"
 
 		dependency:
 			groupId: "c3p0"

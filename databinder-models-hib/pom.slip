@@ -18,8 +18,8 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 
 		dependency:
 			groupId: "org.hibernate"
-			artifactId: "hibernate"
-			version: "3.2.6.ga"
+			artifactId: "hibernate-core"
+			version: "3.3.1.GA"
 			
 		dependency:
 			groupId: "javax.transaction"
