@@ -166,8 +166,8 @@ COMMONS_LOG="commons-logging:commons-logging:jar:1.1.1"
 HTTPCLIENT = ["org.apache.httpcomponents:httpclient:jar:4.0-alpha4", \
   "org.apache.httpcomponents:httpcore:jar:4.0-beta1", "commons-codec:commons-codec:jar:1.3", COMMONS_LOG]
 
-HIBERNATE_CORE = "org.hibernate:hibernate:jar:3.2.6.ga"
-HIBERNATE_SELF = [HIBERNATE_CORE,"org.hibernate:hibernate-annotations:jar:3.3.1.GA", "org.hibernate:hibernate-commons-annotations:jar:3.0.0.ga"]
+HIBERNATE_CORE = "org.hibernate:hibernate-core:jar:3.3.1.GA"
+HIBERNATE_SELF = [HIBERNATE_CORE,"org.hibernate:hibernate-annotations:jar:3.4.0.GA", "org.hibernate:hibernate-commons-annotations:jar:3.1.0.GA"]
 JTA = "javax.transaction:jta:jar:1.0.1B"
 CGLIB = "cglib:cglib:jar:2.1_3"
 C3P0='c3p0:c3p0:jar:0.9.1.2'
@@ -191,6 +191,6 @@ DATABINDER_AO=[DATABINDER_CORE, ACTIVE_OBJECTS, group("databinder-models-ao","da
 DATABINDER_CAY=[DATABINDER_CORE, CAYENNE, group("databinder-models-cay","databinder-components-cay","databinder-app-cay", :under => "net.databinder", :version => DB_VERS)]
 
 DATABINDER_VALID_HIB=[DATABINDER_HIB, "net.databinder:databinder-valid-hib:jar:#{DB_VERS}",
-  'org.hibernate:hibernate-validator:jar:3.0.0.GA']
+  'org.hibernate:hibernate-validator:jar:3.1.0.GA']
 
 JETTY=group('jetty','jetty-util','jetty-ajp', 'servlet-api-2.5', :under=>'org.mortbay.jetty', :version=>'6.1.9')
