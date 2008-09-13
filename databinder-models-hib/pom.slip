@@ -27,9 +27,9 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 			version: "1.0.1B"
 
 		dependency:
-			groupId: "javax.persistence"
-			artifactId: "persistence-api"
-			version: "1.0"
+			groupId: "org.hibernate"
+			artifactId: "ejb3-persistence"
+			version: "1.0.2.GA"
 
 		dependency:
 			groupId: "org.apache.wicket"
