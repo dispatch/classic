@@ -107,7 +107,7 @@ public class DataServer {
 			
 			String warPath = System.getProperty("jetty.warpath", 
 					System.getProperty("jetty.warPath"));
-			if (Strings.isEmpty(warPath)) warPath = projectDir + "src/main/webapp";
+			if (Strings.isEmpty(warPath)) warPath = projectDir + "/src/main/webapp";
 			
 			if (!new File(warPath).isDirectory()) {
 				log.error("Unable to find webapps path: " + warPath +
