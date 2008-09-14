@@ -128,9 +128,9 @@ public class CriteriaFilterAndSort extends CriteriaBuildAndSort implements IFilt
     }
     
     protected Number convertToNumber(String value, Class clazz) throws ParseException {
-    	return (Number)
-    		new PropertyResolverConverter(Application.get().getConverterLocator(), Session.get().getLocale())
-    			.convert(value, clazz);
+      return (Number)
+        new PropertyResolverConverter(Application.get().getConverterLocator(), Session.get().getLocale())
+          .convert(value, clazz);
     }
     
     public Object getFilterState() {
