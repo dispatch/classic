@@ -21,7 +21,6 @@ package net.databinder.models.hib;
 * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  ---*/
 
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
