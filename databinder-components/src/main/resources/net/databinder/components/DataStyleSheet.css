@@ -114,13 +114,13 @@ tr.headers th {
 tr.headers th.wicket_orderDown 
 {
 	background-color: #DFDFFF;
-	background-image: url(arrow_up.png); 
+	background-image: url(image/up-arrow.png); 
 }
 
 tr.headers th.wicket_orderUp 
 {
 	background-color: #DFDFFF;
-	background-image: url(arrow_down.png); 
+	background-image: url(image/down-arrow.png); 
 }
 
 /* Modal Windows */
