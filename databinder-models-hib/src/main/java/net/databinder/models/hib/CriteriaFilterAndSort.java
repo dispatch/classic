@@ -33,6 +33,7 @@ import org.apache.wicket.Session;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.IFilterStateLocator;
 import org.apache.wicket.util.lang.PropertyResolver;
 import org.apache.wicket.util.lang.PropertyResolverConverter;
+import org.apache.wicket.util.convert.ConversionException;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Disjunction;
@@ -116,7 +117,7 @@ public class CriteriaFilterAndSort extends CriteriaBuildAndSort implements IFilt
                     else
                         conj.add(Restrictions.eq(prop, convertToNumber(value, clazz)));
                 }
-                catch(ParseException ex) {
+                catch(ConversionException ex) {
                     // ignore filter in this case
                 }
             }
@@ -127,7 +128,7 @@ public class CriteriaFilterAndSort extends CriteriaBuildAndSort implements IFilt
         criteria.add(conj);
     }
     
-    protected Number convertToNumber(String value, Class clazz) throws ParseException {
+    protected Number convertToNumber(String value, Class clazz) {
       return (Number)
         new PropertyResolverConverter(Application.get().getConverterLocator(), Session.get().getLocale())
           .convert(value, clazz);
