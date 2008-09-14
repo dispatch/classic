@@ -38,8 +38,11 @@ import org.hibernate.criterion.Order;
  * CriteriaSorter sorter = new CriteriaSorter("name",true,false); 
  * IDataProvider provider = new DatabinderProvider(objectClass, criteriaBuilder, sorter);
  * </pre>
- *  * @author Mark Southern (southern at scripps dot edu)
+ * 
+ * @author Mark Southern (southern at scripps dot edu)
+ * @deprecated Use a subclass or OrderedCriteriaBuilder instead. It avoids problems with duplicate Aliases.
  */
+@Deprecated
 public class CriteriaSorter implements ISortStateLocator, CriteriaBuilder, Serializable {
 
     private SingleSortState sortState;

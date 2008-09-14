@@ -44,7 +44,9 @@ import org.hibernate.criterion.Restrictions;
  * </pre>
  * 
  * @author Mark Southern (southern at scripps dot edu)
+ * @deprecated Use CriteriaFilterAndSort instead.
  */
+@Deprecated
 public class CriteriaColumnFilter implements CriteriaBuilder, IFilterStateLocator {
 
     private IColumn[] columns;
