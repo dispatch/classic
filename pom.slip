@@ -43,9 +43,6 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		module: "databinder-dispatch-components"
 		module: "databinder-valid-hib"
 		module: "databinder-draw"
-	scm:
-		connection: "scm:git:file:///var/cache/git/databinder.git/"
-		developerConnection: "scm:git:file:///var/cache/git/databinder.git/"
 
 	organization:
 		name: "Nathan Hamblen"

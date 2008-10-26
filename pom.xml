@@ -42,10 +42,6 @@
   <module>databinder-valid-hib</module>
   <module>databinder-draw</module>
  </modules>
- <scm>
-  <connection>scm:git:file:///var/cache/git/databinder.git/</connection>
-  <developerConnection>scm:git:file:///var/cache/git/databinder.git/</developerConnection>
- </scm>
  <organization>
   <name>Nathan Hamblen</name>
  </organization>
