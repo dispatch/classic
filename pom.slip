@@ -5,7 +5,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 	groupId: "net.databinder"
 	artifactId:"databinder-parent"
 	name: "Databinder"
-	version: "1.2.1-beta1"
+	version: "1.2.1-SNAPSHOT"
 	description: "A persistence toolkit for Wicket"
 	url: "http://databinder.net/"
 	inceptionYear: "2005"
@@ -43,9 +43,6 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		module: "databinder-dispatch-components"
 		module: "databinder-valid-hib"
 		module: "databinder-draw"
-	scm:
-		connection: "scm:svn:svn://localhost/databinder/trunk"
-		developerConnection: "scm:svn:svn://localhost/databinder/trunk"
 
 	organization:
 		name: "Nathan Hamblen"
@@ -58,10 +55,6 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 					target: "1.5"
 					showDeprecation: "true"
 					showWarnings: "true"
-			plugin:
-				artifactId: "maven-release-plugin"
-				configuration:
-					tagBase: "svn://localhost/databinder/tags"
 			plugin:
 				artifactId: "maven-source-plugin"
 				executions:
