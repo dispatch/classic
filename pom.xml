@@ -43,8 +43,8 @@
   <module>databinder-draw</module>
  </modules>
  <scm>
-  <connection>scm:svn:svn://localhost/databinder/trunk</connection>
-  <developerConnection>scm:svn:svn://localhost/databinder/trunk</developerConnection>
+  <connection>scm:git:file:///var/cache/git/databinder.git/</connection>
+  <developerConnection>scm:git:file:///var/cache/git/databinder.git/</developerConnection>
  </scm>
  <organization>
   <name>Nathan Hamblen</name>
@@ -58,12 +58,6 @@
      <target>1.5</target>
      <showDeprecation>true</showDeprecation>
      <showWarnings>true</showWarnings>
-    </configuration>
-   </plugin>
-   <plugin>
-    <artifactId>maven-release-plugin</artifactId>
-    <configuration>
-     <tagBase>svn://localhost/databinder/tags</tagBase>
     </configuration>
    </plugin>
    <plugin>

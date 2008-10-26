@@ -44,8 +44,8 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		module: "databinder-valid-hib"
 		module: "databinder-draw"
 	scm:
-		connection: "scm:svn:svn://localhost/databinder/trunk"
-		developerConnection: "scm:svn:svn://localhost/databinder/trunk"
+		connection: "scm:git:file:///var/cache/git/databinder.git/"
+		developerConnection: "scm:git:file:///var/cache/git/databinder.git/"
 
 	organization:
 		name: "Nathan Hamblen"
@@ -58,10 +58,6 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 					target: "1.5"
 					showDeprecation: "true"
 					showWarnings: "true"
-			plugin:
-				artifactId: "maven-release-plugin"
-				configuration:
-					tagBase: "svn://localhost/databinder/tags"
 			plugin:
 				artifactId: "maven-source-plugin"
 				executions:
