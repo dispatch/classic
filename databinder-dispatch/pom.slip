@@ -15,7 +15,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 		dependency:
 			groupId: "org.apache.httpcomponents"
 			artifactId: "httpclient"
-			version: "4.0-alpha4"
+			version: "4.0-beta1"
 			
 		dependency:
 			groupId: "org.scala-lang"
