@@ -35,8 +35,12 @@ class AnyExtras(x: Any) {
 
 implicit def any2anyExtras(x: Any) = new AnyExtras(x)  
 
-// disp
 import net.databinder.dispatch._
+
+val svc = new Server("services.newsgator.com")
+svc always { _.addHeader("X-NGAPIToken", token) }
+svc auth (user, pass)
+svc("/ngws/svc/Location.aspx") >>> System.out
 
 /*
 val couch = new Http("localhost", 5984)
