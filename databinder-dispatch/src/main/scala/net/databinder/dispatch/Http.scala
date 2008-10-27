@@ -4,6 +4,7 @@ import java.io.{InputStream,OutputStream,BufferedInputStream,BufferedOutputStrea
 
 import org.apache.http._
 import org.apache.http.client._
+import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.client.methods._
 import org.apache.http.client.entity.UrlEncodedFormEntity
 
@@ -14,28 +15,14 @@ import org.apache.http.params.{HttpProtocolParams, BasicHttpParams}
 import org.apache.http.util.EntityUtils
 import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials}
 
-
-class Http extends org.apache.http.impl.client.DefaultHttpClient {
-  // add request interceptor from thunk
-  def requests(thunk: (HttpRequest) => Unit) {
-    addRequestInterceptor(new HttpRequestInterceptor() {
-      def process(req: HttpRequest, context: HttpContext) { thunk(req) }
-    })
-  }
+trait Http {
+  def client: HttpClient
   
-  override def createHttpParams = {
-    val params = new BasicHttpParams
-    HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1)
-    HttpProtocolParams.setContentCharset(params, HTTP.UTF_8)
-    HttpProtocolParams.setUseExpectContinue(params, false)
-    params
-  }
-  
-  def my_execute(req: HttpUriRequest) = execute(req)
+  def execute(req: HttpUriRequest) = client.execute(req)
   
   def x [T](req: HttpUriRequest) = new {
     def apply(thunk: (Int, HttpResponse, HttpEntity) => T) = {
-      val res = my_execute(req)
+      val res = execute(req)
       res.getEntity match {
         case null => error("no response message")
         case ent => try { 
@@ -78,19 +65,44 @@ class Http extends org.apache.http.impl.client.DefaultHttpClient {
     def as_str = x (req) ok { EntityUtils.toString(_) }
     def >>> (out: OutputStream): Unit = x (req) ok { _.writeTo(out) }
   }
+  type XAction = (HttpRequest) => Unit
 }
 
-class Server(host: HttpHost) extends Http {
-  def this(hostname: String) = this(new HttpHost(hostname))
-  def this(hostname: String, port: Int) = this(new HttpHost(hostname, port))
-  
+class ConfiguredHttpCLient extends DefaultHttpClient {
+  override def createHttpParams = {
+    val params = new BasicHttpParams
+    HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1)
+    HttpProtocolParams.setContentCharset(params, HTTP.UTF_8)
+    HttpProtocolParams.setUseExpectContinue(params, false)
+    params
+  }
+}
+
+
+class SingleHttp(x_action: XAction) extends Http {
+  this() = this { r => () }
+  lazy val client = new ConfiguredHttpClient
+  def on_x(new_x_action: XAction) = new SingleHttp { req =>
+    x_action(req)
+    new_x_action(req)
+  }
+  override def execute(req: HttpUriRequest) = {
+    x_action(req)
+    super.execute(req)
+  }
+}
+
+class SingleHttpHost(host: HttpHost, x_action: XAction) extends SingleHttp(x_action) {
   def auth(name: String, password: String) {
     getCredentialsProvider.setCredentials(
         new AuthScope(host.getHostName, host.getPort), 
         new UsernamePasswordCredentials(name, password)
     )
   }
-  override def my_execute(req: HttpUriRequest):HttpResponse = execute(host, req)
+  override def execute(req: HttpUriRequest):HttpResponse = {
+    x_action(req)
+    client.execute(host, req)
+  }
 }
 
 import org.apache.http.conn.scheme.{Scheme,SchemeRegistry,PlainSocketFactory}
@@ -98,10 +110,14 @@ import org.apache.http.conn.ssl.SSLSocketFactory
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
 
 object Http extends Http {
-  override def createClientConnectionManager() = {
-    val registry = new SchemeRegistry()
-    registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80))
-    registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443))
-    new ThreadSafeClientConnManager(getParams(), registry)
+  def host(hostname: String) = this(new SingleHttpHost(hostname))
+  def host(hostname: String, port: Int) = this(new HttpHost(hostname, port))
+  lazy val client = new ConfiguredHttpClient {
+    override def createClientConnectionManager() = {
+      val registry = new SchemeRegistry()
+      registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80))
+      registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443))
+      new ThreadSafeClientConnManager(getParams(), registry)
+    }
   }
 }
