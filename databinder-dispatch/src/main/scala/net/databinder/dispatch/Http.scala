@@ -9,15 +9,19 @@ import org.apache.http.client.entity.UrlEncodedFormEntity
 
 import org.apache.http.entity.StringEntity
 import org.apache.http.message.BasicNameValuePair
-import org.apache.http.protocol.{HTTP, BasicHttpContext}
+import org.apache.http.protocol.{HTTP, HttpContext}
 import org.apache.http.params.{HttpProtocolParams, BasicHttpParams}
 import org.apache.http.util.EntityUtils
+import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials}
 
-class Http(host: Option[HttpHost]) extends org.apache.http.impl.client.DefaultHttpClient {
-  def this() = this(None)
-  def this(host: HttpHost) = this(Some(host))
-  def this(hostname: String) = this(new HttpHost(hostname))
-  def this(hostname: String, port: Int) = this(new HttpHost(hostname, port))
+
+class Http extends org.apache.http.impl.client.DefaultHttpClient {
+  // add request interceptor from thunk
+  def always(thunk: (HttpRequest) => Unit) {
+    addRequestInterceptor(new HttpRequestInterceptor() {
+      def process(req: HttpRequest, context: HttpContext) { thunk(req) }
+    })
+  }
   
   override def createHttpParams = {
     val params = new BasicHttpParams
@@ -27,12 +31,11 @@ class Http(host: Option[HttpHost]) extends org.apache.http.impl.client.DefaultHt
     params
   }
   
+  def my_execute(req: HttpUriRequest) = execute(req)
+  
   def x [T](req: HttpUriRequest) = new {
     def apply(thunk: (Int, HttpResponse, HttpEntity) => T) = {
-      val res = host match {
-        case None => execute(req)
-        case Some(host) => execute(host, req)
-      }
+      val res = my_execute(req)
       res.getEntity match {
         case null => error("no response message")
         case ent => try { 
@@ -75,6 +78,19 @@ class Http(host: Option[HttpHost]) extends org.apache.http.impl.client.DefaultHt
     def as_str = x (req) ok { EntityUtils.toString(_) }
     def >>> (out: OutputStream): Unit = x (req) ok { _.writeTo(out) }
   }
+}
+
+class Server(host: HttpHost) extends Http {
+  def this(hostname: String) = this(new HttpHost(hostname))
+  def this(hostname: String, port: Int) = this(new HttpHost(hostname, port))
+  
+  def auth(name: String, password: String) {
+    getCredentialsProvider.setCredentials(
+        new AuthScope(host.getHostName, host.getPort), 
+        new UsernamePasswordCredentials(name, password)
+    )
+  }
+  override def my_execute(req: HttpUriRequest):HttpResponse = execute(host, req)
 }
 
 import org.apache.http.conn.scheme.{Scheme,SchemeRegistry,PlainSocketFactory}
