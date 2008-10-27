@@ -17,7 +17,7 @@ import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials}
 
 class Http extends org.apache.http.impl.client.DefaultHttpClient {
   // add request interceptor from thunk
-  def always(thunk: (HttpRequest) => Unit) {
+  def requests(thunk: (HttpRequest) => Unit) {
     addRequestInterceptor(new HttpRequestInterceptor() {
       def process(req: HttpRequest, context: HttpContext) { thunk(req) }
     })
