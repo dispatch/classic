@@ -3,22 +3,31 @@ import scala.Console._
 import scala.tools.nsc.util.NameTransformer._  
   
 class AnyExtras(x: Any) {  
-  def methods = methods__.foreach(println _)  
-  def fields = fields__.foreach(println _)  
+  def methods = method_list(ig => true).foreach(println _)  
+  def methods(regex: String) = method_list(has(_, regex)).foreach(println _)
+  def fields = field_list(ig => true).foreach(println _)  
+  def fields(regex: String) = field_list(has(_, regex)).foreach(println _)  
+  
+  def has(str:String, regex: String) = 
+    Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(str).find
     
-  def methods__ = wrapped.getClass  
+  def method_list(filter: String => Boolean) = wrapped.getClass  
       .getMethods  
-      .toList  
+      .toList
+      .filter(m => filter(m.getName))
       .map(m => decode(m.toString  
                         .replaceFirst("\\).*", ")")  
                         .replaceAll("[^(]+\\.", "")  
                         .replace("()", "")))  
       .filter(!_.startsWith("$tag"))  
+      .sort(_ < _)
     
-  def fields__ = wrapped.getClass  
+  def field_list(filter: String => Boolean) = wrapped.getClass  
       .getDeclaredFields  
-      .toList  
+      .filter(f => filter(f.getName))
+      .toList
       .map(m => decode(m.toString.replaceFirst("^.*\\.", "")))  
+      .sort(_ < _)
   
   private def wrapped: AnyRef = x match {  
     case x: Byte => byte2Byte(x)  
