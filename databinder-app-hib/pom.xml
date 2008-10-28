@@ -41,9 +41,9 @@
    <version>3.4.GA</version>
   </dependency>
   <dependency>
-   <groupId>c3p0</groupId>
-   <artifactId>c3p0</artifactId>
-   <version>0.9.1.2</version>
+   <groupId>org.hibernate</groupId>
+   <artifactId>hibernate-c3p0</artifactId>
+   <version>3.3.1.GA</version>
   </dependency>
  </dependencies>
  <repositories>
