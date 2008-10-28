@@ -1,7 +1,9 @@
 // http://minformix.org/blog/index.php?/archives/91-Scala-Querying-an-objects-fields-and-methods-with-reflection.html
 import scala.Console._  
 import scala.tools.nsc.util.NameTransformer._  
-  
+
+import java.util.regex._
+
 class AnyExtras(x: Any) {  
   def methods = method_list(ig => true).foreach(println _)  
   def methods(regex: String) = method_list(has(_, regex)).foreach(println _)
@@ -46,26 +48,7 @@ implicit def any2anyExtras(x: Any) = new AnyExtras(x)
 
 import net.databinder.dispatch._
 
-val svc = new Server("services.newsgator.com")
-svc requests { _.addHeader("X-NGAPIToken", token) }
-svc auth (user, pass)
+val svc = Http.host("services.newsgator.com").on_x(_.addHeader("X-NGAPIToken", token)).auth(user, pass)
 svc("/ngws/svc/Location.aspx") >>> System.out
 
-/*
-val couch = new Http("localhost", 5984)
-object Person extends Doc {
-  val name = String('name) 
-  val age = Int('age)
-  val pets = List[java.lang.String]('pets)
-  
-  val obj = new Object('objective) {
-    val acc = String('accomplished)
-  }
-}
 
-var p = couch("/people/nathan") >> { new Store(_) }
-
-p = (p << Person.name)(Some("Nathan"))
-
-p = couch("/people/nathan") <<: Revise(p)
-*/

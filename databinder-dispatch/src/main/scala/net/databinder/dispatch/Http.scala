@@ -65,10 +65,9 @@ trait Http {
     def as_str = x (req) ok { EntityUtils.toString(_) }
     def >>> (out: OutputStream): Unit = x (req) ok { _.writeTo(out) }
   }
-  type XAction = (HttpRequest) => Unit
 }
 
-class ConfiguredHttpCLient extends DefaultHttpClient {
+class ConfiguredHttpClient extends DefaultHttpClient {
   override def createHttpParams = {
     val params = new BasicHttpParams
     HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1)
@@ -78,27 +77,31 @@ class ConfiguredHttpCLient extends DefaultHttpClient {
   }
 }
 
+trait RequestAction extends Http
 
-class SingleHttp(x_action: XAction) extends Http {
-  this() = this { r => () }
+class SingleHttp(x_action: (HttpRequest) => Unit) extends Http {
   lazy val client = new ConfiguredHttpClient
-  def on_x(new_x_action: XAction) = new SingleHttp { req =>
-    x_action(req)
-    new_x_action(req)
-  }
+  def on_x(new_x_action: (HttpRequest) => Unit) = 
+    new SingleHttp(new_x_action(_))
+
   override def execute(req: HttpUriRequest) = {
     x_action(req)
     super.execute(req)
   }
 }
 
-class SingleHttpHost(host: HttpHost, x_action: XAction) extends SingleHttp(x_action) {
-  def auth(name: String, password: String) {
-    getCredentialsProvider.setCredentials(
+class SingleHttpHost(host: HttpHost, x_action: (HttpRequest) => Unit) extends SingleHttp(x_action) {
+  def auth(name: String, password: String) = {
+    val c = new SingleHttpHost(host, x_action)
+    c.client.getCredentialsProvider.setCredentials(
         new AuthScope(host.getHostName, host.getPort), 
         new UsernamePasswordCredentials(name, password)
     )
+    c
   }
+  override def on_x(new_x_action: (HttpRequest) => Unit) = 
+    new SingleHttpHost(host, new_x_action(_))
+
   override def execute(req: HttpUriRequest):HttpResponse = {
     x_action(req)
     client.execute(host, req)
@@ -110,8 +113,11 @@ import org.apache.http.conn.ssl.SSLSocketFactory
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
 
 object Http extends Http {
-  def host(hostname: String) = this(new SingleHttpHost(hostname))
-  def host(hostname: String, port: Int) = this(new HttpHost(hostname, port))
+  def host(hostname: String) = 
+    new SingleHttpHost(new HttpHost(hostname), foo => ())
+  def host(hostname: String, port: Int) = 
+    new SingleHttpHost(new HttpHost(hostname, port), foo => ())
+
   lazy val client = new ConfiguredHttpClient {
     override def createClientConnectionManager() = {
       val registry = new SchemeRegistry()
