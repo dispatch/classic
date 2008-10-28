@@ -16,7 +16,7 @@ import org.apache.http.util.EntityUtils
 import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials}
 
 trait Http {
-  def client: HttpClient
+  val client: HttpClient
   
   def execute(req: HttpUriRequest) = client.execute(req)
   
