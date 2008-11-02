@@ -83,6 +83,17 @@ trait Http {
     def as_str = x (req) ok { EntityUtils.toString(_) }
     /** Write to the given OutputStream. */
     def >>> (out: OutputStream): Unit = x (req) ok { _.writeTo(out) }
+    /** Process response as XML document in thunk */
+    def <> [T] (thunk: (scala.xml.Document => T)) = >> { is => 
+      val bis = new java.io.BufferedInputStream(is)
+      // walk through possible byte order mark garbage
+      bis.mark(2)
+      while (List(0xef, 0xbb, 0xbf) contains bis.read) bis.mark(2)
+      bis.reset()
+
+      val src = scala.io.Source.fromInputStream(bis)
+      thunk(scala.xml.parsing.ConstructingParser.fromSource(src, false).document)
+    }
   }
 }
 
