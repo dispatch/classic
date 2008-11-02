@@ -84,14 +84,12 @@ trait Http {
     /** Write to the given OutputStream. */
     def >>> (out: OutputStream): Unit = x (req) ok { _.writeTo(out) }
     /** Process response as XML document in thunk */
-    def <> [T] (thunk: (scala.xml.Document => T)) = >> { is => 
-      val bis = new java.io.BufferedInputStream(is)
-      // walk through possible byte order mark garbage
-      bis.mark(2)
-      while (List(0xef, 0xbb, 0xbf) contains bis.read) bis.mark(2)
-      bis.reset()
-
-      val src = scala.io.Source.fromInputStream(bis)
+    def <> [T] (thunk: (scala.xml.Document => T)) = { 
+      // an InputStream source is the right way, but ConstructingParser
+      // is leaking memory with that so use a String for now
+      val full_in = as_str
+      val in = full_in.substring(full_in.indexOf('<')) // strip any garbage
+      val src = scala.io.Source.fromString(in)
       thunk(scala.xml.parsing.ConstructingParser.fromSource(src, false).document)
     }
   }
