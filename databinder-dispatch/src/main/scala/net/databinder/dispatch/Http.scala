@@ -80,7 +80,7 @@ trait Http {
     /** Handle InputStream in thunk if OK. */
     def >> [T] (thunk: InputStream => T) = x (req) ok (res => thunk(res.getContent))
     /** Return response in String if OK. (Don't blow your heap, kids.) */
-    def as_str = x (req) ok { EntityUtils.toString(_) }
+    def as_str = x (req) ok { EntityUtils.toString(_, HTTP.UTF_8) }
     /** Write to the given OutputStream. */
     def >>> (out: OutputStream): Unit = x (req) ok { _.writeTo(out) }
     /** Process response as XML document in thunk */
