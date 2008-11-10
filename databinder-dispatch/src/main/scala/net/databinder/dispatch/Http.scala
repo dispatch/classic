@@ -90,7 +90,7 @@ trait Http {
       val full_in = as_str
       val in = full_in.substring(full_in.indexOf('<')) // strip any garbage
       val src = scala.io.Source.fromString(in)
-      thunk(scala.xml.parsing.ConstructingParser.fromSource(src, false).document)
+      thunk(scala.xml.parsing.ConstructingParser.fromSource(src, true).document)
     }
   }
 }
