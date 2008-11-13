@@ -66,7 +66,7 @@ trait Http {
       val m = new HttpPost(uri)
       m setEntity new UrlEncodedFormEntity(
         java.util.Arrays.asList(
-          (values map) { tup => new BasicNameValuePair(tup._1, tup._2.toString) }.toArray
+          (values map { case (k, v) => new BasicNameValuePair(k, v.toString) }: _*)
         ),
         HTTP.UTF_8
       )
@@ -86,13 +86,13 @@ trait Http {
     /** Write to the given OutputStream. */
     def >>> (out: OutputStream): Unit = x (req) ok { _.writeTo(out) }
     /** Process response as XML document in thunk */
-    def <> [T] (thunk: (scala.xml.Document => T)) = { 
+    def <> [T] (thunk: (scala.xml.NodeSeq => T)) = { 
       // an InputStream source is the right way, but ConstructingParser
-      // is leaking memory with that so use a String for now
+      // won't let us peek and we're tired of trying
       val full_in = as_str
       val in = full_in.substring(full_in.indexOf('<')) // strip any garbage
       val src = scala.io.Source.fromString(in)
-      thunk(scala.xml.parsing.ConstructingParser.fromSource(src, true).document)
+      thunk(scala.xml.parsing.XhtmlParser(src))
     }
   }
 }
