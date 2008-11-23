@@ -15,6 +15,8 @@ import org.apache.http.params.{HttpProtocolParams, BasicHttpParams}
 import org.apache.http.util.EntityUtils
 import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials}
 
+case class UnexpectedResponse(code: Int) extends Exception("Unexpected resoponse code: " + code)
+
 trait Http {
   val client: HttpClient
   
@@ -39,9 +41,8 @@ trait Http {
     
     /** Handle reponse entity in thunk if reponse code returns true from chk. */
     def when(chk: Int => Boolean)(thunk: HttpEntity => T) = this { (code, res, ent) => 
-      if (chk(code))
-        thunk(ent)
-      else error("Response not OK: " + code + " , body:\n" + EntityUtils.toString(ent))
+      if (chk(code)) thunk(ent)
+      else throw UnexpectedResponse(code)
     }
     
     /** Handle reponse entity in thunk when response code is 200 - 204 */
@@ -109,33 +110,27 @@ class ConfiguredHttpClient extends DefaultHttpClient {
 }
 
 /** Instances to be used by a single thread, with thunk to run before any execute. */
-class SingleHttp(x_action: (HttpRequest) => Unit) extends Http {
+trait SingleHttp extends Http {
   lazy val client = new ConfiguredHttpClient
-  def on_x(new_x_action: (HttpRequest) => Unit) = 
-    new SingleHttp(new_x_action(_))
-
-  override def execute(req: HttpUriRequest) = {
-    x_action(req)
-    super.execute(req)
-  }
 }
 
 /** Instances to be used by a single thread, with thunk and host to be used for any execute. */
-class SingleHttpHost(host: HttpHost, x_action: (HttpRequest) => Unit) extends SingleHttp(x_action) {
-  def auth(name: String, password: String) = {
-    val c = new SingleHttpHost(host, x_action)
-    c.client.getCredentialsProvider.setCredentials(
-        new AuthScope(host.getHostName, host.getPort), 
-        new UsernamePasswordCredentials(name, password)
-    )
-    c
-  }
-  override def on_x(new_x_action: (HttpRequest) => Unit) = 
-    new SingleHttpHost(host, new_x_action(_))
-
+class HttpServer(host: HttpHost) extends SingleHttp {
+  def this(hostname: String, port: Int) = this(new HttpHost(hostname, port))
+  def this(hostname: String) = this(new HttpHost(hostname))
   override def execute(req: HttpUriRequest):HttpResponse = {
-    x_action(req)
+    preflight(req)
     client.execute(host, req)
+  }
+  private var preflight = { req: HttpUriRequest => () }
+  protected def preflight(action: HttpUriRequest => Unit) {
+    preflight = action
+  }
+  protected def auth(name: String, password: String) {
+    client.getCredentialsProvider.setCredentials(
+      new AuthScope(host.getHostName, host.getPort), 
+      new UsernamePasswordCredentials(name, password)
+    )
   }
 }
 
@@ -145,11 +140,6 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
 
 /** May be used directly from any thread, or to return configured single-thread instances. */
 object Http extends Http {
-  def host(hostname: String) = 
-    new SingleHttpHost(new HttpHost(hostname), foo => ())
-  def host(hostname: String, port: Int) = 
-    new SingleHttpHost(new HttpHost(hostname, port), foo => ())
-
   lazy val client = new ConfiguredHttpClient {
     override def createClientConnectionManager() = {
       val registry = new SchemeRegistry()

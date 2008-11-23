@@ -15,11 +15,11 @@ import net.sf.ehcache.CacheManager
 import net.sf.ehcache.Ehcache
 import net.sf.ehcache.Element
 
-import net.databinder.dispatch.Http
+import net.databinder.dispatch.HttpServer
 
 abstract class HttpPostConverter extends AbstractConverter {
 
-  def service = Http.host("localhost", 8180)
+  def service = new HttpServer("localhost", 8180)
   def path_name: String
   
   def convertToObject(value: String, locale: Locale): Object = null
