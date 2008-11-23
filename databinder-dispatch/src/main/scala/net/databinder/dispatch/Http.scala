@@ -109,23 +109,27 @@ class ConfiguredHttpClient extends DefaultHttpClient {
   }
 }
 
-/** Instances to be used by a single thread, with thunk to run before any execute. */
-trait SingleHttp extends Http {
+/** client value initialized to a CovfiguredHttpClient instance. */
+trait ConfiguredHttp extends Http {
   lazy val client = new ConfiguredHttpClient
 }
 
-/** Instances to be used by a single thread, with thunk and host to be used for any execute. */
-class HttpServer(host: HttpHost) extends SingleHttp {
+/** For interaction with a single HTTP host. */
+class HttpServer(host: HttpHost) extends ConfiguredHttp {
   def this(hostname: String, port: Int) = this(new HttpHost(hostname, port))
   def this(hostname: String) = this(new HttpHost(hostname))
+  /** Uses bound host server in HTTPClient execute. */
   override def execute(req: HttpUriRequest):HttpResponse = {
     preflight(req)
     client.execute(host, req)
   }
+  /** Block to be run before every outgoing request */
   private var preflight = { req: HttpUriRequest => () }
+  /** @param action run before every outgoing request */
   protected def preflight(action: HttpUriRequest => Unit) {
     preflight = action
   }
+  /** Sets authentication credentials for bound host. */
   protected def auth(name: String, password: String) {
     client.getCredentialsProvider.setCredentials(
       new AuthScope(host.getHostName, host.getPort), 
