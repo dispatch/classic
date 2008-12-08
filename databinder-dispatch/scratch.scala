@@ -48,7 +48,5 @@ implicit def any2anyExtras(x: Any) = new AnyExtras(x)
 
 import net.databinder.dispatch._
 
-val svc = Http.host("services.newsgator.com").on_x(_.addHeader("X-NGAPIToken", token)).auth(user, pass)
-svc("/ngws/svc/Location.aspx") >>> System.out
-
-
+val friday = new Database("friday")
+friday.all_docs
