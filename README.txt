@@ -6,6 +6,8 @@ http://databinder.net/
 
 Version History
 
+1.2.1 Updates Databinder to the latest Wicket and Hibernate versions.
+
 1.2 This release represents a significant refactor of the Databinder toolkit to allow it to work with any underlying persistence technology. Core functionality now resides in modules like databinder-models, while specific functionality is in databinder-models-hib for Hibernate, or databinder-models-ao for ActiveObjects. The "databinder" dependency that was used through 1.1 is now databinder-app and databinder-app-hib for Hibernate applications.
 
 Migration to the new codebase is fairly straightforward. The first step is to refer to the appropriate new Maven artifact name, databinder-app-hib for most applications. Then update dependencies for your IDE, as there are number of class and page renames to work through. Some changes were made to accomodate the new persistence-agnostic structure, others are there just to bundle desired, breaking changes in one release. There aren't any major significant conceptual changes. The renames are as follows:
