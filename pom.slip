@@ -5,7 +5,7 @@ project(xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance",xmlns="http://mave
 	groupId: "net.databinder"
 	artifactId:"databinder-parent"
 	name: "Databinder"
-	version: "1.2.1-SNAPSHOT"
+	version: "1.2.1"
 	description: "A persistence toolkit for Wicket"
 	url: "http://databinder.net/"
 	inceptionYear: "2005"
