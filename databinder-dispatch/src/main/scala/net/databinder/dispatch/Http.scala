@@ -74,7 +74,7 @@ trait Http {
       new Respond(m)
     }
     /** Post the given map and return response wrapper. */
-    // XXX ? def << (values: Map[String, Any]): Respond = <<(values.toList: _*)
+    def << (values: Map[String, Any]): Respond = <<(values.toArray: _*)
   }
   /** Wrapper for common response handling. */
   class Respond(req: HttpUriRequest) {
