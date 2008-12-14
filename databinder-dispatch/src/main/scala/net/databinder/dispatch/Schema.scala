@@ -18,12 +18,11 @@ trait Schema {
   }
 
   case class Spec[T](symbol: Symbol, to: Any => T, from: T => Any) extends Value[T](symbol) {
-    import org.apache.http.impl.cookie.DateUtils
     override def to_type(opt: Option[Any]) = opt map to
     override def from_type(opt: Option[T]) = opt map from
   }
 
-  case class List[T](symbol: Symbol) extends Value[scala.List[T]](symbol)
+  case class List[T](symbol: Symbol) extends Value[scala.List[Option[T]]](symbol)
 
   case class Object(symbol: Symbol) extends Value[Map[Symbol, Option[Any]]](symbol) with Schema {
     override def loc(base: Option[Map[Symbol, Option[Any]]], sub_sym: Symbol) = 

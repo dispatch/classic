@@ -15,13 +15,18 @@ class Database(host: HttpHost, name: String) extends HttpServer(host)  {
   def this(name: String) = this(new HttpHost("localhost", 5984), name)
   
   override def apply(uri: String) = new Request("/"  + name + "/" + uri)
-  def all_docs = (apply("_all_docs") >> { new Store(_) } )(Listing.rows)
+  def all_docs = {
+    for {
+      Some(row) <- (this("_all_docs") >> { new Store(_) } )(Listing.rows).get
+      id <- (new Store(row))(ListItem.id)
+    } yield id
+  }
   
+  object ListItem extends Schema {
+    val id = String('id)
+  }
   object Listing extends Schema { 
-    class ListItem(symbol: Symbol) extends Object(symbol) {
-      val id = String('id)
-    }
-    val rows = List[String]('rows)
+    val rows = List[Map[Symbol, Option[Any]]]('rows)
   }
 }
 
