@@ -16,8 +16,9 @@ class Database(host: HttpHost, name: String) extends HttpServer(host)  {
   
   override def apply(uri: String) = new Request("/"  + name + "/" + uri)
   def all_docs = {
+    val Some(rows) = (this("_all_docs") >> { new Store(_) })(Listing.rows)
     for {
-      Some(row) <- (this("_all_docs") >> { new Store(_) } )(Listing.rows).get
+      Some(row) <- rows
       id <- (new Store(row))(ListItem.id)
     } yield id
   }
