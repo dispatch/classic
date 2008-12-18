@@ -1,6 +1,7 @@
 package net.databinder.dispatch
 
 import java.io.InputStream
+import java.net.URLEncoder.encode
 import org.apache.http.HttpHost
 
 trait Doc extends Schema {
@@ -14,7 +15,7 @@ class Database(host: HttpHost, name: String) extends HttpServer(host)  {
   def this(hostname: String, port: Int, name: String) = this(new HttpHost(hostname, port), name)
   def this(name: String) = this(new HttpHost("localhost", 5984), name)
   
-  override def apply(uri: String) = new Request("/"  + name + "/" + uri)
+  override def apply(uri: String) = new Request("/" + name + "/" + encode(uri))
   def all_docs = {
     val Some(rows) = (this("_all_docs") >> { new Store(_) })(Listing.rows)
     for {
