@@ -32,7 +32,7 @@ trait Http {
     def apply(thunk: (Int, HttpResponse, HttpEntity) => T) = {
       val res = execute(req)
       res.getEntity match {
-        case null => error("no response message")
+        case null => thunk(res.getStatusLine.getStatusCode, res, null)
         case ent => try { 
             thunk(res.getStatusLine.getStatusCode, res, ent)
           } finally { ent.consumeContent() }

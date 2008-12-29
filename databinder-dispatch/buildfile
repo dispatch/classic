@@ -1,0 +1,11 @@
+require "tasks/databinder.rb"
+
+repositories.remote << "http://repo1.maven.org/maven2/"
+
+define "databinder-dispatch" do
+  project.version = "1.2.2-SNAPSHOT"
+  compile.with HTTPCLIENT
+  compile.options.deprecation = true  
+  package :jar
+  embed_server
+end
