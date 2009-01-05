@@ -15,7 +15,7 @@ import org.apache.http.params.{HttpProtocolParams, BasicHttpParams}
 import org.apache.http.util.EntityUtils
 import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials}
 
-case class UnexpectedResponse(code: Int) extends Exception("Unexpected resoponse code: " + code)
+case class StatusCode(code: Int) extends Exception("Exceptional resoponse code: " + code)
 
 trait Http {
   val client: HttpClient
@@ -29,20 +29,20 @@ trait Http {
   /** eXecute wrapper */
   def x [T](req: HttpUriRequest) = new {
     /** handle response codes, response, and entity in thunk */
-    def apply(thunk: (Int, HttpResponse, HttpEntity) => T) = {
+    def apply(thunk: (Int, HttpResponse, Option[HttpEntity]) => T) = {
       val res = execute(req)
-      res.getEntity match {
-        case null => thunk(res.getStatusLine.getStatusCode, res, null)
-        case ent => try { 
-            thunk(res.getStatusLine.getStatusCode, res, ent)
-          } finally { ent.consumeContent() }
+      val ent = res.getEntity match {
+        case null => None
+        case ent => Some(ent)
       }
+      try { thunk(res.getStatusLine.getStatusCode, res, ent) }
+      finally { ent foreach (_.consumeContent) }
     }
     
     /** Handle reponse entity in thunk if reponse code returns true from chk. */
-    def when(chk: Int => Boolean)(thunk: HttpEntity => T) = this { (code, res, ent) => 
-      if (chk(code)) thunk(ent)
-      else throw UnexpectedResponse(code)
+    def when(chk: Int => Boolean)(thunk: (HttpResponse, Option[HttpEntity]) => T) = this { (code, res, ent) => 
+      if (chk(code)) thunk(res, ent)
+      else throw StatusCode(code)
     }
     
     /** Handle reponse entity in thunk when response code is 200 - 204 */
@@ -78,14 +78,20 @@ trait Http {
   }
   /** Wrapper for common response handling. */
   class Respond(req: HttpUriRequest) {
+    def apply [T] (thunk: (Int, HttpResponse, Option[HttpEntity]) => T) = x (req) (thunk)
+    /** Handle response and entity in thunk if OK. */
+    def ok [T] (thunk: (HttpResponse, Option[HttpEntity]) => T) = x (req) ok (thunk)
+    /** Handle response entity in thunk if OK. */
+    def okee [T] (thunk: HttpEntity => T): T = ok { 
+      case (_, Some(ent)) => thunk(ent)
+      case (res, _) => error("response has no entity: " + res)
+    }
     /** Handle InputStream in thunk if OK. */
-    def >> [T] (thunk: InputStream => T) = x (req) ok (res => thunk(res.getContent))
-    /** Ignore response body if OK. */
-    def >| = x (req) ok (res => ())
+    def >> [T] (thunk: InputStream => T) = okee (ent => thunk(ent.getContent))
     /** Return response in String if OK. (Don't blow your heap, kids.) */
-    def as_str = x (req) ok { EntityUtils.toString(_, HTTP.UTF_8) }
+    def as_str = okee { EntityUtils.toString(_, HTTP.UTF_8) }
     /** Write to the given OutputStream. */
-    def >>> (out: OutputStream): Unit = x (req) ok { _.writeTo(out) }
+    def >>> (out: OutputStream): Unit = okee { _.writeTo(out) }
     /** Process response as XML document in thunk */
     def <> [T] (thunk: (scala.xml.NodeSeq => T)) = { 
       // an InputStream source is the right way, but ConstructingParser
@@ -95,6 +101,8 @@ trait Http {
       val src = scala.io.Source.fromString(in)
       thunk(scala.xml.parsing.XhtmlParser(src))
     }
+    /** Ignore response body if OK. */
+    def >| = ok ((r,e) => ())
   }
 }
 
