@@ -17,11 +17,30 @@ import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials}
 
 case class StatusCode(code: Int) extends Exception("Exceptional resoponse code: " + code)
 
-trait Http {
-  val client: HttpClient
-  
-  /** Execute in HttpClient. */
-  protected def execute(req: HttpUriRequest) = client.execute(req)
+class Http(val host: Option[HttpHost], val headers: List[(String, String)]) {
+  def this(host: HttpHost) = this(Some(host), Nil)
+  def this(hostname: String, port: Int) = this(new HttpHost(hostname, port))
+  def this(hostname: String) = this(new HttpHost(hostname))
+  lazy val client = new ConfiguredHttpClient
+
+  /** Uses bound host server in HTTPClient execute. */
+  def execute(req: HttpUriRequest):HttpResponse = {
+    host match {
+      case None => client.execute(req)
+      case Some(host) => client.execute(host, req)
+    }
+  }
+  /** Sets authentication credentials for bound host. */
+  protected def auth(name: String, password: String) {
+    host foreach { host =>
+      client.getCredentialsProvider.setCredentials(
+        new AuthScope(host.getHostName, host.getPort), 
+        new UsernamePasswordCredentials(name, password)
+      )
+    }
+  }
+  /** Add header */
+  def << (k: String, v: String) = new Http(host, (k,v) :: headers)
   
   /** Get wrapper */
   def g [T](uri: String) = x[T](new HttpGet(uri))
@@ -55,6 +74,7 @@ trait Http {
   /** Wrapper to handle common requests, preconfigured as response wrapper for a 
     * get request but defs return other method responders. */
   class Request(req: HttpUriRequest)  {
+    headers foreach { case (k, v) => req.addHeader(k, v) }
     def this(uri: String) = this(new HttpGet(uri))
     /** Put the given object.toString and return response wrapper. */
     def <<< (body: Any) = {
@@ -105,8 +125,7 @@ trait Http {
   }
 }
 
-/** DefaultHttpClient with parameters that may be more widely compatible. */
-class ConfiguredHttpClient extends DefaultHttpClient {
+class ConfiguredHttpClient extends DefaultHttpClient { 
   override def createHttpParams = {
     val params = new BasicHttpParams
     HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1)
@@ -116,35 +135,13 @@ class ConfiguredHttpClient extends DefaultHttpClient {
   }
 }
 
-/** client value initialized to a CovfiguredHttpClient instance. */
-trait ConfiguredHttp extends Http {
-  lazy val client = new ConfiguredHttpClient
-}
-
-/** For interaction with a single HTTP host. */
-class HttpServer(host: HttpHost) extends ConfiguredHttp {
-  def this(hostname: String, port: Int) = this(new HttpHost(hostname, port))
-  def this(hostname: String) = this(new HttpHost(hostname))
-  /** Uses bound host server in HTTPClient execute. */
-  override def execute(req: HttpUriRequest):HttpResponse = {
-    client.execute(host, req)
-  }
-  /** Sets authentication credentials for bound host. */
-  protected def auth(name: String, password: String) {
-    client.getCredentialsProvider.setCredentials(
-      new AuthScope(host.getHostName, host.getPort), 
-      new UsernamePasswordCredentials(name, password)
-    )
-  }
-}
-
 import org.apache.http.conn.scheme.{Scheme,SchemeRegistry,PlainSocketFactory}
 import org.apache.http.conn.ssl.SSLSocketFactory
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
 
 /** May be used directly from any thread, or to return configured single-thread instances. */
-object Http extends Http {
-  lazy val client = new ConfiguredHttpClient {
+object Http extends Http(None, Nil) {
+  override lazy val client = new ConfiguredHttpClient {
     override def createClientConnectionManager() = {
       val registry = new SchemeRegistry()
       registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80))

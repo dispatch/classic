@@ -11,19 +11,21 @@ trait Doc extends Schema {
 
 object Doc extends Doc
 
-class Database(host: HttpHost, name: String) extends HttpServer(host)  {
-  def this(hostname: String, port: Int, name: String) = this(new HttpHost(hostname, port), name)
-  def this(name: String) = this(new HttpHost("localhost", 5984), name)
+object Couch {
+  def apply() = new Http("127.0.0.1", 5984)
+}
   
-  override def apply(uri: String) = new Request("/" + name + "/" + encode(uri))
-  def all_docs = {
-    val Some(rows) = (this("_all_docs") >> { new Store(_) })(Listing.rows)
+
+case class Database(name: String) {
+  def doc(http: Http)(id: String): Http#Request = http("/" + name + "/" + encode(id))
+  def all_docs(http: Http) = {
+    val Some(rows) = (doc(http)("_all_docs") >> { new Store(_) })(Listing.rows)
     for {
       Some(row) <- rows
       id <- (new Store(row))(ListItem.id)
     } yield id
   }
-  
+    
   object ListItem extends Schema {
     val id = String('id)
   }
