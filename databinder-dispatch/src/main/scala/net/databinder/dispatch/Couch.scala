@@ -17,14 +17,17 @@ object Couch {
   
 
 case class Database(name: String) {
-  def doc(http: Http)(id: String): Http#Request = http("/" + name + "/" + encode(id))
-  def all_docs(http: Http) = {
-    val Some(rows) = (doc(http)("_all_docs") >> { new Store(_) })(Listing.rows)
-    for {
-      Some(row) <- rows
-      id <- (new Store(row))(ListItem.id)
-    } yield id
+  class H(val http: Http) {
+    def apply(id: String): Http#Request = http("/" + name + "/" + encode(id))
+    def all_docs = {
+      val Some(rows) = (this("_all_docs") >> { new Store(_) })(Listing.rows)
+      for {
+        Some(row) <- rows
+        id <- (new Store(row))(ListItem.id)
+      } yield id
+    }
   }
+  def apply(http: Http) = new H(http)
     
   object ListItem extends Schema {
     val id = String('id)
