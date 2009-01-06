@@ -54,30 +54,29 @@ trait Http {
   
   /** Wrapper to handle common requests, preconfigured as response wrapper for a 
     * get request but defs return other method responders. */
-  class Request(uri: String) extends Respond(new HttpGet(uri)) {
+  class Request(req: HttpUriRequest)  {
+    def this(uri: String) = this(new HttpGet(uri))
     /** Put the given object.toString and return response wrapper. */
     def <<< (body: Any) = {
-      val m = new HttpPut(uri)
+      val m = new HttpPut(req.getURI)
       m setEntity new StringEntity(body.toString, HTTP.UTF_8)
       HttpProtocolParams.setUseExpectContinue(m.getParams, false)
-      new Respond(m)
+      new Request(m)
     }
     /** Post the given key value sequence and return response wrapper. */
     def << (values: (String, Any)*) = {
-      val m = new HttpPost(uri)
+      val m = new HttpPost(req.getURI)
       m setEntity new UrlEncodedFormEntity(
         java.util.Arrays.asList(
           (values map { case (k, v) => new BasicNameValuePair(k, v.toString) }: _*)
         ),
         HTTP.UTF_8
       )
-      new Respond(m)
+      new Request(m)
     }
     /** Post the given map and return response wrapper. */
-    def << (values: Map[String, Any]): Respond = <<(values.toArray: _*)
-  }
-  /** Wrapper for common response handling. */
-  class Respond(req: HttpUriRequest) {
+    def << (values: Map[String, Any]): Request = <<(values.toArray: _*)
+    
     def apply [T] (thunk: (Int, HttpResponse, Option[HttpEntity]) => T) = x (req) (thunk)
     /** Handle response and entity in thunk if OK. */
     def ok [T] (thunk: (HttpResponse, Option[HttpEntity]) => T) = x (req) ok (thunk)
@@ -128,14 +127,7 @@ class HttpServer(host: HttpHost) extends ConfiguredHttp {
   def this(hostname: String) = this(new HttpHost(hostname))
   /** Uses bound host server in HTTPClient execute. */
   override def execute(req: HttpUriRequest):HttpResponse = {
-    preflight(req)
     client.execute(host, req)
-  }
-  /** Block to be run before every outgoing request */
-  private var preflight = { req: HttpUriRequest => () }
-  /** @param action run before every outgoing request */
-  protected def preflight(action: HttpUriRequest => Unit) {
-    preflight = action
   }
   /** Sets authentication credentials for bound host. */
   protected def auth(name: String, password: String) {
