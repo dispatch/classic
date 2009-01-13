@@ -17,11 +17,22 @@ import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials}
 
 case class StatusCode(code: Int) extends Exception("Exceptional resoponse code: " + code)
 
-class Http(val host: Option[HttpHost], val headers: List[(String, String)]) {
-  def this(host: HttpHost) = this(Some(host), Nil)
+class Http(
+  val host: Option[HttpHost], 
+  val headers: List[(String, String)],
+  val creds: Option[(String, String)]
+) {
+  def this(host: HttpHost) = this(Some(host), Nil, None)
   def this(hostname: String, port: Int) = this(new HttpHost(hostname, port))
   def this(hostname: String) = this(new HttpHost(hostname))
-  lazy val client = new ConfiguredHttpClient
+  lazy val client = new ConfiguredHttpClient {
+    for (h <- host; (name, password) <- creds) {
+      getCredentialsProvider.setCredentials(
+        new AuthScope(h.getHostName, h.getPort), 
+        new UsernamePasswordCredentials(name, password)
+      )
+    }
+  }
 
   /** Uses bound host server in HTTPClient execute. */
   def execute(req: HttpUriRequest):HttpResponse = {
@@ -31,16 +42,9 @@ class Http(val host: Option[HttpHost], val headers: List[(String, String)]) {
     }
   }
   /** Sets authentication credentials for bound host. */
-  protected def auth(name: String, password: String) {
-    host foreach { host =>
-      client.getCredentialsProvider.setCredentials(
-        new AuthScope(host.getHostName, host.getPort), 
-        new UsernamePasswordCredentials(name, password)
-      )
-    }
-  }
+  def as (name: String, pass: String) = new Http(host, headers, Some((name, pass)))
   /** Add header */
-  def << (k: String, v: String) = new Http(host, (k,v) :: headers)
+  def << (k: String, v: String) = new Http(host, (k,v) :: headers, creds)
   
   /** Get wrapper */
   def g [T](uri: String) = x[T](new HttpGet(uri))
@@ -140,7 +144,7 @@ import org.apache.http.conn.ssl.SSLSocketFactory
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
 
 /** May be used directly from any thread, or to return configured single-thread instances. */
-object Http extends Http(None, Nil) {
+object Http extends Http(None, Nil, None) {
   override lazy val client = new ConfiguredHttpClient {
     override def createClientConnectionManager() = {
       val registry = new SchemeRegistry()
