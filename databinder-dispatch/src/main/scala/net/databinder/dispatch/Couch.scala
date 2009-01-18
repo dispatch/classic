@@ -17,7 +17,7 @@ object Couch {
   
 
 case class Database(name: String) {
-  class H(val http: Http, val name: String) {
+  class H(val http: Http) extends Database(name) {
     def apply(id: String): Http#Request = http("/" + name + "/" + encode(id))
     def all_docs = {
       val Some(rows) = (this("_all_docs") >> { new Store(_) })(Listing.rows)
@@ -27,7 +27,7 @@ case class Database(name: String) {
       } yield id
     }
   }
-  def apply(http: Http) = new H(http, name)
+  def apply(http: Http) = new H(http)
     
   object ListItem extends Schema {
     val id = String('id)
