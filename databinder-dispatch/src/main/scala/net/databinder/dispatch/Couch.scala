@@ -12,7 +12,8 @@ trait Doc extends Schema {
 object Doc extends Doc
 
 object Couch {
-  def apply() = new Http("127.0.0.1", 5984)
+  def apply(host: String) = new Http(host, 5984)
+  def apply(): Http = Couch("127.0.0.1")
 }
   
 
