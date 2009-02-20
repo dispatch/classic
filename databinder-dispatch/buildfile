@@ -1,4 +1,5 @@
-require "tasks/databinder.rb"
+require "buildr/scala"
+require "tasks/databinder"
 
 repositories.remote << "http://repo1.maven.org/maven2/"
 
