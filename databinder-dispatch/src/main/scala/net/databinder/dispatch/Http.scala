@@ -7,6 +7,7 @@ import org.apache.http.client._
 import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.client.methods._
 import org.apache.http.client.entity.UrlEncodedFormEntity
+import org.apache.http.client.utils.URLEncodedUtils
 
 import org.apache.http.entity.StringEntity
 import org.apache.http.message.BasicNameValuePair
@@ -87,20 +88,23 @@ class Http(
       HttpProtocolParams.setUseExpectContinue(m.getParams, false)
       new Request(m)
     }
+    /** Convert repeating name value tuples to list of pairs for httpclient */
+    private def map2ee(values: (String, Any)*)  = java.util.Arrays.asList(
+      (values map { case (k, v) => new BasicNameValuePair(k, v.toString) }: _*)
+    )
     /** Post the given key value sequence and return response wrapper. */
     def << (values: (String, Any)*) = {
       val m = new HttpPost(req.getURI)
-      m setEntity new UrlEncodedFormEntity(
-        java.util.Arrays.asList(
-          (values map { case (k, v) => new BasicNameValuePair(k, v.toString) }: _*)
-        ),
-        HTTP.UTF_8
-      )
+      m setEntity new UrlEncodedFormEntity(map2ee(values :_*), HTTP.UTF_8)
       new Request(m)
     }
     /** Post the given map and return response wrapper. */
     def << (values: Map[String, Any]): Request = <<(values.toArray: _*)
-    
+    /** Get with query parameters */
+    def < (values: (String, Any)*) =
+      new Request(new HttpGet(req.getURI + "?" + URLEncodedUtils.format(
+        map2ee(values :_*), HTTP.UTF_8
+      )))
     def apply [T] (thunk: (Int, HttpResponse, Option[HttpEntity]) => T) = x (req) (thunk)
     /** Handle response and entity in thunk if OK. */
     def ok [T] (thunk: (HttpResponse, Option[HttpEntity]) => T) = x (req) ok (thunk)

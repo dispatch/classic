@@ -1,4 +1,4 @@
-package net.databinder.dispatch
+package net.databinder.dispatch.times
 
 trait Times {
   lazy val http = new Http("api.nytimes.com")
@@ -7,12 +7,19 @@ trait Times {
   val version: String
   
   def exec(action: String) =
-    http("/svc/" + service + "/api/" + version + action + ".js?api-key=" + api_key)
+    http("/svc/" + service + "/api/" + version + action) < ("api-key" -> api_key)
 }
 
 case class People(api_key: String) extends Times {
   val service = "timespeople";
   val version = "v1"
   
-  def profile(user_id: Int) = exec("/user/" + user_id + "/profile");
+  def profile(user_id: Int) = exec("/user/" + user_id + "/profile.js");
+}
+
+case class Search(api_key: String) extends Times {
+  val service = "search"
+  val version = "v1"
+  
+  def search(query: String) = exec("/article?query=" + query)
 }
