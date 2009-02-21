@@ -1,4 +1,4 @@
-package net.databinder.dispatch
+package net.databinder.dispatch.couch
 
 import java.io.InputStream
 import java.net.URLEncoder.encode

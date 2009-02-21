@@ -6,8 +6,10 @@ trait Times {
   val service: String
   val version: String
   
-  def exec(action: String) =
-    http("/svc/" + service + "/api/" + version + action) < ("api-key" -> api_key)
+  def exec(action: String, params: Map[String, Any]) =
+    http("/svc/" + service + "/api/" + version + action) ?< (params + ("api-key" -> api_key))
+
+  def exec(action: String): Http#Request = exec(action, Map[String, Any]())
 }
 
 case class People(api_key: String) extends Times {
@@ -21,5 +23,5 @@ case class Search(api_key: String) extends Times {
   val service = "search"
   val version = "v1"
   
-  def search(query: String) = exec("/article?query=" + query)
+  def search(query: String) = exec("/article", Map("query" -> query))
 }
