@@ -4,17 +4,40 @@ import scala.util.parsing.json.Parser
 import scala.util.parsing.input.{Reader,StreamReader}
 import java.io.{InputStream, InputStreamReader, ByteArrayInputStream}
 
-class JsObject (val base: Map[Symbol, Option[Any]]){
-  def this(stream: InputStream) = this(JsObject process stream)
-  def this(string: String) = this(new ByteArrayInputStream(string.getBytes("UTF-8")))
-  def this() = this(Map[Symbol, Option[Any]]())
+/** Json expected typers, returning a of Some(a) casted to a type */
+trait JsT {
+  def raw_list(a: Option[Any]) = a match {
+    case None => List[Option[_]]()
+    case Some(l) => l.asInstanceOf[List[Option[_]]]
+  }
+  def list[T](t: Option[Any] => T)(a: Option[Any]) = raw_list(a).map(t)
 
-  def apply(s: Symbol) = base(s)
-  
-  override def toString = JsObject.as_string(base)
+  def str(a: Option[Any]) = a match {
+    case None => ""
+    case Some(l) => l.toString
+  }
+  def num(a: Option[Any]) = a match {
+    case None => 0.0
+    case Some(l) => l.asInstanceOf[Double]
+  }
+  def obj(a: Option[Any]) = a match {
+    case None => Js()
+    case Some(m) => Js(m.asInstanceOf[Map[Symbol, Option[Any]]])
+  }
 }
 
-object JsObject extends Parser {
+/** Json expected value extractors, value from map with a typer applied. */
+case class Js (val base: Map[Symbol, Option[Any]]) {
+  def apply[T](s: Symbol)(t: Option[Any] => T) = t(base(s))
+  
+  override def toString = Js.as_string(base)
+}
+
+object Js extends Parser {
+  def apply(): Js = Js(Map[Symbol, Option[Any]]())
+  def apply(stream: InputStream): Js = Js(process(stream))
+  def apply(string: String): Js = Js(new ByteArrayInputStream(string.getBytes("UTF-8")))
+
   def process(input: InputStream) = 
     phrase(root)(new lexical.Scanner(StreamReader(new InputStreamReader(input)))) match {
       case Success(list: List[_], _) => mapify(list head, list tail)
