@@ -4,6 +4,7 @@ import java.io.InputStream
 import java.net.URLEncoder.encode
 import org.apache.http.HttpHost
 
+/*
 trait Doc extends Schema {
   val _id = String(Symbol("_id")) 
   val _rev = String(Symbol("_rev"))
@@ -50,3 +51,4 @@ object Revise extends Schema {
       (req <<< source.toString) >> (update(_, source))
   }
 }
+*/
