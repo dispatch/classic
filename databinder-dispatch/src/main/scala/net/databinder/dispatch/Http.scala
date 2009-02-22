@@ -16,7 +16,8 @@ import org.apache.http.params.{HttpProtocolParams, BasicHttpParams}
 import org.apache.http.util.EntityUtils
 import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials}
 
-case class StatusCode(code: Int) extends Exception("Exceptional resoponse code: " + code)
+case class StatusCode(code: Int, contents:String)
+  extends Exception("Exceptional resoponse code: " + code + "\n" + contents)
 
 class Http(
   val host: Option[HttpHost], 
@@ -66,7 +67,9 @@ class Http(
     /** Handle reponse entity in thunk if reponse code returns true from chk. */
     def when(chk: Int => Boolean)(thunk: (HttpResponse, Option[HttpEntity]) => T) = this { (code, res, ent) => 
       if (chk(code)) thunk(res, ent)
-      else throw StatusCode(code)
+      else throw StatusCode(code,
+        ent.map(EntityUtils.toString(_, HTTP.UTF_8)).getOrElse("")
+      )
     }
     
     /** Handle reponse entity in thunk when response code is 200 - 204 */
