@@ -5,24 +5,32 @@ import scala.util.parsing.input.{Reader,StreamReader}
 import java.io.{InputStream, InputStreamReader, ByteArrayInputStream}
 
 /** Json expected typers, returning a of Some(a) casted to a type */
-trait JsT {
-  def raw_list(a: Option[Any]) = a match {
+trait JsTypes {
+  val raw_list: Option[Any] => List[Option[_]] = {
     case None => List[Option[_]]()
     case Some(l) => l.asInstanceOf[List[Option[_]]]
   }
   def list[T](t: Option[Any] => T)(a: Option[Any]) = raw_list(a).map(t)
-
-  def str(a: Option[Any]) = a match {
+  
+  val str: (Option[Any] => String) = {
     case None => ""
     case Some(l) => l.toString
   }
-  def num(a: Option[Any]) = a match {
+  
+  val num: Option[Any] => Double = {
     case None => 0.0
     case Some(l) => l.asInstanceOf[Double]
   }
-  def obj(a: Option[Any]) = a match {
+  val obj: Option[Any] => Js = {
     case None => Js()
     case Some(m) => Js(m.asInstanceOf[Map[Symbol, Option[Any]]])
+  }
+}
+/** Json trait builder */
+trait JsDef extends JsTypes {
+  val js: Js
+  implicit def  sym2conv(s: Symbol) = new {
+    def as[T](t: Option[Any] => T) = js(s)(t)
   }
 }
 

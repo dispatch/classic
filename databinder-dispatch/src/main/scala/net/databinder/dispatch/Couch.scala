@@ -4,9 +4,11 @@ import java.io.InputStream
 import java.net.URLEncoder.encode
 import org.apache.http.HttpHost
 
-case class Doc(js: Js) extends JsT {
-  lazy val _id = js(Symbol("_id"))(str)
-  lazy val _rev = js(Symbol("_rev"))(str)
+import net.databinder.dispatch.js._
+
+trait Doc extends JsDef {
+  lazy val _id = Symbol("_id") as str
+  lazy val _rev = Symbol("_rev") as str
 }
 
 object Couch {
@@ -14,12 +16,11 @@ object Couch {
   def apply(): Http = Couch("127.0.0.1")
 }
 
-case class Database(name: String) extends JsT {
+case class Database(name: String) extends JsTypes {
   class H(val http: Http) extends Database(name) {
-    def apply[T](id: String)(doc: Js => T) =
-      http("/" + name + "/" + encode(id)) >> { str => doc(Js(str)) }
+    def apply(id: String): Http#Request = http("/" + name + "/" + encode(id))
     def all_docs =
-      this("_all_docs") { _('rows)(list(obj)).map { _('id)(str) } }
+      this("_all_docs") $ { _('rows)(list(obj)).map { _('id)(str) } }
   }
   def apply(http: Http) = new H(http)
 }
