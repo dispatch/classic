@@ -17,11 +17,11 @@ object Couch {
   def apply(): Http = Couch("127.0.0.1")
 }
 
-case class Database(name: String) extends JsTypes {
+case class Database(name: String) extends JsDef {
   class H(val http: Http) extends Database(name) {
     def apply(id: String): Http#Request = http("/" + name + "/" + encode(id))
     def all_docs =
-      this("_all_docs") $ { _('rows)(list(obj)).map { _('id)(str) } }
+      this("_all_docs") $ { _('rows as list(obj)) map { _('id as str) } }
   }
   def apply(http: Http) = new H(http)
 }
