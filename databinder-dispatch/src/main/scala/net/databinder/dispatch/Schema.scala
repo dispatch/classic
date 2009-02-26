@@ -30,10 +30,12 @@ trait JsTypes {
 /** Json trait builder */
 trait JsDef extends JsTypes {
   case class Converter[T](s: Symbol, t: Option[Any] => T)
-  implicit def  sym2conv(s: Symbol) = new {
+  implicit def sym2conv(s: Symbol) = new {
     def as[T](t: Option[Any] => T) = new Converter(s, t)
   }
 }
+
+object JsDef extends JsDef
 
 /** Json expected value extractors, value from map with a typer applied. */
 case class Js (val base: Map[Symbol, Option[Any]]) {

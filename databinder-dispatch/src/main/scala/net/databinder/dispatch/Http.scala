@@ -130,7 +130,8 @@ class Http(
       val src = scala.io.Source.fromString(in)
       thunk(scala.xml.parsing.XhtmlParser(src))
     }
-    def $ [T](thunk: Js => T) = >> { stm => thunk(Js(stm)) }
+    def $ [T](thunk: Js => T): T = >> { stm => thunk(Js(stm)) }
+    def $ [T](c: JsDef#Converter[T]): T = $ { _(c) }
 
     /** Ignore response body if OK. */
     def >| = ok ((r,e) => ())

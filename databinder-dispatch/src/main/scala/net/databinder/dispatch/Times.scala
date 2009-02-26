@@ -1,17 +1,18 @@
 package net.databinder.dispatch.times
 
-trait Times extends JsTypes {
+trait Times extends JsDef {
   lazy val http = new Http("api.nytimes.com")
   val api_key: String
   val service: String
   val version: Int
   
-  def exec(action: String, params: Map[String, Any]) =
-    http(
-      ("/svc" :: service :: "v" + version :: action :: Nil).mkString("/")
-    ) ?< (params + ("api-key" -> api_key)) $ { _('results)(obj).base.map(m => obj(m._2)) }
+  def apply(action: String, params: Map[String, Any]) = http(
+    ("/svc" :: service :: "v" + version :: action :: Nil).mkString("/")
+  ) ?< (params + ("api-key" -> api_key))
 
-  def exec(action: String): Iterable[Js] = exec(action, Map[String, Any]())
+  def apply(action: String): Http#Request = this(action, Map[String, Any]())
+
+  val results = 'results as list(obj)
 }
 
 trait Results extends JsDef {
@@ -23,21 +24,23 @@ case class People(api_key: String) extends Times {
   val service = "timespeople/api";
   val version = 1
   
-  def profile(user_id: Int) = exec("/user/" + user_id + "/profile.js")
+  def profile(user_id: Int) = this("/user/" + user_id + "/profile.js")
 }
 
 case class Search(api_key: String) extends Times {
   val service = "search"
   val version = 1
   
-  def search(query: String) = exec("/article", Map("query" -> query))
+  def search(query: String) = this("/article", Map("query" -> query))
 }
 
 case class Community(api_key: String) extends Times {
   val service = "community"
   val version = 2
+
+  // won't work: override val results = ('results as obj)('comments)(list(obj))
   
-  def recent = exec("comments/recent.json")
+  def recent = this("comments/recent.json") $ results
 }
 
 
@@ -45,5 +48,5 @@ case class News(api_key: String) extends Times {
   val service = "news"
   val version = 2
   
-  def recent = exec("all/recent.json")
+  def recent = this("all/recent.json") $ results
 }
