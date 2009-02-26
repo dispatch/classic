@@ -26,17 +26,22 @@ trait JsTypes {
     case Some(m) => Js(m.asInstanceOf[Map[Symbol, Option[Any]]])
   }
 }
+  
 /** Json trait builder */
 trait JsDef extends JsTypes {
-  val js: Js
+  case class Converter[T](s: Symbol, t: Option[Any] => T)
   implicit def  sym2conv(s: Symbol) = new {
-    def as[T](t: Option[Any] => T) = js(s)(t)
+    def as[T](t: Option[Any] => T) = new Converter(s, t)
   }
 }
 
 /** Json expected value extractors, value from map with a typer applied. */
 case class Js (val base: Map[Symbol, Option[Any]]) {
   def apply[T](s: Symbol)(t: Option[Any] => T) = t(base(s))
+
+  def apply[T](c: JsDef#Converter[T]): T = apply(c.s)(c.t)
+  
+  def << [T] (conv: JsDef#Converter[T])(t: T) = Js(base + (conv.s -> Some(t)))
   
   override def toString = Js.as_string(base)
 }

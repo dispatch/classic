@@ -10,6 +10,7 @@ trait Doc extends JsDef {
   lazy val _id = Symbol("_id") as str
   lazy val _rev = Symbol("_rev") as str
 }
+object Doc extends Doc
 
 object Couch {
   def apply(host: String) = new Http(host, 5984)
@@ -24,17 +25,16 @@ case class Database(name: String) extends JsTypes {
   }
   def apply(http: Http) = new H(http)
 }
-/*
-object Revise extends Schema {
-  val id = String('id)
-  val rev = String('rev)
 
-  def update(stream: InputStream, source: Store) =
-    (source << Doc._rev)(new Store(stream)(rev))
+object Revise extends JsDef {
+  val id = 'id as str
+  val rev = 'rev as str
+
+  def update(stream: InputStream, source: Js) =
+    (source << Doc._rev)(Js(stream)(rev))
     
-  def apply(source: Store) = new {
+  def apply(source: Js) = new {
     def <<: (req: Http#Request) =
       (req <<< source.toString) >> (update(_, source))
   }
 }
-*/
