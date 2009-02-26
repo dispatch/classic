@@ -4,7 +4,7 @@ import java.io.InputStream
 import java.net.URLEncoder.encode
 import org.apache.http.HttpHost
 
-import net.databinder.dispatch.js._
+import net.databinder.dispatch._
 
 trait Doc extends JsDef {
   lazy val _id = Symbol("_id") as str
