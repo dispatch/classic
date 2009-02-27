@@ -33,15 +33,19 @@ trait JsDef extends JsTypes {
   implicit def sym2conv(s: Symbol) = new {
     def as[T](t: Option[Any] => T) = new Converter(s, t)
   }
+  implicit def conv2mthunk[T](c: Converter[T]) = { m: Map[Symbol, Option[Any]] => c.t(m(c.s)) }
+  implicit def conv2jthunk[T](c: Converter[T]) = { js: Js => js(c) }
+/*  def apply[T](pre: Seq[JsDef#Converter[Js]])(last: JsDef#Converter[T]): T = pre match {
+    case c :: rem => apply(c)(rem)(last)
+  }*/
 }
 
 object JsDef extends JsDef
 
 /** Json expected value extractors, value from map with a typer applied. */
-case class Js (val base: Map[Symbol, Option[Any]]) {
-  def apply[T](s: Symbol)(t: Option[Any] => T) = t(base(s))
-
-  def apply[T](c: JsDef#Converter[T]): T = apply(c.s)(c.t)
+case class Js (private val base: Map[Symbol, Option[Any]]) {
+  def apply[T](thunk: Map[Symbol, Option[Any]] => T): T = thunk(base)
+  def apply[T](s: Symbol)(t: Option[Any] => T): T = this(b => t(b(s)))
   
   def << [T] (conv: JsDef#Converter[T])(t: T) = Js(base + (conv.s -> Some(t)))
   

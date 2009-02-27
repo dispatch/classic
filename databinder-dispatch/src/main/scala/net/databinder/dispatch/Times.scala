@@ -38,7 +38,7 @@ case class Community(api_key: String) extends Times {
   val service = "community"
   val version = 2
 
-  // won't work: override val results = ('results as obj)('comments)(list(obj))
+  // override val results = ('results as obj) map { 'comments as list(obj) }
   
   def recent = this("comments/recent.json") $ results
 }
