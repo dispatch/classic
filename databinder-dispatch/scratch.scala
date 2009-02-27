@@ -47,6 +47,6 @@ class AnyExtras(x: Any) {
 implicit def any2anyExtras(x: Any) = new AnyExtras(x)  
 
 import net.databinder.dispatch._
+import JsDef._
+import net.databinder.dispatch.couch_
 
-val friday = new Database("friday")
-friday.all_docs

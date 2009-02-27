@@ -31,7 +31,7 @@ object Revise extends JsDef {
   val rev = 'rev as str
 
   def update(stream: InputStream, source: Js) =
-    (source << Doc._rev)(Js(stream)(rev))
+    source(Doc._rev << Js(stream)(rev))
     
   def apply(source: Js) = new {
     def <<: (req: Http#Request) =

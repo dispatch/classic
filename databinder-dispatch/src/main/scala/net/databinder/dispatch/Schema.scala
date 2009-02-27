@@ -26,23 +26,34 @@ trait JsTypes {
     case Some(m) => Js(m.asInstanceOf[Js#MapObj])
   }
 }
-  
+
+case class Converter[T](s: Symbol, t: Option[Any] => T) {
+  def :: [T](co: Converter[Js]) = ConverterChain(co :: Nil, this)
+  def << [T] (t: T): Js#MapObj => Js = { m => Js(m + (s -> Some(t))) }
+}
+
+case class ConverterChain[T](pre: List[Converter[Js]], last: Converter[T]) {
+  def :: [T](co: Converter[Js]) = ConverterChain(co :: pre, last)
+}
+
 /** Json trait builder */
 trait JsDef extends JsTypes {
-  case class Converter[T](s: Symbol, t: Option[Any] => T)
+
   implicit def sym2conv(s: Symbol) = new {
-    def as[T](t: Option[Any] => T) = new Converter(s, t)
+    def as[T](t: Option[Any] => T) = Converter(s, t)
   }
   implicit def conv2m_thunk[T](c: Converter[T]) = { m: Js#MapObj => c.t(m(c.s)) }
   implicit def conv2j_thunk[T](c: Converter[T]) = { js: Js => js(c) }
+  
   implicit def m_thunk2j_thunk[T](t: Js#MapObj => T) = { js: Js => js(t) }
   
-  implicit def convs2m_thunk[T](tup: (Seq[Converter[Js]], Converter[T])): (Js#MapObj => T) = { m =>
-    tup match {
-      case (c :: rem, last) => c.t(m(c.s))(convs2m_thunk(rem -> last))
-      case (_, last) => last.t(m(last.s)) 
+  implicit def convs2m_thunk[T](cc: ConverterChain[T]): Js#MapObj => T = { m =>
+    cc match {
+      case ConverterChain(c :: rem, last) => c.t(m(c.s))(convs2m_thunk(ConverterChain(rem, last)))
+      case ConverterChain(_, last) => last.t(m(last.s)) 
     }
   }
+  implicit def convs2j_thunk[T](cc: ConverterChain[T]): Js => T = m_thunk2j_thunk(convs2m_thunk(cc))
   
 }
 
@@ -53,8 +64,6 @@ case class Js (private val base: Js#MapObj) {
   type MapObj = Map[Symbol, Option[Any]]
   def apply[T](thunk: MapObj => T): T = thunk(base)
   def apply[T](s: Symbol)(t: Option[Any] => T): T = this(b => t(b(s)))
-  
-  def << [T] (conv: JsDef#Converter[T])(t: T) = Js(base + (conv.s -> Some(t)))
   
   override def toString = Js.as_string(base)
 }

@@ -15,11 +15,6 @@ trait Times extends JsDef {
   val results: Js#MapObj => List[Js] = 'results as list(obj)
 }
 
-trait Results extends JsDef {
-  lazy val _id = Symbol("_id") as str
-  lazy val _rev = Symbol("_rev") as str
-}
-
 case class People(api_key: String) extends Times {
   val service = "timespeople/api";
   val version = 1
@@ -38,7 +33,7 @@ case class Community(api_key: String) extends Times {
   val service = "community"
   val version = 2
 
-  override val results = convs2m_thunk((('results as obj) :: Nil) -> ('comments as list(obj)))
+  override val results: Js#MapObj => List[Js] = ('results as obj) :: ('comments as list(obj))
   
   def recent = this("comments/recent.json") $ results
 }
