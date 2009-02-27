@@ -23,7 +23,7 @@ trait JsTypes {
   }
   val obj: Option[Any] => Js = {
     case None => Js()
-    case Some(m) => Js(m.asInstanceOf[Map[Symbol, Option[Any]]])
+    case Some(m) => Js(m.asInstanceOf[Js#MapObj])
   }
 }
   
@@ -33,18 +33,25 @@ trait JsDef extends JsTypes {
   implicit def sym2conv(s: Symbol) = new {
     def as[T](t: Option[Any] => T) = new Converter(s, t)
   }
-  implicit def conv2mthunk[T](c: Converter[T]) = { m: Map[Symbol, Option[Any]] => c.t(m(c.s)) }
-  implicit def conv2jthunk[T](c: Converter[T]) = { js: Js => js(c) }
-/*  def apply[T](pre: Seq[JsDef#Converter[Js]])(last: JsDef#Converter[T]): T = pre match {
-    case c :: rem => apply(c)(rem)(last)
-  }*/
+  implicit def conv2m_thunk[T](c: Converter[T]) = { m: Js#MapObj => c.t(m(c.s)) }
+  implicit def conv2j_thunk[T](c: Converter[T]) = { js: Js => js(c) }
+  implicit def m_thunk2j_thunk[T](t: Js#MapObj => T) = { js: Js => js(t) }
+  
+  implicit def convs2m_thunk[T](tup: (Seq[Converter[Js]], Converter[T])): (Js#MapObj => T) = { m =>
+    tup match {
+      case (c :: rem, last) => c.t(m(c.s))(convs2m_thunk(rem -> last))
+      case (_, last) => last.t(m(last.s)) 
+    }
+  }
+  
 }
 
 object JsDef extends JsDef
 
 /** Json expected value extractors, value from map with a typer applied. */
-case class Js (private val base: Map[Symbol, Option[Any]]) {
-  def apply[T](thunk: Map[Symbol, Option[Any]] => T): T = thunk(base)
+case class Js (private val base: Js#MapObj) {
+  type MapObj = Map[Symbol, Option[Any]]
+  def apply[T](thunk: MapObj => T): T = thunk(base)
   def apply[T](s: Symbol)(t: Option[Any] => T): T = this(b => t(b(s)))
   
   def << [T] (conv: JsDef#Converter[T])(t: T) = Js(base + (conv.s -> Some(t)))
@@ -63,7 +70,7 @@ object Js extends Parser {
       case _ => Map[Symbol, Option[Any]]()
     }
 
-  private def mapify(tup: Any, list: List[Any]): Map[Symbol, Option[Any]] =
+  private def mapify(tup: Any, list: List[Any]): Js#MapObj =
     (list match {
       case Nil => Map[Symbol, Option[Any]]()
       case _ => mapify(list head, list tail)
