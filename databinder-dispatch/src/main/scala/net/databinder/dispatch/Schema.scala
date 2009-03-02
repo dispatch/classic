@@ -4,93 +4,72 @@ import scala.util.parsing.json.Parser
 import scala.util.parsing.input.{Reader,StreamReader}
 import java.io.{InputStream, InputStreamReader, ByteArrayInputStream}
 
-trait JsExtract[T] {
-  val sym: Symbol
-  def unapply(js: Js#MapObj) = js(sym) map { _.asInstanceOf[T] }
-}
-
 /** Json expected typers, returning a of Some(a) casted to a type */
 trait JsTypes {
+  trait JsExtract[T] {
+    val sym: Symbol
+    def unapply(js: Js#M) = js(sym) map { _.asInstanceOf[T] }
+  }
   case class Str(sym: Symbol) extends JsExtract[String]
   case class Num(sym: Symbol) extends JsExtract[Double]
-  case class Obj(sym: Symbol) extends JsExtract[Js#MapObj]
+  case class Obj(sym: Symbol) extends JsExtract[Js#M]
   case class RawList(sym: Symbol) extends JsExtract[List[Option[_]]]
   case class Lst[T](sub: JsExtract[T]) extends JsExtract[List[T]] {
     val sym = sub.sym
-    override def unapply(js: Js#MapObj) = js(sym) map { 
+    override def unapply(js: Js#M) = js(sym) map { 
       _.asInstanceOf[List[Option[_]]] map {
         case Some(e) => e.asInstanceOf[T]
         case None => null.asInstanceOf[T]
       }
     }
   }
-
-  val raw_list: Option[Any] => List[Option[_]] = {
-    case None => List[Option[_]]()
-    case Some(l) => l.asInstanceOf[List[Option[_]]]
-  }
-  def list[T](t: Option[Any] => T)(a: Option[Any]) = raw_list(a).map(t)
-  
-  val str: (Option[Any] => String) = {
-    case None => ""
-    case Some(l) => l.toString
-  }
-  
-  val num: Option[Any] => Double = {
-    case None => 0.0
-    case Some(l) => l.asInstanceOf[Double]
-  }
-  val obj: Option[Any] => Js = {
-    case None => Js()
-    case Some(m) => Js(m.asInstanceOf[Js#MapObj])
-  }
 }
 
-case class Converter[T](s: Symbol, t: Option[Any] => T) {
+/*case class Converter[T](s: Symbol, t: Option[Any] => T) {
   def :: [T](co: Converter[Js]) = ConverterChain(co :: Nil, this)
-  def << [T] (t: T): Js#MapObj => Js = { m => Js(m + (s -> Some(t))) }
+  def << [T] (t: T): Js#M => Js = { m => Js(m + (s -> Some(t))) }
 }
 
 case class ConverterChain[T](pre: List[Converter[Js]], last: Converter[T]) {
   def :: [T](co: Converter[Js]) = ConverterChain(co :: pre, last)
-}
+}*/
 
 /** Json trait builder */
 trait JsDef extends JsTypes {
-  implicit val parents: List[Converter[Js]] = Nil
+/*  implicit val parents: List[Converter[Js]] = Nil
   implicit def sym2conv(s: Symbol) = new {
     def as[T](t: Option[Any] => T)(implicit cc: List[Converter[Js]]) = Converter(s, t)
   }
-  implicit def conv2m_thunk[T](c: Converter[T]) = { m: Js#MapObj => c.t(m(c.s)) }
+  implicit def conv2m_thunk[T](c: Converter[T]) = { m: Js#M => c.t(m(c.s)) }
   implicit def conv2j_thunk[T](c: Converter[T]) = { js: Js => js(c) }
   
-  implicit def m_thunk2j_thunk[T](t: Js#MapObj => T) = { js: Js => js(t) }
+  implicit def m_thunk2j_thunk[T](t: Js#M => T) = { js: Js => js(t) }
   
-  implicit def convs2m_thunk[T](cc: ConverterChain[T]): Js#MapObj => T = { m =>
+  implicit def convs2m_thunk[T](cc: ConverterChain[T]): Js#M => T = { m =>
     cc match {
       case ConverterChain(c :: rem, last) => c.t(m(c.s))(convs2m_thunk(ConverterChain(rem, last)))
       case ConverterChain(_, last) => last.t(m(last.s)) 
     }
   }
-  implicit def convs2j_thunk[T](cc: ConverterChain[T]): Js => T = m_thunk2j_thunk(convs2m_thunk(cc))
+  implicit def convs2j_thunk[T](cc: ConverterChain[T]): Js => T = m_thunk2j_thunk(convs2m_thunk(cc)) */
   
 }
 
 object JsDef extends JsDef
 
 /** Json expected value extractors, value from map with a typer applied. */
-case class Js (val base: Js#MapObj) {
-  type MapObj = Map[Symbol, Option[Any]]
-  def apply[T](thunk: MapObj => T): T = thunk(base)
-  def apply[T](s: Symbol)(t: Option[Any] => T): T = this(b => t(b(s)))
+trait Js {
+//  def apply[T](thunk: MapObj => T): T = thunk(base)
+//  def apply[T](s: Symbol)(t: Option[Any] => T): T = this(b => t(b(s)))
   
-  override def toString = Js.as_string(base)
+  type M = Map[Symbol, Option[Any]]
 }
 
 object Js extends Parser {
-  def apply(): Js = Js(Map[Symbol, Option[Any]]())
-  def apply(stream: InputStream): Js = Js(process(stream))
-  def apply(string: String): Js = Js(new ByteArrayInputStream(string.getBytes("UTF-8")))
+
+  def apply(): Js#M = Map[Symbol, Option[Any]]()
+  def apply(stream: InputStream): Js#M = process(stream)
+  def apply(string: String): Js#M = Js(new ByteArrayInputStream(string.getBytes("UTF-8")))
 
   def process(input: InputStream) = 
     phrase(root)(new lexical.Scanner(StreamReader(new InputStreamReader(input)))) match {
@@ -98,7 +77,7 @@ object Js extends Parser {
       case _ => Map[Symbol, Option[Any]]()
     }
 
-  private def mapify(tup: Any, list: List[Any]): Js#MapObj =
+  private def mapify(tup: Any, list: List[Any]): Js#M =
     (list match {
       case Nil => Map[Symbol, Option[Any]]()
       case _ => mapify(list head, list tail)
