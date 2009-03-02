@@ -57,9 +57,9 @@ case class ConverterChain[T](pre: List[Converter[Js]], last: Converter[T]) {
 
 /** Json trait builder */
 trait JsDef extends JsTypes {
-
+  implicit val parents: List[Converter[Js]] = Nil
   implicit def sym2conv(s: Symbol) = new {
-    def as[T](t: Option[Any] => T) = Converter(s, t)
+    def as[T](t: Option[Any] => T)(implicit cc: List[Converter[Js]]) = Converter(s, t)
   }
   implicit def conv2m_thunk[T](c: Converter[T]) = { m: Js#MapObj => c.t(m(c.s)) }
   implicit def conv2j_thunk[T](c: Converter[T]) = { js: Js => js(c) }
