@@ -7,8 +7,8 @@ import org.apache.http.HttpHost
 import net.databinder.dispatch._
 
 trait Doc extends JsDef {
-  lazy val _id = Symbol("_id") as str
-  lazy val _rev = Symbol("_rev") as str
+  val _id = Str(Symbol("_id"))
+  val _rev = Str(Symbol("_rev"))
 }
 object Doc extends Doc
 
@@ -20,12 +20,15 @@ object Couch {
 case class Database(name: String) extends JsDef {
   class H(val http: Http) extends Database(name) {
     def apply(id: String): Http#Request = http("/" + name + "/" + encode(id))
+    val rows = Lst(Obj('rows))
+    val id = Str('id)
     def all_docs =
-      this("_all_docs") $ { _('rows as list(obj)) map { _('id as str) } }
+      this("_all_docs") $ { case rows(l) => l map { case id(id) => id } }
   }
   def apply(http: Http) = new H(http)
 }
 
+/*
 object Revise extends JsDef {
   val id = 'id as str
   val rev = 'rev as str
@@ -38,3 +41,4 @@ object Revise extends JsDef {
       (req <<< source.toString) >> (update(_, source))
   }
 }
+*/

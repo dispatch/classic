@@ -4,8 +4,27 @@ import scala.util.parsing.json.Parser
 import scala.util.parsing.input.{Reader,StreamReader}
 import java.io.{InputStream, InputStreamReader, ByteArrayInputStream}
 
+trait JsExtract[T] {
+  val sym: Symbol
+  def unapply(js: Js#MapObj) = js(sym) map { _.asInstanceOf[T] }
+}
+
 /** Json expected typers, returning a of Some(a) casted to a type */
 trait JsTypes {
+  case class Str(sym: Symbol) extends JsExtract[String]
+  case class Num(sym: Symbol) extends JsExtract[Double]
+  case class Obj(sym: Symbol) extends JsExtract[Js#MapObj]
+  case class RawList(sym: Symbol) extends JsExtract[List[Option[_]]]
+  case class Lst[T](sub: JsExtract[T]) extends JsExtract[List[T]] {
+    val sym = sub.sym
+    override def unapply(js: Js#MapObj) = js(sym) map { 
+      _.asInstanceOf[List[Option[_]]] map {
+        case Some(e) => e.asInstanceOf[T]
+        case None => null.asInstanceOf[T]
+      }
+    }
+  }
+
   val raw_list: Option[Any] => List[Option[_]] = {
     case None => List[Option[_]]()
     case Some(l) => l.asInstanceOf[List[Option[_]]]
@@ -60,7 +79,7 @@ trait JsDef extends JsTypes {
 object JsDef extends JsDef
 
 /** Json expected value extractors, value from map with a typer applied. */
-case class Js (private val base: Js#MapObj) {
+case class Js (val base: Js#MapObj) {
   type MapObj = Map[Symbol, Option[Any]]
   def apply[T](thunk: MapObj => T): T = thunk(base)
   def apply[T](s: Symbol)(t: Option[Any] => T): T = this(b => t(b(s)))
