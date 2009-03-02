@@ -6,7 +6,7 @@ class Dispatch(info: ProjectInfo) extends DefaultProject(info)
   
   override def ivyXML =
     <publications>
-      <artifact org="net.databinder" name="databinder-dispatch" type="jar" ext="jar"/>
+      <artifact name="databinder-dispatch" type="jar" ext="jar"/>
     </publications>
   
 }
