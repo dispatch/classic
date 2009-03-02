@@ -6,7 +6,7 @@ import org.apache.http.HttpHost
 
 import net.databinder.dispatch._
 
-trait Doc extends JsDef {
+trait Doc extends JsType {
   val _id = Str(Symbol("_id"))
   val _rev = Str(Symbol("_rev"))
 }
@@ -17,13 +17,11 @@ object Couch {
   def apply(): Http = Couch("127.0.0.1")
 }
 
-case class Database(name: String) extends JsDef {
+case class Database(name: String) extends Js {
   class H(val http: Http) extends Database(name) {
     def apply(id: String): Http#Request = http("/" + name + "/" + encode(id))
-    val rows = Lst(Obj('rows))
-    val id = Str('id)
     def all_docs =
-      this("_all_docs") $ { case rows(l) => l map { case id(id) => id } }
+      this("_all_docs") $ Lst(Obj('rows)) map Str('id)
   }
   def apply(http: Http) = new H(http)
 }

@@ -1,6 +1,6 @@
 package net.databinder.dispatch.times
 
-trait Times extends JsDef {
+trait Times extends Js {
   lazy val http = new Http("api.nytimes.com")
   val api_key: String
   val service: String
@@ -33,9 +33,9 @@ case class Community(api_key: String) extends Times {
   val service = "community"
   val version = 2
 
-  //override val results: Js#MapObj => List[Js] = ('results as obj) :: ('comments as list(obj))
+  //override val results: Js#M => List[Js] = ('results as obj) :: ('comments as list(obj))
   
-  def recent = this("comments/recent.json") $ { case results(r) => r }
+  def recent = this("comments/recent.json") $ results
 }
 
 
@@ -43,5 +43,5 @@ case class News(api_key: String) extends Times {
   val service = "news"
   val version = 2
   
-  def recent = this("all/recent.json") $ { case results(r) => r }
+  def recent = this("all/recent.json") $ results
 }
