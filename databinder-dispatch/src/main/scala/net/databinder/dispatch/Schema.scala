@@ -4,35 +4,43 @@ import scala.util.parsing.json.Parser
 import scala.util.parsing.input.{Reader,StreamReader}
 import java.io.{InputStream, InputStreamReader, ByteArrayInputStream}
 
-/** Json expected typers, returning a of Some(a) casted to a type */
-trait JsType {
+trait Js {
+  type M = Map[Symbol, Option[Any]]
+  implicit val ctx: Option[Obj] = None
   trait Extract[T] {
     def unapply(js: Js#M): Option[T]
   }
-  trait Extractor[T] extends Extract[T] {
-    val sym: Symbol
-    def unapply(js: Js#M) = js(sym) map { _.asInstanceOf[T] }
-  }
-  case class Str(sym: Symbol) extends Extractor[String]
-  case class Num(sym: Symbol) extends Extractor[Double]
-  case class Obj(sym: Symbol) extends Extractor[Js#M] {
-    def << [T](e: Extract[T]) = Rel(this, e)
-  }
-  case class Rel[T](parent: Obj, child: Extract[T]) extends Extract[T] {
-    def unapply(js: Js#M) = js match {
-      case parent(child(v)) => Some(v)
-      case _ => None
+  case class Rel[T](parent: Option[Obj], child: Extract[T]) extends Extract[T] {
+    def unapply(js: Js#M) = parent match {
+      case Some(parent) => js match {
+        case parent(child(t)) => Some(t)
+      }
+      case None => js match {
+        case child(t) => Some(t)
+      }
     }
   }
-  case class RawList(sym: Symbol) extends Extractor[List[Option[_]]]
-  case class Lst[T](sub: Extractor[T]) extends Extract[List[T]] {
-    val list = RawList(sub.sym)
-    def unapply(js: Js#M) = js match {
-      case list(l) => Some(l map {
-        case Some(e) => e.asInstanceOf[T]
-        case None => null.asInstanceOf[T]
-      })
-    }
+  def cast[T]: Option[_] => T = { 
+    case Some(v) => v.asInstanceOf[T]
+    case None => error("Json ! assersion failed, value not present")
+  }
+  val str = cast[String]
+  val num = cast[Double]
+  val obj = cast[Js#M]
+  val list = cast[List[Option[_]]]
+  case class Basic[T](sym: Symbol, cst: Option[_] => T) extends Extract[T] {
+    def unapply(js: Js#M) = js.get(sym) map cst
+  }
+  class Obj(sym: Symbol)(implicit parent: Option[Obj]) 
+      extends Rel[Js#M](parent, Basic(sym, obj)) {
+    implicit val ctx = Some(this)
+  }
+  implicit def ext2fun[T](ext: Extract[T]): M => T = {
+    case ext(t) => t
+  }
+  implicit def sym2rel[T](sym: Symbol) = new {
+    def ! [T](cst: Option[_] => T)(implicit parent: Option[Obj]) = 
+      new Rel(parent, Basic(sym, cst))
   }
 }
 
@@ -41,17 +49,7 @@ trait JsType {
   def << [T] (t: T): Js#M => Js = { m => Js(m + (s -> Some(t))) }
 } */
 
-
-/** Json expected value extractors, value from map with a typer applied. */
-trait Js extends JsType {
-  type M = Map[Symbol, Option[Any]]
-
-  implicit def ext2fun[T](ext: JsType#Extract[T]): M => T = {
-    case ext(t) => t
-  }
-}
-
-object Js extends Parser {
+object Js extends Parser with Js {
 
   def apply(): Js#M = Map[Symbol, Option[Any]]()
   def apply(stream: InputStream): Js#M = process(stream)

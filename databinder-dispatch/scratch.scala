@@ -8,9 +8,9 @@ val js = Js(""" { "a": {"b": 2, "c": {"o": "last"} } } """)
 
 object Test extends Js {
   val a = new Obj('a) {
-    val b = 'b as num // a is imilicit param
-    val c = new Obj(this, 'c) {
-      val o = 'o as str
+    val b = 'b ! num // a is imilicit param
+    val c = new Obj('c) {
+      val o = 'o ! str
     }
   }
 }
