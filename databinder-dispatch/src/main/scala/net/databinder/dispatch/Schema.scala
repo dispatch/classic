@@ -20,26 +20,23 @@ trait Js {
       }
     }
   }
-  def cast[T]: Option[_] => T = { 
-    case Some(v) => v.asInstanceOf[T]
-    case None => error("Json ! assersion failed, value not present")
-  }
+  type Cast[T] = Option[_] => Option[T]
+  def cast[T]: Cast[T] = _ map { _.asInstanceOf[T] }
   val str = cast[String]
   val num = cast[Double]
   val obj = cast[Js#M]
   val list = cast[List[Option[_]]]
-  case class Basic[T](sym: Symbol, cst: Option[_] => T) extends Extract[T] {
-    def unapply(js: Js#M) = js.get(sym) map cst
+  case class Basic[T](sym: Symbol, cst: Cast[T]) extends Extract[T] {
+    def unapply(js: Js#M) = js.get(sym) flatMap cst
   }
   class Obj(sym: Symbol)(implicit parent: Option[Obj]) 
       extends Rel[Js#M](parent, Basic(sym, obj)) {
     implicit val ctx = Some(this)
   }
-  implicit def ext2fun[T](ext: Extract[T]): M => T = {
-    case ext(t) => t
-  }
+  //implicit def ext2fun[T](ext: Extract[T]): M => T = { case ext(t) => t }
+  implicit def ext2flatfun[T](ext: Extract[T]): M => Option[T] =  ext.unapply
   implicit def sym2rel[T](sym: Symbol) = new {
-    def ! [T](cst: Option[_] => T)(implicit parent: Option[Obj]) = 
+    def ! [T](cst: Cast[T])(implicit parent: Option[Obj]) = 
       new Rel(parent, Basic(sym, cst))
   }
 }
