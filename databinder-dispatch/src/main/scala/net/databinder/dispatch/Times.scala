@@ -12,7 +12,7 @@ trait Times extends Js {
 
   def apply(action: String): Http#Request = this(action, Map[String, Any]())
 
-  val results: Js#M => List[Js#M] = js => ('results ! list)(None)(js) map obj
+  val results = ('results as list) andThen { _ map { _ map obj } }
 }
 
 case class People(api_key: String) extends Times {

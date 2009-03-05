@@ -21,7 +21,10 @@ trait Js {
     }
   }
   type Cast[T] = Option[_] => Option[T]
-  def cast[T]: Cast[T] = _ map { _.asInstanceOf[T] }
+  def cast[T]: Cast[T] = {
+    case Some(v: T) => Some(v)
+    case _ => None
+  }
   val str = cast[String]
   val num = cast[Double]
   val obj = cast[Js#M]
@@ -33,10 +36,9 @@ trait Js {
       extends Rel[Js#M](parent, Basic(sym, obj)) {
     implicit val ctx = Some(this)
   }
-  //implicit def ext2fun[T](ext: Extract[T]): M => T = { case ext(t) => t }
-  implicit def ext2flatfun[T](ext: Extract[T]): M => Option[T] =  ext.unapply
+  implicit def ext2fun[T](ext: Extract[T]): M => Option[T] =  ext.unapply
   implicit def sym2rel[T](sym: Symbol) = new {
-    def ! [T](cst: Cast[T])(implicit parent: Option[Obj]) = 
+    def as [T](cst: Cast[T])(implicit parent: Option[Obj]) = 
       new Rel(parent, Basic(sym, cst))
   }
 }

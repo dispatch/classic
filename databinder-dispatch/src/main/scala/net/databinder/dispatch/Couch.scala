@@ -7,8 +7,8 @@ import org.apache.http.HttpHost
 import net.databinder.dispatch._
 
 trait Doc extends Js {
-  val _id = Symbol("_id") ! str
-  val _rev = Symbol("_rev") ! str
+  val _id = Symbol("_id") as str
+  val _rev = Symbol("_rev") as str
 }
 object Doc extends Doc
 
@@ -20,8 +20,10 @@ object Couch {
 case class Database(name: String) extends Js {
   class H(val http: Http) extends Database(name) {
     def apply(id: String): Http#Request = http("/" + name + "/" + encode(id))
+    val rows = 'rows as list
+    val id = 'id as str
     def all_docs =
-      this("_all_docs") $ ('rows ! list) map obj map ('id ! str)
+      this("_all_docs") $ ('rows as list) map { _ flatMap { o => obj(o) flatMap ('id as str) } } get
   }
   def apply(http: Http) = new H(http)
 }
