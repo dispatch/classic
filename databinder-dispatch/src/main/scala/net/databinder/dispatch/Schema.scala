@@ -21,14 +21,15 @@ trait Js {
     }
   }
   type Cast[T] = Option[_] => Option[T]
-  def cast[T]: Cast[T] = {
-    case Some(v: T) => Some(v)
+  def cast[T](cl: Class[T]): Cast[T] = {
+    case Some(v) if cl.isInstance(v) => Some(v.asInstanceOf[T])
     case _ => None
   }
-  val str = cast[String]
-  val num = cast[Double]
-  val obj = cast[Js#M]
-  val list = cast[List[Option[_]]]
+  val str = cast(classOf[String])
+  val num = cast(classOf[Number])
+  val obj = cast(classOf[Js#M])
+  val list = cast(classOf[List[Option[_]]])
+  def list[T](c2: Cast[T]): Cast[List[T]] = list andThen { _ map { _.map(e => c2(e).get) } }
   case class Basic[T](sym: Symbol, cst: Cast[T]) extends Extract[T] {
     def unapply(js: Js#M) = js.get(sym) flatMap cst
   }
@@ -38,8 +39,10 @@ trait Js {
   }
   implicit def ext2fun[T](ext: Extract[T]): M => Option[T] =  ext.unapply
   implicit def sym2rel[T](sym: Symbol) = new {
-    def as [T](cst: Cast[T])(implicit parent: Option[Obj]) = 
+    def ? [T](cst: Cast[T])(implicit parent: Option[Obj]) = 
       new Rel(parent, Basic(sym, cst))
+    def ! [T](cst: Cast[T])(implicit parent: Option[Obj]) = 
+      new Rel(parent, Basic(sym, cst)).unapply _ andThen { _.get }
   }
 }
 

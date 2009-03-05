@@ -12,7 +12,7 @@ trait Times extends Js {
 
   def apply(action: String): Http#Request = this(action, Map[String, Any]())
 
-  val results = ('results as list) andThen { _ map { _ map obj } }
+  val results = ('results ! list(obj))
 }
 
 case class People(api_key: String) extends Times {
@@ -33,7 +33,7 @@ case class Community(api_key: String) extends Times {
   val service = "community"
   val version = 2
 
-//  override val results: Js#M => List[Js#M] = { js => ('comments ! list)(None)(('results ! obj)(None)(js)) map obj }
+  override val results: Js#M => List[Js#M] = ('results ! obj) andThen ('comments ! list(obj))
   
   def recent = this("comments/recent.json") $ results
 }
