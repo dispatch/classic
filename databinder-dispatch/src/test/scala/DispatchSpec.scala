@@ -1,5 +1,4 @@
 import org.scalatest.Spec
-import scala.collection.mutable.Stack
 
 class JsonSpec extends Spec {
   import net.databinder.dispatch._
