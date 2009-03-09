@@ -2,16 +2,16 @@ package dispatch.json
 
 import scala.util.parsing.json.Parser
 import scala.util.parsing.input.{Reader,StreamReader}
-import java.io.{InputStream, InputStreamReader, ByteArrayInputStream}
+import java.io.InputStream
 
 trait Js {
-  type M = Map[Symbol, Option[Any]]
+  type M 
   implicit val ctx: Option[Obj] = None
   trait Extract[T] {
-    def unapply(js: Js#M): Option[T]
+    def unapply(js: JsValue): Option[T]
   }
   case class Rel[T](parent: Option[Obj], child: Extract[T]) extends Extract[T] {
-    def unapply(js: Js#M) = parent match {
+    def unapply(js: JsValue) = parent match {
       case Some(parent) => js match {
         case parent(child(t)) => Some(t)
       }
@@ -20,24 +20,40 @@ trait Js {
       }
     }
   }
-  type Cast[T] = Option[_] => Option[T]
-  def cast[T](cl: Class[T]): Cast[T] = {
-    case Some(v) if cl.isInstance(v) => Some(v.asInstanceOf[T])
+  type Cast[T] = JsValue => Option[T]
+  val str: Cast[String] = {
+    case JsString(v) => Some(v)
     case _ => None
   }
-  val str = cast(classOf[String])
-  val num = cast(classOf[Number])
-  val obj = cast(classOf[Js#M])
-  val list = cast(classOf[List[Option[_]]])
+  val num: Cast[BigDecimal] = {
+    case JsNumber(v) => Some(v)
+    case _ => None
+  }
+  val bool: Cast[Boolean] = {
+    case JsBoolean(v) => Some(v)
+    case _ => None
+  }
+  // keep in wrapped type to allow nested extractors
+  val obj: Cast[JsObject] = {
+    case JsObject(v) => Some(JsObject(v))
+    case _ => None
+  }
+  val list: Cast[List[JsValue]] = {
+    case JsArray(v) => Some(v)
+    case _ => None
+  }
   def list[T](c2: Cast[T]): Cast[List[T]] = list andThen { _ map { _.map(e => c2(e).get) } }
   case class Basic[T](sym: Symbol, cst: Cast[T]) extends Extract[T] {
-    def unapply(js: Js#M) = js.get(sym) flatMap cst
+    def unapply(js: JsValue) = js match {
+      case js: JsObject => js.self.get(JsString(sym)) flatMap cst
+      case _ => None
+    }
   }
   class Obj(sym: Symbol)(implicit parent: Option[Obj]) 
-      extends Rel[Js#M](parent, Basic(sym, obj)) {
+      extends Rel[JsObject](parent, Basic(sym, obj)) {
     implicit val ctx = Some(this)
   }
-  implicit def ext2fun[T](ext: Extract[T]): M => Option[T] =  ext.unapply
+  implicit def ext2fun[T](ext: Extract[T]): JsValue => Option[T] =  ext.unapply
   implicit def sym2rel[T](sym: Symbol) = new {
     def ? [T](cst: Cast[T])(implicit parent: Option[Obj]) = 
       new Rel(parent, Basic(sym, cst))
@@ -53,52 +69,9 @@ trait Js {
 
 object Js extends Parser with Js {
 
-  def apply(): Js#M = Map[Symbol, Option[Any]]()
-  def apply(stream: InputStream): Js#M = process(stream)
-  def apply(string: String): Js#M = Js(new ByteArrayInputStream(string.getBytes("UTF-8")))
+  //def apply(): JsValue = Map[Symbol, Option[Any]]()
+  def apply(stream: InputStream): JsValue = JsValue.fromStream(stream)
+  def apply(string: String): JsValue = JsValue.fromString(string)
 
-  def process(input: InputStream) = 
-    phrase(root)(new lexical.Scanner(StreamReader(new InputStreamReader(input)))) match {
-      case Success(list: List[_], _) => mapify(list head, list tail)
-      case _ => Map[Symbol, Option[Any]]()
-    }
 
-  private def mapify(tup: Any, list: List[Any]): Js#M =
-    (list match {
-      case Nil => Map[Symbol, Option[Any]]()
-      case _ => mapify(list head, list tail)
-    }) + (tup match { case (key: String, value) => Symbol(key) -> resolve(value) })
-
-  private def listify(value: Any, list: List[Any]): List[Any] = 
-    resolve(value) :: (list match {
-      case Nil => Nil
-      case list => listify(list head, list tail)
-    })
-
-  private def resolve(value: Any) = value match {
-    case list: List[_] => Some(list.head match {
-      case tup: (_, _) => mapify(tup, (list tail))
-      case value => listify(value, list tail)
-    })
-    case null => None
-    case value => Some(value)
-  }
-  
-  private def qt(str: String) = "\"" + str + "\""
-
-  private def as_string(obj: Map[Symbol,Option[Any]]): String =
-    "{" + (obj map { tup => qt(tup._1.name) + ":" + as_string(tup._2) }).mkString(",") + "}"
-
-  private def as_string(obj: List[Option[Any]]): String =
-    "[" + (obj map as_string ).mkString(",") + "]"
-
-  private def as_string(value: Option[Any]): String = value match {
-    case None => "null"
-    case Some(value) => value match {
-      case value: Map[_, _] => as_string(value.asInstanceOf[Map[Symbol,Option[Any]]])
-      case value: List[_] => as_string(value.asInstanceOf[List[Option[Any]]])
-      case value: String => qt(value.replace("\"", "\\\""))
-      case value => value.toString
-    }
-  }
 }

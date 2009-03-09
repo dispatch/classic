@@ -1,7 +1,7 @@
 package dispatch.json.times
 
 import json._
-
+/*
 trait Times extends Js {
   lazy val http = new Http("api.nytimes.com")
   val api_key: String
@@ -47,3 +47,4 @@ case class News(api_key: String) extends Times {
   
   def recent = this("all/recent.json") $ results
 }
+*/

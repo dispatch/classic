@@ -5,6 +5,8 @@ package dispatch.json
 import scala.util.parsing.combinator._
 import scala.util.parsing.combinator.syntactical._
 import scala.util.parsing.combinator.lexical._
+import scala.util.parsing.input.{Reader,StreamReader,CharArrayReader}
+import java.io.{InputStream, InputStreamReader}
 
 object JsonParser extends StdTokenParsers with ImplicitConversions {
   type Tokens = scala.util.parsing.json.Lexer
@@ -21,7 +23,7 @@ object JsonParser extends StdTokenParsers with ImplicitConversions {
   def jsonStr = accept("string", { case lexical.StringLit(n) => JsString(n)})
   def jsonNum = accept("number", { case lexical.NumericLit(n) => JsNumber(n) })
 
-  def apply(input: String): JsValue =
+  def apply(input: Reader[Char]): JsValue =
     phrase(jsonVal)(new lexical.Scanner(input)) match {
       case Success(result, _) => result
       case _ => throw new Exception("Illegal JSON format")
@@ -115,7 +117,8 @@ object JsValue {
     case xs: Seq[_] => JsArray(xs.map(JsValue.apply).toList)
   }
 
-  def fromString(s: String) = JsonParser(s)
+  def fromString(s: String) = JsonParser(new CharArrayReader(s.toCharArray()))
+  def fromStream(s: InputStream) = JsonParser(StreamReader(new InputStreamReader(s)))
 
   def toJson(x: JsValue): String = x match {
     case JsNull => "null"
