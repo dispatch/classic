@@ -15,45 +15,59 @@ trait Js {
       }
     }
   }
-  type Cast[T] = JsValue => Option[T]
-  val str: Cast[String] = {
-    case JsString(v) => Some(v)
-    case _ => None
+  object str extends Extract[String] {
+    def unapply(js: JsValue) = js match {
+      case JsString(v) => Some(v)
+      case _ => None
+    }
   }
-  val num: Cast[BigDecimal] = {
-    case JsNumber(v) => Some(v)
-    case _ => None
+  object num extends Extract[BigDecimal] {
+    def unapply(js: JsValue) = js match {
+      case JsNumber(v) => Some(v)
+      case _ => None
+    }
   }
-  val bool: Cast[Boolean] = {
-    case JsBoolean(v) => Some(v)
-    case _ => None
+  object bool extends Extract[Boolean] {
+    def unapply(js: JsValue) = js match {
+      case JsBoolean(v) => Some(v)
+      case _ => None
+    }
   }
   // keep in wrapped type to allow nested extractors
-  val obj: Cast[JsObject] = {
-    case JsObject(v) => Some(JsObject(v))
-    case _ => None
-  }
-  val list: Cast[List[JsValue]] = {
-    case JsArray(v) => Some(v)
-    case _ => None
-  }
-  def list[T](c2: Cast[T]): Cast[List[T]] = list andThen { _ map { _.map(e => c2(e).get) } }
-  case class Basic[T](sym: Symbol, cst: Cast[T]) extends Extract[T] {
+  object obj extends Extract[JsObject] {
     def unapply(js: JsValue) = js match {
-      case js: JsObject => js.self.get(JsString(sym)) flatMap cst
+      case JsObject(v) => Some(JsObject(v))
+      case _ => None
+    }
+  }
+  object list extends Extract[List[JsValue]] {
+    def unapply(js: JsValue) = js match {
+      case JsArray(v) => Some(v)
+      case _ => None
+    }
+    def ! [T](ext: Extract[T]) = new Extract[List[T]] {
+      def unapply(js: JsValue) = js match {
+        case list(l) => Some(l map { _ match { case ext(v) => v } } )
+        case _ => None
+      }
+    }
+  }
+  case class Member[T](sym: Symbol, ext: Extract[T]) extends Extract[T] {
+    def unapply(js: JsValue) = js match {
+      case js: JsObject => js.self.get(JsString(sym)) flatMap ext.unapply
       case _ => None
     }
   }
   class Obj(sym: Symbol)(implicit parent: Option[Obj]) 
-      extends Rel[JsObject](parent, Basic(sym, obj)) {
+      extends Rel[JsObject](parent, Member(sym, obj)) {
     implicit val ctx = Some(this)
   }
   implicit def ext2fun[T](ext: Extract[T]): JsValue => Option[T] =  ext.unapply
   implicit def sym2rel[T](sym: Symbol) = new {
-    def ? [T](cst: Cast[T])(implicit parent: Option[Obj]) = 
-      new Rel(parent, Basic(sym, cst))
-    def ! [T](cst: Cast[T])(implicit parent: Option[Obj]) = 
-      new Rel(parent, Basic(sym, cst)).unapply _ andThen { _.get }
+    def ? [T](cst: Extract[T])(implicit parent: Option[Obj]) = 
+      new Rel(parent, Member(sym, cst))
+    def ! [T](cst: Extract[T])(implicit parent: Option[Obj]) = 
+      new Rel(parent, Member(sym, cst)).unapply _ andThen { _.get }
   }
 }
 

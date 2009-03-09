@@ -4,7 +4,7 @@ class JsonSpec extends Spec {
   import dispatch.json._
   import Js._
 
-  val js = JsValue.fromString(""" { "a": {"a": "a string", "b": {"pi": 3.14159265 } }, "b": [1,2,3] } """)
+  val js = Js(""" { "a": {"a": "a string", "b": {"pi": 3.14159265 } }, "b": [1,2,3] } """)
   val expected_map = Map(
     JsString('a) -> JsObject(Map(
       JsString('a) -> JsString("a string"),
@@ -14,10 +14,15 @@ class JsonSpec extends Spec {
     )),
     JsString('b) -> JsArray(List(JsNumber(1), JsNumber(2), JsNumber(3)))
   )
+  val js_list = Js("[1,2,3]")
+  val expected_list = List(JsNumber(1), JsNumber(2), JsNumber(3))
   
   describe("Parsed Json") {
     it("should equal expected map") {
       assert( js.self === expected_map )
+    }
+    it("should equal expected list") {
+      assert( js_list.self === expected_list )
     }
     it("should equal itself serilized and reparsed") {
       assert(js === JsValue.fromString(JsValue.toJson(js)))
@@ -31,7 +36,7 @@ class JsonSpec extends Spec {
           val pi = 'pi ? num
         }
       }
-      val b = 'b ? list(num)
+      val b = 'b ? (list ! num)
     }
     it("should match against top level object") {
       val TestExtractor.a(a) = js
@@ -67,6 +72,11 @@ class JsonSpec extends Spec {
       val l(l_) = js
       assert( l_ === List(JsValue(1), JsValue(2), JsValue(3)))
     }
+    val num_list = list ! num
+    it("should match for an unenclosed Json list") {
+      val num_list(l_) = js_list
+      assert(l_ === List(1,2,3))
+    }
   }
   describe("Function extractor") {
     def fun[T](ext: JsValue => T) = ext(js)
@@ -80,7 +90,11 @@ class JsonSpec extends Spec {
       assert( fun { ('a ! obj) andThen ('b ! obj) andThen ('pi ! num) } === 3.14159265 )
     }
     it("should work with map") {
-      assert( List(js, js, js).map ('b ! list(num)) === List.tabulate(3, _ => List(1,2,3)) )
+      assert( List(js, js, js).map ('b ! (list ! num)) === List.tabulate(3, _ => List(1,2,3)) )
+    }
+    def fun_l[T](ext: JsValue => T) = ext(js_list)
+    it("should extract some(?) unenclosed Json list") {
+      assert( fun_l(list ! num) === Some(List(1,2,3)) )
     }
   }
 }

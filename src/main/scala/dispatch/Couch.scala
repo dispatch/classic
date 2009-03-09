@@ -21,7 +21,7 @@ case class Database(name: String) extends Js {
   class H(val http: Http) extends Database(name) {
     def apply(id: String): Http#Request = http("/" + name + "/" + encode(id))
     def all_docs =
-      this("_all_docs") $ ('rows ! list(obj)) map ('id ! str)
+      this("_all_docs") $ ('rows ! (list ! obj)) map ('id ! str)
   }
   def apply(http: Http) = new H(http)
 }
