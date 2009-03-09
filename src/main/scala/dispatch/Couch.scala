@@ -1,11 +1,11 @@
-package dispatch.json.couch
+package dispatch.couch
 
 import java.io.InputStream
 import java.net.URLEncoder.encode
 import org.apache.http.HttpHost
 
 import json._
-/*
+
 trait Doc extends Js {
   val _id = Symbol("_id") ? str
   val _rev = Symbol("_rev") ? str
@@ -25,7 +25,7 @@ case class Database(name: String) extends Js {
   }
   def apply(http: Http) = new H(http)
 }
-*/
+
 /*
 object Revise extends JsDef {
   val id = 'id as str

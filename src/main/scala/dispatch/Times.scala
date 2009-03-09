@@ -1,7 +1,7 @@
-package dispatch.json.times
+package dispatch.times
 
 import json._
-/*
+
 trait Times extends Js {
   lazy val http = new Http("api.nytimes.com")
   val api_key: String
@@ -35,7 +35,7 @@ case class Community(api_key: String) extends Times {
   val service = "community"
   val version = 2
 
-  override val results: Js#M => List[Js#M] = ('results ! obj) andThen ('comments ! list(obj))
+  override val results: JsValue => List[JsObject] = ('results ! obj) andThen ('comments ! list(obj))
   
   def recent = this("comments/recent.json") $ results
 }
@@ -47,4 +47,3 @@ case class News(api_key: String) extends Times {
   
   def recent = this("all/recent.json") $ results
 }
-*/
