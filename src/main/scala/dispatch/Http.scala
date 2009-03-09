@@ -1,4 +1,4 @@
-package net.databinder.dispatch
+package dispatch
 
 import java.io.{InputStream,OutputStream,BufferedInputStream,BufferedOutputStream}
 
@@ -130,7 +130,7 @@ class Http(
       val src = scala.io.Source.fromString(in)
       thunk(scala.xml.parsing.XhtmlParser(src))
     }
-    def $ [T](thunk: Js#M => T): T = >> { stm => thunk(Js(stm)) }
+    def $ [T](thunk: json.Js#M => T): T = >> { stm => thunk(json.Js(stm)) }
 
     /** Ignore response body if OK. */
     def >| = ok ((r,e) => ())

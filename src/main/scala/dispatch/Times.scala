@@ -1,4 +1,6 @@
-package net.databinder.dispatch.times
+package dispatch.json.times
+
+import json._
 
 trait Times extends Js {
   lazy val http = new Http("api.nytimes.com")

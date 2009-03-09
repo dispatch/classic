@@ -1,4 +1,4 @@
-package net.databinder.dispatch
+package dispatch.json
 
 import scala.util.parsing.json.Parser
 import scala.util.parsing.input.{Reader,StreamReader}

@@ -1,22 +1,27 @@
 import org.scalatest.Spec
 
 class JsonSpec extends Spec {
-  import net.databinder.dispatch._
+  import dispatch.json._
   import Js._
 
-  val js = Js(""" { "a": {"a": "a string", "b": {"pi": 3.14159265 } }, "b": [1,2,3] } """)
-
+  val js = JsValue.fromString(""" { "a": {"a": "a string", "b": {"pi": 3.14159265 } }, "b": [1,2,3] } """)
+  JsValue.fromString(JsValue.toJson(js)) == js
+  
+  
   describe("Parsed Json") {
     it("should equal expected map") {
-      assert( js === Map(
-        'a -> Some(Map(
-          'a -> Some("a string"), 
-          'b -> Some(Map(
-            'pi -> Some(3.14159265)
-          ))
-        )), 
-        'b -> Some(List(Some(1), Some(2), Some(3)))
-      ))
+      assert( js === JsValue(Map(
+        'a -> Map(
+          'a -> "a string",
+          'b -> Map(
+            'pi -> BigDecimal("3.14159265")
+          )
+        ),
+        'b -> List(1, 2, 3)
+      )))
+    }
+    it("should equal itself serilized and reparsed") {
+      assert(js === JsValue.fromString(JsValue.toJson(js)))
     }
   }
   describe("Layered extractor object") {

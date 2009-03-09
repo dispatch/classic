@@ -1,10 +1,10 @@
-package net.databinder.dispatch.couch
+package dispatch.json.couch
 
 import java.io.InputStream
 import java.net.URLEncoder.encode
 import org.apache.http.HttpHost
 
-import net.databinder.dispatch._
+import json._
 
 trait Doc extends Js {
   val _id = Symbol("_id") ? str
