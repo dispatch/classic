@@ -1,11 +1,6 @@
 package dispatch.json
 
-import scala.util.parsing.json.Parser
-import scala.util.parsing.input.{Reader,StreamReader}
-import java.io.InputStream
-
 trait Js {
-  type M 
   implicit val ctx: Option[Obj] = None
   trait Extract[T] {
     def unapply(js: JsValue): Option[T]
@@ -67,11 +62,8 @@ trait Js {
   def << [T] (t: T): Js#M => Js = { m => Js(m + (s -> Some(t))) }
 } */
 
-object Js extends Parser with Js {
-
-  //def apply(): JsValue = Map[Symbol, Option[Any]]()
-  def apply(stream: InputStream): JsValue = JsValue.fromStream(stream)
+object Js extends Js {
+  def apply(): JsValue = JsValue()
+  def apply(stream: java.io.InputStream): JsValue = JsValue.fromStream(stream)
   def apply(string: String): JsValue = JsValue.fromString(string)
-
-
 }
