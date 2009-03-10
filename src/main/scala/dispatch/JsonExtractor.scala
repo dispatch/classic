@@ -1,10 +1,10 @@
 package dispatch.json
 
+trait Extract[T] {
+  def unapply(js: JsValue): Option[T]
+}
 trait Js {
   implicit val ctx: Option[Obj] = None
-  trait Extract[T] {
-    def unapply(js: JsValue): Option[T]
-  }
   case class Rel[T](parent: Option[Obj], child: Extract[T]) extends Extract[T] {
     def unapply(js: JsValue) = parent match {
       case Some(parent) => js match {
