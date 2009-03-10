@@ -62,7 +62,7 @@ trait Js {
       extends Rel[JsObject](parent, Member(sym, obj)) {
     implicit val ctx = Some(this)
   }
-  implicit def ext2fun[T](ext: Extract[T]): JsValue => Option[T] =  ext.unapply
+  implicit def ext2fun[T](ext: Extract[T]): JsValue => T = ext.unapply _ andThen { _.get }
   implicit def sym2rel[T](sym: Symbol) = new {
     def ? [T](cst: Extract[T])(implicit parent: Option[Obj]) = 
       new Rel(parent, Member(sym, cst))

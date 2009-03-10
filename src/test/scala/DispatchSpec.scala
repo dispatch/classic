@@ -93,8 +93,8 @@ class JsonSpec extends Spec {
       assert( List(js, js, js).map ('b ! (list ! num)) === List.tabulate(3, _ => List(1,2,3)) )
     }
     def fun_l[T](ext: JsValue => T) = ext(js_list)
-    it("should extract some(?) unenclosed Json list") {
-      assert( fun_l(list ! num) === Some(List(1,2,3)) )
+    it("should extract unenclosed Json list") {
+      assert( fun_l(list ! num) === List(1,2,3) )
     }
   }
 }
