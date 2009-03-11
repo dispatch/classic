@@ -1,6 +1,7 @@
 import org.scalatest.Spec
+import org.scalatest.matchers.ShouldMatchers
 
-class JsonSpec extends Spec {
+class JsonSpec extends Spec with ShouldMatchers {
   import dispatch.json._
   import Js._
 
@@ -19,13 +20,13 @@ class JsonSpec extends Spec {
   
   describe("Parsed Json") {
     it("should equal expected map") {
-      assert( js.self === expected_map )
+      js.self should equal (expected_map)
     }
     it("should equal expected list") {
-      assert( js_list.self === expected_list )
+      js_list.self should equal (expected_list)
     }
     it("should equal itself serilized and reparsed") {
-      assert(js === JsValue.fromString(JsValue.toJson(js)))
+      js should equal (JsValue.fromString(JsValue.toJson(js)))
     }
   }
   describe("Layered extractor object") {
@@ -40,19 +41,19 @@ class JsonSpec extends Spec {
     }
     it("should match against top level object") {
       val TestExtractor.a(a) = js
-      assert( a === expected_map(JsString('a)) )
+      a should equal (expected_map(JsString('a)))
     }
     it("should match against second level string") {
       val TestExtractor.a.a(a) = js
-      assert( a === "a string" )
+      a should equal ("a string")
     }
     it("should match against third level number") {
       val TestExtractor.a.b.pi(p) = js
-      assert( p === 3.14159265 )
+      p should equal (3.14159265)
     }
     it("should match against a numeric list") {
       val TestExtractor.b(b) = js
-      assert( b === List(1,2,3) )
+      b should equal (List(1,2,3))
     }
   }
   describe("Flat extractors") {
@@ -62,39 +63,39 @@ class JsonSpec extends Spec {
     val l = 'b ? list
     it("should extract a top level object") {
       val a(a_) = js
-      assert( a_ === expected_map(JsString('a)) )
+      a_ should equal (expected_map(JsString('a)))
     }
     it("should deeply extract a third level number") {
       val a(b(pi(pi_))) = js
-      assert( pi_ === 3.14159265 )
+      pi_ should equal (3.14159265)
     }
     it("should match against an unextracted list") {
       val l(l_) = js
-      assert( l_ === List(JsValue(1), JsValue(2), JsValue(3)))
+      l_ should equal (List(JsValue(1), JsValue(2), JsValue(3)))
     }
     val num_list = list ! num
     it("should match for an unenclosed Json list") {
       val num_list(l_) = js_list
-      assert(l_ === List(1,2,3))
+      l_ should equal (List(1,2,3))
     }
   }
   describe("Function extractor") {
     def fun[T](ext: JsValue => T) = ext(js)
     it("should extract a top level object") {
-      assert( fun('a ! obj) === expected_map(JsString('a)) )
+      fun('a ! obj) should equal (expected_map(JsString('a)))
     }
     it("should extract a second level string") {
-      assert( fun { ('a ! obj) andThen ('a ! str) } === "a string" )
+      fun { ('a ! obj) andThen ('a ! str) } should equal ("a string")
     }
     it("should extract a third level number") {
-      assert( fun { ('a ! obj) andThen ('b ! obj) andThen ('pi ! num) } === 3.14159265 )
+      fun { ('a ! obj) andThen ('b ! obj) andThen ('pi ! num) } should equal (3.14159265)
     }
     it("should work with map") {
-      assert( List(js, js, js).map ('b ! (list ! num)) === List.tabulate(3, _ => List(1,2,3)) )
+      List(js, js, js).map ('b ! (list ! num)) should equal (List.tabulate(3, _ => List(1,2,3)))
     }
     def fun_l[T](ext: JsValue => T) = ext(js_list)
     it("should extract unenclosed Json list") {
-      assert( fun_l(list ! num) === List(1,2,3) )
+      fun_l(list ! num) should equal (List(1,2,3))
     }
   }
 }
