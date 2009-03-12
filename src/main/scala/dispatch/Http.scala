@@ -148,12 +148,12 @@ class ConfiguredHttpClient extends DefaultHttpClient {
   }
 }
 
-import org.apache.http.conn.scheme.{Scheme,SchemeRegistry,PlainSocketFactory}
-import org.apache.http.conn.ssl.SSLSocketFactory
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
-
 /** May be used directly from any thread, or to return configured single-thread instances. */
 object Http extends Http(None, Nil, None) {
+  import org.apache.http.conn.scheme.{Scheme,SchemeRegistry,PlainSocketFactory}
+  import org.apache.http.conn.ssl.SSLSocketFactory
+  import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
+
   override lazy val client = new ConfiguredHttpClient {
     override def createClientConnectionManager() = {
       val registry = new SchemeRegistry()
