@@ -28,7 +28,7 @@ case class Search(api_key: String) extends Times {
   val service = "search"
   val version = 1
   
-  def search(query: String) = this("/article", Map("query" -> query))
+  def search(query: String) = this("article", Map("query" -> query))
 }
 
 case class Community(api_key: String) extends Times {

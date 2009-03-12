@@ -38,6 +38,7 @@ class Http(
 
   /** Uses bound host server in HTTPClient execute. */
   def execute(req: HttpUriRequest):HttpResponse = {
+    println(req.getMethod + " " + req.getURI)
     host match {
       case None => client.execute(req)
       case Some(host) => client.execute(host, req)

@@ -11,5 +11,4 @@ class Dispatch(info: ProjectInfo) extends DefaultProject(info)
     <publications>
       <artifact name="dispatch" type="jar" ext="jar"/>
     </publications>
-  
 }
