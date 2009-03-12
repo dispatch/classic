@@ -38,7 +38,7 @@ class Http(
 
   /** Uses bound host server in HTTPClient execute. */
   def execute(req: HttpUriRequest):HttpResponse = {
-    println(req.getMethod + " " + req.getURI)
+    Http.log.info("%s %s", req.getMethod, req.getURI)
     host match {
       case None => client.execute(req)
       case Some(host) => client.execute(host, req)
@@ -161,5 +161,11 @@ object Http extends Http(None, Nil, None) {
       registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443))
       new ThreadSafeClientConnManager(getParams(), registry)
     }
+  }
+  val log = {
+    val conf = new java.io.File("/etc/db-dispatch.conf")
+    if (conf.exists) 
+      net.lag.configgy.Configgy.configure(conf.getPath)
+    net.lag.logging.Logger.get
   }
 }
