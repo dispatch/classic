@@ -104,10 +104,9 @@ class Http(
       new Request(m)
     }
     /** Get with query parameters */
-    def ?< (values: Map[String, Any]) =
-      new Request(new HttpGet(req.getURI + "?" + URLEncodedUtils.format(
-        map2ee(values), HTTP.UTF_8
-      )))
+    def ?< (values: Map[String, Any]) = if(values.isEmpty) this else
+      new Request(new HttpGet(req.getURI + "?" + URLEncodedUtils.format(map2ee(values), HTTP.UTF_8)
+    ))
     def apply [T] (thunk: (Int, HttpResponse, Option[HttpEntity]) => T) = x (req) (thunk)
     /** Handle response and entity in thunk if OK. */
     def ok [T] (thunk: (HttpResponse, Option[HttpEntity]) => T) = x (req) ok (thunk)
