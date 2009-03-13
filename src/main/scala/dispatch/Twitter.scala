@@ -7,11 +7,10 @@ trait Twitter extends Js {
 
   def apply(action: String, params: Map[String, Any]) = http(
     ("" :: service :: action :: Nil).mkString("/")
-  ) ?< (Map("count" -> count) ++ params)
+  ) ?< params
 
   def apply(action: String): Http#Request = this(action, Map[String, Any]())
 
-  val count = 200
   val service: String
 }
 
