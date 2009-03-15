@@ -161,10 +161,5 @@ object Http extends Http(None, Nil, None) {
       new ThreadSafeClientConnManager(getParams(), registry)
     }
   }
-  val log = {
-    val conf = new java.io.File("/etc/db-dispatch.conf")
-    if (conf.exists) 
-      net.lag.configgy.Configgy.configure(conf.getPath)
-    net.lag.logging.Logger.get
-  }
+  val log = net.lag.logging.Logger.get
 }
