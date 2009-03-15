@@ -62,7 +62,6 @@ trait Js {
       extends Rel[JsObject](parent, Member(sym, obj)) {
     implicit val ctx = Some(this)
   }
-  implicit def ext2fun[T](ext: Extract[T]): JsValue => T = ext.unapply _ andThen { _.get }
   implicit def sym2rel[T](sym: Symbol) = new {
     def ? [T](cst: Extract[T])(implicit parent: Option[Obj]) = 
       new Rel(parent, Member(sym, cst))
@@ -80,4 +79,5 @@ object Js extends Js {
   def apply(): JsValue = JsValue()
   def apply(stream: java.io.InputStream): JsValue = JsValue.fromStream(stream)
   def apply(string: String): JsValue = JsValue.fromString(string)
+  implicit def ext2fun[T](ext: Extract[T]): JsValue => T = ext.unapply _ andThen { _.get }
 }

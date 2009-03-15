@@ -2,4 +2,5 @@
 .project
 .settings
 target
+scratch.scala
 lib_managed/
