@@ -12,6 +12,7 @@ trait Js {
       }
       case None => js match {
         case child(t) => Some(t)
+        case _ => None
       }
     }
   }
