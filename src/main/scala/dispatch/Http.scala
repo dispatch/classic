@@ -92,21 +92,15 @@ class Http(
       HttpProtocolParams.setUseExpectContinue(m.getParams, false)
       new Request(m)
     }
-    /** Convert repeating name value tuples to list of pairs for httpclient */
-    private def map2ee(values: Map[String, Any]) = 
-      new java.util.ArrayList[BasicNameValuePair](values.size) {
-        values.foreach { case (k, v) => add(new BasicNameValuePair(k, v.toString)) }
-      }
     /** Post the given key value sequence and return response wrapper. */
     def << (values: Map[String, Any]) = {
       val m = new HttpPost(req.getURI)
-      m setEntity new UrlEncodedFormEntity(map2ee(values), HTTP.UTF_8)
+      m setEntity new UrlEncodedFormEntity(Http.map2ee(values), HTTP.UTF_8)
       new Request(m)
     }
     /** Get with query parameters */
     def ?< (values: Map[String, Any]) = if(values.isEmpty) this else
-      new Request(new HttpGet(req.getURI + "?" + URLEncodedUtils.format(map2ee(values), HTTP.UTF_8)
-    ))
+      new Request(new HttpGet(req.getURI + "?" + Http.query(values)))
     def apply [T] (thunk: (Int, HttpResponse, Option[HttpEntity]) => T) = x (req) (thunk)
     /** Handle response and entity in thunk if OK. */
     def ok [T] (thunk: (HttpResponse, Option[HttpEntity]) => T) = x (req) ok (thunk)
@@ -162,4 +156,10 @@ object Http extends Http(None, Nil, None) {
     }
   }
   val log = net.lag.logging.Logger.get
+  /** Convert repeating name value tuples to list of pairs for httpclient */
+  private def map2ee(values: Map[String, Any]) = 
+    new java.util.ArrayList[BasicNameValuePair](values.size) {
+      values.foreach { case (k, v) => add(new BasicNameValuePair(k, v.toString)) }
+    }
+  def query(values: Map[String, Any]) = URLEncodedUtils.format(map2ee(values), HTTP.UTF_8)
 }
