@@ -100,7 +100,7 @@ class Http(
     }
     /** Get with query parameters */
     def ?< (values: Map[String, Any]) = if(values.isEmpty) this else
-      new Request(new HttpGet(req.getURI + "?" + Http.query(values)))
+      new Request(new HttpGet(req.getURI + "?" + Http?(values)))
     def apply [T] (thunk: (Int, HttpResponse, Option[HttpEntity]) => T) = x (req) (thunk)
     /** Handle response and entity in thunk if OK. */
     def ok [T] (thunk: (HttpResponse, Option[HttpEntity]) => T) = x (req) ok (thunk)
@@ -161,5 +161,5 @@ object Http extends Http(None, Nil, None) {
     new java.util.ArrayList[BasicNameValuePair](values.size) {
       values.foreach { case (k, v) => add(new BasicNameValuePair(k, v.toString)) }
     }
-  def query(values: Map[String, Any]) = URLEncodedUtils.format(map2ee(values), HTTP.UTF_8)
+  def ?(values: Map[String, Any]) = URLEncodedUtils.format(map2ee(values), HTTP.UTF_8)
 }
