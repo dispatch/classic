@@ -65,8 +65,8 @@ trait Js {
   implicit def sym2rel[T](sym: Symbol) = new {
     def ? [T](cst: Extract[T])(implicit parent: Option[Obj]) = 
       new Rel(parent, Member(sym, cst))
-    def ! [T](cst: Extract[T])(implicit parent: Option[Obj]) = 
-      new Rel(parent, Member(sym, cst)).unapply _ andThen { _.get }
+    def ! [T](cst: Extract[T]) = 
+      new Member(sym, cst).unapply _ andThen { _.get }
   }
 }
 
