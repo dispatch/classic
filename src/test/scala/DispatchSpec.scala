@@ -78,6 +78,12 @@ class JsonSpec extends Spec with ShouldMatchers {
       val num_list(l_) = js_list
       l_ should equal (List(1,2,3))
     }
+    it("should pattern-match correct elements") {
+      (js match {
+        case b(b_) => b_
+        case a(a_) => a_
+      }) should equal (expected_map(JsString('a)))
+    }
   }
   describe("Function extractor") {
     def fun[T](ext: JsValue => T) = ext(js)
