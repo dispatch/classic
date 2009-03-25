@@ -45,7 +45,15 @@ object Status extends Js {
   val text = 'text ? str
 }
 
-class Status extends Twitter {
+trait UserFields {
+  import Js._
+  val followers_count = 'followers_count ? num
+  val screen_name = 'screen_name ? str
+}
+
+object User extends UserFields
+
+class Statuses extends Twitter {
   import Js._
   val service = "statuses"
   
@@ -53,4 +61,12 @@ class Status extends Twitter {
     this("public_timeline.json") $ (list ! obj)
   def user_timeline(user: String) =
     this("user_timeline/" + user + ".json") $ (list ! obj)
+}
+
+class Users extends Twitter {
+  import Js._
+  val service = "users"
+
+  def show(user: String) =
+    this("show/" + user + ".json") $ obj
 }
