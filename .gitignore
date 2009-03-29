@@ -4,3 +4,4 @@
 target
 scratch.scala
 lib_managed/
+project/boot
