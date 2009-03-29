@@ -8,17 +8,20 @@ class HttpSpec extends Spec with ShouldMatchers {
   val tus = new Http("technically.us")
   
   describe("Singleton Http test get") {
-    endpoint_tests(Http("http://technically.us/test.text"))
+    get_specs(Http("http://technically.us/test.text"))
   }
   describe("Bound host get") {
-    endpoint_tests(tus("/test.text"))
+    get_specs(tus("/test.text"))
   }
-  def endpoint_tests(test: Http#Request) = {
+  def get_specs(test: Http#Request) = {
     it("should equal expected string") {
       test.as_str should equal (jane)
     }
     it("should stream to expected sting") {
-      test >> { str => io.Source.fromInputStream(str).mkString } should equal (jane)
+      test >> { stm => io.Source.fromInputStream(stm).mkString } should equal (jane)
+    }
+    it("should write to expected sting bytes") {
+      (test >>> new java.io.ByteArrayOutputStream).toByteArray should equal (jane.getBytes)
     }
   }
 }

@@ -114,7 +114,7 @@ class Http(
     /** Return response in String if OK. (Don't blow your heap, kids.) */
     def as_str = okee { EntityUtils.toString(_, HTTP.UTF_8) }
     /** Write to the given OutputStream. */
-    def >>> (out: OutputStream): Unit = okee { _.writeTo(out) }
+    def >>> [OS <: OutputStream](out: OS) = { okee { _.writeTo(out) } ; out }
     /** Process response as XML document in thunk */
     def <> [T] (thunk: (scala.xml.NodeSeq => T)) = { 
       // an InputStream source is the right way, but ConstructingParser
