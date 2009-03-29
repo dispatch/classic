@@ -141,7 +141,7 @@ class ConfiguredHttpClient extends DefaultHttpClient {
   }
 }
 
-/** May be used directly from any thread, or to return configured single-thread instances. */
+/** May be used directly from any thread. */
 object Http extends Http(None, Nil, None) {
   import org.apache.http.conn.scheme.{Scheme,SchemeRegistry,PlainSocketFactory}
   import org.apache.http.conn.ssl.SSLSocketFactory
