@@ -161,6 +161,7 @@ object Http extends Http(None, Nil, None) {
     new java.util.ArrayList[BasicNameValuePair](values.size) {
       values.foreach { case (k, v) => add(new BasicNameValuePair(k, v.toString)) }
     }
+  /** Produce formatted query strings from a Map of parameters */
   def ?(values: Map[String, Any]) = if (values.isEmpty) "" else 
     "?" + URLEncodedUtils.format(map2ee(values), HTTP.UTF_8)
 }
