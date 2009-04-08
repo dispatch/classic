@@ -69,7 +69,12 @@ trait Js {
     def ! [T](cst: Extract[T]) = 
       new Member(sym, cst).unapply _ andThen { _.get }
   }
-}
+  type JsF[T] = JsValue => T
+  def *[A,B](tup: Tuple2[JsF[A],JsF[B]]): JsF[Tuple2[A,B]] =
+    js => (tup._1(js), tup._2(js))
+  def *[A,B,C](tup: Tuple3[JsF[A],JsF[B],JsF[C]]): JsF[Tuple3[A,B,C]] =
+    js => (tup._1(js), tup._2(js), tup._3(js))
+ }
 
 /*case class Converter[T](s: Symbol, t: Option[Any] => T) {
   def :: [T](co: Converter[Js]) = ConverterChain(co :: Nil, this)

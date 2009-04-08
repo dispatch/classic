@@ -91,6 +91,10 @@ class JsonSpec extends Spec with ShouldMatchers {
     it("should extract a top level object") {
       res $ ('a ! obj) should equal (expected_map(JsString('a)))
     }
+    it("should extract a tuple of top level objects") {
+      res $ *('a ! obj, 'b ! list, 'b ! list) should 
+        equal (expected_map(JsString('a)), expected_list, expected_list)
+    }
     it("should extract a second level string") {
       res $ { ('a ! obj) andThen ('a ! str) } should equal ("a string")
     }
