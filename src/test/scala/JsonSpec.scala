@@ -86,15 +86,16 @@ class JsonSpec extends Spec with ShouldMatchers {
     }
   }
   describe("Function extractor") {
-    def fun[T](ext: JsValue => T) = ext(js)
+    /** to resemble an Http#Response */
+    object res { def $ [T](ext: JsF[T]) = ext(js) }
     it("should extract a top level object") {
-      fun('a ! obj) should equal (expected_map(JsString('a)))
+      res $ ('a ! obj) should equal (expected_map(JsString('a)))
     }
     it("should extract a second level string") {
-      fun { ('a ! obj) andThen ('a ! str) } should equal ("a string")
+      res $ { ('a ! obj) andThen ('a ! str) } should equal ("a string")
     }
     it("should extract a third level number") {
-      fun { ('a ! obj) andThen ('b ! obj) andThen ('pi ! num) } should equal (3.14159265)
+      res $ { ('a ! obj) andThen ('b ! obj) andThen ('pi ! num) } should equal (3.14159265)
     }
     it("should work with map") {
       List(js, js, js).map ('b ! (list ! num)) should equal (List.tabulate(3, _ => List(1,2,3)))
