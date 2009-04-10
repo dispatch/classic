@@ -124,7 +124,8 @@ class Http(
       val src = scala.io.Source.fromString(in)
       thunk(scala.xml.parsing.XhtmlParser(src))
     }
-    def $ [T](thunk: json.JsValue => T): T = >> { stm => thunk(json.Js(stm)) }
+    /** Process response as JsValue in thunk */
+    def $ [T](thunk: json.Js.JsF[T]): T = >> { stm => thunk(json.Js(stm)) }
 
     /** Ignore response body if OK. */
     def >| = ok ((r,e) => ())

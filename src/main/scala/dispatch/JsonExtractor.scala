@@ -1,5 +1,6 @@
 package dispatch.json
 
+/** Json Extractor, matches if an expected property and type exists in a given JsValue. */
 trait Extract[T] {
   def unapply(js: JsValue): Option[T]
 }
@@ -63,17 +64,25 @@ trait Js {
       extends Rel[JsObject](parent, Member(sym, obj)) {
     implicit val ctx = Some(this)
   }
-  implicit def sym2rel[T](sym: Symbol) = new {
+  /** Assertion extracting function, error if expected Js type is not present. */
+  type JsF[T] = JsValue => T
+  /** Add ! and ? operators to Symbol. */
+  implicit def sym_add_operators[T](sym: Symbol) = new SymOp(sym)
+  /** For ! and ? operators on Symbol. */
+  case class SymOp(sym: Symbol) {
+    /** @return an extractor */
     def ? [T](cst: Extract[T])(implicit parent: Option[Obj]) = 
       new Rel(parent, Member(sym, cst))
-    def ! [T](cst: Extract[T]) = 
+    /** @return an assertion extracting function (JsF) */
+    def ! [T](cst: Extract[T]): JsF[T] = 
       new Member(sym, cst).unapply _ andThen { _.get }
   }
-  type JsF[T] = JsValue => T
-  def *[A,B](tup: Tuple2[JsF[A],JsF[B]]): JsF[Tuple2[A,B]] =
-    js => (tup._1(js), tup._2(js))
-  def *[A,B,C](tup: Tuple3[JsF[A],JsF[B],JsF[C]]): JsF[Tuple3[A,B,C]] =
-    js => (tup._1(js), tup._2(js), tup._3(js))
+  /** Combines assertion extracting functions into a single function returning a tuple, when curried. */
+  implicit def %[A,B](a: JsF[A], b: JsF[B])(js: JsValue) = (a(js), b(js))
+  /** Combines assertion extracting functions into a single function returning a tuple, when curried. */
+  implicit def %[A,B,C](a: JsF[A], b: JsF[B], c: JsF[C])(js: JsValue) = (a(js), b(js), c(js))
+  /** Combines assertion extracting functions into a single function returning a tuple, when curried. */
+  implicit def %[A,B,C,D](a: JsF[A], b: JsF[B], c: JsF[C], d: JsF[D])(js: JsValue) = (a(js), b(js), c(js), d(js))
  }
 
 /*case class Converter[T](s: Symbol, t: Option[Any] => T) {
@@ -85,5 +94,5 @@ object Js extends Js {
   def apply(): JsValue = JsValue()
   def apply(stream: java.io.InputStream): JsValue = JsValue.fromStream(stream)
   def apply(string: String): JsValue = JsValue.fromString(string)
-  implicit def ext2fun[T](ext: Extract[T]): JsValue => T = ext.unapply _ andThen { _.get }
+  implicit def ext2fun[T](ext: Extract[T]): JsF[T] = ext.unapply _ andThen { _.get }
 }

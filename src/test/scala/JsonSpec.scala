@@ -92,7 +92,7 @@ class JsonSpec extends Spec with ShouldMatchers {
       res $ ('a ! obj) should equal (expected_map(JsString('a)))
     }
     it("should extract a tuple of top level objects") {
-      res $ *('a ! obj, 'b ! list, 'b ! list) should 
+      res $ %('a ! obj, 'b ! list, 'b ! list) should 
         equal (expected_map(JsString('a)), expected_list, expected_list)
     }
     it("should extract a second level string") {
@@ -104,7 +104,7 @@ class JsonSpec extends Spec with ShouldMatchers {
     it("should work with map") {
       List(js, js, js).map ('b ! (list ! num)) should equal (List.tabulate(3, _ => List(1,2,3)))
     }
-    def fun_l[T](ext: JsValue => T) = ext(js_list)
+    def fun_l[T](ext: JsF[T]) = ext(js_list)
     it("should extract unenclosed Json list") {
       fun_l(list ! num) should equal (List(1,2,3))
     }
