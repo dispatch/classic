@@ -4,10 +4,39 @@ package dispatch.json
 trait Extract[T] {
   def unapply(js: JsValue): Option[T]
 }
-/** Namespace and context for Json extraction. Nested extraction objects
-    should extend this trait to receive an initial Obj context of None
-    that Obj instances reset to themselves. For assertion extraction
-    and flat extractors it is sufficient to import Js._ */
+/** Json Property Extractor, extracts a value of type T assigned to 
+    the property sym in a given JsObject (checks any JsValue). Additionally,
+    can replace the property sym with a new value T in the << opertion. */
+case class Property[T](sym: Symbol, ext: Extract[T]) extends Extract[T] {
+  def unapply(js: JsValue) = js match {
+    case js: JsObject => js.self.get(JsString(sym)) flatMap ext.unapply
+    case _ => None
+  }
+  def << (t: T): JsValue => JsObject = {
+    case JsObject(m) => JsObject(m + (JsString(sym) -> JsValue(t)))
+    case js => error("Unable to replace property in " + js)
+  }
+}
+/** Extractor that resolves first by its parent extractor, if present. */
+case class Child[T, E <: Extract[T]](parent: Option[Obj], self: E) extends Extract[T] {
+  def unapply(js: JsValue) = parent match {
+    case Some(parent) => js match {
+      case parent(self(t)) => Some(t)
+    }
+    case None => js match {
+      case self(t) => Some(t)
+      case _ => None
+    }
+  }
+}
+/** Obj extractor, respects current parent context and sets a new context to itself. */
+class Obj(sym: Symbol)(implicit parent: Option[Obj]) 
+    extends Child[JsObject, Property[JsObject]](parent, Property(sym, Js.obj)) {
+  implicit val ctx = Some(this)
+}
+/** Namespace and context for Json extraction. Client extraction 
+    objects, e.g. dispatch.twitter.Search, may extend this trait to 
+    receive all implicit functions and values. */
 trait Js {
   object str extends Extract[String] {
     def unapply(js: JsValue) = js match {
@@ -46,42 +75,12 @@ trait Js {
       }
     }
   }
-  /** Json Property Extractor, extracts a value of type T assigned to 
-      the property sym in a given JsObject (checks any JsValue). Additionally,
-      can replace the property sym with a new value T in the << opertion. */
-  case class Property[T](sym: Symbol, ext: Extract[T]) extends Extract[T] {
-    def unapply(js: JsValue) = js match {
-      case js: JsObject => js.self.get(JsString(sym)) flatMap ext.unapply
-      case _ => None
-    }
-    def << (t: T): JsValue => JsObject = {
-      case JsObject(m) => JsObject(m + (JsString(sym) -> JsValue(t)))
-      case js => error("Unable to replace property in " + js)
-    }
-  }
-  /** Extractor that resolves first by its parent extractor, if present. */
-  case class Child[T, E <: Extract[T]](parent: Option[Obj], self: E) extends Extract[T] {
-    def unapply(js: JsValue) = parent match {
-      case Some(parent) => js match {
-        case parent(self(t)) => Some(t)
-      }
-      case None => js match {
-        case self(t) => Some(t)
-        case _ => None
-      }
-    }
-  }
   /** Converts a Child extractor to the wrapped extractor E, e.g. on << */
   implicit def child2self[T, E <: Extract[T]](r: Child[T,E]) = r.self
   
   /** The parent Obj context, defaults to None for top level definitions. */
   implicit val ctx: Option[Obj] = None
   
-  /** Obj extractor, respects current parent context and sets a new context to itself. */
-  class Obj(sym: Symbol)(implicit parent: Option[Obj]) 
-      extends Child[JsObject, Property[JsObject]](parent, Property(sym, obj)) {
-    implicit val ctx = Some(this)
-  }
   /** Assertion extracting function, error if expected Js type is not present. */
   type JsF[T] = JsValue => T
   
@@ -104,9 +103,13 @@ trait Js {
   def %[A,B,C,D](a: JsF[A], b: JsF[B], c: JsF[C], d: JsF[D])(js: JsValue) = (a(js), b(js), c(js), d(js))
  }
 
+/** Factory for JsValues as well as a global access point for
+    implicit functions and values. This object extends the Js
+    trait so that `import Js._` brings implicits into scope. */
 object Js extends Js {
   def apply(): JsValue = JsValue()
   def apply(stream: java.io.InputStream): JsValue = JsValue.fromStream(stream)
   def apply(string: String): JsValue = JsValue.fromString(string)
+  /** Converts  Json a extrator to an assertion extracting function (JsF). */
   implicit def ext2fun[T](ext: Extract[T]): JsF[T] = ext.unapply _ andThen { _.get }
 }
