@@ -85,11 +85,11 @@ trait Js {
       new Member(sym, cst).unapply _ andThen { _.get }
   }
   /** Combines assertion extracting functions into a single function returning a tuple, when curried. */
-  implicit def %[A,B](a: JsF[A], b: JsF[B])(js: JsValue) = (a(js), b(js))
+  def %[A,B](a: JsF[A], b: JsF[B])(js: JsValue) = (a(js), b(js))
   /** Combines assertion extracting functions into a single function returning a tuple, when curried. */
-  implicit def %[A,B,C](a: JsF[A], b: JsF[B], c: JsF[C])(js: JsValue) = (a(js), b(js), c(js))
+  def %[A,B,C](a: JsF[A], b: JsF[B], c: JsF[C])(js: JsValue) = (a(js), b(js), c(js))
   /** Combines assertion extracting functions into a single function returning a tuple, when curried. */
-  implicit def %[A,B,C,D](a: JsF[A], b: JsF[B], c: JsF[C], d: JsF[D])(js: JsValue) = (a(js), b(js), c(js), d(js))
+  def %[A,B,C,D](a: JsF[A], b: JsF[B], c: JsF[C], d: JsF[D])(js: JsValue) = (a(js), b(js), c(js), d(js))
  }
 
 object Js extends Js {
