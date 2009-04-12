@@ -3,23 +3,28 @@ package dispatch.json
 /** Json Extractor, extracts a value of type T from the given JsValue. */
 trait Extract[T] {
   def unapply(js: JsValue): Option[T]
-  def << (t: T)(js: JsValue) = js.asInstanceOf[JsObject]
+}
+/** Json Inserter, adds or replaces properties in the given JsValue
+    (error if not a JsObject) */
+trait Insert[T] extends Extract[T] {
+  def << (t: T)(js: JsValue): JsObject
 }
 /** Json Property Extractor, extracts a value of type T assigned to 
     the property sym in a given JsObject (checks any JsValue). Additionally,
     can replace the property sym with a new value T in the << opertion. */
-case class Property[T](sym: Symbol, ext: Extract[T]) extends Extract[T] {
+case class Property[T](sym: Symbol, ext: Extract[T]) extends Extract[T] with Insert[T] {
   def unapply(js: JsValue) = js match {
     case js: JsObject => js.self.get(JsString(sym)) flatMap ext.unapply
     case _ => None
   }
-  override def << (t: T)(js: JsValue) = js match {
+  /** Adds or replaces the property sym in the given JsValue (JsObject) */
+  def << (t: T)(js: JsValue) = js match {
     case JsObject(m) => JsObject(m + (JsString(sym) -> JsValue(t)))
     case js => error("Unable to replace property in " + js)
   }
 }
 /** Extractor that resolves first by its parent extractor, if present. */
-case class Child[T, E <: Extract[T]](parent: Option[Obj], self: E) extends Extract[T] {
+case class Child[T, E <: Insert[T]](parent: Option[Obj], self: E) extends Extract[T] with Insert[T] {
   def unapply(js: JsValue) = parent map { parent =>  js match {
       case parent(self(t)) => Some(t)
     } } getOrElse { js match {
@@ -27,7 +32,8 @@ case class Child[T, E <: Extract[T]](parent: Option[Obj], self: E) extends Extra
       case _ => None
     }
   }
-  override def << (t: T)(js: JsValue) = parent map { parent => js match {
+  /** Inserts the value t in self and replaces self in parent, if any. */
+  def << (t: T)(js: JsValue) = parent map { parent => js match {
       case parent(my_js) => (parent << (self << t)(my_js))(js)
     } } getOrElse (self << t)(js)
 }
@@ -85,17 +91,29 @@ trait Js {
   
   /** Assertion extracting function, error if expected Js type is not present. */
   type JsF[T] = JsValue => T
+
+  /** Assertion inserting function, puts any type value into the given JsValue. */
+  type JsIF = JsF[JsObject]
   
   /** Add operators to Symbol. */
   implicit def sym_add_operators[T](sym: Symbol) = new SymOp(sym)
-  /** For ! and ? operators on Symbol. */
+  /** For ! , ? , and << operators on Symbol. */
   case class SymOp(sym: Symbol) {
     /** @return an extractor, respects current Obj context */
     def ? [T](cst: Extract[T])(implicit parent: Option[Obj]) = 
       new Child[T, Property[T]](parent, Property(sym, cst))
+    
     /** @return an assertion extracting function (JsF) */
     def ! [T](cst: Extract[T]): JsF[T] = 
       new Property(sym, cst).unapply _ andThen { _.get }
+    
+    /** @return new JsObject with the given sym property replaced by t */
+    def << [T](t: T): JsIF = _ match {
+      case JsObject(m) => JsObject(m + (JsString(sym) -> JsValue(t)))
+      case js => error("Unable to replace property in " + js)
+    }
+    /** Chain this to another assertion inserting function to replace deep properties */
+    def << (f: JsIF): JsIF = js => (this << f((this ! obj)(js)))(js)
   }
   /** Combines assertion extracting functions into a single function returning a tuple, when curried. */
   def %[A,B](a: JsF[A], b: JsF[B])(js: JsValue) = (a(js), b(js))

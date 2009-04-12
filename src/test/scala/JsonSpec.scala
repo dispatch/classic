@@ -18,6 +18,9 @@ class JsonSpec extends Spec with ShouldMatchers {
   val js_list = Js("[1,2,3]")
   val expected_list = List(JsNumber(1), JsNumber(2), JsNumber(3))
   
+  /** mock $ of Http#Response */
+  object res { def $ [T](f: JsF[T]) = f(js) }
+  
   describe("Parsed Json") {
     it("should equal expected map") {
       js.self should equal (expected_map)
@@ -55,9 +58,15 @@ class JsonSpec extends Spec with ShouldMatchers {
       val TestExtractor.b(b) = js
       b should equal (List(1,2,3))
     }
+    it("should replace second level string") {
+      res $ (TestExtractor.a.a << "land, ho") should equal (Js(
+        """ { "a": {"a": "land, ho", "b": {"pi": 3.14159265 } }, "b": [1,2,3] } """
+      ))
+    }
   }
   describe("Flat extractors") {
     val a = 'a ? obj
+    val aa = 'a ? str
     val b = 'b ? obj
     val pi = 'pi ? num
     val l = 'b ? list
@@ -84,10 +93,14 @@ class JsonSpec extends Spec with ShouldMatchers {
         case a(a_) => a_
       }) should equal (expected_map(JsString('a)))
     }
+    it("should awkwardly replace second level string") {
+      val a(a_) = js
+      res $ (a << (aa << "barnacles, ahoy")(a_)) should equal (Js(
+        """ { "a": {"a": "barnacles, ahoy", "b": {"pi": 3.14159265 } }, "b": [1,2,3] } """
+      ))
+    }
   }
   describe("Function extractor") {
-    /** to resemble an Http#Response */
-    object res { def $ [T](ext: JsF[T]) = ext(js) }
     it("should extract a top level object") {
       res $ ('a ! obj) should equal (expected_map(JsString('a)))
     }
@@ -107,6 +120,18 @@ class JsonSpec extends Spec with ShouldMatchers {
     def fun_l[T](ext: JsF[T]) = ext(js_list)
     it("should extract unenclosed Json list") {
       fun_l(list ! num) should equal (List(1,2,3))
+    }
+  }
+  describe("assertion inserting") {
+    it("should replace second level string") {
+      res $ ('a << ('a << "barnacles, ahoy")) should equal (Js(
+        """ { "a": {"a": "barnacles, ahoy", "b": {"pi": 3.14159265 } }, "b": [1,2,3] } """
+      ))
+    }
+    it("should replace a second level object with a string") {
+      res $ ('a << ('b << "bonzai!")) should equal (Js(
+        """ { "a": {"a": "a string", "b": "bonzai!" } , "b": [1,2,3] } """
+      ))
     }
   }
 }
