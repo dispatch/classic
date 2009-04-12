@@ -3,6 +3,7 @@ package dispatch.json
 /** Json Extractor, extracts a value of type T from the given JsValue. */
 trait Extract[T] {
   def unapply(js: JsValue): Option[T]
+  def << (t: T)(js: JsValue) = js.asInstanceOf[JsObject]
 }
 /** Json Property Extractor, extracts a value of type T assigned to 
     the property sym in a given JsObject (checks any JsValue). Additionally,
@@ -12,7 +13,7 @@ case class Property[T](sym: Symbol, ext: Extract[T]) extends Extract[T] {
     case js: JsObject => js.self.get(JsString(sym)) flatMap ext.unapply
     case _ => None
   }
-  def << (t: T): JsValue => JsObject = {
+  override def << (t: T)(js: JsValue) = js match {
     case JsObject(m) => JsObject(m + (JsString(sym) -> JsValue(t)))
     case js => error("Unable to replace property in " + js)
   }
@@ -27,6 +28,12 @@ case class Child[T, E <: Extract[T]](parent: Option[Obj], self: E) extends Extra
       case self(t) => Some(t)
       case _ => None
     }
+  }
+  override def << (t: T)(js: JsValue) = parent match {
+    case Some(parent) => js match {
+      case parent(my_js) => (parent << (self << t)(my_js))(js)
+    }
+    case None => (self << t)(js)
   }
 }
 /** Obj extractor, respects current parent context and sets a new context to itself. */
@@ -76,7 +83,7 @@ trait Js {
     }
   }
   /** Converts a Child extractor to the wrapped extractor E, e.g. on << */
-  implicit def child2self[T, E <: Extract[T]](r: Child[T,E]) = r.self
+  implicit def child2self[T, E <: Property[T]](r: Child[T,E]) = r.self
   
   /** The parent Obj context, defaults to None for top level definitions. */
   implicit val ctx: Option[Obj] = None
