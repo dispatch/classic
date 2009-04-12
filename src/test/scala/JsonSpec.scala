@@ -29,7 +29,7 @@ class JsonSpec extends Spec with ShouldMatchers {
       js should equal (JsValue.fromString(JsValue.toJson(js)))
     }
   }
-  describe("Layered extractor object") {
+  describe("Nested extractor object") {
     object TestExtractor extends Js {
       val a = new Obj('a) {
         val a = ('a ? str)
