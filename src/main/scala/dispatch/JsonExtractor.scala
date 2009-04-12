@@ -6,13 +6,14 @@ trait Extract[T] {
 }
 trait Js {
   implicit val ctx: Option[Obj] = None
-  case class Rel[T](parent: Option[Obj], child: Extract[T]) extends Extract[T] {
+  /** Extractor that may have a parent. */
+  case class Rel[T, E <: Extract[T]](parent: Option[Obj], self: E) extends Extract[T] {
     def unapply(js: JsValue) = parent match {
       case Some(parent) => js match {
-        case parent(child(t)) => Some(t)
+        case parent(self(t)) => Some(t)
       }
       case None => js match {
-        case child(t) => Some(t)
+        case self(t) => Some(t)
         case _ => None
       }
     }
@@ -59,20 +60,26 @@ trait Js {
       case js: JsObject => js.self.get(JsString(sym)) flatMap ext.unapply
       case _ => None
     }
+    def << (t: T): JsValue => JsObject = {
+      case js: JsObject => JsObject(js.self + (JsString(sym) -> JsValue(t)))
+      case _ => error("a")
+    }
   }
+  implicit def rel2self[T, E <: Extract[T]](r: Rel[T,E]) = r.self
+  
   class Obj(sym: Symbol)(implicit parent: Option[Obj]) 
-      extends Rel[JsObject](parent, Member(sym, obj)) {
+      extends Rel[JsObject, Member[JsObject]](parent, Member(sym, obj)) {
     implicit val ctx = Some(this)
   }
   /** Assertion extracting function, error if expected Js type is not present. */
   type JsF[T] = JsValue => T
-  /** Add ! and ? operators to Symbol. */
+  /** Add operators to Symbol. */
   implicit def sym_add_operators[T](sym: Symbol) = new SymOp(sym)
   /** For ! and ? operators on Symbol. */
   case class SymOp(sym: Symbol) {
     /** @return an extractor */
     def ? [T](cst: Extract[T])(implicit parent: Option[Obj]) = 
-      new Rel(parent, Member(sym, cst))
+      new Rel[T, Member[T]](parent, Member(sym, cst))
     /** @return an assertion extracting function (JsF) */
     def ! [T](cst: Extract[T]): JsF[T] = 
       new Member(sym, cst).unapply _ andThen { _.get }
@@ -84,11 +91,6 @@ trait Js {
   /** Combines assertion extracting functions into a single function returning a tuple, when curried. */
   implicit def %[A,B,C,D](a: JsF[A], b: JsF[B], c: JsF[C], d: JsF[D])(js: JsValue) = (a(js), b(js), c(js), d(js))
  }
-
-/*case class Converter[T](s: Symbol, t: Option[Any] => T) {
-  def :: [T](co: Converter[Js]) = ConverterChain(co :: Nil, this)
-  def << [T] (t: T): Js#M => Js = { m => Js(m + (s -> Some(t))) }
-} */
 
 object Js extends Js {
   def apply(): JsValue = JsValue()
