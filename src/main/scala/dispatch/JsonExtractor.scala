@@ -20,21 +20,16 @@ case class Property[T](sym: Symbol, ext: Extract[T]) extends Extract[T] {
 }
 /** Extractor that resolves first by its parent extractor, if present. */
 case class Child[T, E <: Extract[T]](parent: Option[Obj], self: E) extends Extract[T] {
-  def unapply(js: JsValue) = parent match {
-    case Some(parent) => js match {
+  def unapply(js: JsValue) = parent map { parent =>  js match {
       case parent(self(t)) => Some(t)
-    }
-    case None => js match {
+    } } getOrElse { js match {
       case self(t) => Some(t)
       case _ => None
     }
   }
-  override def << (t: T)(js: JsValue) = parent match {
-    case Some(parent) => js match {
+  override def << (t: T)(js: JsValue) = parent map { parent => js match {
       case parent(my_js) => (parent << (self << t)(my_js))(js)
-    }
-    case None => (self << t)(js)
-  }
+    } } getOrElse (self << t)(js)
 }
 /** Obj extractor, respects current parent context and sets a new context to itself. */
 class Obj(sym: Symbol)(implicit parent: Option[Obj]) 
