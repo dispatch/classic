@@ -83,8 +83,6 @@ trait Js {
       }
     }
   }
-  /** Converts a Child extractor to the wrapped extractor E, e.g. on << */
-  implicit def child2self[T, E <: Property[T]](r: Child[T,E]) = r.self
   
   /** The parent Obj context, defaults to None for top level definitions. */
   implicit val ctx: Option[Obj] = None
