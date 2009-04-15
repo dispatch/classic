@@ -54,26 +54,26 @@ class Http(
   
   /** eXecute wrapper */
   def x [T](req: HttpUriRequest) = new {
-    /** handle response codes, response, and entity in thunk */
-    def apply(thunk: (Int, HttpResponse, Option[HttpEntity]) => T) = {
+    /** handle response codes, response, and entity in block */
+    def apply(block: (Int, HttpResponse, Option[HttpEntity]) => T) = {
       val res = execute(req)
       val ent = res.getEntity match {
         case null => None
         case ent => Some(ent)
       }
-      try { thunk(res.getStatusLine.getStatusCode, res, ent) }
+      try { block(res.getStatusLine.getStatusCode, res, ent) }
       finally { ent foreach (_.consumeContent) }
     }
     
-    /** Handle reponse entity in thunk if reponse code returns true from chk. */
-    def when(chk: Int => Boolean)(thunk: (HttpResponse, Option[HttpEntity]) => T) = this { (code, res, ent) => 
-      if (chk(code)) thunk(res, ent)
+    /** Handle reponse entity in block if reponse code returns true from chk. */
+    def when(chk: Int => Boolean)(block: (HttpResponse, Option[HttpEntity]) => T) = this { (code, res, ent) => 
+      if (chk(code)) block(res, ent)
       else throw StatusCode(code,
         ent.map(EntityUtils.toString(_, HTTP.UTF_8)).getOrElse("")
       )
     }
     
-    /** Handle reponse entity in thunk when response code is 200 - 204 */
+    /** Handle reponse entity in block when response code is 200 - 204 */
     def ok = (this when {code => (200 to 204) contains code}) _
   }
   
@@ -104,31 +104,31 @@ class Http(
     /** HTTP Delete request. */
     def XX = new Request(new HttpDelete(req.getURI))
     /** Execute and process response in block */
-    def apply [T] (thunk: (Int, HttpResponse, Option[HttpEntity]) => T) = x (req) (thunk)
-    /** Handle response and entity in thunk if OK. */
-    def ok [T] (thunk: (HttpResponse, Option[HttpEntity]) => T) = x (req) ok (thunk)
-    /** Handle response entity in thunk if OK. */
-    def okee [T] (thunk: HttpEntity => T): T = ok { 
-      case (_, Some(ent)) => thunk(ent)
+    def apply [T] (block: (Int, HttpResponse, Option[HttpEntity]) => T) = x (req) (block)
+    /** Handle response and entity in block if OK. */
+    def ok [T] (block: (HttpResponse, Option[HttpEntity]) => T) = x (req) ok (block)
+    /** Handle response entity in block if OK. */
+    def okee [T] (block: HttpEntity => T): T = ok { 
+      case (_, Some(ent)) => block(ent)
       case (res, _) => error("response has no entity: " + res)
     }
-    /** Handle InputStream in thunk if OK. */
-    def >> [T] (thunk: InputStream => T) = okee (ent => thunk(ent.getContent))
+    /** Handle InputStream in block if OK. */
+    def >> [T] (block: InputStream => T) = okee (ent => block(ent.getContent))
     /** Return response in String if OK. (Don't blow your heap, kids.) */
     def as_str = okee { EntityUtils.toString(_, HTTP.UTF_8) }
     /** Write to the given OutputStream. */
     def >>> [OS <: OutputStream](out: OS) = { okee { _.writeTo(out) } ; out }
-    /** Process response as XML document in thunk */
-    def <> [T] (thunk: (scala.xml.NodeSeq => T)) = { 
+    /** Process response as XML document in block */
+    def <> [T] (block: (scala.xml.NodeSeq => T)) = { 
       // an InputStream source is the right way, but ConstructingParser
       // won't let us peek and we're tired of trying
       val full_in = as_str
       val in = full_in.substring(full_in.indexOf('<')) // strip any garbage
       val src = scala.io.Source.fromString(in)
-      thunk(scala.xml.parsing.XhtmlParser(src))
+      block(scala.xml.parsing.XhtmlParser(src))
     }
-    /** Process response as JsValue in thunk */
-    def $ [T](thunk: json.Js.JsF[T]): T = >> { stm => thunk(json.Js(stm)) }
+    /** Process response as JsValue in block */
+    def $ [T](block: json.Js.JsF[T]): T = >> { stm => block(json.Js(stm)) }
 
     /** Ignore response body if OK. */
     def >| = ok ((r,e) => ())
