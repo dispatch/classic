@@ -102,7 +102,7 @@ class Http(
     def ?< (values: Map[String, Any]) = if(values.isEmpty) this else
       new Request(new HttpGet(req.getURI + Http ? (values)))
     /** HTTP Delete request. */
-    def XX = new Request(new HttpDelete(req.getURI))
+    def --() = new Request(new HttpDelete(req.getURI))
     /** Execute and process response in block */
     def apply [T] (block: (Int, HttpResponse, Option[HttpEntity]) => T) = x (req) (block)
     /** Handle response and entity in block if OK. */
