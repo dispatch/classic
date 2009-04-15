@@ -101,6 +101,9 @@ class Http(
     /** Get with query parameters */
     def ?< (values: Map[String, Any]) = if(values.isEmpty) this else
       new Request(new HttpGet(req.getURI + Http ? (values)))
+    /** HTTP Delete request. */
+    def XX = new Request(new HttpDelete(req.getURI))
+    /** Execute and process response in block */
     def apply [T] (thunk: (Int, HttpResponse, Option[HttpEntity]) => T) = x (req) (thunk)
     /** Handle response and entity in thunk if OK. */
     def ok [T] (thunk: (HttpResponse, Option[HttpEntity]) => T) = x (req) ok (thunk)
