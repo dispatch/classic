@@ -112,7 +112,6 @@ class Http(
       case (_, Some(ent)) => block(ent)
       case (res, _) => error("response has no entity: " + res)
     }
-    def ☎ [T] = okee[T] _
     /** Handle InputStream in block if OK. */
     def >> [T] (block: InputStream => T) = okee (ent => block(ent.getContent))
     /** Return response in String if OK. (Don't blow your heap, kids.) */
