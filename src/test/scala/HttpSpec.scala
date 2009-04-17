@@ -9,6 +9,9 @@ class HttpSpec extends Spec with ShouldMatchers {
   
   describe("Singleton Http test get") {
     get_specs(Http("http://technically.us/test.text"))
+    Http("http://shouldiusescala.com/shouldiusescala.jpg") ☎ {
+      _.getContentType.getValue
+    } should equal ("image/png") // fail :(
   }
   describe("Bound host get") {
     get_specs(tus("/test.text"))
