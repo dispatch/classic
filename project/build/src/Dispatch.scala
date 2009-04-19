@@ -8,6 +8,13 @@ class Dispatch(info: ProjectInfo) extends DefaultProject(info)
   val scala_test = "org.scala-tools.testing" % "scalatest" % "0.9.5"
   val configgy = "net.lag" % "configgy" % "1.2.1a"
   
+
+  val sxrJarPath =  "/usr/local/sxr-0.1.jar"
+  override def compileOptions =
+    CompileOption("-Xplugin:" + sxrJarPath) ::
+    CompileOption("-P:sxr:base-directory:" + mainScalaSourcePath.asFile.getAbsolutePath) ::
+    super.compileOptions.toList
+
   override def ivyXML =
     <publications>
       <artifact name="dispatch" type="jar" ext="jar"/>
