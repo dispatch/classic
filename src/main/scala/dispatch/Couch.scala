@@ -19,10 +19,14 @@ object Couch {
 
 case class Database(name: String) extends Js {
   class H(val http: Http) extends Database(name) {
-    def apply(id: String): Http#Request = http("/" + name + "/" + encode(id))
-    def all_docs =
-      this("_all_docs") $ ('rows ! (list ! obj)) map ('id ! str)
+    def apply(id: String) = http(base + "/" + encode(id))
+    def apply() = http(base)
+
+    def all_docs = this("_all_docs") $ ('rows ! (list ! obj)) map ('id ! str)
+    def create() { this() <<< Nil >| }
+    def delete() { this() --() >| }
   }
+  val base = "/" + name
   def apply(http: Http) = new H(http)
 }
 
