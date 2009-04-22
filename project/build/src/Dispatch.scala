@@ -1,19 +1,14 @@
 import sbt._
 
-class Dispatch(info: ProjectInfo) extends DefaultProject(info)
+class Dispatch(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins
 {
   val lag_net = "lag.net repository" at "http://www.lag.net/repo"
 
   val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.0-beta2"
   val scala_test = "org.scala-tools.testing" % "scalatest" % "0.9.5"
   val configgy = "net.lag" % "configgy" % "1.2.1a"
-  
 
-  val sxrJarPath =  "/usr/local/sxr-0.1.jar"
-  override def compileOptions =
-    CompileOption("-Xplugin:" + sxrJarPath) ::
-    CompileOption("-P:sxr:base-directory:" + mainScalaSourcePath.asFile.getAbsolutePath) ::
-    super.compileOptions.toList
+  val sxr = compilerPlugin("sxr" % "sxr" % "0.1")
 
   override def ivyXML =
     <publications>
