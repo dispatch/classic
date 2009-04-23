@@ -119,14 +119,7 @@ class Http(
     /** Write to the given OutputStream. */
     def >>> [OS <: OutputStream](out: OS) = { okee { _.writeTo(out) } ; out }
     /** Process response as XML document in block */
-    def <> [T] (block: (scala.xml.NodeSeq => T)) = { 
-      // an InputStream source is the right way, but ConstructingParser
-      // won't let us peek and we're tired of trying
-      val full_in = as_str
-      val in = full_in.substring(full_in.indexOf('<')) // strip any garbage
-      val src = scala.io.Source.fromString(in)
-      block(scala.xml.parsing.XhtmlParser(src))
-    }
+    def <> [T] (block: (xml.NodeSeq => T)) = >> { stm => block(xml.XML.load(stm)) }
     /** Process response as JsValue in block */
     def $ [T](block: json.Js.JsF[T]): T = >> { stm => block(json.Js(stm)) }
 
