@@ -103,6 +103,9 @@ class Http(
       new Request(new HttpGet(req.getURI + Http ? (values)))
     /** HTTP Delete request. */
     def --() = new Request(new HttpDelete(req.getURI))
+    
+    def x (Http: http) = new { // Response?
+    
     /** Execute and process response in block */
     def apply [T] (block: (Int, HttpResponse, Option[HttpEntity]) => T) = x (req) (block)
     /** Handle response and entity in block if OK. */
