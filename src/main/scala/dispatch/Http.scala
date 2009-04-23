@@ -48,10 +48,7 @@ class Http(
   def as (name: String, pass: String) = new Http(host, headers, Some((name, pass)))
   /** Add header */
   def << (k: String, v: String) = new Http(host, (k,v) :: headers, creds)
-  
-  /** Get wrapper */
-  def g [T](uri: String) = x[T](new HttpGet(uri))
-  
+    
   /** eXecute wrapper */
   def x [T](req: HttpUriRequest) = new {
     /** handle response codes, response, and entity in block */
@@ -85,6 +82,9 @@ class Http(
   class Request(req: HttpUriRequest)  {
     headers foreach { case (k, v) => req.addHeader(k, v) }
     def this(uri: String) = this(new HttpGet(uri))
+
+    def apply(block: T => Request) = new   
+
     /** Put the given object.toString and return response wrapper. */
     def <<< (body: Any) = {
       val m = new HttpPut(req.getURI)
