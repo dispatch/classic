@@ -74,6 +74,7 @@ class Http(
     def ok = (this when {code => (200 to 204) contains code}) _
   }
   
+  /** Generally for the curried response function of Request: >>, $, <>, etc. */
   def apply[T](block: Http => T) = block(this)
 }
 
@@ -81,6 +82,7 @@ class Http(
   * get request but defs return other method responders. */
 class Request(req: HttpUriRequest) extends {
   
+  /** Start with GET by default. */
   def this(uri: String) = this(new HttpGet(uri))
 
   /** Put the given object.toString and return response wrapper. */
@@ -125,14 +127,7 @@ class Request(req: HttpUriRequest) extends {
   /** Write to the given OutputStream. */
   def >>> [OS <: OutputStream](out: OS)(http: Http) = { okee { _.writeTo(out) } (http); out }
   /** Process response as XML document in block */
-  def <> [T] (block: (scala.xml.NodeSeq => T))(http: Http) = { 
-    // an InputStream source is the right way, but ConstructingParser
-    // won't let us peek and we're tired of trying
-    val full_in = as_str(http)
-    val in = full_in.substring(full_in.indexOf('<')) // strip any garbage
-    val src = scala.io.Source.fromString(in)
-    block(scala.xml.parsing.XhtmlParser(src))
-  }
+  def <> [T] (block: (xml.NodeSeq => T)) = >> { stm => block(xml.XML.load(stm)) }
   /** Process response as JsValue in block */
   def $ [T](block: json.Js.JsF[T]) = >> { stm => block(json.Js(stm)) }
 
