@@ -129,7 +129,7 @@ trait Responder {
   /** Write to the given OutputStream. */
   def >>> [OS <: OutputStream](out: OS)(http: Http) = { okee { _.writeTo(out) } (http); out }
   /** Process response as XML document in block */
-  def <> [T] (block: (xml.NodeSeq => T)) = >> { stm => block(xml.XML.load(stm)) }
+  def <> [T] (block: xml.NodeSeq => T) = >> { stm => block(xml.XML.load(stm)) }
   /** Process response as JsValue in block */
   def $ [T](block: json.Js.JsF[T]) = >> { stm => block(json.Js(stm)) }
 
