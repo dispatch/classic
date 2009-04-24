@@ -74,8 +74,13 @@ class Http(
     def ok = (this when {code => (200 to 204) contains code}) _
   }
   
-  /** Generally for the curried response function of Request: >>, $, <>, etc. */
+  /** Generally for the curried response function of Responder: >>, j$, <>, etc. */
   def apply[T](block: Http => T) = block(this)
+}
+
+/** Factory for responders at the root. */
+object / {
+  def apply(path: String) = new Request("/" + path)
 }
 
 /** Wrapper to handle common requests, preconfigured as response wrapper for a 
@@ -84,6 +89,9 @@ class Request(val req: HttpUriRequest) extends Responder {
   
   /** Start with GET by default. */
   def this(uri: String) = this(new HttpGet(uri))
+
+  /** Append an element to this request's path */
+  def / (path: String) = new Request(req.getURI + "/" + path)
 
   /** Put the given object.toString and return response wrapper. */
   def <<< (body: Any) = {
@@ -98,13 +106,17 @@ class Request(val req: HttpUriRequest) extends Responder {
     m setEntity new UrlEncodedFormEntity(Http.map2ee(values), HTTP.UTF_8)
     new Request(m)
   }
-  /** Get with query parameters */
-  def ?< (values: Map[String, Any]) = if(values.isEmpty) this else
-    new Request(new HttpGet(req.getURI + Http ? (values)))
-  /** HTTP Delete request. */
-  def --() = new Request(new HttpDelete(req.getURI))
-}
   
+  /** Use <<? instead: the high precedence of ? is problematic. */
+  @deprecated def ?< (values: Map[String, Any]) = <<? (values)
+  /** Get with query parameters */
+  def <<? (values: Map[String, Any]) = if(values.isEmpty) this else
+    new Request(new HttpGet(req.getURI + Http ? (values)))
+
+  /** HTTP Delete request. */
+  def <--() = new Request(new HttpDelete(req.getURI))
+}
+
 trait Responder {
   val req: HttpUriRequest
   /** Execute and process response in block */
@@ -130,9 +142,12 @@ trait Responder {
   def >>> [OS <: OutputStream](out: OS)(http: Http) = { okee { _.writeTo(out) } (http); out }
   /** Process response as XML document in block */
   def <> [T] (block: xml.NodeSeq => T) = >> { stm => block(xml.XML.load(stm)) }
+  
   /** Process response as JsValue in block */
-  def $ [T](block: json.Js.JsF[T]) = >> { stm => block(json.Js(stm)) }
-
+  def j$ [T](block: json.Js.JsF[T]) = >> { stm => block(json.Js(stm)) }
+  /** Use j$ instead: the high precedence of $ is problematic. */
+  @deprecated def $ [T](block: json.Js.JsF[T]) = j$(block)
+  
   /** Ignore response body if OK. */
   def >| = ok ((r,e) => ()) _
 }

@@ -10,7 +10,7 @@ trait Times extends Js {
   val version: Int
   
   def apply(action: String, params: Map[String, Any]) =
-    ("/svc" :: service :: "v" + version :: action :: Nil).mkString("/")  ?< (params + ("api-key" -> api_key))
+    /("svc") / service / ("v" + version) / action <<? (params + ("api-key" -> api_key))
 
   def apply(action: String): Request = this(action, Map[String, Any]())
 
@@ -37,7 +37,7 @@ case class Community(api_key: String) extends Times {
 
   override val results: JsValue => List[JsObject] = ('results ! obj) andThen ('comments ! (list ! obj))
   
-  def recent = this("comments/recent.json") $ results
+  def recent = this("comments/recent.json") j$ results
 }
 
 
@@ -45,5 +45,5 @@ case class News(api_key: String) extends Times {
   val service = "news"
   val version = 2
   
-  def recent = this("all/recent.json") $ results
+  def recent = this("all/recent.json") j$ results
 }

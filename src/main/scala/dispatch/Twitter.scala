@@ -18,7 +18,7 @@ class Search extends Js {
   lazy val http = new Http("search.twitter.com")
 
   def apply(params: Map[String, String]): List[JsObject] = 
-    http("/search.json" ?< params $ { 'results ! (list ! obj) } )
+    http { /("search.json") <<? params j$ { 'results ! (list ! obj) } }
 
   def apply(count: Int)(q: String): List[JsObject] = 
     this(Map("q" -> q, "rpp" -> count.toString))
@@ -31,7 +31,7 @@ trait Twitter extends Js {
   lazy val http = new Http("twitter.com")
 
   def apply(action: String, params: Map[String, Any]) =
-    ("" :: service :: action :: Nil).mkString("/") ?< params
+    /(service) / action <<? params
 
   def apply(action: String): Request = this(action, Map[String, Any]())
 
@@ -59,9 +59,9 @@ class Statuses extends Twitter {
   val service = "statuses"
   
   def public_timeline = 
-    this("public_timeline.json") $ (list ! obj)
+    this("public_timeline.json") j$ (list ! obj)
   def user_timeline(user: String) =
-    this("user_timeline/" + user + ".json") $ (list ! obj)
+    this("user_timeline/" + user + ".json") j$ (list ! obj)
 }
 
 class Users extends Twitter {
@@ -69,5 +69,5 @@ class Users extends Twitter {
   val service = "users"
 
   def show(user: String) =
-    this("show/" + user + ".json") $ obj
+    this("show/" + user + ".json") j$ obj
 }

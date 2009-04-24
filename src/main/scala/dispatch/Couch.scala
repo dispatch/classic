@@ -18,11 +18,10 @@ trait Couch {
 }
 
 class Database(val name: String) extends Couch with Js {
-  import Http._
-  def all_docs = http(("/" + name + "/_all_docs") $ { 'rows ! (list ! obj) }) map ('id ! str)
+  def all_docs = http { /(name) / "_all_docs" j$ ( 'rows ! (list ! obj) ) } map ('id ! str)
 
-  def create() { http("/" + name <<< Nil >|) }
-  def delete() { http("/" + name --() >|) }
+  def create() { http( /(name) <<< Nil >|) }
+  def delete() { http( /(name) <--() >|) }
 }
 /*
 class Document(val db: Database, val id: String) extends Js {
