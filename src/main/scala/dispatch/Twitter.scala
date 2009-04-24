@@ -14,10 +14,11 @@ object Search extends Js {
 }
 
 class Search extends Js {
+  import Http._
   lazy val http = new Http("search.twitter.com")
 
   def apply(params: Map[String, String]): List[JsObject] = 
-    http("/search.json") ?< params $ ('results ! (list ! obj))
+    http("/search.json" ?< params $ { 'results ! (list ! obj) } )
 
   def apply(count: Int)(q: String): List[JsObject] = 
     this(Map("q" -> q, "rpp" -> count.toString))
@@ -26,13 +27,13 @@ class Search extends Js {
 }
 
 trait Twitter extends Js {
+  import Http._
   lazy val http = new Http("twitter.com")
 
-  def apply(action: String, params: Map[String, Any]) = http(
-    ("" :: service :: action :: Nil).mkString("/")
-  ) ?< params
+  def apply(action: String, params: Map[String, Any]) =
+    ("" :: service :: action :: Nil).mkString("/") ?< params
 
-  def apply(action: String): Http#Request = this(action, Map[String, Any]())
+  def apply(action: String): Request = this(action, Map[String, Any]())
 
   val service: String
 }

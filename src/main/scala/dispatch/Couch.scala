@@ -18,16 +18,16 @@ trait Couch {
 }
 
 class Database(val name: String) extends Couch with Js {
-  def apply(path: String*) = http(("" :: name :: path.toList) mkString "/")
-  def all_docs = this("_all_docs") $ ('rows ! (list ! obj)) map ('id ! str)
+  import Http._
+  def all_docs = http(("/" + name + "/_all_docs") $ { 'rows ! (list ! obj) }) map ('id ! str)
 
-  def create() { this() <<< Nil >| }
-  def delete() { this() --() >| }
+  def create() { http("/" + name <<< Nil >|) }
+  def delete() { http("/" + name --() >|) }
 }
-
+/*
 class Document(val db: Database, val id: String) extends Js {
   def apply() = db(encode(id))
-}
+}*/
 
 /*
 object Revise extends JsDef {

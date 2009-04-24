@@ -3,16 +3,16 @@ package dispatch.times
 import json._
 
 trait Times extends Js {
+  import Http._
   lazy val http = new Http("api.nytimes.com")
   val api_key: String
   val service: String
   val version: Int
   
-  def apply(action: String, params: Map[String, Any]) = http(
-    ("/svc" :: service :: "v" + version :: action :: Nil).mkString("/")
-  ) ?< (params + ("api-key" -> api_key))
+  def apply(action: String, params: Map[String, Any]) =
+    ("/svc" :: service :: "v" + version :: action :: Nil).mkString("/")  ?< (params + ("api-key" -> api_key))
 
-  def apply(action: String): Http#Request = this(action, Map[String, Any]())
+  def apply(action: String): Request = this(action, Map[String, Any]())
 
   val results = ('results ! (list ! obj))
 }
