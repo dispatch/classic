@@ -80,7 +80,7 @@ class Http(
 
 /** Wrapper to handle common requests, preconfigured as response wrapper for a 
   * get request but defs return other method responders. */
-class Request(req: HttpUriRequest) extends {
+class Request(val req: HttpUriRequest) extends Responder {
   
   /** Start with GET by default. */
   def this(uri: String) = this(new HttpGet(uri))
@@ -103,8 +103,10 @@ class Request(req: HttpUriRequest) extends {
     new Request(new HttpGet(req.getURI + Http ? (values)))
   /** HTTP Delete request. */
   def --() = new Request(new HttpDelete(req.getURI))
+}
   
-  
+trait Responder {
+  val req: HttpUriRequest
   /** Execute and process response in block */
   def apply [T] (block: (Int, HttpResponse, Option[HttpEntity]) => T)(http: Http) = {
     http.headers foreach { case (k, v) => req.addHeader(k, v) }
