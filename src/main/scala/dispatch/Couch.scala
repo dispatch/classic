@@ -1,7 +1,6 @@
 package dispatch.couch
 
 import java.io.InputStream
-import java.net.URLEncoder.encode
 import org.apache.http.HttpHost
 
 import json._
@@ -12,21 +11,22 @@ trait Doc extends Js {
 }
 object Doc extends Doc
 
-trait Couch {
-  val hostname = "127.0.0.1"
-  lazy val http = new Http(hostname, 5984)
+object Couch {
+  def apply(hostname: String): Http = new Http(hostname, 5984)
+  def apply(): Http = apply("127.0.0.1")
 }
 
-class Database(val name: String) extends Couch with Js {
-  def all_docs = http { /(name) / "_all_docs" ># ( 'rows ! (list ! obj) ) } map ('id ! str)
+case class Database(val name: String) extends Js {
+  val base = /(name)
+  val all_docs: Http => List[String] = _ { base / "_all_docs" ># ( 'rows ! (list ! obj) ) } map ('id ! str)
 
-  def create() { http( /(name) <<< Nil >|) }
-  def delete() { http( /(name) <--() >|) }
+  val create = base <<< Nil >|
+  val delete = base <--() >|
 }
-/*
-class Document(val db: Database, val id: String) extends Js {
-  def apply() = db(encode(id))
-}*/
+
+case class Document(val db: Database, val id: String) extends Js {
+  val doc = db.base / java.net.URLEncoder.encode(id)
+}
 
 /*
 object Revise extends JsDef {
