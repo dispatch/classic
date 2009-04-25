@@ -37,7 +37,7 @@ case class Community(api_key: String) extends Times {
 
   override val results: JsValue => List[JsObject] = ('results ! obj) andThen ('comments ! (list ! obj))
   
-  def recent = this("comments/recent.json") j$ results
+  def recent = this("comments/recent.json") ># results
 }
 
 
@@ -45,5 +45,5 @@ case class News(api_key: String) extends Times {
   val service = "news"
   val version = 2
   
-  def recent = this("all/recent.json") j$ results
+  def recent = this("all/recent.json") ># results
 }

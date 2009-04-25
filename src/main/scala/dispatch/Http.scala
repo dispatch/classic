@@ -144,9 +144,9 @@ trait Responder {
   def <> [T] (block: xml.NodeSeq => T) = >> { stm => block(xml.XML.load(stm)) }
   
   /** Process response as JsValue in block */
-  def j$ [T](block: json.Js.JsF[T]) = >> { stm => block(json.Js(stm)) }
-  /** Use j$ instead: the high precedence of $ is problematic. */
-  @deprecated def $ [T](block: json.Js.JsF[T]) = j$(block)
+  def ># [T](block: json.Js.JsF[T]) = >> { stm => block(json.Js(stm)) }
+  /** Use ># instead: $ is forbidden. */
+  @deprecated def $ [T](block: json.Js.JsF[T]) = >#(block)
   
   /** Ignore response body if OK. */
   def >| = ok ((r,e) => ()) _
