@@ -34,8 +34,9 @@ import java.net.URLEncoder.encode
 /** Requests on a particular document in a particular database. */
 case class Doc(val db: Db, val id: String) extends /(db / encode(id)) with Js {
   def update(js: JsValue) = this <<< js ># { 
-    case Updated.rev(rev) => (Updated.rev << rev)(js)
+    case Updated.rev(rev) => (Id._rev << rev)(js)
   }
   private object Updated { val rev = 'rev ? str }
+  def delete(rev: String) = this <<? Map("rev" -> rev)  <--()  >|
 }
 
