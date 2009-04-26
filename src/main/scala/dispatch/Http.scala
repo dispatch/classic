@@ -78,7 +78,12 @@ class Http(
   def apply[T](block: Http => T) = block(this)
 }
 
-/** Factory for responders at the root. */
+/** Extension point for static request definitions. */
+class /(path: String) extends Request("/" + path) {
+  def this(req: Request) = this(req.req.getURI.toString.substring(1))
+}
+
+/** Factory for requests from the root. */
 object / {
   def apply(path: String) = new Request("/" + path)
 }
@@ -169,6 +174,7 @@ object Http extends Http(None, Nil, None) {
   import org.apache.http.conn.ssl.SSLSocketFactory
   import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
   
+  // import to support e.g. Http("http://example.com/" >>> System.out)
   implicit def str2req(str: String) = new Request(str)
 
   override lazy val client = new ConfiguredHttpClient {

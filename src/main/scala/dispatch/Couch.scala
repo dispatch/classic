@@ -5,40 +5,37 @@ import org.apache.http.HttpHost
 
 import json._
 
-trait Doc extends Js {
+/** Extractors for CouchDB document id and revsion properties.
+    Extend with your own document properties. */
+trait Id extends Js {
   val _id = Symbol("_id") ? str
   val _rev = Symbol("_rev") ? str
 }
-object Doc extends Doc
+/** Extractors for CouchDB document id and revsion properties.
+    Use this object for direct access to Id extractors. */
+object Id extends Id
 
+/** Factory for Http access points to typical CouchDB hostnames. */
 object Couch {
   def apply(hostname: String): Http = new Http(hostname, 5984)
   def apply(): Http = apply("127.0.0.1")
 }
 
-case class Database(val name: String) extends Js {
-  val base = /(name)
-  val all_docs: Http => List[String] = _ { base / "_all_docs" ># ( 'rows ! (list ! obj) ) } map ('id ! str)
+/** Requests on a particular database. */
+case class Db(val name: String) extends /(name) with Js {
+  val all_docs: Http => List[String] = _ { this / "_all_docs" ># ( 'rows ! (list ! obj) ) } map ('id ! str)
 
-  val create = base <<< Nil >|
-  val delete = base <--() >|
+  val create = this <<< Nil >|
+  val delete = this <--() >|
 }
 
-case class Document(val db: Database, val id: String) extends Js {
-  val doc = db.base / java.net.URLEncoder.encode(id)
-}
+import java.net.URLEncoder.encode
 
-/*
-object Revise extends JsDef {
-  val id = 'id as str
-  val rev = 'rev as str
-
-  def update(stream: InputStream, source: Js) =
-    source(Doc._rev << Js(stream)(rev))
-    
-  def apply(source: Js) = new {
-    def <<: (req: Http#Request) =
-      (req <<< source.toString) >> (update(_, source))
+/** Requests on a particular document in a particular database. */
+case class Doc(val db: Db, val id: String) extends /(db / encode(id)) with Js {
+  def update(js: JsValue) = this <<< js ># { 
+    case Updated.rev(rev) => (Updated.rev << rev)(js)
   }
+  private object Updated { val rev = 'rev ? str }
 }
-*/
+
