@@ -18,8 +18,8 @@ class JsonSpec extends Spec with ShouldMatchers {
   val js_list = Js("[1,2,3]")
   val expected_list = List(JsNumber(1), JsNumber(2), JsNumber(3))
   
-  /** mock $ of Http#Response */
-  object res { def $ [T](f: JsF[T]) = f(js) }
+  /** mock ># of Http#Response */
+  object res { def ># [T](f: JsF[T]) = f(js) }
   
   describe("Parsed Json") {
     it("should equal expected map") {
@@ -59,7 +59,7 @@ class JsonSpec extends Spec with ShouldMatchers {
       b should equal (List(1,2,3))
     }
     it("should replace second level string") {
-      res $ (TestExtractor.a.a << "land, ho") should equal (Js(
+      res ># (TestExtractor.a.a << "land, ho") should equal (Js(
         """ { "a": {"a": "land, ho", "b": {"pi": 3.14159265 } }, "b": [1,2,3] } """
       ))
     }
@@ -95,24 +95,24 @@ class JsonSpec extends Spec with ShouldMatchers {
     }
     it("should awkwardly replace second level string") {
       val a(a_) = js
-      res $ (a << (aa << "barnacles, ahoy")(a_)) should equal (Js(
+      res ># (a << (aa << "barnacles, ahoy")(a_)) should equal (Js(
         """ { "a": {"a": "barnacles, ahoy", "b": {"pi": 3.14159265 } }, "b": [1,2,3] } """
       ))
     }
   }
   describe("Function extractor") {
     it("should extract a top level object") {
-      res $ ('a ! obj) should equal (expected_map(JsString('a)))
+      res ># ('a ! obj) should equal (expected_map(JsString('a)))
     }
     it("should extract a tuple of top level objects") {
-      res $ %('a ! obj, 'b ! list, 'b ! list) should 
+      res ># %('a ! obj, 'b ! list, 'b ! list) should 
         equal (expected_map(JsString('a)), expected_list, expected_list)
     }
     it("should extract a second level string") {
-      res $ { ('a ! obj) andThen ('a ! str) } should equal ("a string")
+      res ># { ('a ! obj) andThen ('a ! str) } should equal ("a string")
     }
     it("should extract a third level number") {
-      res $ { ('a ! obj) andThen ('b ! obj) andThen ('pi ! num) } should equal (3.14159265)
+      res ># { ('a ! obj) andThen ('b ! obj) andThen ('pi ! num) } should equal (3.14159265)
     }
     it("should work with map") {
       List(js, js, js).map ('b ! (list ! num)) should equal (List.tabulate(3, _ => List(1,2,3)))
@@ -124,12 +124,12 @@ class JsonSpec extends Spec with ShouldMatchers {
   }
   describe("assertion inserting") {
     it("should replace second level string") {
-      res $ ('a << ('a << "barnacles, ahoy")) should equal (Js(
+      res ># ('a << ('a << "barnacles, ahoy")) should equal (Js(
         """ { "a": {"a": "barnacles, ahoy", "b": {"pi": 3.14159265 } }, "b": [1,2,3] } """
       ))
     }
     it("should replace a second level object with a string") {
-      res $ ('a << ('b << "bonzai!")) should equal (Js(
+      res ># ('a << ('b << "bonzai!")) should equal (Js(
         """ { "a": {"a": "a string", "b": "bonzai!" } , "b": [1,2,3] } """
       ))
     }

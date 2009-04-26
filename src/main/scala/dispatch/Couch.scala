@@ -1,46 +1,42 @@
 package dispatch.couch
 
 import java.io.InputStream
-import java.net.URLEncoder.encode
 import org.apache.http.HttpHost
 
 import json._
 
-trait Doc extends Js {
+/** Extractors for CouchDB document id and revsion properties.
+    Extend with your own document properties. */
+trait Id extends Js {
   val _id = Symbol("_id") ? str
   val _rev = Symbol("_rev") ? str
 }
-object Doc extends Doc
+/** Extractors for CouchDB document id and revsion properties.
+    Use this object for direct access to Id extractors. */
+object Id extends Id
 
+/** Factory for Http access points to typical CouchDB hostnames. */
 object Couch {
-  def apply(host: String) = new Http(host, 5984)
-  def apply(): Http = Couch("127.0.0.1")
+  def apply(hostname: String): Http = new Http(hostname, 5984)
+  def apply(): Http = apply("127.0.0.1")
 }
 
-case class Database(name: String) extends Js {
-  class H(val http: Http) extends Database(name) {
-    def apply(id: String) = http(base + "/" + encode(id))
-    def apply() = http(base)
+/** Requests on a particular database. */
+case class Db(val name: String) extends /(name) with Js {
+  val all_docs: Http => List[String] = _ { this / "_all_docs" ># ( 'rows ! (list ! obj) ) } map ('id ! str)
 
-    def all_docs = this("_all_docs") $ ('rows ! (list ! obj)) map ('id ! str)
-    def create() { this() <<< Nil >| }
-    def delete() { this() --() >| }
+  val create = this <<< Nil >|
+  val delete = this <--() >|
+}
+
+import java.net.URLEncoder.encode
+
+/** Requests on a particular document in a particular database. */
+case class Doc(val db: Db, val id: String) extends /(db / encode(id)) with Js {
+  def update(js: JsValue) = this <<< js ># { 
+    case Updated.rev(rev) => (Id._rev << rev)(js)
   }
-  val base = "/" + name
-  def apply(http: Http) = new H(http)
+  private object Updated { val rev = 'rev ? str }
+  def delete(rev: String) = this <<? Map("rev" -> rev)  <--()  >|
 }
 
-/*
-object Revise extends JsDef {
-  val id = 'id as str
-  val rev = 'rev as str
-
-  def update(stream: InputStream, source: Js) =
-    source(Doc._rev << Js(stream)(rev))
-    
-  def apply(source: Js) = new {
-    def <<: (req: Http#Request) =
-      (req <<< source.toString) >> (update(_, source))
-  }
-}
-*/

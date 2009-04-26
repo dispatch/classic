@@ -3,16 +3,16 @@ package dispatch.times
 import json._
 
 trait Times extends Js {
+  import Http._
   lazy val http = new Http("api.nytimes.com")
   val api_key: String
   val service: String
   val version: Int
   
-  def apply(action: String, params: Map[String, Any]) = http(
-    ("/svc" :: service :: "v" + version :: action :: Nil).mkString("/")
-  ) ?< (params + ("api-key" -> api_key))
+  def apply(action: String, params: Map[String, Any]) =
+    /("svc") / service / ("v" + version) / action <<? (params + ("api-key" -> api_key))
 
-  def apply(action: String): Http#Request = this(action, Map[String, Any]())
+  def apply(action: String): Request = this(action, Map[String, Any]())
 
   val results = ('results ! (list ! obj))
 }
@@ -37,7 +37,7 @@ case class Community(api_key: String) extends Times {
 
   override val results: JsValue => List[JsObject] = ('results ! obj) andThen ('comments ! (list ! obj))
   
-  def recent = this("comments/recent.json") $ results
+  def recent = this("comments/recent.json") ># results
 }
 
 
@@ -45,5 +45,5 @@ case class News(api_key: String) extends Times {
   val service = "news"
   val version = 2
   
-  def recent = this("all/recent.json") $ results
+  def recent = this("all/recent.json") ># results
 }
