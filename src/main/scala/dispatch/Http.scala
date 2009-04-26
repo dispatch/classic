@@ -48,10 +48,7 @@ class Http(
   def as (name: String, pass: String) = new Http(host, headers, Some((name, pass)))
   /** Add header */
   def << (k: String, v: String) = new Http(host, (k,v) :: headers, creds)
-  
-  /** Get wrapper */
-  def g [T](uri: String) = x[T](new HttpGet(uri))
-  
+    
   /** eXecute wrapper */
   def x [T](req: HttpUriRequest) = new {
     /** handle response codes, response, and entity in block */
@@ -77,63 +74,89 @@ class Http(
     def ok = (this when {code => (200 to 204) contains code}) _
   }
   
-  /** Return wrapper for basic request workflow. */
-  def apply(uri: String) = new Request(uri)
-  
-  /** Wrapper to handle common requests, preconfigured as response wrapper for a 
-    * get request but defs return other method responders. */
-  class Request(req: HttpUriRequest)  {
-    headers foreach { case (k, v) => req.addHeader(k, v) }
-    def this(uri: String) = this(new HttpGet(uri))
-    /** Put the given object.toString and return response wrapper. */
-    def <<< (body: Any) = {
-      val m = new HttpPut(req.getURI)
-      m setEntity new StringEntity(body.toString, HTTP.UTF_8)
-      HttpProtocolParams.setUseExpectContinue(m.getParams, false)
-      new Request(m)
-    }
-    /** Post the given key value sequence and return response wrapper. */
-    def << (values: Map[String, Any]) = {
-      val m = new HttpPost(req.getURI)
-      m setEntity new UrlEncodedFormEntity(Http.map2ee(values), HTTP.UTF_8)
-      new Request(m)
-    }
-    /** Get with query parameters */
-    def ?< (values: Map[String, Any]) = if(values.isEmpty) this else
-      new Request(new HttpGet(req.getURI + Http ? (values)))
-    /** HTTP Delete request. */
-    def --() = new Request(new HttpDelete(req.getURI))
-    /** Execute and process response in block */
-    def apply [T] (block: (Int, HttpResponse, Option[HttpEntity]) => T) = x (req) (block)
-    /** Handle response and entity in block if OK. */
-    def ok [T] (block: (HttpResponse, Option[HttpEntity]) => T) = x (req) ok (block)
-    /** Handle response entity in block if OK. */
-    def okee [T] (block: HttpEntity => T): T = ok { 
-      case (_, Some(ent)) => block(ent)
-      case (res, _) => error("response has no entity: " + res)
-    }
-    /** Handle InputStream in block if OK. */
-    def >> [T] (block: InputStream => T) = okee (ent => block(ent.getContent))
-    /** Return response in String if OK. (Don't blow your heap, kids.) */
-    def as_str = okee { EntityUtils.toString(_, HTTP.UTF_8) }
-    /** Write to the given OutputStream. */
-    def >>> [OS <: OutputStream](out: OS) = { okee { _.writeTo(out) } ; out }
-    /** Process response as XML document in block */
-    def <> [T] (block: (scala.xml.NodeSeq => T)) = { 
-      // an InputStream source is the right way, but ConstructingParser
-      // won't let us peek and we're tired of trying
-      val full_in = as_str
-      val in = full_in.substring(full_in.indexOf('<')) // strip any garbage
-      val src = scala.io.Source.fromString(in)
-      block(scala.xml.parsing.XhtmlParser(src))
-    }
-    /** Process response as JsValue in block */
-    def $ [T](block: json.Js.JsF[T]): T = >> { stm => block(json.Js(stm)) }
-
-    /** Ignore response body if OK. */
-    def >| = ok ((r,e) => ())
-  }
+  /** Generally for the curried response function of Responder: >>, j$, <>, etc. */
+  def apply[T](block: Http => T) = block(this)
 }
+
+/** Extension point for static request definitions. */
+class /(path: String) extends Request("/" + path) {
+  def this(req: Request) = this(req.req.getURI.toString.substring(1))
+}
+
+/** Factory for requests from the root. */
+object / {
+  def apply(path: String) = new Request("/" + path)
+}
+
+/** Wrapper to handle common requests, preconfigured as response wrapper for a 
+  * get request but defs return other method responders. */
+class Request(val req: HttpUriRequest) extends Responder {
+  
+  /** Start with GET by default. */
+  def this(uri: String) = this(new HttpGet(uri))
+
+  /** Append an element to this request's path */
+  def / (path: String) = new Request(req.getURI + "/" + path)
+
+  /** Put the given object.toString and return response wrapper. */
+  def <<< (body: Any) = {
+    val m = new HttpPut(req.getURI)
+    m setEntity new StringEntity(body.toString, HTTP.UTF_8)
+    HttpProtocolParams.setUseExpectContinue(m.getParams, false)
+    new Request(m)
+  }
+  /** Post the given key value sequence and return response wrapper. */
+  def << (values: Map[String, Any]) = {
+    val m = new HttpPost(req.getURI)
+    m setEntity new UrlEncodedFormEntity(Http.map2ee(values), HTTP.UTF_8)
+    new Request(m)
+  }
+  
+  /** Use <<? instead: the high precedence of ? is problematic. */
+  @deprecated def ?< (values: Map[String, Any]) = <<? (values)
+  /** Get with query parameters */
+  def <<? (values: Map[String, Any]) = if(values.isEmpty) this else
+    new Request(new HttpGet(req.getURI + Http ? (values)))
+
+  /** HTTP Delete request. */
+  def <--() = new Request(new HttpDelete(req.getURI))
+}
+
+trait Responder {
+  val req: HttpUriRequest
+  /** Execute and process response in block */
+  def apply [T] (block: (Int, HttpResponse, Option[HttpEntity]) => T)(http: Http) = {
+    http.headers foreach { case (k, v) => req.addHeader(k, v) }
+    (http x req) (block)
+  }
+  /** Handle response and entity in block if OK. */
+  def ok [T] (block: (HttpResponse, Option[HttpEntity]) => T)(http: Http) = {
+    http.headers foreach { case (k, v) => req.addHeader(k, v) }
+    (http x req) ok (block)
+  }
+  /** Handle response entity in block if OK. */
+  def okee [T] (block: HttpEntity => T) = ok { 
+    case (_, Some(ent)) => block(ent)
+    case (res, _) => error("response has no entity: " + res)
+  } _
+  /** Handle InputStream in block if OK. */
+  def >> [T] (block: InputStream => T) = okee (ent => block(ent.getContent))
+  /** Return response in String if OK. (Don't blow your heap, kids.) */
+  def as_str = okee { EntityUtils.toString(_, HTTP.UTF_8) }
+  /** Write to the given OutputStream. */
+  def >>> [OS <: OutputStream](out: OS)(http: Http) = { okee { _.writeTo(out) } (http); out }
+  /** Process response as XML document in block */
+  def <> [T] (block: xml.NodeSeq => T) = >> { stm => block(xml.XML.load(stm)) }
+  
+  /** Process response as JsValue in block */
+  def ># [T](block: json.Js.JsF[T]) = >> { stm => block(json.Js(stm)) }
+  /** Use ># instead: $ is forbidden. */
+  @deprecated def $ [T](block: json.Js.JsF[T]) = >#(block)
+  
+  /** Ignore response body if OK. */
+  def >| = ok ((r,e) => ()) _
+}
+
 
 class ConfiguredHttpClient extends DefaultHttpClient { 
   override def createHttpParams = {
@@ -150,6 +173,9 @@ object Http extends Http(None, Nil, None) {
   import org.apache.http.conn.scheme.{Scheme,SchemeRegistry,PlainSocketFactory}
   import org.apache.http.conn.ssl.SSLSocketFactory
   import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
+  
+  // import to support e.g. Http("http://example.com/" >>> System.out)
+  implicit def str2req(str: String) = new Request(str)
 
   override lazy val client = new ConfiguredHttpClient {
     override def createClientConnectionManager() = {
@@ -161,7 +187,7 @@ object Http extends Http(None, Nil, None) {
   }
   val log = net.lag.logging.Logger.get
   /** Convert repeating name value tuples to list of pairs for httpclient */
-  private def map2ee(values: Map[String, Any]) = 
+  def map2ee(values: Map[String, Any]) = 
     new java.util.ArrayList[BasicNameValuePair](values.size) {
       values.foreach { case (k, v) => add(new BasicNameValuePair(k, v.toString)) }
     }

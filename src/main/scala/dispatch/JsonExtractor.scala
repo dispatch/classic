@@ -125,9 +125,9 @@ trait Js {
     implicit functions and values. This object extends the Js
     trait so that `import Js._` brings implicits into scope. */
 object Js extends Js {
-  def apply(): JsValue = JsValue()
+  def apply(): JsValue = JsObject()
   def apply(stream: java.io.InputStream): JsValue = JsValue.fromStream(stream)
   def apply(string: String): JsValue = JsValue.fromString(string)
-  /** Converts  Json a extrator to an assertion extracting function (JsF). */
+  /** Converts a Json extrator to an assertion extracting function (JsF). */
   implicit def ext2fun[T](ext: Extract[T]): JsF[T] = ext.unapply _ andThen { _.get }
 }
