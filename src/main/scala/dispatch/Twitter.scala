@@ -29,13 +29,6 @@ class Search extends Js {
 trait Twitter extends Js {
   import Http._
   lazy val http = new Http("twitter.com")
-
-  def apply(action: String, params: Map[String, Any]) =
-    /(service) / action <<? params
-
-  def apply(action: String): Request = this(action, Map[String, Any]())
-
-  val service: String
 }
 
 object Status extends Js {
@@ -56,18 +49,17 @@ object User extends UserFields
 
 class Statuses extends Twitter {
   import Js._
-  val service = "statuses"
+  val svc = /("statuses")
   
   def public_timeline = 
-    http(this("public_timeline.json") ># (list ! obj))
+    http(svc / "public_timeline.json" ># (list ! obj))
   def user_timeline(user: String) =
-    http(this("user_timeline/" + user + ".json") ># (list ! obj))
+    http(svc / "user_timeline" / (user + ".json") ># (list ! obj))
 }
 
 class Users extends Twitter {
-  import Js._
-  val service = "users"
+  val svc = /("users")
 
   def show(user: String) =
-    http(this("show/" + user + ".json") ># obj)
+    http(svc / "show" / (user + ".json") ># obj)
 }
