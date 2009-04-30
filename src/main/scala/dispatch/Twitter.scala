@@ -59,9 +59,9 @@ class Statuses extends Twitter {
   val service = "statuses"
   
   def public_timeline = 
-    this("public_timeline.json") ># (list ! obj)
+    http(this("public_timeline.json") ># (list ! obj))
   def user_timeline(user: String) =
-    this("user_timeline/" + user + ".json") ># (list ! obj)
+    http(this("user_timeline/" + user + ".json") ># (list ! obj))
 }
 
 class Users extends Twitter {
@@ -69,5 +69,5 @@ class Users extends Twitter {
   val service = "users"
 
   def show(user: String) =
-    this("show/" + user + ".json") ># obj
+    http(this("show/" + user + ".json") ># obj)
 }
