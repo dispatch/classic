@@ -15,13 +15,12 @@ object Search extends Js {
   val iso_language_code = 'iso_language_code ? str
   val from_user = 'from_user ? str
 
-  def apply(params: Map[String, String]): Http => List[JsObject] = 
-    { /("search.json") <<? params ># { 'results ! (list ! obj) } }
+  def limit(rpp: Int)(q: String) = 
+    /("search.json") <<? Map("q" -> q, "rpp" -> rpp.toString) ># (
+      'results ! (list ! obj)
+    )
 
-  def apply(count: Int)(q: String): Http => List[JsObject] = 
-    this(Map("q" -> q, "rpp" -> count.toString))
-
-  def apply: String => (Http  => List[JsObject]) = apply(20)
+  def apply(s: String) = limit(20)(s)
 }
 
 object Status extends Js {
