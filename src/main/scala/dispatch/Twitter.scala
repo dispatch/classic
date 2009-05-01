@@ -2,6 +2,9 @@ package dispatch.twitter
 
 import json._
 
+class SearchHttp extends Http("search.twitter.com")
+class TwitterHttp extends Http("twitter.com")
+
 object Search extends Js {
   val to_user_id = 'to_user_id ? num
   val from_user_id = 'from_user_id ? num
@@ -11,31 +14,14 @@ object Search extends Js {
   val created_at = 'created_at ? str
   val iso_language_code = 'iso_language_code ? str
   val from_user = 'from_user ? str
-}
 
-class Search extends Js {
-  import Http._
-  lazy val http = new Http("search.twitter.com")
+  def apply(params: Map[String, String]): Http => List[JsObject] = 
+    { /("search.json") <<? params ># { 'results ! (list ! obj) } }
 
-  def apply(params: Map[String, String]): List[JsObject] = 
-    http { /("search.json") <<? params ># { 'results ! (list ! obj) } }
-
-  def apply(count: Int)(q: String): List[JsObject] = 
+  def apply(count: Int)(q: String): Http => List[JsObject] = 
     this(Map("q" -> q, "rpp" -> count.toString))
 
-  def apply: String => List[JsObject] = apply(20)
-}
-
-trait Twitter extends Js {
-  import Http._
-  lazy val http = new Http("twitter.com")
-
-  def apply(action: String, params: Map[String, Any]) =
-    /(service) / action <<? params
-
-  def apply(action: String): Request = this(action, Map[String, Any]())
-
-  val service: String
+  def apply: String => (Http  => List[JsObject]) = apply(20)
 }
 
 object Status extends Js {
@@ -44,6 +30,13 @@ object Status extends Js {
     val screen_name = 'screen_name ? str
   }
   val text = 'text ? str
+
+  val svc = /("statuses")
+  
+  def public_timeline = 
+    svc / "public_timeline.json" ># (list ! obj)
+  def user_timeline(user: String) =
+    svc / "user_timeline" / (user + ".json") ># (list ! obj)
 }
 
 trait UserFields {
@@ -52,22 +45,8 @@ trait UserFields {
   val screen_name = 'screen_name ? str
 }
 
-object User extends UserFields
+object User extends UserFields with Js {
+  val svc = /("users")
 
-class Statuses extends Twitter {
-  import Js._
-  val service = "statuses"
-  
-  def public_timeline = 
-    http(this("public_timeline.json") ># (list ! obj))
-  def user_timeline(user: String) =
-    http(this("user_timeline/" + user + ".json") ># (list ! obj))
-}
-
-class Users extends Twitter {
-  import Js._
-  val service = "users"
-
-  def show(user: String) =
-    http(this("show/" + user + ".json") ># obj)
+  def show(user: String) = svc / "show" / (user + ".json") ># obj
 }
