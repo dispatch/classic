@@ -27,7 +27,6 @@ class Search extends Js {
 }
 
 trait Twitter extends Js {
-  import Http._
   lazy val http = new Http("twitter.com")
 }
 
