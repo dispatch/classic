@@ -73,23 +73,18 @@ class OldeHttp {
 //  def as (name: String, pass: String) = new Http(host, headers, Some((name, pass)))
 }
 
-/** Extension point for static request definitions from the root. */
-class /(path: String) extends Request("/" + path) {
-  def this(req: Request) = this(req.req.getURI.toString.substring(1))
+/* Factory for requests from a host */
+object :/ {
+  def apply(hostname: String, port: Int): Request = 
+    new Request(Some(new HttpHost(hostname, port)), Nil)
+
+  def apply(name: String): Request = apply(name, 80)
 }
 
 /** Factory for requests from the root. */
 object / {
   def apply(path: String) = new Request("/" + path)
 }
-
-object Host {
-  def apply(name: String, port: Int): Request = 
-    new Request(Some(new HttpHost(name, port)), Nil)
-
-  def apply(name: String): Request = apply(name, 80)
-}
- 
 
 object Request {
   type Xf = HttpRequestBase => HttpRequestBase
@@ -104,6 +99,8 @@ class Request(val host: Option[HttpHost], val xfs: List[Request.Xf]) extends Res
 
   /** Construct with path or full URI. */
   def this(str: String) = this(None, Request.uri_xf(cur => str)_ :: Nil)
+  
+  def this(req: Request) = this(req.host, req.xfs)
   
   private def next(xf: Request.Xf) = new Request(host, xf :: xfs)
   private def next_uri(sxf: String => String) = next(Request.uri_xf(sxf))

@@ -2,11 +2,12 @@ package dispatch.twitter
 
 import json._
 
+object Twitter {
+  val search = :/("search.twitter.com")
+  val host   = :/("twitter.com")
+}
 
 object Search extends Js {
-  val host = Host("search.twitter.com")
-  val TwitterHost = Host("twitter.com")
-
   val to_user_id = 'to_user_id ? num
   val from_user_id = 'from_user_id ? num
   val source = 'source ? str
@@ -17,7 +18,7 @@ object Search extends Js {
   val from_user = 'from_user ? str
 
   def limit(rpp: Int)(q: String) = 
-    /("search.json") <<? Map("q" -> q, "rpp" -> rpp.toString) ># (
+    Twitter.search / "search.json" <<? Map("q" -> q, "rpp" -> rpp.toString) ># (
       'results ! (list ! obj)
     )
 
@@ -34,9 +35,9 @@ object Status extends Js {
   val svc = /("statuses")
   
   def public_timeline = 
-    svc / "public_timeline.json" ># (list ! obj)
+    Twitter.host / svc / "public_timeline.json" ># (list ! obj)
   def user_timeline(user: String) =
-    svc / "user_timeline" / (user + ".json") ># (list ! obj)
+    Twitter.host / svc / "user_timeline" / (user + ".json") ># (list ! obj)
 }
 
 trait UserFields {
@@ -48,5 +49,5 @@ trait UserFields {
 object User extends UserFields with Js {
   val svc = /("users")
 
-  def show(user: String) = svc / "show" / (user + ".json") ># obj
+  def show(user: String) = Twitter.host / svc / "show" / (user + ".json") ># obj
 }

@@ -15,14 +15,13 @@ trait Id extends Js {
     Use this object for direct access to Id extractors. */
 object Id extends Id
 
-/** Factory for Http access points to typical CouchDB hostnames. */
-object Couch {
-  def apply(hostname: String): Request = Host(hostname, 5984)
-  def apply(): Request = apply("127.0.0.1")
-}
+case class Couch(hostname: String) extends Request(:/(hostname, 5984))
+
+object Couch { def apply(): Couch = Couch("127.0.0.1") }
+
 
 /** Requests on a particular database. */
-case class Db(val name: String) extends /(name) with Js {
+case class Db(couch: Couch, name: String) extends Request(couch / name) with Js {
   val all_docs: Http => List[String] = _ { this / "_all_docs" ># ( 'rows ! (list ! obj) ) } map ('id ! str)
 
   val create = this <<< Nil >|
@@ -32,7 +31,7 @@ case class Db(val name: String) extends /(name) with Js {
 import java.net.URLEncoder.encode
 
 /** Requests on a particular document in a particular database. */
-case class Doc(val db: Db, val id: String) extends /(db / encode(id)) with Js {
+case class Doc(val db: Db, val id: String) extends Request(db / encode(id)) with Js {
   def update(js: JsValue) = this <<< js ># { 
     case Updated.rev(rev) => (Id._rev << rev)(js)
   }

@@ -6,13 +6,12 @@ class HttpSpec extends Spec with ShouldMatchers {
   import Http._
 
   val jane = "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.\n"
-  val tus = new Http("technically.us")
   
   describe("Singleton Http test get") {
     get_specs(Http, "http://technically.us/test.text")
   }
   describe("Bound host get") {
-    get_specs(tus, "/test.text")
+    get_specs(new Http, :/("technically.us") / "test.text")
   }
   def get_specs(http: Http, test: Request) = {
     it("should equal expected string") {

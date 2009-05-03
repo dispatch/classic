@@ -4,7 +4,7 @@ import json._
 
 trait Times extends Js {
   import Http._
-  lazy val host = Host("api.nytimes.com")
+  lazy val host = :/("api.nytimes.com")
   val api_key: String
   val service: String
   val version: Int
