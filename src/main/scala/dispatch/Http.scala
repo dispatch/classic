@@ -19,38 +19,19 @@ import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials}
 case class StatusCode(code: Int, contents:String)
   extends Exception("Exceptional resoponse code: " + code + "\n" + contents)
 
-class Http(
-  val host: Option[HttpHost], 
-  val headers: List[(String, String)],
-  val creds: Option[(String, String)]
-) {
-  def this(host: HttpHost) = this(Some(host), Nil, None)
-  def this(hostname: String, port: Int) = this(new HttpHost(hostname, port))
-  def this(hostname: String) = this(new HttpHost(hostname))
-  lazy val client = new ConfiguredHttpClient {
-    for (h <- host; (name, password) <- creds) {
-      getCredentialsProvider.setCredentials(
-        new AuthScope(h.getHostName, h.getPort), 
-        new UsernamePasswordCredentials(name, password)
-      )
-    }
-  }
-
+trait Http {
+  val client: HttpClient
+  
   /** Uses bound host server in HTTPClient execute. */
-  def execute(req: HttpUriRequest):HttpResponse = {
+  def execute(host: Option[HttpHost], req: HttpUriRequest):HttpResponse = {
     Http.log.info("%s %s", req.getMethod, req.getURI)
     host match {
       case None => client.execute(req)
       case Some(host) => client.execute(host, req)
     }
   }
-  /** Sets authentication credentials for bound host. */
-  def as (name: String, pass: String) = new Http(host, headers, Some((name, pass)))
-  /** Add header */
-  def << (k: String, v: String) = new Http(host, (k,v) :: headers, creds)
-    
   /** eXecute wrapper */
-  def x [T](req: HttpUriRequest) = new {
+  def x [T](val host: Option[HttpHost], req: HttpUriRequest) = new {
     /** handle response codes, response, and entity in block */
     def apply(block: (Int, HttpResponse, Option[HttpEntity]) => T) = {
       val res = execute(req)
@@ -78,62 +59,90 @@ class Http(
   def apply[T](block: Http => T) = block(this)
 }
 
+class OldeHttp(
+  lazy val client = new ConfiguredHttpClient {
+    for (h <- host; (name, password) <- creds) {
+      getCredentialsProvider.setCredentials(
+        new AuthScope(h.getHostName, h.getPort), 
+        new UsernamePasswordCredentials(name, password)
+      )
+    }
+  }
+  /** Sets authentication credentials for bound host. */
+  def as (name: String, pass: String) = new Http(host, headers, Some((name, pass)))
+    
+}
+
 /** Extension point for static request definitions. */
-class /(path: String) extends Request("/" + path) {
+class /(path: String) extends Request(None, "/" + path) {
   def this(req: Request) = this(req.req.getURI.toString.substring(1))
 }
 
 /** Factory for requests from the root. */
 object / {
-  def apply(path: String) = new Request("/" + path)
+  def apply(path: String) = new Request(None, "/" + path)
+}
+
+object Request {
+  type ReqXf = HttpUriRequest => HttpUriRequest
 }
 
 /** Wrapper to handle common requests, preconfigured as response wrapper for a 
   * get request but defs return other method responders. */
-class Request(val req: HttpUriRequest) extends Responder {
+class Request(host: Option[HttpHost], val xfs: List[ReqXf]) extends Responder {
   
   /** Start with GET by default. */
-  def this(uri: String) = this(new HttpGet(uri))
+  def this(uri: String) = this(host, List(_.setUri(uri)))
+  
+  private def next(xf: ReqXf) = new Request(host, xf :: xfs)
+  private def next_uri(xf: String => String) = next { req => xf(req.getURI) }  
 
-  /** Append an element to this request's path */
-  def / (path: String) = new Request(req.getURI + "/" + path)
+  /** Append an element to this request's path, mutates request */
+  def / (path: String) = next_uri { _ + "/" + path }
+  
+  def <:< (values: Map[String, String]) = next { req =>
+    values foreach { case (k, v) => req.addHeader(k, v) }
+  }
 
-  /** Put the given object.toString and return response wrapper. */
-  def <<< (body: Any) = {
+  def << (k: String, v: String) = new Http(host, (k,v) :: headers, creds)
+
+  /** Put the given object.toString and return response wrapper, replaces request */
+  def <<< (body: Any) = next { req =>
     val m = new HttpPut(req.getURI)
     m setEntity new StringEntity(body.toString, HTTP.UTF_8)
     HttpProtocolParams.setUseExpectContinue(m.getParams, false)
-    new Request(m)
+    m
   }
-  /** Post the given key value sequence and return response wrapper. */
-  def << (values: Map[String, Any]) = {
+  /** Post the given key value sequence and return response wrapper, replaces request. */
+  def << (values: Map[String, Any]) = next { req =>
     val m = new HttpPost(req.getURI)
     m setEntity new UrlEncodedFormEntity(Http.map2ee(values), HTTP.UTF_8)
-    new Request(m)
+    m
   }
   
-  /** Use <<? instead: the high precedence of ? is problematic. */
-  @deprecated def ?< (values: Map[String, Any]) = <<? (values)
-  /** Get with query parameters */
-  def <<? (values: Map[String, Any]) = if(values.isEmpty) this else
-    new Request(new HttpGet(req.getURI + Http ? (values)))
-
+  /** Add query parameters, mutates request */
+  def <<? (values: Map[String, Any]) = next_uri { uri =>
+    if(values.isEmpty) uri
+    else uri + Http ? (values))
+  }
+  
   /** HTTP Delete request. */
-  def <--() = new Request(new HttpDelete(req.getURI))
+  def <--() = next { req => new HttpDelete(req.getURI) }
 }
 
 trait Responder {
-  val req: HttpUriRequest
+  val host: Option[HttpHost]
+  val xfs: List[ReqXf]
+  lazy val req = (xfs :\ new HttpGet()) { (a,b) => a(b) }
+
   /** Execute and process response in block */
-  def apply [T] (block: (Int, HttpResponse, Option[HttpEntity]) => T)(http: Http) = {
-    http.headers foreach { case (k, v) => req.addHeader(k, v) }
-    (http x req) (block)
-  }
+  def apply [T] (block: (Int, HttpResponse, Option[HttpEntity]) => T)(http: Http) =
+    http x (host, req) (block)
+
   /** Handle response and entity in block if OK. */
-  def ok [T] (block: (HttpResponse, Option[HttpEntity]) => T)(http: Http) = {
-    http.headers foreach { case (k, v) => req.addHeader(k, v) }
-    (http x req) ok (block)
-  }
+  def ok [T] (block: (HttpResponse, Option[HttpEntity]) => T)(http: Http) =
+    http x (host, req) ok (block)
+
   /** Handle response entity in block if OK. */
   def okee [T] (block: HttpEntity => T) = ok { 
     case (_, Some(ent)) => block(ent)
