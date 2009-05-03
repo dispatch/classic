@@ -1,7 +1,7 @@
 import org.scalatest.Spec
 import org.scalatest.matchers.ShouldMatchers
 
-class HttpSpec extends Spec with ShouldMatchers {
+class TwitterSpec extends Spec with ShouldMatchers {
   import dispatch._
   import json.Js._
   import twitter._
