@@ -19,8 +19,8 @@ import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials}
 case class StatusCode(code: Int, contents:String)
   extends Exception("Exceptional resoponse code: " + code + "\n" + contents)
 
-trait Http {
-  val client: HttpClient
+class Http {
+  val client = new ConfiguredHttpClient
   
   /** Uses bound host server in HTTPClient execute. */
   def execute(host: Option[HttpHost], req: HttpUriRequest):HttpResponse = {
@@ -31,7 +31,7 @@ trait Http {
     }
   }
   /** eXecute wrapper */
-  def x [T](val host: Option[HttpHost], req: HttpUriRequest) = new {
+  def x [T](host: Option[HttpHost], req: HttpUriRequest) = new {
     /** handle response codes, response, and entity in block */
     def apply(block: (Int, HttpResponse, Option[HttpEntity]) => T) = {
       val res = execute(req)
@@ -59,8 +59,8 @@ trait Http {
   def apply[T](block: Http => T) = block(this)
 }
 
-class OldeHttp(
-  lazy val client = new ConfiguredHttpClient {
+class OldeHttp {
+  val client = new ConfiguredHttpClient {
     for (h <- host; (name, password) <- creds) {
       getCredentialsProvider.setCredentials(
         new AuthScope(h.getHostName, h.getPort), 
@@ -70,7 +70,6 @@ class OldeHttp(
   }
   /** Sets authentication credentials for bound host. */
   def as (name: String, pass: String) = new Http(host, headers, Some((name, pass)))
-    
 }
 
 /** Extension point for static request definitions. */
@@ -123,7 +122,7 @@ class Request(host: Option[HttpHost], val xfs: List[ReqXf]) extends Responder {
   /** Add query parameters, mutates request */
   def <<? (values: Map[String, Any]) = next_uri { uri =>
     if(values.isEmpty) uri
-    else uri + Http ? (values))
+    else uri + Http ? (values)
   }
   
   /** HTTP Delete request. */
@@ -186,7 +185,7 @@ object Http extends Http(None, Nil, None) {
   // import to support e.g. Http("http://example.com/" >>> System.out)
   implicit def str2req(str: String) = new Request(str)
 
-  override lazy val client = new ConfiguredHttpClient {
+  override val client = new ConfiguredHttpClient {
     override def createClientConnectionManager() = {
       val registry = new SchemeRegistry()
       registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80))
