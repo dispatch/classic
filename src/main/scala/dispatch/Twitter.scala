@@ -3,11 +3,18 @@ package dispatch.twitter
 import json._
 
 object Twitter {
+  val host = :/("twitter.com")
   val search = :/("search.twitter.com")
-  val host   = :/("twitter.com")
+}
+
+case class Search(query: String, rpp: Int) extends 
+    Request( Twitter.search / "search.json" <<? Map("q" -> query, "rpp" -> rpp.toString)  ) with Js {
+  
+  def results = this ># ('results ! (list ! obj))
 }
 
 object Search extends Js {
+  def apply(query: String): Search = Search(query, 20)
   val to_user_id = 'to_user_id ? num
   val from_user_id = 'from_user_id ? num
   val source = 'source ? str
@@ -16,38 +23,26 @@ object Search extends Js {
   val created_at = 'created_at ? str
   val iso_language_code = 'iso_language_code ? str
   val from_user = 'from_user ? str
-
-  def limit(rpp: Int)(q: String) = 
-    Twitter.search / "search.json" <<? Map("q" -> q, "rpp" -> rpp.toString) ># (
-      'results ! (list ! obj)
-    )
-
-  def apply(s: String) = limit(20)(s)
 }
 
-object Status extends Js {
-  val user = new Obj('user) {
-    val followers_count = 'followers_count ? num
-    val screen_name = 'screen_name ? str
-  }
+object Status extends Request(Twitter.host / "statuses") with Js {
+  def public_timeline = this / "public_timeline.json" ># (list ! obj)
   val text = 'text ? str
-
-  val svc = /("statuses")
-  
-  def public_timeline = 
-    Twitter.host / svc / "public_timeline.json" ># (list ! obj)
-  def user_timeline(user: String) =
-    Twitter.host / svc / "user_timeline" / (user + ".json") ># (list ! obj)
 }
 
-trait UserFields {
-  import Js._
+case class Status(user: String) extends 
+    Request(Status / "user_timeline" / (user + ".json")) with Js {
+
+  def timeline(user: String) = this ># (list ! obj)
+}
+
+object UserFields extends Js {
   val followers_count = 'followers_count ? num
   val screen_name = 'screen_name ? str
 }
 
-object User extends UserFields with Js {
-  val svc = /("users")
+case class User(user: String) extends 
+    Request(Twitter.host / "users" / "show" / (user + ".json")) with Js {
 
-  def show(user: String) = Twitter.host / svc / "show" / (user + ".json") ># obj
+  def show(user: String) = this ># obj
 }

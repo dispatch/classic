@@ -9,7 +9,7 @@ class TwitterSpec extends Spec with ShouldMatchers {
   describe("Twitter Search") {
     val http = new Http
     it("should find tweets containing #dbDispatch") {
-      val res = http(Search("#dbDispatch"))
+      val res = http(Search("#dbDispatch").results)
       res.isEmpty should be (false)
       res map Status.text forall { _ contains "#dbDispatch" } should be (true)
     }
