@@ -1,6 +1,7 @@
 package dispatch
 
 import java.io.{InputStream,OutputStream,BufferedInputStream,BufferedOutputStream}
+import java.net.URI
 
 import org.apache.http._
 import org.apache.http.client._
@@ -34,7 +35,7 @@ class Http {
   def x [T](host: Option[HttpHost], req: HttpUriRequest) = new {
     /** handle response codes, response, and entity in block */
     def apply(block: (Int, HttpResponse, Option[HttpEntity]) => T) = {
-      val res = execute(req)
+      val res = execute(host, req)
       val ent = res.getEntity match {
         case null => None
         case ent => Some(ent)
@@ -60,83 +61,109 @@ class Http {
 }
 
 class OldeHttp {
-  val client = new ConfiguredHttpClient {
+/*  val client = new ConfiguredHttpClient {
     for (h <- host; (name, password) <- creds) {
       getCredentialsProvider.setCredentials(
         new AuthScope(h.getHostName, h.getPort), 
         new UsernamePasswordCredentials(name, password)
       )
     }
-  }
+  } */
   /** Sets authentication credentials for bound host. */
-  def as (name: String, pass: String) = new Http(host, headers, Some((name, pass)))
+//  def as (name: String, pass: String) = new Http(host, headers, Some((name, pass)))
 }
 
-/** Extension point for static request definitions. */
-class /(path: String) extends Request(None, "/" + path) {
+/** Extension point for static request definitions from the root. */
+class /(path: String) extends Request("/" + path) {
   def this(req: Request) = this(req.req.getURI.toString.substring(1))
 }
 
 /** Factory for requests from the root. */
 object / {
-  def apply(path: String) = new Request(None, "/" + path)
+  def apply(path: String) = new Request("/" + path)
 }
+
+object Host {
+  def apply(name: String, port: Int): Request = 
+    new Request(Some(new HttpHost(name, port)), Nil)
+
+  def apply(name: String): Request = apply(name, 80)
+}
+ 
 
 object Request {
-  type ReqXf = HttpUriRequest => HttpUriRequest
+  type Xf = HttpRequestBase => HttpRequestBase
+  /** Updates the request URI with the given function. (mutates request) */
+  def uri_xf(sxf: String => String)(req: HttpRequestBase) = {
+    req.setURI(URI.create(sxf(req.getURI.toString)))
+    req
+  }
 }
 
-/** Wrapper to handle common requests, preconfigured as response wrapper for a 
-  * get request but defs return other method responders. */
-class Request(host: Option[HttpHost], val xfs: List[ReqXf]) extends Responder {
-  
-  /** Start with GET by default. */
-  def this(uri: String) = this(host, List(_.setUri(uri)))
-  
-  private def next(xf: ReqXf) = new Request(host, xf :: xfs)
-  private def next_uri(xf: String => String) = next { req => xf(req.getURI) }  
+class Request(val host: Option[HttpHost], val xfs: List[Request.Xf]) extends Responder {
 
-  /** Append an element to this request's path, mutates request */
+  /** Construct with path or full URI. */
+  def this(str: String) = this(None, Request.uri_xf(cur => str)_ :: Nil)
+  
+  private def next(xf: Request.Xf) = new Request(host, xf :: xfs)
+  private def next_uri(sxf: String => String) = next(Request.uri_xf(sxf))
+  
+  private def mimic(dest: HttpRequestBase)(req: HttpRequestBase) = {
+    dest.setURI(req.getURI)
+    dest.setHeaders(req.getAllHeaders)
+    dest
+  }
+  
+  /** Combine two requests, i.e. separately constructed host and path specs. */
+  def / (req: Request) = new Request(host orElse req.host, xfs ::: req.xfs)
+
+  /** Append an element to this request's path. (mutates request) */
   def / (path: String) = next_uri { _ + "/" + path }
   
+  /** Add headers to this request. (mutates request) */
   def <:< (values: Map[String, String]) = next { req =>
     values foreach { case (k, v) => req.addHeader(k, v) }
+    req
   }
 
-  def << (k: String, v: String) = new Http(host, (k,v) :: headers, creds)
-
-  /** Put the given object.toString and return response wrapper, replaces request */
-  def <<< (body: Any) = next { req =>
-    val m = new HttpPut(req.getURI)
+  /** Put the given object.toString and return response wrapper. (new request, old URI) */
+  def <<< (body: Any) = next {
+    val m = new HttpPut
     m setEntity new StringEntity(body.toString, HTTP.UTF_8)
     HttpProtocolParams.setUseExpectContinue(m.getParams, false)
-    m
+    mimic(m)_
   }
-  /** Post the given key value sequence and return response wrapper, replaces request. */
-  def << (values: Map[String, Any]) = next { req =>
-    val m = new HttpPost(req.getURI)
+  /** Post the given key value sequence and return response wrapper. (new request, old URI) */
+  def << (values: Map[String, Any]) = next {
+    val m = new HttpPost
     m setEntity new UrlEncodedFormEntity(Http.map2ee(values), HTTP.UTF_8)
-    m
+    mimic(m)_
   }
   
-  /** Add query parameters, mutates request */
+  /** Add query parameters. (mutates request) */
   def <<? (values: Map[String, Any]) = next_uri { uri =>
     if(values.isEmpty) uri
     else uri + Http ? (values)
   }
   
-  /** HTTP Delete request. */
-  def <--() = next { req => new HttpDelete(req.getURI) }
+  /** HTTP Delete request. (new request, old URI) */
+  def <--() = next { mimic(new HttpDelete)_ }
 }
 
 trait Responder {
+  /** May contain host */
   val host: Option[HttpHost]
-  val xfs: List[ReqXf]
-  lazy val req = (xfs :\ new HttpGet()) { (a,b) => a(b) }
+  /** Request transformers */
+  val xfs: List[Request.Xf]
+  /** Builds underlying request starting with a blank get and applying transformers right to left. */
+  lazy val req = {
+    val start: HttpRequestBase = new HttpGet("")
+    (xfs :\ start) { (a,b) => a(b) }
+  }
 
   /** Execute and process response in block */
   def apply [T] (block: (Int, HttpResponse, Option[HttpEntity]) => T)(http: Http) =
-    http x (host, req) (block)
+    http.x (host, req) (block)
 
   /** Handle response and entity in block if OK. */
   def ok [T] (block: (HttpResponse, Option[HttpEntity]) => T)(http: Http) =
@@ -177,12 +204,12 @@ class ConfiguredHttpClient extends DefaultHttpClient {
 }
 
 /** May be used directly from any thread. */
-object Http extends Http(None, Nil, None) {
+object Http extends Http {
   import org.apache.http.conn.scheme.{Scheme,SchemeRegistry,PlainSocketFactory}
   import org.apache.http.conn.ssl.SSLSocketFactory
   import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
   
-  // import to support e.g. Http("http://example.com/" >>> System.out)
+  /** import to support e.g. Http("http://example.com/" >>> System.out) */
   implicit def str2req(str: String) = new Request(str)
 
   override val client = new ConfiguredHttpClient {

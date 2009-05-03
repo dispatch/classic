@@ -2,10 +2,11 @@ package dispatch.twitter
 
 import json._
 
-class SearchHttp extends Http("search.twitter.com")
-class TwitterHttp extends Http("twitter.com")
 
 object Search extends Js {
+  val host = Host("search.twitter.com")
+  val TwitterHost = Host("twitter.com")
+
   val to_user_id = 'to_user_id ? num
   val from_user_id = 'from_user_id ? num
   val source = 'source ? str

@@ -17,8 +17,8 @@ object Id extends Id
 
 /** Factory for Http access points to typical CouchDB hostnames. */
 object Couch {
-  def apply(hostname: String): Http = new Http(hostname, 5984)
-  def apply(): Http = apply("127.0.0.1")
+  def apply(hostname: String): Request = Host(hostname, 5984)
+  def apply(): Request = apply("127.0.0.1")
 }
 
 /** Requests on a particular database. */
