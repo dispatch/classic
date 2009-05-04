@@ -60,19 +60,6 @@ class Http {
   def apply[T](block: Http => T) = block(this)
 }
 
-class OldeHttp {
-/*  val client = new ConfiguredHttpClient {
-    for (h <- host; (name, password) <- creds) {
-      getCredentialsProvider.setCredentials(
-        new AuthScope(h.getHostName, h.getPort), 
-        new UsernamePasswordCredentials(name, password)
-      )
-    }
-  } */
-  /** Sets authentication credentials for bound host. */
-//  def as (name: String, pass: String) = new Http(host, headers, Some((name, pass)))
-}
-
 /* Factory for requests from a host */
 object :/ {
   def apply(hostname: String, port: Int): Request = 
@@ -219,6 +206,9 @@ object Http extends Http {
       new ThreadSafeClientConnManager(getParams(), registry)
     }
   }
+  /** Shutdown connection manager, threads. (Needed to close console cleanly.) */
+  def shutdown() = client.getConnectionManager.shutdown()
+
   val log = net.lag.logging.Logger.get
   /** Convert repeating name value tuples to list of pairs for httpclient */
   def map2ee(values: Map[String, Any]) = 
