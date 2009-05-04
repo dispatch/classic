@@ -15,9 +15,12 @@ trait Id extends Js {
     Use this object for direct access to Id extractors. */
 object Id extends Id
 
-case class Couch(hostname: String) extends Request(:/(hostname, 5984))
+case class Couch(hostname: String, port: Int) extends Request(:/(hostname, port))
 
-object Couch { def apply(): Couch = Couch("127.0.0.1") }
+object Couch {
+  def apply(): Couch = this("127.0.0.1")
+  def apply(hostname: String): Couch = Couch(hostname, 5984)
+}
 
 
 /** Requests on a particular database. */
