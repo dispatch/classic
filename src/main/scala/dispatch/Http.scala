@@ -87,8 +87,9 @@ object / {
 }
 
 object Request {
+  /** Request transformer */
   type Xf = HttpRequestBase => HttpRequestBase
-  /** Updates the request URI with the given function. (mutates request) */
+  /** Updates the request URI with the given string-to-string  function. (mutates request) */
   def uri_xf(sxf: String => String)(req: HttpRequestBase) = {
     req.setURI(URI.create(sxf(req.getURI.toString)))
     req
@@ -100,6 +101,7 @@ class Request(val host: Option[HttpHost], val xfs: List[Request.Xf]) extends Res
   /** Construct with path or full URI. */
   def this(str: String) = this(None, Request.uri_xf(cur => str)_ :: Nil)
   
+  /** Construct as a clone, e.g. in class extends clause. */
   def this(req: Request) = this(req.host, req.xfs)
   
   private def next(xf: Request.Xf) = new Request(host, xf :: xfs)
