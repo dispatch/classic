@@ -36,7 +36,7 @@ case class Status(user: String) extends
   def timeline(user: String) = this ># (list ! obj)
 }
 
-object UserFields extends Js {
+object User extends Js {
   val followers_count = 'followers_count ? num
   val screen_name = 'screen_name ? str
 }
@@ -44,5 +44,5 @@ object UserFields extends Js {
 case class User(user: String) extends 
     Request(Twitter.host / "users" / "show" / (user + ".json")) with Js {
 
-  def show(user: String) = this ># obj
+  def show = this ># obj
 }
