@@ -43,7 +43,7 @@ class Http {
       client.execute(req)
   }
   /** Execute request and handle response codes, response, and entity in block */
-  def x [T](req: Request)(block: (Int, HttpResponse, Option[HttpEntity]) => T) = {
+  def x [T](req: Request)(block: Handler.F[T]) = {
     val res = execute(req.host, req.creds, req.req)
     val ent = res.getEntity match {
       case null => None
@@ -59,14 +59,11 @@ class Http {
     case (code, _, _)         => throw StatusCode(code, "[no entity]")
   }
   /** Apply a custom block in addition to predefined response Handler. */
-  def also[T](block: (Int, HttpResponse, Option[HttpEntity]) => T)(hand: Handler[T]) = 
+  def also[T](block: Handler.F[T])(hand: Handler[T]) = 
     x(hand.req) { (code, res, ent) => (block(code, res, ent), hand.block(code, res, ent) ) }
   
   /** Apply handler block when response code is 200 - 204 */
   def apply[T](hand: Handler[T]) = (this when {code => (200 to 204) contains code})(hand)
-
-  /** Back-apply Http block */
-  def apply[T](block: Http => T) = block(this)
 }
 
 /* Factory for requests from a host */
@@ -92,8 +89,10 @@ object Request {
   }
 }
 
-case class Handler[T](req: Request, block: (Int, HttpResponse, Option[HttpEntity]) => T)
+case class Handler[T](req: Request, block: Handler.F[T])
+
 object Handler { 
+  type F[T] = (Int, HttpResponse, Option[HttpEntity]) => T
   def apply[T](req: Request, block: HttpEntity => T): Handler[T] = 
     Handler(req, { (code, res, ent) => ent match {
       case Some(ent) => block(ent) 
