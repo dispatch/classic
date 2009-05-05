@@ -1,11 +1,12 @@
 package dispatch
 
+import util.DynamicVariable
 import java.io.{InputStream,OutputStream,BufferedInputStream,BufferedOutputStream}
 import java.net.URI
 
 import org.apache.http._
 import org.apache.http.client._
-import org.apache.http.impl.client.DefaultHttpClient
+import org.apache.http.impl.client.{DefaultHttpClient, BasicCredentialsProvider}
 import org.apache.http.client.methods._
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.utils.URLEncodedUtils
@@ -15,27 +16,37 @@ import org.apache.http.message.BasicNameValuePair
 import org.apache.http.protocol.{HTTP, HttpContext}
 import org.apache.http.params.{HttpProtocolParams, BasicHttpParams}
 import org.apache.http.util.EntityUtils
-import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials}
+import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials, Credentials}
 
 case class StatusCode(code: Int, contents:String)
   extends Exception("Exceptional resoponse code: " + code + "\n" + contents)
 
 class Http {
+  val credentials = new DynamicVariable[Option[(AuthScope, Credentials)]](None)
   val client = new ConfiguredHttpClient
   
-  /** Uses bound host server in HTTPClient execute. */
-  def execute(host: Option[HttpHost], req: HttpUriRequest):HttpResponse = {
-    Http.log.info("%s %s", req.getMethod, req.getURI)
-    host match {
-      case None => client.execute(req)
-      case Some(host) => client.execute(host, req)
-    }
+  def credentialsProvider = new BasicCredentialsProvider {
+    override def getCredentials(scope: AuthScope) = null
+  }
+  /** Execute method for the given host, with logging. */
+  def execute(host: HttpHost, req: HttpUriRequest) = {
+    Http.log.info("%s %s%s", req.getMethod, host, req.getURI)
+    client.execute(host, req) 
+  }
+  /** Execute for given optional parametrs, with logging. Creates local scope for credentials. */
+  def execute: (Option[HttpHost], Option[Credentials], HttpUriRequest) => HttpResponse = {
+    case (Some(host), Some(creds), req) =>
+      client.credentials.withValue(Some((new AuthScope(host.getHostName, host.getPort), creds)))(execute(host, req))
+    case (Some(host), _, req) => execute(host, req)
+    case (_, _, req) => 
+      Http.log.info("%s %s", req.getMethod, req.getURI)
+      client.execute(req)
   }
   /** eXecute wrapper */
-  def x [T](host: Option[HttpHost], req: HttpUriRequest) = new {
+  def x [T](host: Option[HttpHost], creds: Option[Credentials], req: HttpUriRequest) = new {
     /** handle response codes, response, and entity in block */
     def apply(block: (Int, HttpResponse, Option[HttpEntity]) => T) = {
-      val res = execute(host, req)
+      val res = execute(host, creds, req)
       val ent = res.getEntity match {
         case null => None
         case ent => Some(ent)
@@ -56,14 +67,14 @@ class Http {
     def ok = (this when {code => (200 to 204) contains code}) _
   }
   
-  /** Generally for the curried response function of Responder: >>, j$, <>, etc. */
+  /** Generally for the curried response function of Responder: >>, >#, <>, etc. */
   def apply[T](block: Http => T) = block(this)
 }
 
 /* Factory for requests from a host */
 object :/ {
   def apply(hostname: String, port: Int): Request = 
-    new Request(Some(new HttpHost(hostname, port)), Nil)
+    new Request(Some(new HttpHost(hostname, port)), None, Nil)
 
   def apply(name: String): Request = apply(name, 80)
 }
@@ -83,15 +94,15 @@ object Request {
   }
 }
 
-class Request(val host: Option[HttpHost], val xfs: List[Request.Xf]) extends Responder {
+class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xfs: List[Request.Xf]) extends Responder {
 
   /** Construct with path or full URI. */
-  def this(str: String) = this(None, Request.uri_xf(cur => str)_ :: Nil)
+  def this(str: String) = this(None, None, Request.uri_xf(cur => str)_ :: Nil)
   
   /** Construct as a clone, e.g. in class extends clause. */
-  def this(req: Request) = this(req.host, req.xfs)
+  def this(req: Request) = this(req.host, req.creds, req.xfs)
   
-  private def next(xf: Request.Xf) = new Request(host, xf :: xfs)
+  private def next(xf: Request.Xf) = new Request(host, creds, xf :: xfs)
   private def next_uri(sxf: String => String) = next(Request.uri_xf(sxf))
   
   private def mimic(dest: HttpRequestBase)(req: HttpRequestBase) = {
@@ -100,8 +111,11 @@ class Request(val host: Option[HttpHost], val xfs: List[Request.Xf]) extends Res
     dest
   }
   
+  def as (name: String, pass: String) = 
+    new Request(host, Some(new UsernamePasswordCredentials(name, pass)), xfs)
+  
   /** Combine two requests, i.e. separately constructed host and path specs. */
-  def / (req: Request) = new Request(host orElse req.host, xfs ::: req.xfs)
+  def / (req: Request) = new Request(host orElse req.host, creds orElse req.creds, xfs ::: req.xfs)
 
   /** Append an element to this request's path. (mutates request) */
   def / (path: String) = next_uri { _ + "/" + path }
@@ -139,6 +153,7 @@ class Request(val host: Option[HttpHost], val xfs: List[Request.Xf]) extends Res
 trait Responder {
   /** May contain host */
   val host: Option[HttpHost]
+  val creds: Option[Credentials]
   /** Request transformers */
   val xfs: List[Request.Xf]
   /** Builds underlying request starting with a blank get and applying transformers right to left. */
@@ -149,11 +164,11 @@ trait Responder {
 
   /** Execute and process response in block */
   def apply [T] (block: (Int, HttpResponse, Option[HttpEntity]) => T)(http: Http) =
-    http.x (host, req) (block)
+    http.x (host, creds, req) (block)
 
   /** Handle response and entity in block if OK. */
   def ok [T] (block: (HttpResponse, Option[HttpEntity]) => T)(http: Http) =
-    http x (host, req) ok (block)
+    http x (host, creds, req) ok (block)
 
   /** Handle response entity in block if OK. */
   def okee [T] (block: HttpEntity => T) = ok { 
@@ -187,6 +202,13 @@ class ConfiguredHttpClient extends DefaultHttpClient {
     HttpProtocolParams.setUseExpectContinue(params, false)
     params
   }
+  val credentials = new DynamicVariable[Option[(AuthScope, Credentials)]](None)
+  setCredentialsProvider(new BasicCredentialsProvider {
+    override def getCredentials(scope: AuthScope) = credentials.value match {
+      case Some((auth_scope, creds)) if scope.`match`(auth_scope) >= 0 => creds
+      case _ => null
+    }
+  })
 }
 
 /** May be used directly from any thread. */
