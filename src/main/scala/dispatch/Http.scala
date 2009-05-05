@@ -64,6 +64,9 @@ class Http {
   
   /** Apply handler block when response code is 200 - 204 */
   def apply[T](hand: Handler[T]) = (this when {code => (200 to 204) contains code})(hand)
+
+  /** Back-apply Http block */
+  def apply[T](block: Http => T) = block(this)
 }
 
 /* Factory for requests from a host */
@@ -97,6 +100,8 @@ object Handler {
       case None => error("response has no entity: " + res)
     } } )
 }
+
+object /\ extends Request("")
 
 class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xfs: List[Request.Xf]) {
 

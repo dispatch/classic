@@ -30,6 +30,9 @@ class CouchSpec extends Spec with ShouldMatchers {
       http(full <<< content >|)
       http(full ># Test.content) should equal (example)
     }
+    it("should return new documents from all_docs") {
+      http(test.all_docs) should equal (List(empty.id, full.id))
+    }
   }
   describe("Document update") {
     it("should update a remote document") {
