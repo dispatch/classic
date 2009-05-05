@@ -42,33 +42,28 @@ class Http {
       Http.log.info("%s %s", req.getMethod, req.getURI)
       client.execute(req)
   }
-  /** eXecute wrapper */
-  def x [T](host: Option[HttpHost], creds: Option[Credentials], req: HttpUriRequest) = new {
-    /** handle response codes, response, and entity in block */
-    def apply(block: (Int, HttpResponse, Option[HttpEntity]) => T) = {
-      val res = execute(host, creds, req)
-      val ent = res.getEntity match {
-        case null => None
-        case ent => Some(ent)
-      }
-      try { block(res.getStatusLine.getStatusCode, res, ent) }
-      finally { ent foreach (_.consumeContent) }
+  /** Execute request and handle response codes, response, and entity in block */
+  def x [T](req: Request)(block: (Int, HttpResponse, Option[HttpEntity]) => T) = {
+    val res = execute(req.host, req.creds, req.req)
+    val ent = res.getEntity match {
+      case null => None
+      case ent => Some(ent)
     }
-    
-    /** Handle reponse entity in block if reponse code returns true from chk. */
-    def when(chk: Int => Boolean)(block: (HttpResponse, Option[HttpEntity]) => T) = this { (code, res, ent) => 
-      if (chk(code)) block(res, ent)
-      else throw StatusCode(code,
-        ent.map(EntityUtils.toString(_, HTTP.UTF_8)).getOrElse("")
-      )
-    }
-    
-    /** Handle reponse entity in block when response code is 200 - 204 */
-    def ok = (this when {code => (200 to 204) contains code}) _
+    try { block(res.getStatusLine.getStatusCode, res, ent) }
+    finally { ent foreach (_.consumeContent) }
   }
+  /** Apply Response Handler if reponse code returns true from chk. */
+  def when[T](chk: Int => Boolean)(hand: Handler[T]) = x(hand.req) {
+    case (code, res, ent) if chk(code) => hand.block(code, res, ent)
+    case (code, _, Some(ent)) => throw StatusCode(code, EntityUtils.toString(ent, HTTP.UTF_8))
+    case (code, _, _)         => throw StatusCode(code, "[no entity]")
+  }
+  /** Apply a custom block in addition to predefined response Handler. */
+  def also[T](block: (Int, HttpResponse, Option[HttpEntity]) => T)(hand: Handler[T]) = 
+    x(hand.req) { (code, res, ent) => (block(code, res, ent), hand.block(code, res, ent) ) }
   
-  /** Generally for the curried response function of Responder: >>, >#, <>, etc. */
-  def apply[T](block: Http => T) = block(this)
+  /** Apply handler block when response code is 200 - 204 */
+  def apply[T](hand: Handler[T]) = (this when {code => (200 to 204) contains code})(hand)
 }
 
 /* Factory for requests from a host */
@@ -94,7 +89,16 @@ object Request {
   }
 }
 
-class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xfs: List[Request.Xf]) extends Responder {
+case class Handler[T](req: Request, block: (Int, HttpResponse, Option[HttpEntity]) => T)
+object Handler { 
+  def apply[T](req: Request, block: HttpEntity => T): Handler[T] = 
+    Handler(req, { (code, res, ent) => ent match {
+      case Some(ent) => block(ent) 
+      case None => error("response has no entity: " + res)
+    } } )
+}
+
+class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xfs: List[Request.Xf]) {
 
   /** Construct with path or full URI. */
   def this(str: String) = this(None, None, Request.uri_xf(cur => str)_ :: Nil)
@@ -148,49 +152,27 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   
   /** HTTP Delete request. (new request, old URI) */
   def <--() = next { mimic(new HttpDelete)_ }
-}
 
-trait Responder {
-  /** May contain host */
-  val host: Option[HttpHost]
-  val creds: Option[Credentials]
-  /** Request transformers */
-  val xfs: List[Request.Xf]
   /** Builds underlying request starting with a blank get and applying transformers right to left. */
   lazy val req = {
     val start: HttpRequestBase = new HttpGet("")
     (xfs :\ start) { (a,b) => a(b) }
   }
 
-  /** Execute and process response in block */
-  def apply [T] (block: (Int, HttpResponse, Option[HttpEntity]) => T)(http: Http) =
-    http.x (host, creds, req) (block)
-
-  /** Handle response and entity in block if OK. */
-  def ok [T] (block: (HttpResponse, Option[HttpEntity]) => T)(http: Http) =
-    http x (host, creds, req) ok (block)
-
-  /** Handle response entity in block if OK. */
-  def okee [T] (block: HttpEntity => T) = ok { 
-    case (_, Some(ent)) => block(ent)
-    case (res, _) => error("response has no entity: " + res)
-  } _
   /** Handle InputStream in block if OK. */
-  def >> [T] (block: InputStream => T) = okee (ent => block(ent.getContent))
+  def >> [T] (block: InputStream => T) = Handler(this, { ent => block(ent.getContent) })
   /** Return response in String if OK. (Don't blow your heap, kids.) */
-  def as_str = okee { EntityUtils.toString(_, HTTP.UTF_8) }
+  def as_str = Handler(this, ent => EntityUtils.toString(ent, HTTP.UTF_8))
   /** Write to the given OutputStream. */
-  def >>> [OS <: OutputStream](out: OS)(http: Http) = { okee { _.writeTo(out) } (http); out }
+  def >>> [OS <: OutputStream](out: OS) = Handler(this, { ent => ent.writeTo(out); out })
   /** Process response as XML document in block */
   def <> [T] (block: xml.NodeSeq => T) = >> { stm => block(xml.XML.load(stm)) }
   
   /** Process response as JsValue in block */
   def ># [T](block: json.Js.JsF[T]) = >> { stm => block(json.Js(stm)) }
-  /** Use ># instead: $ is forbidden. */
-  @deprecated def $ [T](block: json.Js.JsF[T]) = >#(block)
   
   /** Ignore response body if OK. */
-  def >| = ok ((r,e) => ()) _
+  def >| = Handler(this, ent => ())
 }
 
 

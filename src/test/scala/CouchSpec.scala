@@ -48,17 +48,14 @@ class CouchSpec extends Spec with ShouldMatchers {
     import org.apache.http.HttpResponse
     import org.apache.http.HttpEntity
     it("should delete a document") {
+      import Js._
       http(full.delete(http(full ># Test._rev)))
-      http(
-        full { (status: Int, res: HttpResponse, e: Option[HttpEntity]) => status }
-      ) should equal (404)
+      (http when { _ == 404 }) (full ># ('error ! str)) should equal ("not_found")
     }
-
     it("should delete a database") {
       http(test.delete)
-      http(
-        test { (status: Int, res: HttpResponse, e: Option[HttpEntity]) => status }
-      ) should equal (404)
+      // just another way of checking that it returns 404
+      (http x test) { (status, _, _) => status } should equal (404)
     }
   }
 }
