@@ -6,8 +6,8 @@ class CouchSpec extends Spec with ShouldMatchers {
   import dispatch.couch._
   import dispatch.json._
 
-  val couch = Couch() // these tests expect CouchDB to be running at 127.0.0.1 on port 5984
-  val test = Db("test")
+  val http = new Http
+  val test = Db(Couch(), "test") // these tests expect CouchDB to be running at 127.0.0.1 on port 5984
   val empty = Doc(test, "empty")
   val full = Doc(test, "full")
   
@@ -18,47 +18,47 @@ class CouchSpec extends Spec with ShouldMatchers {
   
   describe("Database and document create") {
     it("should create a database") {
-      couch(test.create)
-      couch(test as_str) should startWith("""{"db_name":"test","doc_count":0""")
+      http(test.create)
+      http(test as_str) should startWith("""{"db_name":"test","doc_count":0""")
     }
     it("should create an empty document") {
-      couch(empty <<< Js() >|)
-      couch(empty ># Id._id) should equal (empty.id) 
+      http(empty <<< Js() >|)
+      http(empty ># Id._id) should equal (empty.id) 
     }
     it("should create a document with content") {
       val content = (Test.content << example)(Js())
-      couch(full <<< content >|)
-      couch(full ># Test.content) should equal (example)
+      http(full <<< content >|)
+      http(full ># Test.content) should equal (example)
+    }
+    it("should return new documents from all_docs") {
+      http(test.all_docs) should equal (List(empty.id, full.id))
     }
   }
   describe("Document update") {
     it("should update a remote document") {
-      val js = couch(empty ># { Test.content << example })
-      couch(empty.update(js))
-      couch(empty ># Test.content) should equal (example)
+      val js = http(empty ># { Test.content << example })
+      http(empty.update(js))
+      http(empty ># Test.content) should equal (example)
     }
     it("should update local revisions to avoid update conflicts") {
-      val js = couch(empty ># { Test.content << "1" })
-      val update1 = couch(empty.update(js))
-      val update2 = couch(empty.update((Test.content << "2")(update1)))
-      couch(empty ># Test.content) should equal ("2")
+      val js = http(empty ># { Test.content << "1" })
+      val update1 = http(empty.update(js))
+      val update2 = http(empty.update((Test.content << "2")(update1)))
+      http(empty ># Test.content) should equal ("2")
     }
   }
   describe("Document and database delete") {
     import org.apache.http.HttpResponse
     import org.apache.http.HttpEntity
     it("should delete a document") {
-      couch(full.delete(couch(full ># Test._rev)))
-      couch(
-        full { (status: Int, res: HttpResponse, e: Option[HttpEntity]) => status }
-      ) should equal (404)
+      import Js._
+      http(full.delete(http(full ># Test._rev)))
+      (http when { _ == 404 }) (full ># ('error ! str)) should equal ("not_found")
     }
-
     it("should delete a database") {
-      couch(test.delete)
-      couch(
-        test { (status: Int, res: HttpResponse, e: Option[HttpEntity]) => status }
-      ) should equal (404)
+      http(test.delete)
+      // just another way of checking that it returns 404
+      (http x test) { (status, _, _) => status } should equal (404)
     }
   }
 }

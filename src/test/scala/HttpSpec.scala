@@ -6,13 +6,12 @@ class HttpSpec extends Spec with ShouldMatchers {
   import Http._
 
   val jane = "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.\n"
-  val tus = new Http("technically.us")
   
   describe("Singleton Http test get") {
     get_specs(Http, "http://technically.us/test.text")
   }
   describe("Bound host get") {
-    get_specs(tus, "/test.text")
+    get_specs(new Http, :/("technically.us") / "test.text")
   }
   def get_specs(http: Http, test: Request) = {
     it("should equal expected string") {
@@ -23,6 +22,20 @@ class HttpSpec extends Spec with ShouldMatchers {
     }
     it("should write to expected sting bytes") {
       http(test >>> new java.io.ByteArrayOutputStream).toByteArray should equal (jane.getBytes)
+    }
+
+    it("should equal expected string with gzip encoding") {
+      http.also (test.gzip as_str) {
+        case (_, _, Some(ent)) if ent.getContentEncoding != null => ent.getContentEncoding.getValue
+        case _ => ""
+      } should equal ("gzip", jane)
+    }
+  
+    it("should equal expected string without gzip encoding") {
+      http.also (test as_str) {
+        case (_, _, Some(ent)) if ent.getContentEncoding != null => ent.getContentEncoding.getValue
+        case _ => ""
+      } should equal ("", jane)
     }
   }
 }
