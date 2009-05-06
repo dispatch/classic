@@ -25,7 +25,7 @@ object Couch {
 
 /** Requests on a particular database. */
 case class Db(couch: Couch, name: String) extends Request(couch / name) with Js {
-  val all_docs =  this / "_all_docs" ># { 'rows ! (list ! obj) andThen { _ map ('id ! str) } }
+  val all_docs =  this / "_all_docs" ># ('rows ! list andThen { _ map 'id ! str })
 
   val create = this <<< Nil >|
   val delete = this <--() >|
