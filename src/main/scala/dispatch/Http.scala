@@ -22,6 +22,7 @@ import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials, Credentials
 case class StatusCode(code: Int, contents:String)
   extends Exception("Exceptional resoponse code: " + code + "\n" + contents)
 
+/** Http access point. Standard instances to be used by a single thread. */
 class Http {
   val credentials = new DynamicVariable[Option[(AuthScope, Credentials)]](None)
   val client = new ConfiguredHttpClient
@@ -90,10 +91,12 @@ object Request {
   }
 }
 
+/** Request handler, contains request descriptor and a function to transform the result. */
 case class Handler[T](req: Request, block: Handler.F[T])
 
 object Handler { 
   type F[T] = (Int, HttpResponse, Option[HttpEntity]) => T
+  /** Turns a simple entity handler in into a full response handler that fails if no entity */
   def apply[T](req: Request, block: HttpEntity => T): Handler[T] = 
     Handler(req, { (code, res, ent) => ent match {
       case Some(ent) => block(ent) 
@@ -101,8 +104,10 @@ object Handler {
     } } )
 }
 
+/** Nil request, useful to start with a descritor like <:< that doesn't have a factory. */
 object /\ extends Request("")
 
+/** Request descriptor, possibly contains a host, credentials, and a list of transformation functions. */
 class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xfs: List[Request.Xf]) {
 
   /** Construct with path or full URI. */
@@ -120,11 +125,14 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
     dest
   }
   
+  // the below functions create new request descriptors based off of the current
+  
+  /** Set credentials to be used for this request */
   def as (name: String, pass: String) = 
     new Request(host, Some(new UsernamePasswordCredentials(name, pass)), xfs)
   
   /** Combine two requests, i.e. separately constructed host and path specs. */
-  def / (req: Request) = new Request(host orElse req.host, creds orElse req.creds, xfs ::: req.xfs)
+  def + (req: Request) = new Request(host orElse req.host, creds orElse req.creds, xfs ::: req.xfs)
 
   /** Append an element to this request's path. (mutates request) */
   def / (path: String) = next_uri { _ + "/" + path }
@@ -161,11 +169,15 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   /** HTTP Delete request. (new request, old URI) */
   def <--() = next { mimic(new HttpDelete)_ }
 
+  // end Request generators
+
   /** Builds underlying request starting with a blank get and applying transformers right to left. */
   lazy val req = {
     val start: HttpRequestBase = new HttpGet("")
     (xfs :\ start) { (a,b) => a(b) }
   }
+  
+  // the below functions produce Handlers based on this request descriptor
 
   /** Handle InputStream in block, handle gzip if so encoded. */
   def >> [T] (block: InputStream => T) = Handler(this, { ent => block (
@@ -187,7 +199,8 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   def >| = Handler(this, ent => ())
 }
 
-
+/** Basic extension of DefaultHttpClient defaulting to Http 1.1, UTF8, and no Expect-Continue.
+    Scopes authorization credentials to particular requests thorugh a DynamicVariable. */
 class ConfiguredHttpClient extends DefaultHttpClient { 
   override def createHttpParams = {
     val params = new BasicHttpParams
