@@ -3,6 +3,7 @@ package dispatch
 import util.DynamicVariable
 import java.io.{InputStream,OutputStream,BufferedInputStream,BufferedOutputStream}
 import java.net.URI
+import java.util.zip.GZIPInputStream
 
 import org.apache.http._
 import org.apache.http.client._
@@ -164,7 +165,11 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   }
 
   /** Handle InputStream in block if OK. */
-  def >> [T] (block: InputStream => T) = Handler(this, { ent => block(ent.getContent) })
+  def >> [T] (block: InputStream => T) = Handler(this, { ent => 
+    if(ent.getContentEncoding != null && ent.getContentEncoding.getValue == "gzip") 
+      block(new GZIPInputStream(ent.getContent)) 
+    else block(ent.getContent)
+  } )
   /** Return response in String if OK. (Don't blow your heap, kids.) */
   def as_str = Handler(this, ent => EntityUtils.toString(ent, HTTP.UTF_8))
   /** Write to the given OutputStream. */
