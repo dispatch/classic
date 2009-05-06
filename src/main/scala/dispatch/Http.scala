@@ -61,7 +61,7 @@ class Http {
     case (code, _, _)         => throw StatusCode(code, "[no entity]")
   }
   /** Apply a custom block in addition to predefined response Handler. */
-  def also[T](block: Handler.F[T])(hand: Handler[T]) = 
+  def also[A,B](hand: Handler[B])(block: Handler.F[A]) = 
     x(hand.req) { (code, res, ent) => (block(code, res, ent), hand.block(code, res, ent) ) }
   
   /** Apply handler block when response code is 200 - 204 */
