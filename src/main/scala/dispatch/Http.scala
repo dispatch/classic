@@ -73,7 +73,7 @@ object :/ {
   def apply(hostname: String, port: Int): Request = 
     new Request(Some(new HttpHost(hostname, port)), None, Nil)
 
-  def apply(name: String): Request = apply(name, 80)
+  def apply(hostname: String): Request = new Request(Some(new HttpHost(hostname)), None, Nil)
 }
 
 /** Factory for requests from the root. */
