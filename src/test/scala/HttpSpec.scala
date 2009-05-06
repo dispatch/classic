@@ -24,12 +24,12 @@ class HttpSpec extends Spec with ShouldMatchers {
       http(test >>> new java.io.ByteArrayOutputStream).toByteArray should equal (jane.getBytes)
     }
 
-	it("should equal expected string with gzip encoding"){
-		http("http://technically.us/test.text" <:< Map("Accept-Encoding" ->  "gzip") >> { stm => io.Source.fromInputStream(stm).mkString }) should equal (jane)
-	}
-	
-	it("should equal expected string without gzip encoding"){
-		http("http://technically.us/test.text" <:< Map[String, String]() >> { stm => io.Source.fromInputStream(stm).mkString }) should equal (jane)
-	}
+    it("should equal expected string with gzip encoding"){
+      http(test.gzip as_str) should equal (jane)
+    }
+  
+    it("should equal expected string without gzip encoding"){
+      http(test <:< Map[String, String]() as_str) should equal (jane)
+    }
   }
 }

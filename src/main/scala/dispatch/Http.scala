@@ -135,6 +135,9 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
     req
   }
 
+  /* Add a gzip acceptance header */
+  def gzip = this <:< Map("Accept-Encoding" -> "gzip")
+
   /** Put the given object.toString and return response wrapper. (new request, old URI) */
   def <<< (body: Any) = next {
     val m = new HttpPut
@@ -164,14 +167,14 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
     (xfs :\ start) { (a,b) => a(b) }
   }
 
-  /** Handle InputStream in block if OK. */
-  def >> [T] (block: InputStream => T) = Handler(this, { ent => 
+  /** Handle InputStream in block, handle gzip if so encoded. */
+  def >> [T] (block: InputStream => T) = Handler(this, { ent => block (
     if(ent.getContentEncoding != null && ent.getContentEncoding.getValue == "gzip") 
-      block(new GZIPInputStream(ent.getContent)) 
-    else block(ent.getContent)
-  } )
-  /** Return response in String if OK. (Don't blow your heap, kids.) */
-  def as_str = Handler(this, ent => EntityUtils.toString(ent, HTTP.UTF_8))
+      new GZIPInputStream(ent.getContent)
+    else ent.getContent
+  ) } )
+  /** Return response in String. (Don't blow your heap, kids.) */
+  def as_str = >> { scala.io.Source.fromInputStream(_).mkString }
   /** Write to the given OutputStream. */
   def >>> [OS <: OutputStream](out: OS) = Handler(this, { ent => ent.writeTo(out); out })
   /** Process response as XML document in block */
