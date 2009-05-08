@@ -9,9 +9,7 @@ class Dispatch(info: ProjectInfo) extends DefaultProject(info) with AutoCompiler
   val configgy = "net.lag" % "configgy" % "1.2.1a"
 
   val sxr = compilerPlugin("sxr" % "sxr" % "0.1")
-
-  override def ivyXML =
-    <publications>
-      <artifact name="dispatch" type="jar" ext="jar"/>
-    </publications>
+  
+  override def managedStyle = ManagedStyle.Maven
+  lazy val publishTo = Resolver.file("Databinder Repository", new java.io.File("/var/dbwww/repo"))
 }
