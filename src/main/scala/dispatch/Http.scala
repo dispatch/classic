@@ -199,7 +199,7 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   /** Process response as JsValue in block */
   def ># [T](block: json.Js.JsF[T]) = >> { stm => block(json.Js(stm)) }
   
-  /** Ignore response body if OK. */
+  /** Ignore response body. */
   def >| = Handler(this, ent => ())
 }
 
