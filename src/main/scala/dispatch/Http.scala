@@ -36,7 +36,7 @@ class Http {
     client.execute(host, req) 
   }
   /** Execute for given optional parametrs, with logging. Creates local scope for credentials. */
-  def execute: (Option[HttpHost], Option[Credentials], HttpUriRequest) => HttpResponse = {
+  val execute: (Option[HttpHost], Option[Credentials], HttpUriRequest) => HttpResponse = {
     case (Some(host), Some(creds), req) =>
       client.credentials.withValue(Some((new AuthScope(host.getHostName, host.getPort), creds)))(execute(host, req))
     case (Some(host), _, req) => execute(host, req)
@@ -132,7 +132,10 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
     new Request(host, Some(new UsernamePasswordCredentials(name, pass)), xfs)
   
   /** Combine two requests, i.e. separately constructed host and path specs. */
-  def + (req: Request) = new Request(host orElse req.host, creds orElse req.creds, xfs ::: req.xfs)
+  def <& (req: Request) = new Request(host orElse req.host, creds orElse req.creds, req.xfs ::: xfs)
+  
+  /** @deprecated use <& */
+  def + (req: Request) = this <& req
 
   /** Append an element to this request's path. (mutates request) */
   def / (path: String) = next_uri { _ + "/" + path }
