@@ -1,7 +1,7 @@
-import org.scalatest.Spec
+import org.scalatest.{Spec, BeforeAndAfter}
 import org.scalatest.matchers.ShouldMatchers
 
-class HttpSpec extends Spec with ShouldMatchers {
+class HttpSpec extends Spec with ShouldMatchers with BeforeAndAfter {
   import dispatch._
   import Http._
 
@@ -20,7 +20,7 @@ class HttpSpec extends Spec with ShouldMatchers {
     get_specs(/("test.text") <& :/("technically.us"))
   }
   def get_specs(test: Request) = {
-    val http = new Http
+    val http = new Http // using a single-threaded Http instance
     it("should equal expected string") {
       http(test.as_str) should equal (jane)
     }
@@ -35,7 +35,7 @@ class HttpSpec extends Spec with ShouldMatchers {
       http.also (test.gzip as_str) {
         case (_, _, Some(ent)) if ent.getContentEncoding != null => ent.getContentEncoding.getValue
         case _ => ""
-      } should equal ("gzip", jane)
+      } should equal (jane, "gzip")
     }
 
     it("should equal expected string with a gzip defaulter") {
@@ -43,14 +43,27 @@ class HttpSpec extends Spec with ShouldMatchers {
       http.also (my_defualts <& test as_str) {
         case (_, _, Some(ent)) if ent.getContentEncoding != null => ent.getContentEncoding.getValue
         case _ => ""
-      } should equal ("gzip", jane)
+      } should equal (jane, "gzip")
     }
 
     it("should equal expected string without gzip encoding") {
       http.also (test as_str) {
         case (_, _, Some(ent)) if ent.getContentEncoding != null => ent.getContentEncoding.getValue
         case _ => ""
-      } should equal ("", jane)
+      } should equal (jane, "")
     }
+  }
+  describe("Path building responses") {
+    // using singleton Http, will need to shut down after all tests
+    val test2 = "and they were both ever sensible of the warmest gratitude\n"
+    it("should work with chaining") {
+      Http( :/("technically.us") / "test" / "test.text" as_str ) should equal (test2)
+    }
+    it("should work with factories") {
+      Http( :/("technically.us") <& /("test") <& /("test.text") as_str ) should equal (test2)
+    }
+  }
+  override def afterAll {
+    Http.shutdown
   }
 }
