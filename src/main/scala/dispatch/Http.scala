@@ -36,7 +36,7 @@ class Http {
     client.execute(host, req) 
   }
   /** Execute for given optional parametrs, with logging. Creates local scope for credentials. */
-  def execute: (Option[HttpHost], Option[Credentials], HttpUriRequest) => HttpResponse = {
+  val execute: (Option[HttpHost], Option[Credentials], HttpUriRequest) => HttpResponse = {
     case (Some(host), Some(creds), req) =>
       client.credentials.withValue(Some((new AuthScope(host.getHostName, host.getPort), creds)))(execute(host, req))
     case (Some(host), _, req) => execute(host, req)
@@ -62,11 +62,14 @@ class Http {
   }
   /** Apply a custom block in addition to predefined response Handler. */
   def also[A,B](hand: Handler[B])(block: Handler.F[A]) = 
-    x(hand.req) { (code, res, ent) => (block(code, res, ent), hand.block(code, res, ent) ) }
+    x(hand.req) { (code, res, ent) => ( hand.block(code, res, ent), block(code, res, ent) ) }
   
   /** Apply handler block when response code is 200 - 204 */
   def apply[T](hand: Handler[T]) = (this when {code => (200 to 204) contains code})(hand)
 }
+
+/** Nil request, useful to kick off a descriptors that don't have a factory. */
+object /\ extends Request(None, None, Nil)
 
 /* Factory for requests from a host */
 object :/ {
@@ -76,9 +79,9 @@ object :/ {
   def apply(hostname: String): Request = new Request(Some(new HttpHost(hostname)), None, Nil)
 }
 
-/** Factory for requests from the root. */
+/** Factory for requests from a directory. */
 object / {
-  def apply(path: String) = new Request("/" + path)
+  def apply(path: String) = /\ / path
 }
 
 object Request {
@@ -104,14 +107,12 @@ object Handler {
     } } )
 }
 
-/** Nil request, useful to start with a descritor like <:< that doesn't have a factory. */
-object /\ extends Request("")
 
 /** Request descriptor, possibly contains a host, credentials, and a list of transformation functions. */
 class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xfs: List[Request.Xf]) {
 
   /** Construct with path or full URI. */
-  def this(str: String) = this(None, None, Request.uri_xf(cur => str)_ :: Nil)
+  def this(str: String) = this(None, None, Request.uri_xf(cur => cur + str)_ :: Nil)
   
   /** Construct as a clone, e.g. in class extends clause. */
   def this(req: Request) = this(req.host, req.creds, req.xfs)
@@ -132,7 +133,10 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
     new Request(host, Some(new UsernamePasswordCredentials(name, pass)), xfs)
   
   /** Combine two requests, i.e. separately constructed host and path specs. */
-  def + (req: Request) = new Request(host orElse req.host, creds orElse req.creds, xfs ::: req.xfs)
+  def <& (req: Request) = new Request(host orElse req.host, creds orElse req.creds, req.xfs ::: xfs)
+  
+  /** @deprecated use <& */
+  def + (req: Request) = this <& req
 
   /** Append an element to this request's path. (mutates request) */
   def / (path: String) = next_uri { _ + "/" + path }
