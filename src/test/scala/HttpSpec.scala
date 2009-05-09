@@ -8,12 +8,19 @@ class HttpSpec extends Spec with ShouldMatchers {
   val jane = "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.\n"
   
   describe("Singleton Http test get") {
-    get_specs(Http, "http://technically.us/test.text")
+    get_specs("http://technically.us/test.text")
   }
   describe("Bound host get") {
-    get_specs(new Http, :/("technically.us") / "test.text")
+    get_specs(:/("technically.us") / "test.text")
   }
-  def get_specs(http: Http, test: Request) = {
+  describe("Combined request get") {
+    get_specs(:/("technically.us") <& /("test.text"))
+  }
+  describe("Backwards combined request get") {
+    get_specs(/("test.text") <& :/("technically.us"))
+  }
+  def get_specs(test: Request) = {
+    val http = new Http
     it("should equal expected string") {
       http(test.as_str) should equal (jane)
     }
@@ -30,7 +37,7 @@ class HttpSpec extends Spec with ShouldMatchers {
         case _ => ""
       } should equal ("gzip", jane)
     }
-  
+
     it("should equal expected string without gzip encoding") {
       http.also (test as_str) {
         case (_, _, Some(ent)) if ent.getContentEncoding != null => ent.getContentEncoding.getValue

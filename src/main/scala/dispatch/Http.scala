@@ -81,6 +81,9 @@ object / {
   def apply(path: String) = new Request("/" + path)
 }
 
+/** Nil request, useful to start with a descriptor like <:< that doesn't have a factory. */
+object /\ extends Request("")
+
 object Request {
   /** Request transformer */
   type Xf = HttpRequestBase => HttpRequestBase
@@ -104,8 +107,6 @@ object Handler {
     } } )
 }
 
-/** Nil request, useful to start with a descritor like <:< that doesn't have a factory. */
-object /\ extends Request("")
 
 /** Request descriptor, possibly contains a host, credentials, and a list of transformation functions. */
 class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xfs: List[Request.Xf]) {
