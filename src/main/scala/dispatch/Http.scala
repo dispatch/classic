@@ -81,8 +81,8 @@ object / {
   def apply(path: String) = new Request("/" + path)
 }
 
-/** Nil request, useful to start with a descriptor like <:< that doesn't have a factory. */
-object /\ extends Request("")
+/** Nil request, useful to kick off a descriptor like <:< that doesn't have a factory. */
+object /\ extends Request(None, None, Nil)
 
 object Request {
   /** Request transformer */

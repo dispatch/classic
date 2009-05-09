@@ -38,6 +38,14 @@ class HttpSpec extends Spec with ShouldMatchers {
       } should equal ("gzip", jane)
     }
 
+    it("should equal expected string with a gzip defaulter") {
+      val my_defualts = /\.gzip
+      http.also (my_defualts <& test as_str) {
+        case (_, _, Some(ent)) if ent.getContentEncoding != null => ent.getContentEncoding.getValue
+        case _ => ""
+      } should equal ("gzip", jane)
+    }
+
     it("should equal expected string without gzip encoding") {
       http.also (test as_str) {
         case (_, _, Some(ent)) if ent.getContentEncoding != null => ent.getContentEncoding.getValue
