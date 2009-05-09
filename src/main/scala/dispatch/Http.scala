@@ -79,7 +79,7 @@ object :/ {
   def apply(hostname: String): Request = new Request(Some(new HttpHost(hostname)), None, Nil)
 }
 
-/** Factory for requests from a directory. */
+/** Factory for requests from a directory, prepends '/'. */
 object / {
   def apply(path: String) = /\ / path
 }
@@ -138,7 +138,7 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   /** @deprecated use <& */
   def + (req: Request) = this <& req
 
-  /** Append an element to this request's path. (mutates request) */
+  /** Append an element to this request's path, joins with '/'. (mutates request) */
   def / (path: String) = next_uri { _ + "/" + path }
   
   /** Add headers to this request. (mutates request) */
@@ -150,14 +150,14 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   /* Add a gzip acceptance header */
   def gzip = this <:< Map("Accept-Encoding" -> "gzip")
 
-  /** Put the given object.toString and return response wrapper. (new request, old URI) */
+  /** Put the given object.toString and return response wrapper. (new request, mimics) */
   def <<< (body: Any) = next {
     val m = new HttpPut
     m setEntity new StringEntity(body.toString, HTTP.UTF_8)
     HttpProtocolParams.setUseExpectContinue(m.getParams, false)
     mimic(m)_
   }
-  /** Post the given key value sequence and return response wrapper. (new request, old URI) */
+  /** Post the given key value sequence and return response wrapper. (new request, mimics) */
   def << (values: Map[String, Any]) = next {
     val m = new HttpPost
     m setEntity new UrlEncodedFormEntity(Http.map2ee(values), HTTP.UTF_8)
@@ -170,7 +170,7 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
     else uri + Http ? (values)
   }
   
-  /** HTTP Delete request. (new request, old URI) */
+  /** HTTP Delete request. (new request, mimics) */
   def <--() = next { mimic(new HttpDelete)_ }
 
   // end Request generators
@@ -199,7 +199,7 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   /** Process response as JsValue in block */
   def ># [T](block: json.Js.JsF[T]) = >> { stm => block(json.Js(stm)) }
   
-  /** Ignore response body if OK. */
+  /** Ignore response body. */
   def >| = Handler(this, ent => ())
 }
 
