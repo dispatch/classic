@@ -132,7 +132,7 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   def as (name: String, pass: String) = 
     new Request(host, Some(new UsernamePasswordCredentials(name, pass)), xfs)
   
-  /** Combine two requests, i.e. separately constructed host and path specs. */
+  /** Combine this request with another. */
   def <& (req: Request) = new Request(host orElse req.host, creds orElse req.creds, req.xfs ::: xfs)
   
   /** Append an element to this request's path, joins with '/'. (mutates request) */
