@@ -135,9 +135,6 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   /** Combine two requests, i.e. separately constructed host and path specs. */
   def <& (req: Request) = new Request(host orElse req.host, creds orElse req.creds, req.xfs ::: xfs)
   
-  /** @deprecated use <& */
-  def + (req: Request) = this <& req
-
   /** Append an element to this request's path, joins with '/'. (mutates request) */
   def / (path: String) = next_uri { _ + "/" + path }
   
