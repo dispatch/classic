@@ -1,8 +1,5 @@
 package dispatch.couch
 
-import java.io.InputStream
-import org.apache.http.HttpHost
-
 import json._
 
 /** Extractors for CouchDB document id and revsion properties.
