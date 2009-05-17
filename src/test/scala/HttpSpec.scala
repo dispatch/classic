@@ -52,6 +52,13 @@ class HttpSpec extends Spec with ShouldMatchers with BeforeAndAfter {
         case _ => ""
       } should equal (jane, "")
     }
+    it("should equal expected string without gzip encoding") {
+      http (test as_str {
+        case (_, _, Some(ent), as_str) if ent.getContentEncoding != null => 
+          (as_str, ent.getContentEncoding.getValue)
+        case _ => ("", "")
+      } ) should equal (jane, "")
+    }
   }
   describe("Path building responses") {
     // using singleton Http, will need to shut down after all tests
