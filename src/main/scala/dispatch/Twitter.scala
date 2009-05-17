@@ -33,7 +33,7 @@ object Status extends Request(Twitter.host / "statuses") with Js {
 case class Status(user: String) extends 
     Request(Status / "user_timeline" / (user + ".json")) with Js {
 
-  def timeline(user: String) = this ># (list ! obj)
+  def timeline = this ># (list ! obj)
 }
 
 object User extends Js {
