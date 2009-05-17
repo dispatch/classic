@@ -97,10 +97,10 @@ object Request {
 /** Request handler, contains request descriptor and a function to transform the result. */
 case class Handler[T](req: Request, block: Handler.F[T]) {
   /** Create a new handler with block that receives all response parameters and
-      this handler's output as a by-name parameter (if accessed). */
-  def apply[R](next: (Int, HttpResponse, Option[HttpEntity], => T) => R) =
+      this handler's block converted to parameterless function. */
+  def apply[R](next: (Int, HttpResponse, Option[HttpEntity], () => T) => R) =
     new Handler(req, {(code, res, ent) =>
-      next(code, res, ent, block(code, res, ent))
+      next(code, res, ent, () => block(code, res, ent))
     })
 }
 

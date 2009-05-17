@@ -42,7 +42,7 @@ class HttpSpec extends Spec with ShouldMatchers with BeforeAndAfter {
       val my_defualts = /\.gzip
       http(my_defualts <& test as_str {
         case (_, _, Some(ent), out) if ent.getContentEncoding != null => 
-          (out, ent.getContentEncoding.getValue)
+          (out(), ent.getContentEncoding.getValue)
         case _ => ("", "")
       } ) should equal (jane, "gzip")
     }
@@ -50,7 +50,7 @@ class HttpSpec extends Spec with ShouldMatchers with BeforeAndAfter {
     it("should equal expected string without gzip encoding") {
       http(test as_str {
         case (_, _, Some(ent), out) =>
-          (out, if (ent.getContentEncoding == null) "" else ent.getContentEncoding.getValue)
+          (out(), if (ent.getContentEncoding == null) "" else ent.getContentEncoding.getValue)
         case _ => ("", "")
       } ) should equal (jane, "")
     }
