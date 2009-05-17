@@ -96,7 +96,9 @@ object Request {
 
 /** Request handler, contains request descriptor and a function to transform the result. */
 case class Handler[T](req: Request, block: Handler.F[T]) {
-  def apply[T2](next: (Int, HttpResponse, Option[HttpEntity], => T) => T2) =
+  /** Create a new handler with block that receives all response parameters and
+      this handler's output as a by-name parameter (if accessed). */
+  def apply[R](next: (Int, HttpResponse, Option[HttpEntity], => T) => R) =
     new Handler(req, {(code, res, ent) =>
       next(code, res, ent, block(code, res, ent))
     })

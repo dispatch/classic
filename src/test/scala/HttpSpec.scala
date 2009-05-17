@@ -40,24 +40,19 @@ class HttpSpec extends Spec with ShouldMatchers with BeforeAndAfter {
 
     it("should equal expected string with a gzip defaulter") {
       val my_defualts = /\.gzip
-      http.also (my_defualts <& test as_str) {
-        case (_, _, Some(ent)) if ent.getContentEncoding != null => ent.getContentEncoding.getValue
-        case _ => ""
-      } should equal (jane, "gzip")
+      http(my_defualts <& test as_str {
+        case (_, _, Some(ent), out) if ent.getContentEncoding != null => 
+          (out, ent.getContentEncoding.getValue)
+        case _ => ("", "")
+      } ) should equal (jane, "gzip")
     }
 
     it("should equal expected string without gzip encoding") {
-      http.also (test as_str) {
-        case (_, _, Some(ent)) if ent.getContentEncoding != null => ent.getContentEncoding.getValue
-        case _ => ""
-      } should equal (jane, "")
-    }
-    it("should equal expected string without gzip encoding") {
-      http (test as_str {
-        case (_, _, Some(ent), as_str) if ent.getContentEncoding != null => 
-          (as_str, ent.getContentEncoding.getValue)
+      http(test.as_str.apply( {
+        case (_, _, Some(ent), out) =>
+          (out, if (ent.getContentEncoding == null) "" else ent.getContentEncoding.getValue)
         case _ => ("", "")
-      } ) should equal (jane, "")
+      } )) should equal (jane, "")
     }
   }
   describe("Path building responses") {
