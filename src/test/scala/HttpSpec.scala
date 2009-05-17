@@ -48,11 +48,11 @@ class HttpSpec extends Spec with ShouldMatchers with BeforeAndAfter {
     }
 
     it("should equal expected string without gzip encoding") {
-      http(test.as_str.apply( {
+      http(test as_str {
         case (_, _, Some(ent), out) =>
           (out, if (ent.getContentEncoding == null) "" else ent.getContentEncoding.getValue)
         case _ => ("", "")
-      } )) should equal (jane, "")
+      } ) should equal (jane, "")
     }
   }
   describe("Path building responses") {
