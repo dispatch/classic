@@ -30,6 +30,19 @@ class HttpSpec extends Spec with ShouldMatchers with BeforeAndAfter {
     it("should write to expected sting bytes") {
       http(test >>> new java.io.ByteArrayOutputStream).toByteArray should equal (jane.getBytes)
     }
+    
+    it("should throw status code exception when applied to non-existent resource") {
+      intercept[StatusCode] {
+        http (test / "do_not_want" as_str)
+      }
+    }
+
+    it("should allow any status code with x") {
+      http x (test / "do_not_want" as_str) {
+        case (404, _, _, out) => out()
+        case _ => "success is failure"
+      } should include ("404 Not Found")
+    }
 
     it("should equal expected string with gzip encoding") {
       http.also (test.gzip as_str) {
@@ -48,11 +61,11 @@ class HttpSpec extends Spec with ShouldMatchers with BeforeAndAfter {
     }
 
     it("should equal expected string without gzip encoding") {
-      http(test as_str {
+      http(test.as_str {
         case (_, _, Some(ent), out) =>
           (out(), if (ent.getContentEncoding == null) "" else ent.getContentEncoding.getValue)
         case _ => ("", "")
-      } ) should equal (jane, "")
+      }) should equal (jane, "")
     }
   }
   describe("Path building responses") {

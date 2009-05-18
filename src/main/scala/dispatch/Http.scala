@@ -44,6 +44,8 @@ class Http {
       Http.log.info("%s %s", req.getMethod, req.getURI)
       client.execute(req)
   }
+  /** Execute full request-response handler. */
+  def x[T](hand: Handler[T]): T = x(hand.req)(hand.block)
   /** Execute request and handle response codes, response, and entity in block */
   def x [T](req: Request)(block: Handler.F[T]) = {
     val res = execute(req.host, req.creds, req.req)
