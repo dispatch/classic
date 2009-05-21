@@ -123,7 +123,7 @@ object JsValue {
   def toJson(x: JsValue): String = x match {
     case JsNull => "null"
     case JsBoolean(b) => b.toString
-    case JsString(s) => "\"" + s + "\""
+    case JsString(s) => "\"" + s.replaceAll("\\\\", "\\\\\\\\").replaceAll("\\\"", "\\\\\"") + "\""
     case JsNumber(n) => n.toString
     case JsArray(xs) => xs.map(toJson).mkString("[",", ","]")
     case JsObject(m) => m.map{case (key, value) => toJson(key) + " : " + toJson(value)}.mkString("{",", ","}")
