@@ -44,6 +44,8 @@ class Http {
       Http.log.info("%s %s", req.getMethod, req.getURI)
       client.execute(req)
   }
+  /** Execute full request-response handler. */
+  def x[T](hand: Handler[T]): T = x(hand.req)(hand.block)
   /** Execute request and handle response codes, response, and entity in block */
   def x [T](req: Request)(block: Handler.F[T]) = {
     val res = execute(req.host, req.creds, req.req)
@@ -95,7 +97,14 @@ object Request {
 }
 
 /** Request handler, contains request descriptor and a function to transform the result. */
-case class Handler[T](req: Request, block: Handler.F[T])
+case class Handler[T](req: Request, block: Handler.F[T]) {
+  /** Create a new handler with block that receives all response parameters and
+      this handler's block converted to parameterless function. */
+  def apply[R](next: (Int, HttpResponse, Option[HttpEntity], () => T) => R) =
+    new Handler(req, {(code, res, ent) =>
+      next(code, res, ent, () => block(code, res, ent))
+    })
+}
 
 object Handler { 
   type F[T] = (Int, HttpResponse, Option[HttpEntity]) => T
@@ -132,12 +141,9 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   def as (name: String, pass: String) = 
     new Request(host, Some(new UsernamePasswordCredentials(name, pass)), xfs)
   
-  /** Combine two requests, i.e. separately constructed host and path specs. */
+  /** Combine this request with another. */
   def <& (req: Request) = new Request(host orElse req.host, creds orElse req.creds, req.xfs ::: xfs)
   
-  /** @deprecated use <& */
-  def + (req: Request) = this <& req
-
   /** Append an element to this request's path, joins with '/'. (mutates request) */
   def / (path: String) = next_uri { _ + "/" + path }
   
