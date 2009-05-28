@@ -8,10 +8,20 @@ class HttpSpec extends Spec with ShouldMatchers with BeforeAndAfter {
   val jane = "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.\n"
   
   describe("Singleton Http test get") {
-    get_specs("http://technically.us/test.text")
+    val req: Request = "http://technically.us/test.text"
+    it("should throw exception if credentials are specified without explicit host") {
+      intercept[Exception] {
+        Http (req as ("user", "pass") as_str)
+      }
+    }
+    get_specs(req)
   }
   describe("Bound host get") {
-    get_specs(:/("technically.us") / "test.text")
+    val req = :/("technically.us") / "test.text"
+    it("should not throw exception if credentials are specified with explicit host") {
+      Http (req as ("user", "pass") as_str) should equal (jane)
+    }
+    get_specs(req)
   }
   describe("Combined request get") {
     get_specs(:/("technically.us") <& /("test.text"))

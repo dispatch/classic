@@ -39,6 +39,7 @@ class Http {
   val execute: (Option[HttpHost], Option[Credentials], HttpUriRequest) => HttpResponse = {
     case (Some(host), Some(creds), req) =>
       client.credentials.withValue(Some((new AuthScope(host.getHostName, host.getPort), creds)))(execute(host, req))
+    case (None, Some(creds), _) => error("Credentials specified without explicit host")
     case (Some(host), _, req) => execute(host, req)
     case (_, _, req) => 
       Http.log.info("%s %s", req.getMethod, req.getURI)
@@ -137,7 +138,7 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   
   // the below functions create new request descriptors based off of the current
   
-  /** Set credentials to be used for this request */
+  /** Set credentials to be used for this request; requires a host value :/(...) upon execution. */
   def as (name: String, pass: String) = 
     new Request(host, Some(new UsernamePasswordCredentials(name, pass)), xfs)
   
