@@ -4,9 +4,12 @@ class Dispatch(info: ProjectInfo) extends DefaultProject(info) with AutoCompiler
 {
   val lag_net = "lag.net repository" at "http://www.lag.net/repo"
 
-  val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.0-beta2"
-  val scala_test = "org.scala-tools.testing" % "scalatest" % "0.9.5"
-  val configgy = "net.lag" % "configgy" % "1.2.1a"
+  override def useMavenConfigurations = true
+
+  val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.0-beta2" % "compile->default"
+  val configgy = "net.lag" % "configgy" % "1.3" % "compile->default"
+
+  val st = "org.scala-tools.testing" % "scalatest" % "0.9.5" % "test->default"
 
   val sxr = compilerPlugin("sxr" % "sxr" % "0.1")
   
