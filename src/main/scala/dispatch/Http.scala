@@ -22,6 +22,9 @@ import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials, Credentials
 case class StatusCode(code: Int, contents:String)
   extends Exception("Exceptional resoponse code: " + code + "\n" + contents)
 
+/** Simple info logger */
+trait Logger { def info(msg: String, items: Any*) }
+
 /** Http access point. Standard instances to be used by a single thread. */
 class Http {
   val credentials = new DynamicVariable[Option[(AuthScope, Credentials)]](None)
@@ -30,9 +33,24 @@ class Http {
   def credentialsProvider = new BasicCredentialsProvider {
     override def getCredentials(scope: AuthScope) = null
   }
+  
+  /** Info Logger for this instance, default returns Connfiggy if on classpath else console logger. */
+  lazy val log: Logger = try {
+    new Logger {
+      val delegate = net.lag.logging.Logger.get
+      def info(msg: String, items: Any*) { delegate.info(msg, items: _*) }
+    }
+  } catch {
+    case e: NoClassDefFoundError => new Logger {
+      def info(msg: String, items: Any*) { 
+        println("INF: [console logger] dispatch: " + msg.format(items: _*)) 
+      }
+    }
+  }
+  
   /** Execute method for the given host, with logging. */
   def execute(host: HttpHost, req: HttpUriRequest) = {
-    Http.log.info("%s %s%s", req.getMethod, host, req.getURI)
+    log.info("%s %s%s", req.getMethod, host, req.getURI)
     client.execute(host, req) 
   }
   /** Execute for given optional parametrs, with logging. Creates local scope for credentials. */
@@ -42,7 +60,7 @@ class Http {
     case (None, Some(creds), _) => error("Credentials specified without explicit host")
     case (Some(host), _, req) => execute(host, req)
     case (_, _, req) => 
-      Http.log.info("%s %s", req.getMethod, req.getURI)
+      log.info("%s %s", req.getMethod, req.getURI)
       client.execute(req)
   }
   /** Execute full request-response handler. */
@@ -249,7 +267,6 @@ object Http extends Http {
   /** Shutdown connection manager, threads. (Needed to close console cleanly.) */
   def shutdown() = client.getConnectionManager.shutdown()
 
-  val log = net.lag.logging.Logger.get
   /** Convert repeating name value tuples to list of pairs for httpclient */
   def map2ee(values: Map[String, Any]) = 
     new java.util.ArrayList[BasicNameValuePair](values.size) {

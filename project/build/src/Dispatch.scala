@@ -7,7 +7,7 @@ class Dispatch(info: ProjectInfo) extends DefaultProject(info)
   override def useMavenConfigurations = true
 
   val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.0-beta2" % "compile->default"
-  val configgy = "net.lag" % "configgy" % "1.3" % "compile->default"
+  val configgy = "net.lag" % "configgy" % "1.3" % "provided->default"
 
   val st = "org.scala-tools.testing" % "scalatest" % "0.9.5" % "test->default"
 
