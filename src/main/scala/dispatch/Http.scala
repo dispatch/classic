@@ -1,5 +1,6 @@
 package dispatch
 
+import collection.Map
 import util.DynamicVariable
 import java.io.{InputStream,OutputStream,BufferedInputStream,BufferedOutputStream}
 import java.net.URI
@@ -173,7 +174,7 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   }
 
   /* Add a gzip acceptance header */
-  def gzip = this <:< Map("Accept-Encoding" -> "gzip")
+  def gzip = this <:< collection.immutable.Map("Accept-Encoding" -> "gzip")
 
   /** Put the given object.toString and return response wrapper. (new request, mimics) */
   def <<< (body: Any) = next {
