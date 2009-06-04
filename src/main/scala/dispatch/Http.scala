@@ -1,5 +1,6 @@
 package dispatch
 
+import collection.Map
 import util.DynamicVariable
 import java.io.{InputStream,OutputStream,BufferedInputStream,BufferedOutputStream}
 import java.net.URI
@@ -173,7 +174,7 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   }
 
   /* Add a gzip acceptance header */
-  def gzip = this <:< Map("Accept-Encoding" -> "gzip")
+  def gzip = this <:< collection.immutable.Map("Accept-Encoding" -> "gzip")
 
   /** Put the given object.toString and return response wrapper. (new request, mimics) */
   def <<< (body: Any) = next {
@@ -183,14 +184,14 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
     mimic(m)_
   }
   /** Post the given key value sequence and return response wrapper. (new request, mimics) */
-  def << (values: Map[String, Any]) = next {
+  def << [T] (values: Map[String, T]) = next {
     val m = new HttpPost
     m setEntity new UrlEncodedFormEntity(Http.map2ee(values), HTTP.UTF_8)
     mimic(m)_
   }
   
   /** Add query parameters. (mutates request) */
-  def <<? (values: Map[String, Any]) = next_uri { uri =>
+  def <<? [T] (values: Map[String, T]) = next_uri { uri =>
     if(values.isEmpty) uri
     else uri + Http ? (values)
   }
@@ -268,11 +269,11 @@ object Http extends Http {
   def shutdown() = client.getConnectionManager.shutdown()
 
   /** Convert repeating name value tuples to list of pairs for httpclient */
-  def map2ee(values: Map[String, Any]) = 
+  def map2ee[T](values: Map[String, T]) = 
     new java.util.ArrayList[BasicNameValuePair](values.size) {
       values.foreach { case (k, v) => add(new BasicNameValuePair(k, v.toString)) }
     }
   /** Produce formatted query strings from a Map of parameters */
-  def ?(values: Map[String, Any]) = if (values.isEmpty) "" else 
+  def ? [T] (values: Map[String, T]) = if (values.isEmpty) "" else 
     "?" + URLEncodedUtils.format(map2ee(values), HTTP.UTF_8)
 }
