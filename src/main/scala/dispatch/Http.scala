@@ -163,6 +163,9 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   
   /** Combine this request with another. */
   def <& (req: Request) = new Request(host orElse req.host, creds orElse req.creds, req.xfs ::: xfs)
+
+  /** Combine this request with another handler. */
+  def >& [T] (other: Handler[T]) = new Handler(this <& other.req, other.block)
   
   /** Append an element to this request's path, joins with '/'. (mutates request) */
   def / (path: String) = next_uri { _ + "/" + path }
