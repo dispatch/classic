@@ -71,31 +71,31 @@ class JsonSpec extends Spec with ShouldMatchers {
     val pi = 'pi ? num
     val l = 'b ? list
     it("should extract a top level object") {
-      val a(a_) = js
-      a_ should equal (expected_map(JsString('a)))
+      val a(a0) = js
+      a0 should equal (expected_map(JsString('a)))
     }
     it("should deeply extract a third level number") {
-      val a(b(pi(pi_))) = js
-      pi_ should equal (3.14159265)
+      val a(b(pi(pi0))) = js
+      pi0 should equal (3.14159265)
     }
     it("should match against an unextracted list") {
-      val l(l_) = js
-      l_ should equal (List(JsValue(1), JsValue(2), JsValue(3)))
+      val l(l0) = js
+      l0 should equal (List(JsValue(1), JsValue(2), JsValue(3)))
     }
     val num_list = list ! num
     it("should match for an unenclosed Json list") {
-      val num_list(l_) = js_list
-      l_ should equal (List(1,2,3))
+      val num_list(l0) = js_list
+      l0 should equal (List(1,2,3))
     }
     it("should pattern-match correct elements") {
       (js match {
-        case b(b_) => b_
-        case a(a_) => a_
+        case b(b0) => b0
+        case a(a0) => a0
       }) should equal (expected_map(JsString('a)))
     }
     it("should awkwardly replace second level string") {
-      val a(a_) = js
-      res ># (a << (aa << "barnacles, ahoy")(a_)) should equal (Js(
+      val a(a0) = js
+      res ># (a << (aa << "barnacles, ahoy")(a0)) should equal (Js(
         """ { "a": {"a": "barnacles, ahoy", "b": {"pi": 3.14159265 } }, "b": [1,2,3] } """
       ))
     }
