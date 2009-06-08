@@ -4,11 +4,8 @@ class Dispatch(info: ProjectInfo) extends DefaultProject(info)
 {
   val lag_net = "lag.net repository" at "http://www.lag.net/repo"
 
-  val config_default = Configurations.Default
-  val config_compile = Configurations.Compile
-  val config_test = Configurations.Test
-  val config_provided = Configurations.Provided
-
+  override def useMavenConfigurations = true
+  
   val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.0-beta2" % "compile->default"
   val configgy = "net.lag" % "configgy" % "1.3" % "provided->default"
 
