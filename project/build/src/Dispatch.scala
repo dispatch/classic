@@ -11,6 +11,6 @@ class Dispatch(info: ProjectInfo) extends DefaultProject(info)
 
   val st = "org.scala-tools.testing" % "scalatest" % "0.9.5" % "test->default"
 
-  //override def managedStyle = ManagedStyle.Maven
+  override def managedStyle = ManagedStyle.Maven
   lazy val publishTo = Resolver.file("Databinder Repository", new java.io.File("/var/dbwww/repo"))
 }
