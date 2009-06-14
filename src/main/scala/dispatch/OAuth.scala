@@ -12,7 +12,7 @@ case class Consumer(key: String, secret: String)
 case class Token(value: String, secret: String)
 
 object OAuth {
-  def sign(url: String, consumer: Consumer, token: Option[Token], user_params: Map[String, Any]) = {
+  def sign(method: String, url: String, user_params: Map[String, Any], consumer: Consumer, token: Option[Token]) = {
     val params = TreeMap(
       "oauth_consumer_key" -> consumer.key,
       "oauth_signature_method" -> "HMAC-SHA1",
@@ -21,7 +21,7 @@ object OAuth {
       "oauth_nonce" -> System.nanoTime.toString
     ) ++ token.map { "oauth_token" -> _.value } ++ user_params
     
-    val message = %%("GET" :: url :: q_str(params) :: Nil)
+    val message = %%(method :: url :: q_str(params) :: Nil)
     println(message)
     
     val SHA1 = "HmacSHA1";
