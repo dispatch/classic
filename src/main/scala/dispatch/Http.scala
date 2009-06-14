@@ -15,7 +15,7 @@ import org.apache.http.client.utils.URLEncodedUtils
 
 import org.apache.http.entity.StringEntity
 import org.apache.http.message.BasicNameValuePair
-import org.apache.http.protocol.{HTTP, HttpContext}
+import org.apache.http.protocol.HTTP.UTF_8
 import org.apache.http.params.{HttpProtocolParams, BasicHttpParams}
 import org.apache.http.util.EntityUtils
 import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials, Credentials}
@@ -79,7 +79,7 @@ class Http {
   /** Apply Response Handler if reponse code returns true from chk. */
   def when[T](chk: Int => Boolean)(hand: Handler[T]) = x(hand.req) {
     case (code, res, ent) if chk(code) => hand.block(code, res, ent)
-    case (code, _, Some(ent)) => throw StatusCode(code, EntityUtils.toString(ent, HTTP.UTF_8))
+    case (code, _, Some(ent)) => throw StatusCode(code, EntityUtils.toString(ent, UTF_8))
     case (code, _, _)         => throw StatusCode(code, "[no entity]")
   }
   /** Apply a custom block in addition to predefined response Handler. */
@@ -182,19 +182,19 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   /** Put the given object.toString and return response wrapper. (new request, mimics) */
   def <<< (body: Any) = next {
     val m = new HttpPut
-    m setEntity new StringEntity(body.toString, HTTP.UTF_8)
+    m setEntity new StringEntity(body.toString, UTF_8)
     HttpProtocolParams.setUseExpectContinue(m.getParams, false)
     mimic(m)_
   }
   /** Post the given key value sequence and return response wrapper. (new request, mimics) */
-  def << [T] (values: Map[String, T]) = next {
+  def << (values: Map[String, Any]) = next {
     val m = new HttpPost
-    m setEntity new UrlEncodedFormEntity(Http.map2ee(values), HTTP.UTF_8)
+    m setEntity new UrlEncodedFormEntity(Http.map2ee(values), UTF_8)
     mimic(m)_
   }
   
   /** Add query parameters. (mutates request) */
-  def <<? [T] (values: Map[String, T]) = next_uri { uri =>
+  def <<? (values: Map[String, Any]) = next_uri { uri =>
     if(values.isEmpty) uri
     else uri + Http ? (values)
   }
@@ -238,7 +238,7 @@ class ConfiguredHttpClient extends DefaultHttpClient {
   override def createHttpParams = {
     val params = new BasicHttpParams
     HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1)
-    HttpProtocolParams.setContentCharset(params, HTTP.UTF_8)
+    HttpProtocolParams.setContentCharset(params, UTF_8)
     HttpProtocolParams.setUseExpectContinue(params, false)
     params
   }
@@ -272,11 +272,15 @@ object Http extends Http {
   def shutdown() = client.getConnectionManager.shutdown()
 
   /** Convert repeating name value tuples to list of pairs for httpclient */
-  def map2ee[T](values: Map[String, T]) = 
-    new java.util.ArrayList[BasicNameValuePair](values.size) {
-      values.foreach { case (k, v) => add(new BasicNameValuePair(k, v.toString)) }
-    }
-  /** Produce formatted query strings from a Map of parameters */
-  def ? [T] (values: Map[String, T]) = if (values.isEmpty) "" else 
-    "?" + URLEncodedUtils.format(map2ee(values), HTTP.UTF_8)
+  def map2ee(values: Map[String, Any]) = java.util.Arrays asList (
+    values.toSeq map { case (k, v) => new BasicNameValuePair(k, v.toString) } toArray : _*
+  )
+  /** @return %-encoded string for use in URLs */
+  def % (s: String) = java.net.URLEncoder.encode(s, UTF_8)
+  
+  /** @return formatted and %-encoded query string, e.g. name=value&name2=value2 */
+  def q_str (values: Map[String, Any]) = URLEncodedUtils.format(map2ee(values), UTF_8)
+
+  /** @return formatted query string prepended by ? unless values map is empty  */
+  def ? (values: Map[String, Any]) = if (values.isEmpty) "" else "?" + q_str(values)
 }
