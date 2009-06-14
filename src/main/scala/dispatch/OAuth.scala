@@ -12,14 +12,14 @@ case class Consumer(key: String, secret: String)
 case class Token(value: String, secret: String)
 
 object OAuth {
-  def sign(url: String, consumer: Consumer, token: Option[Token]) = {
+  def sign(url: String, consumer: Consumer, token: Option[Token], user_params: Map[String, Any]) = {
     val params = TreeMap(
       "oauth_consumer_key" -> consumer.key,
       "oauth_signature_method" -> "HMAC-SHA1",
       "oauth_version" -> "1.0",
       "oauth_timestamp" -> (System.currentTimeMillis / 1000).toString,
       "oauth_nonce" -> System.nanoTime.toString
-    ) ++ token.map { "oauth_token" -> _.value }
+    ) ++ token.map { "oauth_token" -> _.value } ++ user_params
     
     val message = %%("GET" :: url :: q_str(params) :: Nil)
     println(message)
