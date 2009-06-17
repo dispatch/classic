@@ -186,9 +186,10 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
     HttpProtocolParams.setUseExpectContinue(m.getParams, false)
     mimic(m)_
   }
+  class Post(values: Map[String, Any]) extends HttpPost
   /** Post the given key value sequence and return response wrapper. (new request, mimics) */
   def << (values: Map[String, Any]) = next {
-    val m = new HttpPost
+    val m = new Post(values)
     m setEntity new UrlEncodedFormEntity(Http.map2ee(values), UTF_8)
     mimic(m)_
   }
