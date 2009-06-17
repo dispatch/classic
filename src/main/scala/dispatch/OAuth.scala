@@ -1,6 +1,7 @@
 package dispatch.oauth
 import Http.{%, q_str}
 
+import collection.Map
 import collection.immutable.TreeMap
 
 import javax.crypto
@@ -10,6 +11,17 @@ import org.apache.commons.codec.binary.Base64.encodeBase64
 
 case class Consumer(key: String, secret: String)
 case class Token(value: String, secret: String)
+
+object OA { // scalac thinks this method is recurisve if it's in OAuth (?)
+  implicit def add_<<@ (r: Request) = new {
+    def <<@ (consumer: Consumer, token: Option[Token]) = r next {
+      case before: Post =>
+        val after = new Post(OAuth.sign(before.getMethod, before.getURI.toString, before.values, consumer, token))
+        r.mimic(after)(before)
+      case before => before
+    }
+  }
+}
 
 object OAuth {
   def sign(method: String, url: String, user_params: Map[String, Any], consumer: Consumer, token: Option[Token]) = {

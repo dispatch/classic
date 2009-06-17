@@ -136,6 +136,9 @@ object Handler {
     } } )
 }
 
+class Post(val values: Map[String, Any]) extends HttpPost {
+  this setEntity new UrlEncodedFormEntity(Http.map2ee(values), UTF_8)
+}
 
 /** Request descriptor, possibly contains a host, credentials, and a list of transformation functions. */
 class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xfs: List[Request.Xf]) {
@@ -146,10 +149,10 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   /** Construct as a clone, e.g. in class extends clause. */
   def this(req: Request) = this(req.host, req.creds, req.xfs)
   
-  private def next(xf: Request.Xf) = new Request(host, creds, xf :: xfs)
-  private def next_uri(sxf: String => String) = next(Request.uri_xf(sxf))
+  def next(xf: Request.Xf) = new Request(host, creds, xf :: xfs)
+  def next_uri(sxf: String => String) = next(Request.uri_xf(sxf))
   
-  private def mimic(dest: HttpRequestBase)(req: HttpRequestBase) = {
+  def mimic(dest: HttpRequestBase)(req: HttpRequestBase) = {
     dest.setURI(req.getURI)
     dest.setHeaders(req.getAllHeaders)
     dest
@@ -186,13 +189,8 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
     HttpProtocolParams.setUseExpectContinue(m.getParams, false)
     mimic(m)_
   }
-  class Post(values: Map[String, Any]) extends HttpPost
   /** Post the given key value sequence and return response wrapper. (new request, mimics) */
-  def << (values: Map[String, Any]) = next {
-    val m = new Post(values)
-    m setEntity new UrlEncodedFormEntity(Http.map2ee(values), UTF_8)
-    mimic(m)_
-  }
+  def << (values: Map[String, Any]) = next { mimic(new Post(values))_ }
   
   /** Add query parameters. (mutates request) */
   def <<? (values: Map[String, Any]) = next_uri { uri =>
