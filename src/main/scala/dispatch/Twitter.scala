@@ -1,6 +1,7 @@
 package dispatch.twitter
 
 import json._
+import oauth.OAuth._
 
 object Twitter {
   val host = :/("twitter.com")
@@ -45,4 +46,20 @@ case class User(user: String) extends
     Request(Twitter.host / "users" / "show" / (user + ".json")) with Js {
 
   def show = this ># obj
+}
+
+object Auth {
+  import oauth._
+  import OAuth._
+  
+  val svc = Twitter.host / "oauth"
+  def request_token(consumer: Consumer) = 
+    svc / "request_token" <<@ (consumer, None) as_str
+    
+  def authorize_url(consumer: Consumer, token: Token) =
+    OAuth.authorize_url("http://twitter.com/oauth/authorize", consumer, token)
+  
+  def access_token(consumer: Consumer, token: Token) = 
+    svc / "access_token" <<@ (consumer, Some(token)) as_str
+    
 }
