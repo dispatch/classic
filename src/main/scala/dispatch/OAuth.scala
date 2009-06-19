@@ -53,20 +53,29 @@ object OAuth {
     def <@ (consumer: Consumer, token: Option[Token]) = r next {
       case before: Post =>
         r.mimic(new Post(OAuth.sign(
-          before.getMethod, oauth_url(r, before), params(before) ++ before.values, consumer, token))
+          before.getMethod, oauth_url(r, before), split_query(before) ++ before.values, consumer, token))
         )(before)
       case before =>
-        val signed = OAuth.sign(before.getMethod, oauth_url(r, before), params(before), consumer, token)
+        val signed = OAuth.sign(before.getMethod, oauth_url(r, before), split_query(before), consumer, token)
         before.setURI(java.net.URI.create(oauth_url(r, before) + (Http ? signed)))
         before
     }
-  }
-  private def oauth_url(r: Request, req: HttpRequestBase) = r.host.getOrElse("") + req.getURI.toString.split('?')(0)
+    def >% [T] (block: IMap[String, String] => T) = r >- ( split_decode andThen block )
+    def as_token = r >% { m => Token(m("oauth_token"), m("oauth_token_secret")) }
+    
+    private def oauth_url(r: Request, req: HttpRequestBase) = r.host.getOrElse("") + req.getURI.toString.split('?')(0)
 
-  private def params(req: HttpRequestBase): IMap[String,Any] = req.getURI.getQuery match {
+    private def split_query(req: HttpRequestBase) = split_decode(req.getURI.getRawQuery)
+
+    val split_decode: (String => IMap[String, String]) = {
       case null => IMap.empty
-      case query => IMap.empty ++ query.split('&').map {
-        _ split "=" match { case Seq(name, value) => name -> value }
+      case query => IMap.empty ++ query.split('&').map { nvp =>
+        ( nvp split "=" map Http.-% ) match { 
+          case Seq(name, value) => name -> value
+          case Seq(name) => name -> ""
+        }
       }
+    }
   }
+  
 }

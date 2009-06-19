@@ -217,8 +217,10 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
       new GZIPInputStream(ent.getContent)
     else ent.getContent
   ) } )
-  /** Return response in String. (Don't blow your heap, kids.) */
-  def as_str = >> { scala.io.Source.fromInputStream(_).mkString }
+  /** Handle some non-huge response body as a String, in a block. */
+  def >- [T] (block: String => T) = >> { stm => block(scala.io.Source.fromInputStream(stm).mkString) }
+  /** Return some non-huge response as a String. */
+  def as_str = >- { s => s }
   /** Write to the given OutputStream. */
   def >>> [OS <: OutputStream](out: OS) = Handler(this, { ent => ent.writeTo(out); out })
   /** Process response as XML document in block */
@@ -276,6 +278,9 @@ object Http extends Http {
   )
   /** @return %-encoded string for use in URLs */
   def % (s: String) = java.net.URLEncoder.encode(s, UTF_8)
+
+  /** @return %-decoded string e.g. from query string or form body */
+  def -% (s: String) = java.net.URLEncoder.encode(s, UTF_8)
   
   /** @return formatted and %-encoded query string, e.g. name=value&name2=value2 */
   def q_str (values: Map[String, Any]) = URLEncodedUtils.format(map2ee(values), UTF_8)
