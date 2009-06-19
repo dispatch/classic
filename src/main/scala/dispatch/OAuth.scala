@@ -39,8 +39,8 @@ object OAuth {
     params + ("oauth_signature" -> sig)
   }
 
-  def %% (s: Seq[String]) = s map % mkString "&"
-  def bytes(str: String) = str.getBytes(UTF_8)
+  private def %% (s: Seq[String]) = s map % mkString "&"
+  private def bytes(str: String) = str.getBytes(UTF_8)
   
   class RequestSigner(r: Request) {
     /** Convert to a post before signing */
