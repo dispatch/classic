@@ -64,5 +64,7 @@ object Auth {
   
   def access_token(consumer: Consumer, token: Token) = 
     svc / "access_token" <<@ (consumer, token) as_token
-    
+
+  def access_token(consumer: Consumer, token: Token, pin: Int) = 
+    svc / "access_token" << Map("oauth_verifier" -> pin) <@ (consumer, token) as_token
 }
