@@ -209,6 +209,9 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
     (xfs :\ start) { (a,b) => a(b) }
   }
   
+  /** @return URI based on this request, e.g. if needed outside Disptach. */
+  def to_uri = Http.to_uri(host, req)
+  
   // the below functions produce Handlers based on this request descriptor
 
   /** Handle InputStream in block, handle gzip if so encoded. */
@@ -287,4 +290,8 @@ object Http extends Http {
 
   /** @return formatted query string prepended by ? unless values map is empty  */
   def ? (values: Map[String, Any]) = if (values.isEmpty) "" else "?" + q_str(values)
+  
+  /** @return URI built from HttpHost if present combined with a HttpClient request object. */
+  def to_uri(host: Option[HttpHost], req: HttpRequestBase) =
+    URI.create(host.map(_.toURI).getOrElse("")).resolve(req.getURI)
 }

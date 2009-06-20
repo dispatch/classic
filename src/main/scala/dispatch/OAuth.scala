@@ -47,26 +47,30 @@ object OAuth {
   
   class RequestSigner(r: Request) {
     /** Convert to a post before signing */
-    val <<@ = r << IMap() <@ (_, _)
+    def <<@ (consumer: Consumer): Request = r << IMap() <@ (consumer)
+    def <<@ (consumer: Consumer, token: Token): Request = r << IMap() <@ (consumer, token)
+
+    def <@ (consumer: Consumer): Request = sign(consumer, None)
+    def <@ (consumer: Consumer, token: Token): Request = sign(consumer, Some(token))
     
     /** Sign request using Post (<<) parameters and query string */
-    def <@ (consumer: Consumer, token: Option[Token]) = r next {
-      case before: Post =>
-        r.mimic(new Post(OAuth.sign(
-          before.getMethod, oauth_url(r, before), split_query(before) ++ before.values, consumer, token))
-        )(before)
-      case before =>
-        val signed = OAuth.sign(before.getMethod, oauth_url(r, before), split_query(before), consumer, token)
-        before.setURI(java.net.URI.create(oauth_url(r, before) + (Http ? signed)))
-        before
+    private def sign (consumer: Consumer, token: Option[Token]) = r next { req =>
+      val oauth_url = Http.to_uri(r.host, req).toString.split('?')(0)
+      val query_map = split_decode(req.getURI.getRawQuery)
+      req match {
+        case before: Post =>
+          r.mimic(new Post(OAuth.sign(
+            before.getMethod, oauth_url, query_map ++ before.values, consumer, token))
+          )(before)
+        case before =>
+          val signed = OAuth.sign(before.getMethod, oauth_url, query_map, consumer, token)
+          before.setURI(java.net.URI.create(oauth_url + (Http ? signed)))
+          before
+      }
     }
     def >% [T] (block: IMap[String, String] => T) = r >- ( split_decode andThen block )
     def as_token = r >% { m => Token(m("oauth_token"), m("oauth_token_secret")) }
     
-    private def oauth_url(r: Request, req: HttpRequestBase) = r.host.getOrElse("") + req.getURI.toString.split('?')(0)
-
-    private def split_query(req: HttpRequestBase) = split_decode(req.getURI.getRawQuery)
-
     val split_decode: (String => IMap[String, String]) = {
       case null => IMap.empty
       case query => IMap.empty ++ query.split('&').map { nvp =>
