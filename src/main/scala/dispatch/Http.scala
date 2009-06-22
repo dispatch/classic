@@ -203,8 +203,14 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
     else uri + Http ? (values)
   }
   
-  /** HTTP Delete request. (new request, mimics) */
-  def <--() = next { mimic(new HttpDelete)_ }
+  /** @deprecated use DELETE */
+  def <--() = DELETE
+  
+  /** HTTP delete request. (new request, mimics) */
+  def DELETE = next { mimic(new HttpDelete)_ }
+  
+  /** HTTP head request. (new request, mimics). Use Http.x or similar to access headers. */
+  def HEAD = next { mimic(new HttpHead)_ }
 
   // end Request generators
 
@@ -238,7 +244,7 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   def ># [T](block: json.Js.JsF[T]) = >> { stm => block(json.Js(stm)) }
   
   /** Ignore response body. */
-  def >| = Handler(this, ent => ())
+  def >| = Handler(this, (code, res, ent) => ())
 }
 
 /** Basic extension of DefaultHttpClient defaulting to Http 1.1, UTF8, and no Expect-Continue.

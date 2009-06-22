@@ -26,7 +26,7 @@ case class Db(couch: Couch, name: String) extends Request(couch / name) with Js 
   val all_docs =  this / "_all_docs" ># ('rows ! list andThen { _ map 'id ! str })
 
   val create = this <<< Nil >|
-  val delete = this <--() >|
+  val delete = DELETE >|
 }
 
 import java.net.URLEncoder.encode
@@ -37,6 +37,6 @@ case class Doc(val db: Db, val id: String) extends Request(db / encode(id)) with
     case Updated.rev(rev) => (Id._rev << rev)(js)
   }
   private object Updated { val rev = 'rev ? str }
-  def delete(rev: String) = this <<? Map("rev" -> rev)  <--()  >|
+  def delete(rev: String) = DELETE <<? Map("rev" -> rev) >|
 }
 
