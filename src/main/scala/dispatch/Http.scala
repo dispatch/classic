@@ -164,6 +164,11 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   def as (name: String, pass: String) = 
     new Request(host, Some(new UsernamePasswordCredentials(name, pass)), xfs)
   
+  /** Convert this to a secure (scheme https) request if not already */
+  def secure = new Request(host map { 
+    h => new HttpHost(h.getHostName, h.getPort, "https") // default port -1 works for either
+  } orElse { error("secure requires an explicit host") }, creds, xfs)
+  
   /** Combine this request with another. */
   def <& (req: Request) = new Request(host orElse req.host, creds orElse req.creds, req.xfs ::: xfs)
 

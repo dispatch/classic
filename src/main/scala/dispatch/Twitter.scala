@@ -57,14 +57,13 @@ object Auth {
   
   val svc = Twitter.host / "oauth"
   def request_token(consumer: Consumer) = 
-    svc / "request_token" <<@ consumer as_token
+    svc.secure / "request_token" <<@ consumer as_token
     
   def authorize_url(consumer: Consumer, token: Token) =
     svc / "authorize" <@ (consumer, token)
   
-  def access_token(consumer: Consumer, token: Token) = 
-    svc / "access_token" <<@ (consumer, token) as_token
-
-  def access_token(consumer: Consumer, token: Token, pin: Int) = 
-    svc / "access_token" << Map("oauth_verifier" -> pin) <@ (consumer, token) as_token
+  def access_token(consumer: Consumer, token: Token, verifier: String) = 
+    svc.secure / "access_token" <<@ (consumer, token, verifier) >% { m =>
+      (Token(m), m("user_id"), m("screen_name"))
+    }
 }
