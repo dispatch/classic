@@ -22,15 +22,15 @@ object OAuth {
   
   def sign(method: String, url: String, user_params: Map[String, Any], consumer: Consumer, 
       token: Option[Token], verifier: Option[String]) = {
-    val params = TreeMap(
+    val oauth_params = TreeMap(
       "oauth_consumer_key" -> consumer.key,
       "oauth_signature_method" -> "HMAC-SHA1",
       "oauth_timestamp" -> (System.currentTimeMillis / 1000).toString,
       "oauth_nonce" -> System.nanoTime.toString
     ) ++ token.map { "oauth_token" -> _.value } ++ 
-      verifier.map { "oauth_verifier" -> _ } ++ user_params
+      verifier.map { "oauth_verifier" -> _ }
     
-    val message = %%(method :: url :: q_str(params) :: Nil)
+    val message = %%(method :: url :: q_str(oauth_params ++ user_params) :: Nil)
     
     val SHA1 = "HmacSHA1";
     val key_str = %%(consumer.secret :: (token map { _.secret } getOrElse "") :: Nil)
@@ -40,7 +40,7 @@ object OAuth {
       mac.init(key)
       new String(encodeBase64(mac.doFinal(bytes(message))))
     }
-    params + ("oauth_signature" -> sig)
+    oauth_params + ("oauth_signature" -> sig)
   }
   
   private def %% (s: Seq[String]) = s map % mkString "&"
@@ -66,11 +66,11 @@ object OAuth {
         req match {
           case before: Post =>
             r.mimic(new Post(OAuth.sign(
-              before.getMethod, oauth_url, query_map ++ before.values, consumer, token, verifier))
-            )(before)
+              before.getMethod, oauth_url, query_map ++ before.values, consumer, token, verifier)
+            ++ before.values))(before)
           case before =>
             val signed = OAuth.sign(before.getMethod, oauth_url, query_map, consumer, token, verifier)
-            before.setURI(java.net.URI.create(oauth_url + (Http ? signed)))
+            before.setURI(java.net.URI.create(oauth_url + (Http ? (query_map ++ signed))))
             before
         }
       }
