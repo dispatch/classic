@@ -39,11 +39,11 @@ object OAuth {
     params + ("oauth_signature" -> sig)
   }
   
-  def authorize_url(url: String, consumer: Consumer, token: Token) =
-    url + (Http ? sign("GET", url, IMap(), consumer, Some(token)))
-
   private def %% (s: Seq[String]) = s map % mkString "&"
   private def bytes(str: String) = str.getBytes(UTF_8)
+
+  def authorize_url(url: String, consumer: Consumer, token: Token) =
+    url + (Http ? sign("GET", url, IMap(), consumer, Some(token)))
   
   class RequestSigner(r: Request) {
     /** Convert to a post before signing */
