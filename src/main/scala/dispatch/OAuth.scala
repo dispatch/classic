@@ -47,12 +47,7 @@ object OAuth {
   private def bytes(str: String) = str.getBytes(UTF_8)
 
   class RequestSigner(r: Request) {
-    /** Convert to a post before signing */
-    def <<@ (consumer: Consumer): Request = r << IMap() <@ (consumer)
-    def <<@ (consumer: Consumer, token: Token): Request = r << IMap() <@ (consumer, token)
-    def <<@ (consumer: Consumer, token: Token, verifier: String): Request = 
-      r << IMap() <@ (consumer, token, verifier)
-
+    // sign requests with an Authorization header
     def <@ (consumer: Consumer): Request = sign(consumer, None, None)
     def <@ (consumer: Consumer, token: Token): Request = sign(consumer, Some(token), None)
     def <@ (consumer: Consumer, token: Token, verifier: String): Request = 
@@ -63,16 +58,14 @@ object OAuth {
       r next { req =>
         val oauth_url = Http.to_uri(r.host, req).toString.split('?')(0)
         val query_map = split_decode(req.getURI.getRawQuery)
-        req match {
-          case before: Post =>
-            r.mimic(new Post(OAuth.sign(
-              before.getMethod, oauth_url, query_map ++ before.values, consumer, token, verifier)
-            ++ before.values))(before)
-          case before =>
-            val signed = OAuth.sign(before.getMethod, oauth_url, query_map, consumer, token, verifier)
-            before.setURI(java.net.URI.create(oauth_url + (Http ? (query_map ++ signed))))
-            before
-        }
+        val oauth_params = OAuth.sign(req.getMethod, oauth_url, query_map ++ (req match {
+          case before: Post => before.values
+          case _ => IMap()
+        }), consumer, token, verifier)
+        req.addHeader("Authorization", "OAuth " + oauth_params.map { case (k, v) =>
+          (Http % k) + "=\"%s\"".format(Http % v)
+        }.mkString(",") )
+        req
       }
     def >% [T] (block: IMap[String, String] => T) = r >- ( split_decode andThen block )
     def as_token = r >% { Token(_) }

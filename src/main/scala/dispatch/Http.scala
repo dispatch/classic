@@ -158,7 +158,9 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
     dest
   }
   
-  // the below functions create new request descriptors based off of the current
+  // The below functions create new request descriptors based off of the current one.
+  // Most are intended to be used as infix operators; those that don't take a parameter
+  // have character names to be used with dot notation, e.g. /:("example.com").HEAD.secure >>> {...}
   
   /** Set credentials to be used for this request; requires a host value :/(...) upon execution. */
   def as (name: String, pass: String) = 
@@ -203,6 +205,11 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
     else uri + Http ? (values)
   }
   
+  // generators that change request method without adding parameters
+  
+  /** HTTP post request. (new request, mimics) */
+  def POST = next { mimic(new Post(collection.immutable.Map.empty))_ }
+    
   /** @deprecated use DELETE */
   def <--() = DELETE
   
