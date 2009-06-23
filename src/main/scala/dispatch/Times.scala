@@ -1,6 +1,7 @@
 package dispatch.times
 
 import json._
+import Js._
 
 trait Times extends Js {
   import Http._

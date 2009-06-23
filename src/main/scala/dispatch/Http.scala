@@ -249,9 +249,6 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   /** Process response as XML document in block */
   def <> [T] (block: xml.NodeSeq => T) = >> { stm => block(xml.XML.load(stm)) }
   
-  /** Process response as JsValue in block */
-  def ># [T](block: json.Js.JsF[T]) = >> { stm => block(json.Js(stm)) }
-  
   /** Ignore response body. */
   def >| = Handler(this, (code, res, ent) => ())
 }

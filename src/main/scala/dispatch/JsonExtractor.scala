@@ -130,4 +130,12 @@ object Js extends Js {
   def apply(string: String): JsValue = JsValue.fromString(string)
   /** Converts a Json extrator to an assertion extracting function (JsF). */
   implicit def ext2fun[T](ext: Extract[T]): JsF[T] = ext.unapply _ andThen { _.get }
+  
+  /** Add JSON-processing method ># to dispatch.Request */
+  implicit def Request2JsonRequest(r: dispatch.Request) = new JsonRequest(r)
+
+  class JsonRequest(r: Request) {
+    /** Process response as JsValue in block */
+    def ># [T](block: json.Js.JsF[T]) = r >> { stm => block(json.Js(stm)) }
+  }
 }

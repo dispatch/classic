@@ -1,6 +1,7 @@
 package dispatch.couch
 
 import json._
+import Js._
 
 /** Extractors for CouchDB document id and revsion properties.
     Extend with your own document properties. */

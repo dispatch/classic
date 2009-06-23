@@ -45,7 +45,7 @@ object OAuth {
   private def %% (s: Seq[String]) = s map % mkString "&"
   private def bytes(str: String) = str.getBytes(UTF_8)
   
-  implicit def Requst2RequestSigner(r: Request) = new RequestSigner(r)
+  implicit def Request2RequestSigner(r: Request) = new RequestSigner(r)
   
   class RequestSigner(r: Request) {
     
