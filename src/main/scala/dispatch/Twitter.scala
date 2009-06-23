@@ -56,11 +56,11 @@ case class User(user: String) extends
 object Auth {
   
   val svc = Twitter.host / "oauth"
+
   def request_token(consumer: Consumer) = 
     svc.secure.POST / "request_token" <@ consumer as_token
     
-  def authorize_url(consumer: Consumer, token: Token) =
-    svc / "authorize" <<?@ (consumer, token)
+  def authorize_url(token: Token) = svc / "authorize" <<? token
   
   def access_token(consumer: Consumer, token: Token, verifier: String) = 
     svc.secure.POST / "access_token" <@ (consumer, token, verifier) >% { m =>

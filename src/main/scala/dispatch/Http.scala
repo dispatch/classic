@@ -201,8 +201,10 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   
   /** Add query parameters. (mutates request) */
   def <<? (values: Map[String, Any]) = next_uri { uri =>
-    if(values.isEmpty) uri
-    else uri + Http ? (values)
+    if (values.isEmpty) uri
+    else uri + (
+      if (uri contains '?') '&' + Http.q_str(values) else (Http ? values)
+    )
   }
   
   // generators that change request method without adding parameters
