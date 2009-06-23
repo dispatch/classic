@@ -5,6 +5,7 @@ import collection.Map
 import collection.immutable.{TreeMap, Map=>IMap}
 
 import javax.crypto
+import java.net.URI
 
 import org.apache.http.protocol.HTTP.UTF_8
 import org.apache.commons.codec.binary.Base64.encodeBase64
@@ -47,25 +48,39 @@ object OAuth {
   private def bytes(str: String) = str.getBytes(UTF_8)
 
   class RequestSigner(r: Request) {
+    
+    
     // sign requests with an Authorization header
-    def <@ (consumer: Consumer): Request = sign(consumer, None, None)
-    def <@ (consumer: Consumer, token: Token): Request = sign(consumer, Some(token), None)
+    def <@ (consumer: Consumer): Request = header_sign(consumer, None, None)
+    def <@ (consumer: Consumer, token: Token): Request = header_sign(consumer, Some(token), None)
     def <@ (consumer: Consumer, token: Token, verifier: String): Request = 
-      sign(consumer, Some(token), Some(verifier))
+      header_sign(consumer, Some(token), Some(verifier))
+
+    def <<?@ (consumer: Consumer, token: Token) = query_sign(consumer, Some(token), None)
+    
+    type Finisher = (String, Map[String, String], HttpRequestBase, Map[String, String]) => HttpRequestBase
+
+    private val header_sign = sign { (oauth_url, query_params, req, params) => 
+      req.addHeader("Authorization", "OAuth " + params.map { 
+        case (k, v) => (Http % k) + "=\"%s\"".format(Http % v)
+      }.mkString(",") )
+      req
+    } _
+    
+    private val query_sign = sign { (oauth_url, query_params, req, oauth_params) =>  
+      req setURI URI.create(oauth_url + (Http ? (IMap() ++ query_params ++ oauth_params)))
+      req 
+    } _
     
     /** Sign request using Post (<<) parameters and query string */
-    private def sign (consumer: Consumer, token: Option[Token], verifier: Option[String]) = 
+    private def sign(fin: Finisher)(consumer: Consumer, token: Option[Token], verifier: Option[String]) = 
       r next { req =>
         val oauth_url = Http.to_uri(r.host, req).toString.split('?')(0)
-        val query_map = split_decode(req.getURI.getRawQuery)
-        val oauth_params = OAuth.sign(req.getMethod, oauth_url, query_map ++ (req match {
+        val query_params = split_decode(req.getURI.getRawQuery)
+        fin ( oauth_url, query_params, req, OAuth.sign(req.getMethod, oauth_url, query_params ++ (req match {
           case before: Post => before.values
           case _ => IMap()
-        }), consumer, token, verifier)
-        req.addHeader("Authorization", "OAuth " + oauth_params.map { case (k, v) =>
-          (Http % k) + "=\"%s\"".format(Http % v)
-        }.mkString(",") )
-        req
+        }), consumer, token, verifier) )
       }
     def >% [T] (block: IMap[String, String] => T) = r >- ( split_decode andThen block )
     def as_token = r >% { Token(_) }

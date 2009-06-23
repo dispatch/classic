@@ -60,7 +60,7 @@ object Auth {
     svc.secure.POST / "request_token" <@ consumer as_token
     
   def authorize_url(consumer: Consumer, token: Token) =
-    svc / "authorize" <@ (consumer, token)
+    svc / "authorize" <<?@ (consumer, token)
   
   def access_token(consumer: Consumer, token: Token, verifier: String) = 
     svc.secure.POST / "access_token" <@ (consumer, token, verifier) >% { m =>
