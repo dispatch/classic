@@ -60,6 +60,10 @@ object Auth {
 
   def request_token(consumer: Consumer) = 
     svc.secure.POST / "request_token" <@ consumer as_token
+
+  def request_token(consumer: Consumer, oauth_callback: String) = 
+    svc.secure / "request_token" << 
+      Map("oauth_callback" -> oauth_callback) <@ consumer as_token
     
   def authorize_url(token: Token) = svc / "authorize" <<? token
   
