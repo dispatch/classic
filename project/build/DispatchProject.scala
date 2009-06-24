@@ -1,11 +1,10 @@
 import sbt._
 
-class Dispatch(info: ProjectInfo) extends DefaultProject(info)
+class DispatchProject(info: ProjectInfo) extends DefaultProject(info)
 {
   val lag_net = "lag.net repository" at "http://www.lag.net/repo"
 
-  override def useMavenConfigurations = true
-  val default = Configurations.Default
+  override def useDefaultConfigurations = true
   override def crossScalaVersions = Set("2.7.3", "2.7.4", "2.7.5")
   
   val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.0-beta2"
