@@ -19,6 +19,7 @@ object Token {
 
 /** Import this object's methods to add signing operators to dispatch.Request */
 object OAuth {
+  /** @return oauth parameter map including signature */
   def sign(method: String, url: String, user_params: Map[String, Any], consumer: Consumer, 
       token: Option[Token], verifier: Option[String]) = {
     val oauth_params = TreeMap(
@@ -42,9 +43,11 @@ object OAuth {
     oauth_params + ("oauth_signature" -> sig)
   }
   
+  /** @return unnamed parameters, percent-encoded and joined by & */
   private def %% (s: Seq[String]) = s map % mkString "&"
   private def bytes(str: String) = str.getBytes(UTF_8)
   
+  /** Add OAuth operators to dispatch.Request */
   implicit def Request2RequestSigner(r: Request) = new RequestSigner(r)
   
   class RequestSigner(r: Request) {
