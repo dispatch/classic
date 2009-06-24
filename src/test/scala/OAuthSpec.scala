@@ -1,7 +1,7 @@
-import org.scalatest.{Spec, BeforeAndAfter}
+import org.scalatest.Spec
 import org.scalatest.matchers.ShouldMatchers
 
-class OAuthSpec extends Spec with ShouldMatchers with BeforeAndAfter {
+class OAuthSpec extends Spec with ShouldMatchers {
   import dispatch._
   import oauth._
   import OAuth._
