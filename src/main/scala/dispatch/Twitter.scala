@@ -1,6 +1,9 @@
 package dispatch.twitter
 
 import json._
+import Js._
+import oauth._
+import oauth.OAuth._
 
 object Twitter {
   val host = :/("twitter.com")
@@ -27,6 +30,10 @@ object Search extends Js {
 
 object Status extends Request(Twitter.host / "statuses") with Js {
   def public_timeline = this / "public_timeline.json" ># (list ! obj)
+  
+  def friends_timeline(consumer: Consumer, token: Token) =
+    this / "friends_timeline.json" <@ (consumer, token) ># (list ! obj)
+  
   val text = 'text ? str
 }
 
@@ -45,4 +52,23 @@ case class User(user: String) extends
     Request(Twitter.host / "users" / "show" / (user + ".json")) with Js {
 
   def show = this ># obj
+}
+
+object Auth {
+  
+  val svc = Twitter.host / "oauth"
+
+  def request_token(consumer: Consumer) = 
+    svc.secure.POST / "request_token" <@ consumer as_token
+
+  def request_token(consumer: Consumer, oauth_callback: String) = 
+    svc.secure / "request_token" << 
+      Map("oauth_callback" -> oauth_callback) <@ consumer as_token
+    
+  def authorize_url(token: Token) = svc / "authorize" <<? token
+  
+  def access_token(consumer: Consumer, token: Token, verifier: String) = 
+    svc.secure.POST / "access_token" <@ (consumer, token, verifier) >% { m =>
+      (Token(m), m("user_id"), m("screen_name"))
+    }
 }
