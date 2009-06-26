@@ -1,5 +1,4 @@
 package dispatch.oauth
-import Http.{%, q_str}
 
 import collection.Map
 import collection.immutable.{TreeMap, Map=>IMap}
@@ -22,7 +21,7 @@ object OAuth {
   /** @return oauth parameter map including signature */
   def sign(method: String, url: String, user_params: Map[String, Any], consumer: Consumer, 
       token: Option[Token], verifier: Option[String]) = {
-    val oauth_params = TreeMap(
+    val oauth_params = IMap(
       "oauth_consumer_key" -> consumer.key,
       "oauth_signature_method" -> "HMAC-SHA1",
       "oauth_timestamp" -> (System.currentTimeMillis / 1000).toString,
@@ -30,7 +29,11 @@ object OAuth {
     ) ++ token.map { "oauth_token" -> _.value } ++ 
       verifier.map { "oauth_verifier" -> _ }
     
-    val message = %%(method :: url :: q_str(oauth_params ++ user_params) :: Nil)
+    val encoded_ordered_params = (
+      new TreeMap[String, String] ++ (user_params ++ oauth_params map %%)
+    ) map { case (k, v) => k + "=" + v } mkString "&"
+    
+    val message = %%(method :: url :: encoded_ordered_params :: Nil)
     
     val SHA1 = "HmacSHA1";
     val key_str = %%(consumer.secret :: (token map { _.secret } getOrElse "") :: Nil)
@@ -43,8 +46,11 @@ object OAuth {
     oauth_params + ("oauth_signature" -> sig)
   }
   
-  /** @return unnamed parameters, percent-encoded and joined by & */
-  private def %% (s: Seq[String]) = s map % mkString "&"
+  //normalize to OAuth percent encoding
+  private def %% (str: String): String = (Http % str) replace ("+", "%20") replace ("%7E", "~")
+  private def %% (s: Seq[String]): String = s map %% mkString "&"
+  private def %% (t: (String, Any)): (String, String) = (%%(t._1), %%(t._2.toString))
+  
   private def bytes(str: String) = str.getBytes(UTF_8)
   
   /** Add OAuth operators to dispatch.Request */
