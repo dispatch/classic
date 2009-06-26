@@ -14,9 +14,12 @@ class OAuthSpec extends Spec with ShouldMatchers {
       val h = new Http
       val request_token = h(svc / "request_token.php" <@ consumer as_token)
       val access_token = h(svc / "access_token" <@ (consumer, request_token) as_token)
+      val payload = Map("identité"->"caché")
       h(
-        svc / "echo_api.php" <<? Map("top"->"secret") <@ (consumer, access_token) as_str
-      ) should be ("top=secret")
+        svc / "echo_api.php" <<? payload <@ (consumer, access_token) >% {
+          _ should be (payload)
+        }
+      )
     }
   }
 }
