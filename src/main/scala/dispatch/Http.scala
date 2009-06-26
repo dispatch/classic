@@ -300,7 +300,7 @@ object Http extends Http {
   def % (s: String) = java.net.URLEncoder.encode(s, UTF_8)
 
   /** @return %-decoded string e.g. from query string or form body */
-  def -% (s: String) = java.net.URLEncoder.encode(s, UTF_8)
+  def -% (s: String) = java.net.URLDecoder.decode(s, UTF_8)
   
   /** @return formatted and %-encoded query string, e.g. name=value&name2=value2 */
   def q_str (values: Map[String, Any]) = URLEncodedUtils.format(map2ee(values), UTF_8)
