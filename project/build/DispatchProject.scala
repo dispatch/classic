@@ -1,6 +1,6 @@
 import sbt._
 
-class DispatchProject(info: ProjectInfo) extends DefaultProject(info)
+class DispatchProject(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins
 {
   val lag_net = "lag.net repository" at "http://www.lag.net/repo"
 
@@ -12,6 +12,8 @@ class DispatchProject(info: ProjectInfo) extends DefaultProject(info)
 
   val st = "org.scala-tools.testing" % "scalatest" % "0.9.5" % "test->default"
 
+  val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2")
+  
   override def managedStyle = ManagedStyle.Maven
   lazy val publishTo = Resolver.file("Databinder Repository", new java.io.File("/var/dbwww/repo"))
 }
