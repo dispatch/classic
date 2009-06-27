@@ -33,7 +33,7 @@ object OAuth {
     
     val SHA1 = "HmacSHA1";
     val key_str = %%(consumer.secret :: (token map { _.secret } getOrElse "") :: Nil)
-    val key = new crypto.spec.SecretKeySpec(key_str.getBytes(UTF_8), SHA1)
+    val key = new crypto.spec.SecretKeySpec(bytes(key_str), SHA1)
     val sig = {
       val mac = crypto.Mac.getInstance(SHA1)
       mac.init(key)
