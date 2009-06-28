@@ -12,7 +12,7 @@ class DispatchProject(info: ProjectInfo) extends DefaultProject(info) with AutoC
 
   val st = "org.scala-tools.testing" % "scalatest" % "0.9.5" % "test->default"
 
-  val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2")
+  val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2.2-SNAPSHOT")
   
   override def managedStyle = ManagedStyle.Maven
   lazy val publishTo = Resolver.file("Databinder Repository", new java.io.File("/var/dbwww/repo"))
