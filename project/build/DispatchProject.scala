@@ -15,6 +15,6 @@ class DispatchProject(info: ProjectInfo) extends DefaultProject(info) with AutoC
   val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2.2-SNAPSHOT")
   
   override def managedStyle = ManagedStyle.Maven
-  val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/snapshots/"
+  val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
   Credentials(Path.userHome / ".ivy2" / ".credentials", log)
 }
