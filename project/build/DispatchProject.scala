@@ -12,7 +12,7 @@ class DispatchProject(info: ProjectInfo) extends DefaultProject(info) with AutoC
 
   val st = "org.scala-tools.testing" % "scalatest" % "0.9.5" % "test->default"
 
-  val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2.2-SNAPSHOT")
+  val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2.1")
   
   override def managedStyle = ManagedStyle.Maven
   val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
