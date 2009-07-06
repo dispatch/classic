@@ -18,7 +18,7 @@ class DispatchProject(info: ProjectInfo) extends DefaultProject(info) with AutoC
   val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
   Credentials(Path.userHome / ".ivy2" / ".credentials", log)
   
-  def sxrPackagePath = outputPath / (artifactBaseName + ".sxr")
+  def sxrPackagePath = outputPath / "classes.sxr"
   def sxrPublishPath = Path.fromFile("/var/dbwww/sxr") / name / projectVersion.value.toString
   lazy val publishSxr = syncTask(sxrPackagePath, sxrPublishPath) dependsOn(compile)
   override def publishAction = super.publishAction dependsOn(publishSxr)
