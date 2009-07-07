@@ -268,9 +268,8 @@ trait Handlers {
 
   /** Split into two request handlers, return results of each in tuple. */
   def >+ [A, B] (block: Handlers => (Handler[A], Handler[B])) = {
-    val cur_request = request
     new Handler[(A,B)] ( request, { (code, res, opt_ent) =>
-      val (a, b) = block(new Handlers { val request = cur_request })
+      val (a, b) = block(new Handlers { val request = /\ })
       (a.block(code, res, opt_ent), b.block(code,res,opt_ent))
     } )
   }
