@@ -4,6 +4,8 @@ import org.scalatest.matchers.ShouldMatchers
 class HttpSpec extends Spec with ShouldMatchers with BeforeAndAfter {
   import dispatch._
   import Http._
+  
+  import org.apache.http.protocol.HTTP.CONTENT_ENCODING
 
   val jane = "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.\n"
   
@@ -52,6 +54,10 @@ class HttpSpec extends Spec with ShouldMatchers with BeforeAndAfter {
         case (404, _, _, out) => out()
         case _ => "success is failure"
       } should include ("404 Not Found")
+    }
+
+    it("should serve a gzip header") {
+      http(test.gzip >:> { _(CONTENT_ENCODING) }) should equal (Set("gzip"))
     }
 
     it("should equal expected string with gzip encoding") {

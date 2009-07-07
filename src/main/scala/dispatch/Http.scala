@@ -1,6 +1,7 @@
 package dispatch
 
 import collection.Map
+import collection.immutable.{Map => IMap}
 import util.DynamicVariable
 import java.io.{InputStream,OutputStream,BufferedInputStream,BufferedOutputStream}
 import java.net.URI
@@ -187,7 +188,7 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   }
 
   /* Add a gzip acceptance header */
-  def gzip = this <:< collection.immutable.Map("Accept-Encoding" -> "gzip")
+  def gzip = this <:< IMap("Accept-Encoding" -> "gzip")
 
   /** Put the given object.toString and return response wrapper. (new request, mimics) */
   def <<< (body: Any) = next {
@@ -210,7 +211,7 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   // generators that change request method without adding parameters
   
   /** HTTP post request. (new request, mimics) */
-  def POST = next { mimic(new Post(collection.immutable.Map.empty))_ }
+  def POST = next { mimic(new Post(IMap.empty))_ }
     
   /** @deprecated use DELETE */
   def <--() = DELETE
@@ -218,7 +219,7 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   /** HTTP delete request. (new request, mimics) */
   def DELETE = next { mimic(new HttpDelete)_ }
   
-  /** HTTP head request. (new request, mimics). Use Http.x or similar to access headers. */
+  /** HTTP head request. (new request, mimics). See >:> to access headers. */
   def HEAD = next { mimic(new HttpHead)_ }
 
   // end Request generators
@@ -248,6 +249,14 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   def >>> [OS <: OutputStream](out: OS) = Handler(this, { ent => ent.writeTo(out); out })
   /** Process response as XML document in block */
   def <> [T] (block: xml.NodeSeq => T) = >> { stm => block(xml.XML.load(stm)) }
+  
+  /** Process header as Map in block. Map returns empty set for header name misses. */
+  def >:> [T] (block: IMap[String, Set[String]] => T) = 
+    Handler(this, (_, res, _) => 
+      block((IMap[String, Set[String]]().withDefaultValue(Set()) /: res.getAllHeaders) { 
+        (m, h) => m + (h.getName -> (m(h.getName) + h.getValue))
+      } )
+    )
   
   /** Ignore response body. */
   def >| = Handler(this, (code, res, ent) => ())
