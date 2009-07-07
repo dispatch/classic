@@ -66,7 +66,7 @@ class Http {
       client.execute(req)
   }
   /** Execute full request-response handler. */
-  def x[T](hand: Handler[T]): T = x(hand.req)(hand.block)
+  def x[T](hand: Handler[T]): T = x(hand.request)(hand.block)
   /** Execute request and handle response codes, response, and entity in block */
   def x [T](req: Request)(block: Handler.F[T]) = {
     val res = execute(req.host, req.creds, req.req)
@@ -78,14 +78,14 @@ class Http {
     finally { ent foreach (_.consumeContent) }
   }
   /** Apply Response Handler if reponse code returns true from chk. */
-  def when[T](chk: Int => Boolean)(hand: Handler[T]) = x(hand.req) {
+  def when[T](chk: Int => Boolean)(hand: Handler[T]) = x(hand.request) {
     case (code, res, ent) if chk(code) => hand.block(code, res, ent)
     case (code, _, Some(ent)) => throw StatusCode(code, EntityUtils.toString(ent, UTF_8))
     case (code, _, _)         => throw StatusCode(code, "[no entity]")
   }
   /** Apply a custom block in addition to predefined response Handler. */
   def also[A,B](hand: Handler[B])(block: Handler.F[A]) = 
-    x(hand.req) { (code, res, ent) => ( hand.block(code, res, ent), block(code, res, ent) ) }
+    x(hand.request) { (code, res, ent) => ( hand.block(code, res, ent), block(code, res, ent) ) }
   
   /** Apply handler block when response code is 200 - 204 */
   def apply[T](hand: Handler[T]) = (this when {code => (200 to 204) contains code})(hand)
@@ -118,11 +118,11 @@ object Request {
 }
 
 /** Request handler, contains request descriptor and a function to transform the result. */
-case class Handler[T](req: Request, block: Handler.F[T]) {
+case class Handler[T](request: Request, block: Handler.F[T]) extends Handlers {
   /** Create a new handler with block that receives all response parameters and
       this handler's block converted to parameterless function. */
   def apply[R](next: (Int, HttpResponse, Option[HttpEntity], () => T) => R) =
-    new Handler(req, {(code, res, ent) =>
+    new Handler(request, {(code, res, ent) =>
       next(code, res, ent, () => block(code, res, ent))
     })
 }
@@ -142,7 +142,7 @@ class Post(val values: Map[String, Any]) extends HttpPost {
 }
 
 /** Request descriptor, possibly contains a host, credentials, and a list of transformation functions. */
-class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xfs: List[Request.Xf]) {
+class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xfs: List[Request.Xf]) extends Handlers {
 
   /** Construct with path or full URI. */
   def this(str: String) = this(None, None, Request.uri_xf(cur => cur + str)_ :: Nil)
@@ -176,7 +176,7 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   def <& (req: Request) = new Request(host orElse req.host, creds orElse req.creds, req.xfs ::: xfs)
 
   /** Combine this request with another handler. */
-  def >& [T] (other: Handler[T]) = new Handler(this <& other.req, other.block)
+  def >& [T] (other: Handler[T]) = new Handler(this <& other.request, other.block)
   
   /** Append an element to this request's path, joins with '/'. (mutates request) */
   def / (path: String) = next_uri { _ + "/" + path }
@@ -233,10 +233,15 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   /** @return URI based on this request, e.g. if needed outside Disptach. */
   def to_uri = Http.to_uri(host, req)
   
-  // the below functions produce Handlers based on this request descriptor
-
+  /** Use this request for trait Handlers */
+  val request = this
+}
+trait Handlers {
+  /** the below functions produce Handlers based on this request descriptor */
+  val request: Request
+  
   /** Handle InputStream in block, handle gzip if so encoded. */
-  def >> [T] (block: InputStream => T) = Handler(this, { ent => block (
+  def >> [T] (block: InputStream => T) = Handler(request, { ent => block (
     if(ent.getContentEncoding != null && ent.getContentEncoding.getValue == "gzip") 
       new GZIPInputStream(ent.getContent)
     else ent.getContent
@@ -246,20 +251,29 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   /** Return some non-huge response as a String. */
   def as_str = >- { s => s }
   /** Write to the given OutputStream. */
-  def >>> [OS <: OutputStream](out: OS) = Handler(this, { ent => ent.writeTo(out); out })
+  def >>> [OS <: OutputStream](out: OS) = Handler(request, { ent => ent.writeTo(out); out })
   /** Process response as XML document in block */
   def <> [T] (block: xml.NodeSeq => T) = >> { stm => block(xml.XML.load(stm)) }
   
   /** Process header as Map in block. Map returns empty set for header name misses. */
   def >:> [T] (block: IMap[String, Set[String]] => T) = 
-    Handler(this, (_, res, _) => 
+    Handler(request, (_, res, _) => 
       block((IMap[String, Set[String]]().withDefaultValue(Set()) /: res.getAllHeaders) { 
         (m, h) => m + (h.getName -> (m(h.getName) + h.getValue))
       } )
     )
   
   /** Ignore response body. */
-  def >| = Handler(this, (code, res, ent) => ())
+  def >| = Handler(request, (code, res, ent) => ())
+
+  /** Split into two request handlers, return results of each in tuple. */
+  def >+ [A, B] (block: Handlers => (Handler[A], Handler[B])) = {
+    val cur_request = request
+    new Handler[(A,B)] ( request, { (code, res, opt_ent) =>
+      val (a, b) = block(new Handlers { val request = cur_request })
+      (a.block(code, res, opt_ent), b.block(code,res,opt_ent))
+    } )
+  }
 }
 
 /** Basic extension of DefaultHttpClient defaulting to Http 1.1, UTF8, and no Expect-Continue.
