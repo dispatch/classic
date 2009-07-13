@@ -3,8 +3,8 @@ import sbt._
 class DispatchProject(info: ProjectInfo) extends ParentProject(info)
 {
   class DispatchDefault(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins {
+    override def crossScalaVersions = DispatchProject.this.crossScalaVersions
     override def useDefaultConfigurations = true
-    override def crossScalaVersions = Set("2.7.3", "2.7.4", "2.7.5")
     override def managedStyle = ManagedStyle.Maven
     val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
     Credentials(Path.userHome / ".ivy2" / ".credentials", log)
@@ -28,6 +28,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2.1")
   }
   
+  override def crossScalaVersions = Set("2.7.3", "2.7.4", "2.7.5")
   override def parallelExecution = true
 
   lazy val http = project("http", "Dispatch", new HttpProject(_))
