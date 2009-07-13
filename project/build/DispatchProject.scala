@@ -27,6 +27,8 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
  
     val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2.1")
   }
+  
+  override def parallelExecution = true
 
   lazy val http = project("http", "Dispatch", new HttpProject(_))
   lazy val json = project("json", "Dispatch JSON", new DispatchDefault(_), http)
