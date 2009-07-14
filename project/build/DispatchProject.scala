@@ -37,4 +37,34 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   lazy val times = project("times", "Dispatch NY Times", new DispatchDefault(_), json)
   lazy val couch = project("couch", "Dispatch CouchDB", new DispatchDefault(_), json)
   lazy val twitter = project("twitter", "Dispatch Twitter", new DispatchDefault(_), json, oauth)
+
+  lazy val archetect = project("archetect", "Dispatch Archetect", new ArchetectProject(_))
+  
+  class ArchetectProject(info: ProjectInfo) extends DefaultProject(info) {
+    import Process._
+    val arcOutput = outputPath / "arc"
+    val arcSource = "src" / "arc"
+
+    lazy val archetect = task { None } dependsOn ((arcSource * "*").get.map { in =>
+      val out = arcOutput / in.asFile.getName
+      fileTask(out from (in ** "*")) {
+        FileUtilities.clean(out, log)
+        FileUtilities.sync(in, out, log) orElse {
+          FileUtilities.write((out / "project" / "build" / "Project.scala").asFile, """
+import sbt._
+
+class TwineProject(info: ProjectInfo) extends DefaultProject(info) with extract.BasicSelfExtractingProject
+{
+  val dispatch = "net.databinder" %%%% "dispatch-twitter" %% "%s"
+}
+""" format version, log) orElse {
+            (new java.lang.ProcessBuilder("sbt", "installer") directory out.asFile) ! log match {
+              case 0 => None
+              case code => Some("sbt failed on archetect project %s with code %d" format (in, code))
+            }
+          }
+        }.toSeq.firstOption
+      }
+    }.toSeq : _*)
+  }
 }
