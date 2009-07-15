@@ -5,12 +5,12 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   override def crossScalaVersions = Set("2.7.3", "2.7.4", "2.7.5")
   override def parallelExecution = true
 
-  lazy val http = project("http", "http", new HttpProject(_))
-  lazy val json = project("json", "json", new DispatchDefault(_), http)
-  lazy val oauth = project("oauth", "oauth", new DispatchDefault(_), http)
-  lazy val times = project("times", "times", new DispatchDefault(_), json)
-  lazy val couch = project("couch", "couch", new DispatchDefault(_), json)
-  lazy val twitter = project("twitter", "twitter", new DispatchDefault(_), json, oauth)
+  lazy val http = project("http", "Dispatch HTTP", new HttpProject(_))
+  lazy val json = project("json", "Dispatch JSON", new DispatchDefault(_), http)
+  lazy val oauth = project("oauth", "Dispatch OAuth", new DispatchDefault(_), http)
+  lazy val times = project("times", "Dispatch Times", new DispatchDefault(_), json)
+  lazy val couch = project("couch", "Dispatch Couch", new DispatchDefault(_), json)
+  lazy val twitter = project("twitter", "Dispatch Twitter", new DispatchDefault(_), json, oauth)
 
   class DispatchDefault(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins {
     override def crossScalaVersions = DispatchProject.this.crossScalaVersions
@@ -21,7 +21,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     
     def sxrMainPath = outputPath / "classes.sxr"
     def sxrTestPath = outputPath / "test-classes.sxr"
-    def sxrPublishPath = Path.fromFile("/var/dbwww/sxr") / moduleID / projectVersion.value.toString
+    def sxrPublishPath = Path.fromFile("/var/dbwww/sxr") / normalizedName / projectVersion.value.toString
     lazy val publishSxr = 
       syncTask(sxrMainPath, sxrPublishPath / "main") dependsOn(
         syncTask(sxrTestPath, sxrPublishPath / "test") dependsOn(testCompile)
