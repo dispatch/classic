@@ -3,6 +3,7 @@ package dispatch.json
 /** Json Extractor, extracts a value of type T from the given JsValue. */
 trait Extract[T] {
   def unapply(js: JsValue): Option[T]
+  override def toString = getClass.getName
 }
 /** Json Inserter, adds or replaces properties in the given JsValue
     (error if not a JsObject) */
@@ -22,6 +23,7 @@ case class Property[T](sym: Symbol, ext: Extract[T]) extends Extract[T] with Ins
     case JsObject(m) => JsObject(m + (JsString(sym) -> JsValue(t)))
     case js => error("Unable to replace property in " + js)
   }
+  override def toString = "%s ! %s" format (sym, ext)
 }
 /** Extractor that resolves first by its parent extractor, if present. */
 case class Child[T, E <: Insert[T]](parent: Option[Obj], self: E) extends Extract[T] with Insert[T] {
@@ -102,8 +104,7 @@ trait Js {
       new Child[T, Property[T]](parent, Property(sym, cst))
     
     /** @return an assertion extracting function (JsF) */
-    def ! [T](cst: Extract[T]): JsF[T] = 
-      new Property(sym, cst).unapply _ andThen { _.get }
+    def ! [T](cst: Extract[T]): JsF[T] = Js.ext2fun(new Property(sym, cst))
     
     /** @return new JsObject with the given sym property replaced by t */
     def << [T](t: T): JsIF = _ match {
@@ -129,7 +130,9 @@ object Js extends Js {
   def apply(stream: java.io.InputStream): JsValue = JsValue.fromStream(stream)
   def apply(string: String): JsValue = JsValue.fromString(string)
   /** Converts a Json extrator to an assertion extracting function (JsF). */
-  implicit def ext2fun[T](ext: Extract[T]): JsF[T] = ext.unapply _ andThen { _.get }
+  implicit def ext2fun[T](ext: Extract[T]): JsF[T] = jsv => ext.unapply(jsv).getOrElse {
+    error("Extractor %s does not match JSON: %s" format (ext, jsv))
+  }
   
   /** Add JSON-processing method ># to dispatch.Request */
   implicit def Request2JsonRequest(r: dispatch.Request) = new JsonRequest(r)
