@@ -49,22 +49,18 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
       val out = arcOutput / in.asFile.getName
       fileTask(out from (in ** "*")) {
         FileUtilities.clean(out, log)
-        FileUtilities.sync(in, out, log) orElse {
-          FileUtilities.write((out / "project" / "build" / "Project.scala").asFile, """
-import sbt._
-
-class TwineProject(info: ProjectInfo) extends DefaultProject(info) with extract.BasicSelfExtractingProject
-{
-  val dispatch = "net.databinder" %%%% "dispatch-twitter" %% "%s"
-}
-""" format version, log) orElse {
-            (new java.lang.ProcessBuilder("sbt", "installer") directory out.asFile) ! log match {
+        FileUtilities.readStream(in.asFile, log) { read =>
+          FileUtilities.writeStream(out.asFile, log) { write =>
+            io.Source.fromStream(read).getLines.foreach { l =>
+              write.write(l)
+            }
+          }
+        }
+/*            (new java.lang.ProcessBuilder("sbt", "installer") directory out.asFile) ! log match {
               case 0 => None
               case code => Some("sbt failed on archetect project %s with code %d" format (in, code))
             }
-          }
-        }.toSeq.firstOption
-      }
-    }.toSeq : _*)
+          }*/
+    })
   }
 }
