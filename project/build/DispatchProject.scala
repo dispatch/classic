@@ -7,6 +7,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
 
   lazy val http = project("http", "Dispatch HTTP", new HttpProject(_))
   lazy val json = project("json", "Dispatch JSON", new DispatchDefault(_), http)
+  lazy val literaljson = project("literaljson", "Dispatch literaljson", new LiteralJsonProject(_), http)
   lazy val oauth = project("oauth", "Dispatch OAuth", new DispatchDefault(_), http)
   lazy val times = project("times", "Dispatch Times", new DispatchDefault(_), http, json)
   lazy val couch = project("couch", "Dispatch Couch", new DispatchDefault(_), http, json)
@@ -36,5 +37,8 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     val st = "org.scala-tools.testing" % "scalatest" % "0.9.5" % "test->default"
  
     val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2.1")
+  }
+  class LiteralJsonProject(info: ProjectInfo) extends DispatchDefault(info) {
+    val literaljson = "literaljson" % "literaljson" % "0.1"
   }
 }
