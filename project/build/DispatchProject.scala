@@ -40,32 +40,31 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
 
   lazy val archetect = project("archetect", "Dispatch Archetect", new ArchetectProject(_))
   
+  val tmpl_props = Map(
+    "sbt.version" -> sbtVersion.get.get,
+    "dispatch.version" -> version
+  )
   class ArchetectProject(info: ProjectInfo) extends DefaultProject(info) {
     import Process._
     val arcOutput = outputPath / "arc"
     val arcSource = "src" / "arc"
-    
 
-    lazy val archetect = task { None } dependsOn ( ( ( (arcSource ##) * "*").get map { arc_proj:Path =>
-      fileTask(arcOutput / arc_proj.asFile.getName / "target" from arcOutput ** "*") {
-        (new java.lang.ProcessBuilder("sbt", "installer") directory arc_proj.asFile) ! log match {
+    lazy val archetect = task { None } dependsOn ( ( (arcSource * "*").get map { proj =>
+      val proj_target = arcOutput / proj.asFile.getName
+      val proj_target_target = proj_target / "target"
+      fileTask(proj_target_target from arcSource ** "*") {
+        proj_target_target.asFile.setLastModified(System.currentTimeMillis)
+        (new java.lang.ProcessBuilder("sbt", "installer") directory proj_target.asFile) ! log match {
           case 0 => None
-          case code => Some("sbt failed on archetect project %s with code %d" format (arc_proj, code))
+          case code => Some("sbt failed on archetect project %s with code %d" format (proj_target, code))
         }
-      } dependsOn ( (arc_proj ** "*").get.filter(!_.isDirectory).map { in =>
-        val props = Map(
-          "sbt.version" -> sbtVersion.value,
-          "dispatch.version" -> projectVersion.get.toString
-        )
+      } dependsOn ( ( (arcSource ##) ** "*").get.filter(!_.isDirectory).map { in =>
         val out = Path.fromString(arcOutput, in.relativePath)
         val tmpl = """(.*)\{\{(.*)\}\}(.*\n)""".r
         def template(str: String): String = str match {
-          case tmpl(before, key, after) => 
-          println("match")
-          template(before + props(key) + after)
+          case tmpl(before, key, after) => template(before + tmpl_props(key) + after)
           case _ => str
         }
-
         fileTask(out from in) {
           FileUtilities.readStream(in.asFile, log) { stm =>
             FileUtilities.write(out.asFile, log) { writer =>
