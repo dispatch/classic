@@ -78,7 +78,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
           case 0 => None
           case code => Some("sbt failed on archetect project %s with code %d" format (proj_target, code))
         }
-      } dependsOn archetect
+      } dependsOn (archetect, publishLocal)
     } ).toSeq: _*) 
   }
 }
