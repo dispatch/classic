@@ -21,7 +21,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     
     def sxrMainPath = outputPath / "classes.sxr"
     def sxrTestPath = outputPath / "test-classes.sxr"
-    def sxrPublishPath = Path.fromFile("/var/dbwww/sxr") / normalizedName / projectVersion.get.toString
+    def sxrPublishPath = Path.fromFile("/var/dbwww/sxr") / normalizedName / version.toString
     lazy val publishSxr = 
       syncTask(sxrMainPath, sxrPublishPath / "main") dependsOn(
         syncTask(sxrTestPath, sxrPublishPath / "test") dependsOn(testCompile)
@@ -46,10 +46,30 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   )
   class ArchetectProject(info: ProjectInfo) extends DefaultProject(info) {
     import Process._
-    val arcOutput = outputPath / "arc"
     val arcSource = "src" / "arc"
+    val arcOutput = outputPath / "arc"
+    override def watchPaths = super.watchPaths +++ (arcSource ** "*")
 
-    lazy val archetect = task { None } dependsOn ( ( (arcSource * "*").get map { proj =>
+    lazy val archetect = task { None } dependsOn ( (arcSource ##).descendentsExcept("*", ".*").get.filter(!_.isDirectory).map { in =>
+      val out = Path.fromString(arcOutput, in.relativePath)
+      val tmpl = """(.*)\{\{(.*)\}\}(.*\n)""".r
+      def template(str: String): String = str match {
+        case tmpl(before, key, after) => template(before + tmpl_props(key) + after)
+        case _ => str
+      }
+      // note: file tasks built on load; will not notice files added later
+      fileTask(out from in) {
+        FileUtilities.readStream(in.asFile, log) { stm =>
+          FileUtilities.write(out.asFile, log) { writer =>
+            io.Source.fromInputStream(stm).getLines.foreach { l =>
+              writer write template(l)
+            }; None
+          }
+        }
+      }
+    }.toSeq: _*)
+
+    lazy val archetectInstaller = task { None } dependsOn ( ( (arcSource * "*").get map { proj =>
       val proj_target = arcOutput / proj.asFile.getName
       val proj_target_target = proj_target / "target"
       fileTask(proj_target_target from arcSource ** "*") {
@@ -58,23 +78,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
           case 0 => None
           case code => Some("sbt failed on archetect project %s with code %d" format (proj_target, code))
         }
-      } dependsOn ( ( (arcSource ##) ** "*").get.filter(!_.isDirectory).map { in =>
-        val out = Path.fromString(arcOutput, in.relativePath)
-        val tmpl = """(.*)\{\{(.*)\}\}(.*\n)""".r
-        def template(str: String): String = str match {
-          case tmpl(before, key, after) => template(before + tmpl_props(key) + after)
-          case _ => str
-        }
-        fileTask(out from in) {
-          FileUtilities.readStream(in.asFile, log) { stm =>
-            FileUtilities.write(out.asFile, log) { writer =>
-              io.Source.fromInputStream(stm).getLines.foreach { l =>
-                writer write template(l)
-              }; None
-            }
-          }
-        }
-      }.toSeq: _*)
-    } ).toSeq: _*)
+      } dependsOn archetect
+    } ).toSeq: _*) 
   }
 }
