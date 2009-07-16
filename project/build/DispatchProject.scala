@@ -21,7 +21,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     
     def sxrMainPath = outputPath / "classes.sxr"
     def sxrTestPath = outputPath / "test-classes.sxr"
-    def sxrPublishPath = Path.fromFile("/var/dbwww/sxr") / normalizedName / projectVersion.value.toString
+    def sxrPublishPath = Path.fromFile("/var/dbwww/sxr") / normalizedName / projectVersion.get.toString
     lazy val publishSxr = 
       syncTask(sxrMainPath, sxrPublishPath / "main") dependsOn(
         syncTask(sxrTestPath, sxrPublishPath / "test") dependsOn(testCompile)
@@ -44,23 +44,38 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     import Process._
     val arcOutput = outputPath / "arc"
     val arcSource = "src" / "arc"
+    
 
-    lazy val archetect = task { None } dependsOn ((arcSource * "*").get.map { in =>
-      val out = arcOutput / in.asFile.getName
-      fileTask(out from (in ** "*")) {
-        FileUtilities.clean(out, log)
-        FileUtilities.readStream(in.asFile, log) { read =>
-          FileUtilities.writeStream(out.asFile, log) { write =>
-            io.Source.fromStream(read).getLines.foreach { l =>
-              write.write(l)
+    lazy val archetect = task { None } dependsOn ( ( ( (arcSource ##) * "*").get map { arc_proj:Path =>
+      fileTask(arcOutput / arc_proj.asFile.getName / "target" from arcOutput ** "*") {
+        (new java.lang.ProcessBuilder("sbt", "installer") directory arc_proj.asFile) ! log match {
+          case 0 => None
+          case code => Some("sbt failed on archetect project %s with code %d" format (arc_proj, code))
+        }
+      } dependsOn ( (arc_proj ** "*").get.filter(!_.isDirectory).map { in =>
+        val props = Map(
+          "sbt.version" -> sbtVersion.value,
+          "dispatch.version" -> projectVersion.get.toString
+        )
+        val out = Path.fromString(arcOutput, in.relativePath)
+        val tmpl = """(.*)\{\{(.*)\}\}(.*\n)""".r
+        def template(str: String): String = str match {
+          case tmpl(before, key, after) => 
+          println("match")
+          template(before + props(key) + after)
+          case _ => str
+        }
+
+        fileTask(out from in) {
+          FileUtilities.readStream(in.asFile, log) { stm =>
+            FileUtilities.write(out.asFile, log) { writer =>
+              io.Source.fromInputStream(stm).getLines.foreach { l =>
+                writer write template(l)
+              }; None
             }
           }
         }
-/*            (new java.lang.ProcessBuilder("sbt", "installer") directory out.asFile) ! log match {
-              case 0 => None
-              case code => Some("sbt failed on archetect project %s with code %d" format (in, code))
-            }
-          }*/
-    })
+      }.toSeq: _*)
+    } ).toSeq: _*)
   }
 }
