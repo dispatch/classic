@@ -55,6 +55,8 @@ object OAuth {
   
   /** Add OAuth operators to dispatch.Request */
   implicit def Request2RequestSigner(r: Request) = new RequestSigner(r)
+  /** Add String conversion since Http#str2req implicit will not chain. */
+  implicit def Request2RequestSigner(r: String) = new RequestSigner(new Request(r))
   
   class RequestSigner(r: Request) {
     
