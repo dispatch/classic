@@ -8,9 +8,9 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   lazy val http = project("http", "Dispatch HTTP", new HttpProject(_))
   lazy val json = project("json", "Dispatch JSON", new DispatchDefault(_), http)
   lazy val oauth = project("oauth", "Dispatch OAuth", new DispatchDefault(_), http)
-  lazy val times = project("times", "Dispatch Times", new DispatchDefault(_), json)
-  lazy val couch = project("couch", "Dispatch Couch", new DispatchDefault(_), json)
-  lazy val twitter = project("twitter", "Dispatch Twitter", new DispatchDefault(_), json, oauth)
+  lazy val times = project("times", "Dispatch Times", new DispatchDefault(_), http, json)
+  lazy val couch = project("couch", "Dispatch Couch", new DispatchDefault(_), http, json)
+  lazy val twitter = project("twitter", "Dispatch Twitter", new DispatchDefault(_), http, json, oauth)
 
   class DispatchDefault(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins {
     override def crossScalaVersions = DispatchProject.this.crossScalaVersions
