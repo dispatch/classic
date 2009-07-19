@@ -49,6 +49,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     val arcSource = "src" / "arc"
     val arcOutput = outputPath / "arc"
     override def watchPaths = super.watchPaths +++ (arcSource ** "*")
+    override def publishAction = task { None }
 
     lazy val archetect = task { None } dependsOn ( (arcSource ##).descendentsExcept("*", ".*").get.filter(!_.isDirectory).map { in =>
       val out = Path.fromString(arcOutput, in.relativePath)
