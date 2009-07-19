@@ -25,7 +25,7 @@ object Twine {
     ((args, Token(config.configMap("request").asMap)) match {
       case (Seq(verifier), Some(tok)) => 
         http(Auth.access_token(consumer, tok, verifier)) match {
-          case (access_tok, a, screen_name) =>
+          case (access_tok, _, screen_name) =>
             ("Approved, %s! It's tweetin' time." format screen_name, "access", access_tok)
         }
       case _ => 
