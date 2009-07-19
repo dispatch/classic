@@ -33,8 +33,12 @@ object Status extends Request(Twitter.host / "statuses") with Js {
   
   def friends_timeline(consumer: Consumer, token: Token) =
     this / "friends_timeline.json" <@ (consumer, token) ># (list ! obj)
+    
+  def update(status: String, consumer: Consumer, token: Token) =
+    this / "update.json" << Map("status" -> status) <@ (consumer, token) ># Status.id
   
   val text = 'text ? str
+  val id = 'id ? num
 }
 
 case class Status(user: String) extends 
@@ -69,6 +73,6 @@ object Auth {
   
   def access_token(consumer: Consumer, token: Token, verifier: String) = 
     svc.secure.POST / "access_token" <@ (consumer, token, verifier) >% { m =>
-      (Token(m), m("user_id"), m("screen_name"))
+      (Token(m).get, m("user_id"), m("screen_name"))
     }
 }
