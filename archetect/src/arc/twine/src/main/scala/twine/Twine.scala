@@ -27,10 +27,10 @@ object Twine {
       case (Seq(verifier), Some(tok)) => try {
         http(Auth.access_token(consumer, tok, verifier)) match {
           case (access_tok, _, screen_name) =>
-            ("Approved! It's tweetin' time, %s." format screen_name, Some("access"), Some(access_tok))
+            ("Approved! It's tweetin' time, %s." format screen_name, Some(("access", access_tok)))
         } } catch {
           case StatusCode(401, _) =>
-            ("Rats! That PIN %s doesn't seem to match." format verifier, None, None)
+            ("Rats! That PIN %s doesn't seem to match." format verifier, None)
         }
       case _ => 
         val tok = http(Auth.request_token(consumer))
@@ -44,9 +44,10 @@ object Twine {
           case _ => "Open the following URL in a browser to permit this application to tweet 4 u:\n%s".
                       format(auth_uri.toString)
         }) + "\n\nThen run `java -jar twine.jar <pin>` to complete authorization.",
-          Some("request"), Some(tok))
+          Some(("request", tok)))
     }) match {
-      case (message, Some(name), Some(tok)) =>
+      case (message, None) => message
+      case (message, Some((name, tok))) =>
         val conf_writer = new java.io.FileWriter(conf)
         conf_writer write (
           """
@@ -57,7 +58,6 @@ object Twine {
         )
         conf_writer.close
         message
-      case (message, _, _) => message
     }
   }
 }
