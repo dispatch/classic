@@ -3,6 +3,8 @@ import sbt._
 class TwineProject(info: ProjectInfo) extends DefaultProject(info) with extract.BasicSelfExtractingProject
 {
   val lag_net = "lag.net repository" at "http://www.lag.net/repo"
+  val snapshots = "scala-tools snapshots" at "http://scala-tools.org/repo-snapshots/"
+  
   val configgy = "net.lag" % "configgy" % "1.3" % "provided->default"
   val dispatch = "net.databinder" %% "dispatch-twitter" % "{{dispatch.version}}"
   // rm below when published ivy.xml is correct
