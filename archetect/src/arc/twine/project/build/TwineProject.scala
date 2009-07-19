@@ -10,6 +10,8 @@ class TwineProject(info: ProjectInfo) extends DefaultProject(info) with extract.
   val dispatch_json = "net.databinder" %% "dispatch-json" % "{{dispatch.version}}"
   val dispatch_http = "net.databinder" %% "dispatch-http" % "{{dispatch.version}}"
   
+  override def installActions = update.name :: script.name :: readme.name :: Nil
+	
   // will use proguard to make one runnable jar later, for now a crazy long classpath will do
   lazy val script = task {
     import java.io.File
@@ -23,4 +25,12 @@ class TwineProject(info: ProjectInfo) extends DefaultProject(info) with extract.
       None
     }
   } dependsOn compile
+  
+  lazy val readme = task {
+    val rf = path("README").asFile
+    print("Printing %s ==>\n\n" format rf)
+    FileUtilities.readStream(rf, log) { stm =>
+      io.Source.fromInputStream(stm).getLines.foreach(print); None
+    }
+  }
 }
