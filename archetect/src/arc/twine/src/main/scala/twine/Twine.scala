@@ -1,5 +1,6 @@
 package dispatch.twine
 
+import json.Js._
 import oauth._
 import twitter._
 import net.lag.configgy._
@@ -17,8 +18,11 @@ object Twine {
     println( (args, Token(config.configMap("access").asMap)) match {
       case (Seq("reset"), _) => conf.delete(); "OAuth credentials deleted."
       case (Seq(), Some(tok)) => "Try again, when you have something to say?"
-      case (args, Some(tok)) => "Posted update %s" format
-        http(Status.update(args mkString " ", consumer, tok))
+      case (args, Some(tok)) => http(Status.update(args mkString " ", consumer, tok) ># { js =>
+        val Status.user.screen_name(screen_name) = js
+        val Status.id(id) = js
+        "Posted: " + (Twitter.host / screen_name / "status" / id.toString to_uri)
+      })
       case _ => get_authorization(args)
     })
   }
@@ -43,7 +47,7 @@ object Twine {
         } catch {
           case _ => "Open the following URL in a browser to permit this application to tweet 4 u:\n%s".
                       format(auth_uri.toString)
-        }) + "\n\nThen run `java -jar twine.jar <pin>` to complete authorization.",
+        }) + "\n\nThen run `twine <pin>` to complete authorization.\n",
           Some(("request", tok)))
     }) match {
       case (message, None) => message
