@@ -28,26 +28,31 @@ object Search extends Js {
   val from_user = 'from_user ? str
 }
 
-object Status extends Request(Twitter.host / "statuses") with Js {
+object Status extends Request(Twitter.host / "statuses") {
   def public_timeline = this / "public_timeline.json" ># (list ! obj)
   
   def friends_timeline(consumer: Consumer, token: Token) =
     this / "friends_timeline.json" <@ (consumer, token) ># (list ! obj)
-    
+  
   def update(status: String, consumer: Consumer, token: Token) =
-    this / "update.json" << Map("status" -> status) <@ (consumer, token) ># Status.id
+    this / "update.json" << Map("status" -> status) <@ (consumer, token)
   
   val text = 'text ? str
   val id = 'id ? num
+  val user = new Obj('user) with UserProps // Obj assigns context to itself
 }
 
-case class Status(user: String) extends 
-    Request(Status / "user_timeline" / (user + ".json")) with Js {
+case class Status(user_id: String) extends 
+    Request(Status / "user_timeline" / (user_id + ".json")) with Js {
 
   def timeline = this ># (list ! obj)
 }
 
-object User extends Js {
+object User extends UserProps with Js // Js assigns context of None
+
+trait UserProps {
+  // undefined local context for `?` to allow Obj / Js to assign themselves
+  implicit val ctx: Option[Obj]
   val followers_count = 'followers_count ? num
   val screen_name = 'screen_name ? str
 }
