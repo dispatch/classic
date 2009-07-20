@@ -73,7 +73,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
       }.toSeq: _*
     )
 
-    lazy val archetectInstaller = compoundTask(archetectInstallerTasks)
+    lazy val archetectInstaller = compoundTask(archetectInstallerTasks) dependsOn (archetect, publishLocal)
 
     def archetectInstallerTasks = task { None } named("archetect-installer-complete") dependsOn (
       (arcSource * "*").get.map { proj =>
@@ -85,7 +85,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
             case 0 => None
             case code => Some("sbt failed on archetect project %s with code %d" format (proj_target, code))
           }
-        } dependsOn (archetectTasks, publishLocal)
+        }
       }.toSeq: _*
     )
   }
