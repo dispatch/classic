@@ -21,9 +21,10 @@ class TwineProject(info: ProjectInfo) extends DefaultProject(info) with extract.
     val twine = (info.projectPath / "twine").asFile
     FileUtilities.write(twine,
       "java -cp %s %s \"$@\"" format (
-        (Path.makeString(runClasspath.get) :: mainDependencies.scalaJars.get.toList).mkString(File.pathSeparator),
+        Path.makeString((runClasspath +++ mainDependencies.scalaJars).get),
         getMainClass(false).get
-      ), log) orElse {
+      ), log
+    ) orElse {
       ("chmod a+x " + twine) ! log
       None
     }
@@ -32,8 +33,8 @@ class TwineProject(info: ProjectInfo) extends DefaultProject(info) with extract.
   lazy val readme = task {
     val rf = path("README").asFile
     print("Printing %s ==>\n\n" format rf)
-    FileUtilities.readStream(rf, log) { stm =>
-      io.Source.fromInputStream(stm).getLines.foreach(print); None
-    }
+    FileUtilities.readString(rf, log) fold (
+      Some(_), { str => print(str); None }
+    )
   }
 }

@@ -51,35 +51,42 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     override def watchPaths = super.watchPaths +++ (arcSource ** "*")
     override def publishAction = task { None }
 
-    lazy val archetect = task { None } dependsOn ( (arcSource ##).descendentsExcept("*", ".*").get.filter(!_.isDirectory).map { in =>
-      val out = Path.fromString(arcOutput, in.relativePath)
-      val tmpl = """(.*)\{\{(.*)\}\}(.*\n)""".r
-      def template(str: String): String = str match {
-        case tmpl(before, key, after) => template(before + tmpl_props(key) + after)
-        case _ => str
-      }
-      // note: file tasks built on load; will not notice files added later
-      fileTask(out from in) {
-        FileUtilities.readStream(in.asFile, log) { stm =>
-          FileUtilities.write(out.asFile, log) { writer =>
-            io.Source.fromInputStream(stm).getLines.foreach { l =>
-              writer write template(l)
-            }; None
+    lazy val archetect = compoundTask(archetectTasks)
+
+    def archetectTasks = task { None } named("archetect-complete") dependsOn (
+      descendents(arcSource ##, "*").get.filter(!_.isDirectory).map { in =>
+        val out = Path.fromString(arcOutput, in.relativePath)
+        val tmpl = """(.*)\{\{(.*)\}\}(.*\n)""".r
+        def template(str: String): String = str match {
+          case tmpl(before, key, after) => template(before + tmpl_props(key) + after)
+          case _ => str
+        }
+        fileTask(out from in) {
+          FileUtilities.readStream(in.asFile, log) { stm =>
+            FileUtilities.write(out.asFile, log) { writer =>
+              io.Source.fromInputStream(stm).getLines.foreach { l =>
+                writer write template(l)
+              }; None
+            }
           }
         }
-      }
-    }.toSeq: _*)
+      }.toSeq: _*
+    )
 
-    lazy val archetectInstaller = task { None } dependsOn ( ( (arcSource * "*").get map { proj =>
-      val proj_target = arcOutput / proj.asFile.getName
-      val proj_target_target = proj_target / "target"
-      fileTask(proj_target_target from arcSource ** "*") {
-        proj_target_target.asFile.setLastModified(System.currentTimeMillis)
-        (new java.lang.ProcessBuilder("sbt", "installer") directory proj_target.asFile) ! log match {
-          case 0 => None
-          case code => Some("sbt failed on archetect project %s with code %d" format (proj_target, code))
-        }
-      } dependsOn (archetect, publishLocal)
-    } ).toSeq: _*) 
+    lazy val archetectInstaller = compoundTask(archetectInstallerTasks)
+
+    def archetectInstallerTasks = task { None } named("archetect-installer-complete") dependsOn (
+      (arcSource * "*").get.map { proj =>
+        val proj_target = arcOutput / proj.asFile.getName
+        val proj_target_target = proj_target / "target"
+        fileTask(proj_target_target from arcSource ** "*") {
+          proj_target_target.asFile.setLastModified(System.currentTimeMillis)
+          (new java.lang.ProcessBuilder("sbt", "installer") directory proj_target.asFile) ! log match {
+            case 0 => None
+            case code => Some("sbt failed on archetect project %s with code %d" format (proj_target, code))
+          }
+        } dependsOn (archetectTasks, publishLocal)
+      }.toSeq: _*
+    )
   }
 }
