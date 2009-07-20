@@ -16,6 +16,7 @@ class TwineProject(info: ProjectInfo) extends DefaultProject(info) with extract.
 	
   // will use proguard to make one runnable jar later, for now a crazy long classpath will do
   lazy val script = task {
+    import Process._
     import java.io.File
     val twine = (info.projectPath / "twine").asFile
     FileUtilities.write(twine,
@@ -23,7 +24,7 @@ class TwineProject(info: ProjectInfo) extends DefaultProject(info) with extract.
         (Path.makeString(runClasspath.get) :: mainDependencies.scalaJars.get.toList).mkString(File.pathSeparator),
         getMainClass(false).get
       ), log) orElse {
-      twine setExecutable true
+      ("chmod a+x " + twine) ! log
       None
     }
   } dependsOn compile
