@@ -37,6 +37,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2.1")
   }
   
+  // parent project should not be published
   override def publishAction = task { None }
   override def publishConfiguration = publishLocalConfiguration
   
@@ -51,6 +52,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     val arcSource = "src" / "arc"
     val arcOutput = outputPath / "arc"
     override def watchPaths = super.watchPaths +++ (arcSource ** "*")
+    // archetect project should not be published
     override def publishAction = task { None }
     override def publishConfiguration = publishLocalConfiguration
 
