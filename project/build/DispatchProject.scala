@@ -35,7 +35,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     val configgy = "net.lag" % "configgy" % "1.3" % "provided->default"
     val st = "org.scala-tools.testing" % "scalatest" % "0.9.5" % "test->default"
  
-    val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2.1")
+    val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2.2")
   }
 
   lazy val archetect = project("archetect", "Dispatch Archetect", new ArchetectProject(_))
