@@ -81,7 +81,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
         val proj_target_target = proj_target / "target"
         fileTask(proj_target_target from arcSource ** "*") {
           proj_target_target.asFile.setLastModified(System.currentTimeMillis)
-          (new java.lang.ProcessBuilder("sbt", "installer") directory proj_target.asFile) ! log match {
+          (new java.lang.ProcessBuilder("sbt", "clean", "installer") directory proj_target.asFile) ! log match {
             case 0 => None
             case code => Some("sbt failed on archetect project %s with code %d" format (proj_target, code))
           }
