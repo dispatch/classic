@@ -49,6 +49,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     val arcOutput = outputPath / "arc"
     override def watchPaths = super.watchPaths +++ (arcSource ** "*")
     override def publishAction = task { None }
+    override def publishConfiguration = publishLocalConfiguration
 
     lazy val archetect = compoundTask(archetectTasks)
 
