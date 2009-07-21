@@ -23,6 +23,7 @@ class TwineProject(info: ProjectInfo) extends DefaultProject(info)
     import Process._
     import java.io.File
     val twine = (info.projectPath / "twine").asFile
+    val twine_bat = (info.projectPath / "twine.bat").asFile
     FileUtilities.write(twine,
       "java -cp %s %s \"$@\"" format (
         Path.makeString((runClasspath +++ mainDependencies.scalaJars).get),
@@ -31,6 +32,13 @@ class TwineProject(info: ProjectInfo) extends DefaultProject(info)
     ) orElse {
       ("chmod a+x " + twine) ! log
       None
+    } orElse {
+      FileUtilities.write(twine_bat,
+        "java -cp %s %s %%*" format (
+          Path.makeString((runClasspath +++ mainDependencies.scalaJars).get),
+          getMainClass(false).get
+        ), log
+      )
     }
   } dependsOn compile
   
