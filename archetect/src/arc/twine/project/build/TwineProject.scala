@@ -1,6 +1,8 @@
 import sbt._
 
-class TwineProject(info: ProjectInfo) extends DefaultProject(info) with extract.BasicSelfExtractingProject
+class TwineProject(info: ProjectInfo) extends DefaultProject(info) 
+  with extract.BasicSelfExtractingProject
+  with AutoCompilerPlugins
 {
   val lag_net = "lag.net repository" at "http://www.lag.net/repo"
   val snapshots = "scala-tools snapshots" at "http://scala-tools.org/repo-snapshots/"
@@ -13,6 +15,8 @@ class TwineProject(info: ProjectInfo) extends DefaultProject(info) with extract.
   val dispatch_http = "net.databinder" %% "dispatch-http" % "{{dispatch.version}}"
   
   override def installActions = update.name :: script.name :: readme.name :: Nil
+  
+  val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2.1")
 	
   // will use proguard to make one runnable jar later, for now a crazy long classpath will do
   lazy val script = task {
