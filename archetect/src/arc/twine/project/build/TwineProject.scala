@@ -24,22 +24,23 @@ class TwineProject(info: ProjectInfo) extends DefaultProject(info)
     import java.io.File
     val twine = (info.projectPath / "twine").asFile
     val twine_bat = (info.projectPath / "twine.bat").asFile
-    FileUtilities.write(twine,
-      "java -cp %s %s \"$@\"" format (
-        Path.makeString((runClasspath +++ mainDependencies.scalaJars).get),
-        getMainClass(false).get
-      ), log
-    ) orElse {
-      ("chmod a+x " + twine) ! log
-      None
-    } orElse {
+    if (System.getProperty("os.name").toLowerCase.indexOf("windows") < 0)
+      FileUtilities.write(twine,
+        "java -cp %s %s \"$@\"" format (
+          Path.makeString((runClasspath +++ mainDependencies.scalaJars).get),
+          getMainClass(false).get
+        ), log
+      ) orElse {
+        ("chmod a+x " + twine) ! log
+        None
+      }
+    else
       FileUtilities.write(twine_bat,
-        "java -cp %s %s %%*" format (
+        "@echo off\njava -cp \"%s\" %s %%*" format (
           Path.makeString((runClasspath +++ mainDependencies.scalaJars).get),
           getMainClass(false).get
         ), log
       )
-    }
   } dependsOn compile
   
   lazy val readme = task {
