@@ -36,7 +36,10 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
  
     val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2.1")
   }
-
+  
+  override def publishAction = task { None }
+  override def publishConfiguration = publishLocalConfiguration
+  
   lazy val archetect = project("archetect", "Dispatch Archetect", new ArchetectProject(_))
   
   val tmpl_props = Map(
