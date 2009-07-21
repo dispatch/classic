@@ -26,7 +26,6 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
       syncTask(sxrMainPath, sxrPublishPath / "main") dependsOn(
         syncTask(sxrTestPath, sxrPublishPath / "test") dependsOn(testCompile)
       )
-    override def publishAction = super.publishAction dependsOn(publishSxr)
   }   
     
   class HttpProject(info: ProjectInfo) extends DispatchDefault(info) {
