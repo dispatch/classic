@@ -1,0 +1,27 @@
+Databinder Twine
+================
+
+This is a sample application for Databinder Dispatch[1], built and packaged
+by simple-build-tool[2]. If you've run this from the self extracting installer,
+you should have a twine project directory with a `twine` script inside it.
+
+You can run the `twine` script from anywhere; it might be fun to put it on your
+executable search path. The script refers fully to the project path in its
+classpath, so if you move the project you'll need to regenerate the script by
+running `sbt script` in the project directory. Here's what it looks like to
+run twine from inside twine/
+
+  ./twine
+  # opens browser or prints url to grant access, depending on JVM ability
+  ./twine <pin>
+  # pass in the PIN that Twitter assigns, without brackets
+  ./twine I love to tweet from terminal\!
+
+If you'd like to see how Twine ticks, its Scala X-Ray[3] formatted source
+is the best place to start. See: target/classes.sxr/Twine.scala.html
+
+Happy twails.
+
+[1]:http://databinder.net/dispatch/
+[2]:http://code.google.com/p/simple-build-tool/
+[3]:http://github.com/harrah/browse/tree/master

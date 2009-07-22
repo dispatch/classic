@@ -22,12 +22,11 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     
     def sxrMainPath = outputPath / "classes.sxr"
     def sxrTestPath = outputPath / "test-classes.sxr"
-    def sxrPublishPath = Path.fromFile("/var/dbwww/sxr") / normalizedName / projectVersion.value.toString
+    def sxrPublishPath = Path.fromFile("/var/dbwww/sxr") / normalizedName / version.toString
     lazy val publishSxr = 
       syncTask(sxrMainPath, sxrPublishPath / "main") dependsOn(
         syncTask(sxrTestPath, sxrPublishPath / "test") dependsOn(testCompile)
       )
-    override def publishAction = super.publishAction dependsOn(publishSxr)
   }   
     
   class HttpProject(info: ProjectInfo) extends DispatchDefault(info) {
@@ -38,7 +37,66 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
  
     val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2.1")
   }
+  
   class LiteralJsonProject(info: ProjectInfo) extends DispatchDefault(info) {
     val literaljson = "literaljson" % "literaljson" % "0.1"
+  }
+  
+  // parent project should not be published
+  override def publishAction = task { None }
+  override def publishConfiguration = publishLocalConfiguration
+  
+  lazy val archetect = project("archetect", "Dispatch Archetect", new ArchetectProject(_))
+  
+  val tmpl_props = Map(
+    "sbt.version" -> sbtVersion.get.get,
+    "dispatch.version" -> version
+  )
+  class ArchetectProject(info: ProjectInfo) extends DefaultProject(info) {
+    import Process._
+    val arcSource = "src" / "arc"
+    val arcOutput = outputPath / "arc"
+    override def watchPaths = super.watchPaths +++ (arcSource ** "*")
+    // archetect project should not be published
+    override def publishAction = task { None }
+    override def publishConfiguration = publishLocalConfiguration
+
+    lazy val archetect = dynamic(archetectTasks)
+
+    def archetectTasks = task { None } named("archetect-complete") dependsOn (
+      descendents(arcSource ##, "*").get.filter(!_.isDirectory).map { in =>
+        val out = Path.fromString(arcOutput, in.relativePath)
+        val tmpl = """(.*)\{\{(.*)\}\}(.*\n)""".r
+        def template(str: String): String = str match {
+          case tmpl(before, key, after) => template(before + tmpl_props(key) + after)
+          case _ => str
+        }
+        fileTask(out from in) {
+          FileUtilities.readStream(in.asFile, log) { stm =>
+            FileUtilities.write(out.asFile, log) { writer =>
+              io.Source.fromInputStream(stm).getLines.foreach { l =>
+                writer write template(l)
+              }; None
+            }
+          }
+        }
+      }.toSeq: _*
+    )
+
+    lazy val archetectInstaller = dynamic(archetectInstallerTasks) dependsOn (archetect, publishLocal)
+
+    def archetectInstallerTasks = task { None } named("archetect-installer-complete") dependsOn (
+      (arcSource * "*").get.map { proj =>
+        val proj_target = arcOutput / proj.asFile.getName
+        val proj_target_target = proj_target / "target"
+        fileTask(proj_target_target from arcSource ** "*") {
+          proj_target_target.asFile.setLastModified(System.currentTimeMillis)
+          (new java.lang.ProcessBuilder("sbt", "clean", "installer") directory proj_target.asFile) ! log match {
+            case 0 => None
+            case code => Some("sbt failed on archetect project %s with code %d" format (proj_target, code))
+          }
+        }
+      }.toSeq: _*
+    )
   }
 }

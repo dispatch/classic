@@ -13,7 +13,10 @@ import org.apache.http.client.methods.HttpRequestBase
 case class Consumer(key: String, secret: String)
 case class Token(value: String, secret: String)
 object Token {
-  def apply(m: Map[String, String]): Token = Token(m("oauth_token"), m("oauth_token_secret"))
+  def apply(m: Map[String, String]): Option[Token] = List("oauth_token", "oauth_token_secret").flatMap(m.get) match {
+    case value :: secret :: Nil => Some(Token(value, secret))
+    case _ => None
+  }
 }
 
 /** Import this object's methods to add signing operators to dispatch.Request */
@@ -84,7 +87,7 @@ object OAuth {
     }
 
     def >% [T] (block: IMap[String, String] => T) = r >- ( split_decode andThen block )
-    def as_token = r >% { Token(_) }
+    def as_token = r >% { Token(_).getOrElse { error("Token parameters not found in given map") } }
     
     val split_decode: (String => IMap[String, String]) = {
       case null => IMap.empty
