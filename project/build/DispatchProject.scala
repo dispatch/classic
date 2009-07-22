@@ -56,7 +56,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     override def publishAction = task { None }
     override def publishConfiguration = publishLocalConfiguration
 
-    lazy val archetect = compoundTask(archetectTasks)
+    lazy val archetect = dynamic(archetectTasks)
 
     def archetectTasks = task { None } named("archetect-complete") dependsOn (
       descendents(arcSource ##, "*").get.filter(!_.isDirectory).map { in =>
@@ -78,7 +78,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
       }.toSeq: _*
     )
 
-    lazy val archetectInstaller = compoundTask(archetectInstallerTasks) dependsOn (archetect, publishLocal)
+    lazy val archetectInstaller = dynamic(archetectInstallerTasks) dependsOn (archetect, publishLocal)
 
     def archetectInstallerTasks = task { None } named("archetect-installer-complete") dependsOn (
       (arcSource * "*").get.map { proj =>

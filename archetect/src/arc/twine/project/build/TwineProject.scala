@@ -1,4 +1,5 @@
 import sbt._
+import Process._
 
 class TwineProject(info: ProjectInfo) extends DefaultProject(info) 
   with extract.BasicSelfExtractingProject
@@ -19,7 +20,6 @@ class TwineProject(info: ProjectInfo) extends DefaultProject(info)
 	
   // will use proguard to make one runnable jar later, for now a crazy long classpath will do
   lazy val script = task {
-    import Process._
     import java.io.File
     val twine = (info.projectPath / "twine").asFile
     val twine_bat = (info.projectPath / "twine.bat").asFile
@@ -45,8 +45,7 @@ class TwineProject(info: ProjectInfo) extends DefaultProject(info)
   lazy val readme = task {
     val rf = path("README").asFile
     print("Printing %s ==>\n\n" format rf)
-    FileUtilities.readString(rf, log) fold (
-      Some(_), { str => print(str); None }
-    )
+    (rf.cat !)
+    None
   }
 }
