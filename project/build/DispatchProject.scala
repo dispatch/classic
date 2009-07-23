@@ -13,8 +13,6 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   lazy val twitter = project("twitter", "Dispatch Twitter", new DispatchDefault(_), http, json, oauth)
 
   class DispatchDefault(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins {
-    override def crossScalaVersions = DispatchProject.this.crossScalaVersions
-    override def useDefaultConfigurations = true
     override def managedStyle = ManagedStyle.Maven
     val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
     Credentials(Path.userHome / ".ivy2" / ".credentials", log)
@@ -44,7 +42,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   lazy val archetect = project("archetect", "Dispatch Archetect", new ArchetectProject(_))
   
   val tmpl_props = Map(
-    "sbt.version" -> sbtVersion.get.get,
+    "sbt.version" -> sbtVersion.value,
     "dispatch.version" -> version
   )
   class ArchetectProject(info: ProjectInfo) extends DefaultProject(info) {
