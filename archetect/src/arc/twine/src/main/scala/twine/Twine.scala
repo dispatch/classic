@@ -18,11 +18,15 @@ package dispatch {
         println( (args, Token(C.config.configMap("access").asMap)) match {
           case (Seq("reset"), _) => conf.delete(); "OAuth credentials deleted."
           case (Seq(), Some(tok)) => "Try again, when you have something to say?"
-          case (args, Some(tok)) => http(Status.update(args mkString " ", consumer, tok) ># { js =>
-            val Status.user.screen_name(screen_name) = js
-            val Status.id(id) = js
-            "Posted: " + (Twitter.host / screen_name / "status" / id.toString to_uri)
-          })
+          case (args, Some(tok)) => (args mkString " ") match {
+            case tweet if tweet.length > 140 => 
+              "%d characters? This is Twitter not NY Times Magazine." format tweet.length
+            case tweet => http(Status.update(tweet, consumer, tok) ># { js =>
+              val Status.user.screen_name(screen_name) = js
+              val Status.id(id) = js
+              "Posted: " + (Twitter.host / screen_name / "status" / id.toString to_uri)
+            })
+          }
           case _ => get_authorization(args)
         })
       }
