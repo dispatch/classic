@@ -10,7 +10,11 @@ package dispatch {
       
       val conf = new java.io.File(System.getProperty("user.home"), ".twine.conf")
       val consumer = Consumer("lrhF8SXnl5q3gFOmzku4Gw", "PbB4Mr8pKAChWmd6AocY6gLmAKzPKaszYnXyIDQhzE")
-      val http = new Http
+      val http = new Http {
+        override lazy val log = new Logger {
+          def info(msg: String, items: Any*) { }
+        }
+      }
 
       def main(args: Array[String]) {
         conf.createNewFile()
