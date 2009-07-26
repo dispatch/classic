@@ -294,6 +294,10 @@ class ConfiguredHttpClient extends DefaultHttpClient {
   })
 }
 
+/** Used by client APIs to build Handler or other objects via chaining, completed implicitly.
+  * @see Http#builder2product */
+trait Builder[T] { def product:T }
+
 /** May be used directly from any thread. */
 object Http extends Http {
   import org.apache.http.conn.scheme.{Scheme,SchemeRegistry,PlainSocketFactory}
@@ -302,6 +306,8 @@ object Http extends Http {
   
   /** import to support e.g. Http("http://example.com/" >>> System.out) */
   implicit def str2req(str: String) = new Request(str)
+  
+  implicit def builder2product[T](builder: Builder[T]) = builder.product
 
   override val client = new ConfiguredHttpClient {
     override def createClientConnectionManager() = {

@@ -6,6 +6,7 @@ package dispatch {
   package twine {
     object Twine {
       import _root_.net.lag.configgy.{Configgy => C}
+      import Http._
       
       val conf = new java.io.File(System.getProperty("user.home"), ".twine.conf")
       val consumer = Consumer("lrhF8SXnl5q3gFOmzku4Gw", "PbB4Mr8pKAChWmd6AocY6gLmAKzPKaszYnXyIDQhzE")
@@ -17,7 +18,7 @@ package dispatch {
         
         println( (args, Token(C.config.configMap("access").asMap)) match {
           case (Seq("reset"), _) => conf.delete(); "OAuth credentials deleted."
-          case (Seq(), Some(tok)) => "Try again, when you have something to say?"
+          case (Seq(), Some(tok)) => cat(tok, None)
           case (args, Some(tok)) => (args mkString " ") match {
             case tweet if tweet.length > 140 => 
               "%d characters? This is Twitter not NY Times Magazine." format tweet.length
@@ -29,6 +30,18 @@ package dispatch {
           }
           case _ => get_authorization(args)
         })
+      }
+      def cat(tok: Token, since_id: Option[BigDecimal]) {
+        val tweets = http(
+          (Status.friends_timeline(consumer, tok) /: since_id) { _ since_id _ }
+        )
+        tweets.reverse foreach { js =>
+          val Status.user.screen_name(screen_name) = js
+          val Status.text(text) = js
+          println("%-15s%s" format (screen_name, text))
+        }
+        Thread sleep 60000
+        cat(tok, tweets.firstOption map { Status.id(_) } orElse since_id)
       }
       def get_authorization(args: Array[String]) = {
         ((args, Token(C.config.configMap("request").asMap)) match {

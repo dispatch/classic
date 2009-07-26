@@ -31,9 +31,21 @@ object Search extends Js {
 object Status extends Request(Twitter.host / "statuses") {
   def public_timeline = this / "public_timeline.json" ># (list ! obj)
   
-  def friends_timeline(consumer: Consumer, token: Token) =
-    this / "friends_timeline.json" <@ (consumer, token) ># (list ! obj)
+  def friends_timeline(consumer: Consumer, token: Token, params: (String, Any)*) = 
+    new FriendsTimeline(consumer, token, Map(params: _*))
+
+  class FriendsTimeline(consumer: Consumer, token: Token, params: Map[String, Any]) 
+      extends Builder[Handler[List[JsObject]]] {
   
+    def param(key: String)(value: Any) =
+      new FriendsTimeline(consumer, token, params + (key -> value))
+    val since_id = param("since_id")_
+    val max_id = param("max_id")_
+    val count = param("count")_
+    val page = param("page")_
+    def product =  Status / "friends_timeline.json" <<? params <@ (consumer, token) ># (list ! obj)
+  }
+
   def update(status: String, consumer: Consumer, token: Token) =
     this / "update.json" << Map("status" -> status) <@ (consumer, token)
   
