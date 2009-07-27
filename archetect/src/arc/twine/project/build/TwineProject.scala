@@ -9,10 +9,6 @@ class TwineProject(info: ProjectInfo) extends DefaultProject(info)
   
   val configgy = "net.lag" % "configgy" % "1.3" % "provided->default"
   val dispatch = "net.databinder" %% "dispatch-twitter" % "{{dispatch.version}}"
-  // rm below when published ivy.xml is correct
-  val dispatch_oauth = "net.databinder" %% "dispatch-oauth" % "{{dispatch.version}}"
-  val dispatch_json = "net.databinder" %% "dispatch-json" % "{{dispatch.version}}"
-  val dispatch_http = "net.databinder" %% "dispatch-http" % "{{dispatch.version}}"
   
   override def installActions = update.name :: script.name :: readme.name :: Nil
   
