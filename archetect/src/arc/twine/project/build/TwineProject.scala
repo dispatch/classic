@@ -7,7 +7,7 @@ class TwineProject(info: ProjectInfo) extends DefaultProject(info)
 {
   val lag_net = "lag.net repository" at "http://www.lag.net/repo"
   
-  val configgy = "net.lag" % "configgy" % "1.3" % "provided->default"
+  val configgy = "net.lag" % "configgy" % "1.3"
   val dispatch = "net.databinder" %% "dispatch-twitter" % "{{dispatch.version}}"
   
   override def installActions = update.name :: script.name :: readme.name :: Nil
