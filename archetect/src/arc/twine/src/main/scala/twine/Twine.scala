@@ -10,11 +10,7 @@ package dispatch {
       
       val conf = new java.io.File(System.getProperty("user.home"), ".twine.conf")
       val consumer = Consumer("lrhF8SXnl5q3gFOmzku4Gw", "PbB4Mr8pKAChWmd6AocY6gLmAKzPKaszYnXyIDQhzE")
-      val http = new Http {
-        override lazy val log = new Logger {
-          def info(msg: String, items: Any*) { }
-        }
-      }
+      val http = new Http
 
       def main(args: Array[String]) {
         conf.createNewFile()
@@ -78,7 +74,9 @@ package dispatch {
           case (message, Some((name, tok))) =>
             val conf_writer = new java.io.FileWriter(conf)
             conf_writer write (
-              """
+            """ |<log>
+                |  level = "WARNING"
+                |</log>
                 |<%s>
                 |  oauth_token = "%s"
                 |  oauth_token_secret = "%s"
