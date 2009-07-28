@@ -11,11 +11,18 @@ classpath, so if you move the project you'll need to regenerate the script by
 running `sbt script` in the project directory. Here's what it looks like to
 run twine from inside twine/
 
-  ./twine
-  # opens browser or prints url to grant access, depending on JVM ability
-  ./twine <pin>
-  # pass in the PIN that Twitter assigns, without brackets
-  ./twine I love to tweet from terminal\!
+    ./twine
+    # opens browser or prints url to grant access, depending on JVM ability
+    ./twine <pin>
+
+    # pass in the PIN that Twitter assigns, without brackets
+    ./twine I love to tweet from terminal\!
+
+    # print timeline to stdout and stay open, polling for new tweets
+    ./twine
+  
+    # remove oauth credentials from ~/.twine
+    ./twine reset
 
 If you'd like to see how Twine ticks, its Scala X-Ray[3] formatted source
 is the best place to start. See: target/classes.sxr/Twine.scala.html
