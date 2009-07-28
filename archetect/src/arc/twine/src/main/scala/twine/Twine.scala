@@ -38,7 +38,7 @@ package dispatch {
         tweets.reverse foreach { js =>
           val Status.user.screen_name(screen_name) = js
           val Status.text(text) = js
-          println("%-15s%s" format (screen_name, text))
+          println("%-15s%s" format (screen_name, Status.rebracket(text)) )
         }
         Thread sleep 60000
         cat(tok, tweets.firstOption map { Status.id(_) } orElse since_id)

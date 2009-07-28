@@ -67,6 +67,8 @@ object Status extends Request(Twitter.host / "statuses") {
   val text = 'text ? str
   val id = 'id ? num
   val user = new Obj('user) with UserProps // Obj assigns context to itself
+
+  def rebracket(status: String) = status replace ("&gt;", ">") replace ("&lt;", "<")
 }
 
 case class Status(user_id: String) extends 
