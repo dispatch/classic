@@ -10,14 +10,29 @@ object Twitter {
   val search = :/("search.twitter.com")
 }
 
-case class Search(query: String, rpp: Int) extends 
-    Request( Twitter.search / "search.json" <<? Map("q" -> query, "rpp" -> rpp.toString)  ) with Js {
-  
-  def results = this ># ('results ! (list ! obj))
-}
-
 object Search extends Js {
-  def apply(query: String): Search = Search(query, 20)
+  /* @deprecated use SearchBuilder#rpp */
+  def apply(query: String, rpp: Int) = new SearchBuilder(Map.empty).q(query).rpp(20)
+  def apply(query: String, params: (String, Any)*) = new SearchBuilder(Map(params: _*)).q(query)
+  
+  class SearchBuilder(params: Map[String, Any]) extends Builder[Handler[List[JsObject]]] {
+    private def param(key: String)(value: Any) = new SearchBuilder(params + (key -> value))
+    
+    val q = param("q")_
+    val lang = param("lang")_
+    val rpp = param("rpp")_
+    val page = param("page")_
+    val since_id = param("since_id")_
+    private def geocode0(unit: String)(lat: Double, lon: Double, radius: Double) = 
+      param("geocode")(List(lat, lon, radius).mkString(",") + unit)
+    val geocode = geocode0("km")_
+    val geocode_mi = geocode0("mi")_
+    def product = Twitter.search / "search.json" <<? params ># ('results ! (list ! obj))
+    
+    /* @deprecated use `product` or allow implicit conversion to Handler */
+    def results = product
+  }
+  
   val to_user_id = 'to_user_id ? num
   val from_user_id = 'from_user_id ? num
   val source = 'source ? str
@@ -29,16 +44,16 @@ object Search extends Js {
 }
 
 object Status extends Request(Twitter.host / "statuses") {
-  def public_timeline = this / "public_timeline.json" ># (list ! obj)
+  private def public_timeline = this / "public_timeline.json" ># (list ! obj)
   
   def friends_timeline(consumer: Consumer, token: Token, params: (String, Any)*) = 
-    new FriendsTimeline(consumer, token, Map(params: _*))
+    new FriendsTimelineBuilder(consumer, token, Map(params: _*))
 
-  class FriendsTimeline(consumer: Consumer, token: Token, params: Map[String, Any]) 
+  class FriendsTimelineBuilder(consumer: Consumer, token: Token, params: Map[String, Any]) 
       extends Builder[Handler[List[JsObject]]] {
   
-    def param(key: String)(value: Any) =
-      new FriendsTimeline(consumer, token, params + (key -> value))
+    private def param(key: String)(value: Any) =
+      new FriendsTimelineBuilder(consumer, token, params + (key -> value))
     val since_id = param("since_id")_
     val max_id = param("max_id")_
     val count = param("count")_
