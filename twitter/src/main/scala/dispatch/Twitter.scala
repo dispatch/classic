@@ -28,9 +28,6 @@ object Search extends Js {
     val geocode = geocode0("km")_
     val geocode_mi = geocode0("mi")_
     def product = Twitter.search / "search.json" <<? params ># ('results ! (list ! obj))
-    
-    /* @deprecated use `product` or allow implicit conversion to Handler */
-    def results = product
   }
   
   val to_user_id = 'to_user_id ? num

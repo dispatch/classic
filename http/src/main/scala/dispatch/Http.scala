@@ -213,9 +213,6 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   /** HTTP post request. (new request, mimics) */
   def POST = next { mimic(new Post(IMap.empty))_ }
     
-  /** @deprecated use DELETE */
-  def <--() = DELETE
-  
   /** HTTP delete request. (new request, mimics) */
   def DELETE = next { mimic(new HttpDelete)_ }
   
