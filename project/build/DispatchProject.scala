@@ -39,7 +39,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   override def publishAction = task { None }
   override def publishConfiguration = publishLocalConfiguration
   
-  lazy val archetect = project("archetect", "Dispatch Archetect", new ArchetectProject(_))
+  lazy val examples = project("examples", "Dispatch Examples", new ArchetectProject(_))
   
   val tmpl_props = Map(
     "sbt.version" -> sbtVersion.value,
