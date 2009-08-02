@@ -5,3 +5,5 @@ target
 scratch.scala
 lib_managed/
 project/boot
+project/plugins/project/
+src_managed/

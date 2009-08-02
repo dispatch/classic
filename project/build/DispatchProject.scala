@@ -1,4 +1,5 @@
 import sbt._
+import archetect.ArchetectProject
 
 class DispatchProject(info: ProjectInfo) extends ParentProject(info)
 {
@@ -39,47 +40,20 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   override def publishAction = task { None }
   override def publishConfiguration = publishLocalConfiguration
   
-  lazy val examples = project("examples", "Dispatch Examples", new ArchetectProject(_))
-  
-  val tmpl_props = Map(
-    "sbt.version" -> sbtVersion.value,
-    "dispatch.version" -> version
-  )
-  class ArchetectProject(info: ProjectInfo) extends DefaultProject(info) {
+  lazy val examples = project("examples", "Dispatch Examples", new DefaultProject(_) with ArchetectProject {
     import Process._
-    val arcSource = "src" / "arc"
-    val arcOutput = outputPath / "arc"
-    override def watchPaths = super.watchPaths +++ (arcSource ** "*")
+
+    override val templateMappings = Map(
+      "sbt.version" -> DispatchProject.this.sbtVersion.value,
+      "dispatch.version" -> version
+    )
     // archetect project should not be published
     override def publishAction = task { None }
     override def publishConfiguration = publishLocalConfiguration
+    lazy val examplesInstaller = dynamic(examplesInstallerTasks) dependsOn (archetect, publishLocal)
 
-    lazy val archetect = dynamic(archetectTasks)
-
-    def archetectTasks = task { None } named("archetect-complete") dependsOn (
-      descendents(arcSource ##, "*").get.filter(!_.isDirectory).map { in =>
-        val out = Path.fromString(arcOutput, in.relativePath)
-        val tmpl = """(.*)\{\{(.*)\}\}(.*\n)""".r
-        def template(str: String): String = str match {
-          case tmpl(before, key, after) => template(before + tmpl_props(key) + after)
-          case _ => str
-        }
-        fileTask(out from in) {
-          FileUtilities.readStream(in.asFile, log) { stm =>
-            FileUtilities.write(out.asFile, log) { writer =>
-              io.Source.fromInputStream(stm).getLines.foreach { l =>
-                writer write template(l)
-              }; None
-            }
-          }
-        }
-      }.toSeq: _*
-    )
-
-    lazy val archetectInstaller = dynamic(archetectInstallerTasks) dependsOn (archetect, publishLocal)
-
-    def archetectInstallerTasks = task { None } named("archetect-installer-complete") dependsOn (
-      (arcSource * "*").get.map { proj =>
+    def examplesInstallerTasks = task { None } named("examples-installer-complete") dependsOn (
+      ("src" / "arc" * "*").get.map { proj =>
         val proj_target = arcOutput / proj.asFile.getName
         val proj_target_target = proj_target / "target"
         fileTask(proj_target_target from arcSource ** "*") {
@@ -91,5 +65,5 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
         }
       }.toSeq: _*
     )
-  }
+  })
 }
