@@ -250,7 +250,7 @@ trait Handlers {
   /** Write to the given OutputStream. */
   def >>> [OS <: OutputStream](out: OS) = Handler(request, { ent => ent.writeTo(out); out })
   /** Process response as XML document in block */
-  def <> [T] (block: xml.NodeSeq => T) = >> { stm => block(xml.XML.load(stm)) }
+  def <> [T] (block: xml.Elem => T) = >> { stm => block(xml.XML.load(stm)) }
   
   /** Process header as Map in block. Map returns empty set for header name misses. */
   def >:> [T] (block: IMap[String, Set[String]] => T) = 
