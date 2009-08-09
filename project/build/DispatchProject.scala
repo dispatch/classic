@@ -12,12 +12,10 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   lazy val times = project("times", "Dispatch Times", new DispatchDefault(_), http, json)
   lazy val couch = project("couch", "Dispatch Couch", new DispatchDefault(_), http, json)
   lazy val twitter = project("twitter", "Dispatch Twitter", new DispatchDefault(_), http, json, oauth)
+  lazy val agg = project("agg", "Databinder Dispatch", new AggregateProject(_) with AutoCompilerPlugins {
+    def projects = http :: json :: oauth :: times :: couch :: twitter :: Nil
+    val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2.1")
 
-  class DispatchDefault(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins {
-    override def managedStyle = ManagedStyle.Maven
-    val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
-    Credentials(Path.userHome / ".ivy2" / ".credentials", log)
-    
     def sxrMainPath = outputPath / "classes.sxr"
     def sxrTestPath = outputPath / "test-classes.sxr"
     def sxrPublishPath = Path.fromFile("/var/dbwww/sxr") / normalizedName / version.toString
@@ -25,6 +23,12 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
       syncTask(sxrMainPath, sxrPublishPath / "main") dependsOn(
         syncTask(sxrTestPath, sxrPublishPath / "test") dependsOn(testCompile)
       )
+  })
+
+  class DispatchDefault(info: ProjectInfo) extends DefaultProject(info) {
+    override def managedStyle = ManagedStyle.Maven
+    val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
+    Credentials(Path.userHome / ".ivy2" / ".credentials", log)
   }   
     
   class HttpProject(info: ProjectInfo) extends DispatchDefault(info) {
@@ -32,8 +36,6 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     val lag_net = "lag.net repository" at "http://www.lag.net/repo"
     val configgy = "net.lag" % "configgy" % "1.3" % "provided->default"
     val st = "org.scala-tools.testing" % "scalatest" % "0.9.5" % "test->default"
- 
-    val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2.1")
   }
   
   // parent project should not be published
@@ -66,4 +68,19 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
       }.toSeq: _*
     )
   })
+  
+  abstract class AggregateProject(info: ProjectInfo) extends DefaultProject(info) {
+    protected def projects: Collection[DefaultProject]
+    
+    override def compileAction = task { None }
+    
+    def concatenatePaths(f: DefaultProject => PathFinder) = 
+      (Path.emptyPathFinder /: projects.map(f)) { _ +++ _ }
+    override def mainSources = concatenatePaths(_.mainSources)
+    override def mainResources = concatenatePaths(_.mainResources)
+    override def testSources = concatenatePaths(_.testSources)
+    override def testResources = concatenatePaths(_.testResources)
+    override def compileClasspath = concatenatePaths(_.compileClasspath)
+    override def docClasspath = concatenatePaths(_.docClasspath)
+  }
 }
