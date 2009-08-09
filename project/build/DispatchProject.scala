@@ -74,6 +74,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     protected def projects: Collection[DefaultProject]
     
     override def compileAction = task { None }
+    override def testCompileAction = task { None }
     
     def concatenatePaths(f: DefaultProject => PathFinder) = 
       (Path.emptyPathFinder /: projects.map(f)) { _ +++ _ }
