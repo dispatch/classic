@@ -8,7 +8,10 @@ trait Extract[T] {
 /** Json Inserter, adds or replaces properties in the given JsValue
     (error if not a JsObject) */
 trait Insert[T] extends Extract[T] {
+  /** Insert value into JsValue given after */
   def << (t: T)(js: JsValue): JsObject
+  /** Insert value into empty JsValue */
+  def <<| (t: T) = <<(t)(Js())
 }
 /** Json Property Extractor, extracts a value of type T assigned to 
     the property sym in a given JsObject (checks any JsValue). Additionally,
@@ -113,6 +116,8 @@ trait Js {
     }
     /** Chain this to another assertion inserting function to replace deep properties */
     def << (f: JsIF): JsIF = js => (this << f((this ! obj)(js)))(js)
+    /** Insert value into empty JsValue */
+    def <<| [T] (t: T) = <<(t)(Js())
   }
   /** Combines assertion extracting functions into a single function returning a tuple, when curried. */
   def %[A,B](a: JsF[A], b: JsF[B])(js: JsValue) = (a(js), b(js))

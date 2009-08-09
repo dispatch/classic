@@ -43,5 +43,13 @@ case class Doc(db: Db, id: String) extends Request(db / encode(id)) with Js {
   def delete(rev: String) = DELETE <<? Map("rev" -> rev) >|
 }
 
-case class View(db: Db, design: String, view: String) extends 
-  Request(db / "_design" / design / "_view" / view)
+object Design {
+  val views = 'views ? obj
+}
+object View {
+  val map = 'map ? str
+  val reduce = 'reduce ? str
+}
+
+case class Design(db: Db, design: String) extends Request(db / "_design" / design)
+case class View(design: Design, view: String) extends Request(design / "_view" / view)
