@@ -12,8 +12,15 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   lazy val times = project("times", "Dispatch Times", new DispatchDefault(_), http, json)
   lazy val couch = project("couch", "Dispatch Couch", new DispatchDefault(_), http, json)
   lazy val twitter = project("twitter", "Dispatch Twitter", new DispatchDefault(_), http, json, oauth)
-  lazy val agg = project("agg", "Databinder Dispatch", new AggregateProject(_) with AutoCompilerPlugins {
+  lazy val agg = project("agg", "Databinder Dispatch", new AggregateProject(_) {
     def projects = http :: json :: oauth :: times :: couch :: twitter :: Nil
+  })
+
+  class DispatchDefault(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins {
+    override def managedStyle = ManagedStyle.Maven
+    val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
+    Credentials(Path.userHome / ".ivy2" / ".credentials", log)
+    
     val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2.1")
 
     def sxrMainPath = outputPath / "classes.sxr"
@@ -23,13 +30,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
       syncTask(sxrMainPath, sxrPublishPath / "main") dependsOn(
         syncTask(sxrTestPath, sxrPublishPath / "test") dependsOn(testCompile)
       )
-  })
-
-  class DispatchDefault(info: ProjectInfo) extends DefaultProject(info) {
-    override def managedStyle = ManagedStyle.Maven
-    val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
-    Credentials(Path.userHome / ".ivy2" / ".credentials", log)
-  }   
+  }
     
   class HttpProject(info: ProjectInfo) extends DispatchDefault(info) {
     val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.0-beta2"
