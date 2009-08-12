@@ -69,6 +69,9 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
         }
       }.toSeq: _*
     )
+    val publishExamplesPath = Path.fromFile("/var/dbwww/dispatch-examples/")
+    lazy val publishExamples = copyTask((outputPath / "arc" * "*" / "target" ##) * "*.jar", 
+        publishExamplesPath) dependsOn(examplesInstaller)
   })
   
   abstract class AggregateProject(info: ProjectInfo) extends DefaultProject(info) {
@@ -76,6 +79,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     
     override def compileAction = task { None }
     override def testCompileAction = task { None }
+    override def publishAction = task { None }
     
     def concatenatePaths(f: DefaultProject => PathFinder) = 
       (Path.emptyPathFinder /: projects.map(f)) { _ +++ _ }
