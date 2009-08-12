@@ -33,7 +33,8 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   }
     
   class HttpProject(info: ProjectInfo) extends DispatchDefault(info) {
-    val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.0-beta2"
+    val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.0"
+    val jcip = "net.jcip" % "jcip-annotations" % "1.0" % "provided->default"
     val lag_net = "lag.net repository" at "http://www.lag.net/repo"
     val configgy = "net.lag" % "configgy" % "1.3" % "provided->default"
     val st = "org.scala-tools.testing" % "scalatest" % "0.9.5" % "test->default"
