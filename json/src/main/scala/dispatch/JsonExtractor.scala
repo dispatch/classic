@@ -125,6 +125,10 @@ trait Js {
   def %[A,B,C](a: JsF[A], b: JsF[B], c: JsF[C])(js: JsValue) = (a(js), b(js), c(js))
   /** Combines assertion extracting functions into a single function returning a tuple, when curried. */
   def %[A,B,C,D](a: JsF[A], b: JsF[B], c: JsF[C], d: JsF[D])(js: JsValue) = (a(js), b(js), c(js), d(js))
+  /** Converts a Json extrator to an assertion extracting function (JsF). */
+  implicit def ext2fun[T](ext: Extract[T]): JsF[T] = jsv => ext.unapply(jsv).getOrElse {
+    error("Extractor %s does not match JSON: %s" format (ext, jsv))
+  }
  }
 
 /** Factory for JsValues as well as a global access point for
@@ -134,18 +138,4 @@ object Js extends Js {
   def apply(): JsValue = JsObject()
   def apply(stream: java.io.InputStream): JsValue = JsValue.fromStream(stream)
   def apply(string: String): JsValue = JsValue.fromString(string)
-  /** Converts a Json extrator to an assertion extracting function (JsF). */
-  implicit def ext2fun[T](ext: Extract[T]): JsF[T] = jsv => ext.unapply(jsv).getOrElse {
-    error("Extractor %s does not match JSON: %s" format (ext, jsv))
-  }
-  
-  /** Add JSON-processing method ># to dispatch.Request */
-  implicit def Request2JsonRequest(r: Request) = new JsonRequest(r)
-  /** Add String conversion since Http#str2req implicit will not chain. */
-  implicit def String2JsonRequest(r: String) = new JsonRequest(new Request(r))
-
-  class JsonRequest(r: Request) {
-    /** Process response as JsValue in block */
-    def ># [T](block: json.Js.JsF[T]) = r >> { stm => block(json.Js(stm)) }
-  }
 }

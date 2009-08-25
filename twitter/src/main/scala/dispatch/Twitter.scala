@@ -1,7 +1,7 @@
 package dispatch.twitter
 
 import json._
-import Js._
+import JsHttp._
 import oauth._
 import oauth.OAuth._
 

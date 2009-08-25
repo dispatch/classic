@@ -3,7 +3,7 @@ package dispatch.times
 import json._
 import Js._
 
-trait Times extends Js {
+trait Times extends JsHttp {
   import Http._
   lazy val host = :/("api.nytimes.com")
   val api_key: String

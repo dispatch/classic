@@ -12,7 +12,7 @@ class TwitterSpec extends Spec with ShouldMatchers {
     it("should find tweets containing #scala") {
       val res = http(Search("#scala"))
       res.isEmpty should be (false)
-      res map Status.text forall { _.toUpperCase contains "#SCALA" } should be (true)
+      res map Status.text forall { _.toLowerCase contains "#scala" } should be (true)
     }
   }
 }

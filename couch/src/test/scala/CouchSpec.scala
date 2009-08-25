@@ -5,6 +5,7 @@ class CouchSpec extends Spec with ShouldMatchers {
   import dispatch._
   import dispatch.couch._
   import dispatch.json._
+  import JsHttp._
 
   val http = new Http
   val test = Db(Couch(), "test") // these tests expect CouchDB to be running at 127.0.0.1 on port 5984
@@ -51,7 +52,6 @@ class CouchSpec extends Spec with ShouldMatchers {
     import org.apache.http.HttpResponse
     import org.apache.http.HttpEntity
     it("should delete a document") {
-      import Js._
       http(full.delete(http(full ># Test._rev)))
       (http when { _ == 404 }) (full ># ('error ! str)) should equal ("not_found")
     }

@@ -7,11 +7,12 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   override def parallelExecution = true
 
   lazy val http = project("http", "Dispatch HTTP", new HttpProject(_))
-  lazy val json = project("json", "Dispatch JSON", new DispatchDefault(_), http)
+  lazy val json = project("json", "Dispatch JSON", new DispatchDefault(_))
+  lazy val http_json = project("http+json", "Dispatch HTTP+JSON", new HttpProject(_), http, json)
   lazy val oauth = project("oauth", "Dispatch OAuth", new DispatchDefault(_), http)
-  lazy val times = project("times", "Dispatch Times", new DispatchDefault(_), http, json)
-  lazy val couch = project("couch", "Dispatch Couch", new DispatchDefault(_), http, json)
-  lazy val twitter = project("twitter", "Dispatch Twitter", new DispatchDefault(_), http, json, oauth)
+  lazy val times = project("times", "Dispatch Times", new DispatchDefault(_), http, json, http_json)
+  lazy val couch = project("couch", "Dispatch Couch", new DispatchDefault(_), http, json, http_json)
+  lazy val twitter = project("twitter", "Dispatch Twitter", new DispatchDefault(_), http, json, http_json, oauth)
   lazy val agg = project("agg", "Databinder Dispatch", new AggregateProject(_) {
     def projects = http :: json :: oauth :: times :: couch :: twitter :: Nil
   })

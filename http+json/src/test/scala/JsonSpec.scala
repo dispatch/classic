@@ -3,7 +3,7 @@ import org.scalatest.matchers.ShouldMatchers
 
 class JsonSpec extends Spec with ShouldMatchers {
   import dispatch.json._
-  import Js._
+  import JsHttp._
 
   val js = Js(""" { "a": {"a": "a string", "b": {"pi": 3.14159265 } }, "b": [1,2,3] } """)
   val expected_map = Map(

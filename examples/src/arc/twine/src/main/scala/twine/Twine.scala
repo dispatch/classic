@@ -10,7 +10,7 @@
 // this is one way to declare your packages in Scala
 package dispatch {
   // the three imports below use the current `dispatch` scope!
-  import json.Js._
+  import json.JsHttp._
   import oauth._
   import twitter._
   
