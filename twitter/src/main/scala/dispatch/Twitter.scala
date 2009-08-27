@@ -101,6 +101,7 @@ object Auth {
       Map("oauth_callback" -> oauth_callback) <@ consumer as_token
     
   def authorize_url(token: Token) = svc / "authorize" <<? token
+  def authenticate_url(token: Token) = svc / "authenticate" <<? token
   
   def access_token(consumer: Consumer, token: Token, verifier: String) = 
     svc.secure.POST / "access_token" <@ (consumer, token, verifier) >% { m =>
