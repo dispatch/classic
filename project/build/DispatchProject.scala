@@ -9,6 +9,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   lazy val http = project("http", "Dispatch HTTP", new HttpProject(_))
   lazy val json = project("json", "Dispatch JSON", new DispatchDefault(_))
   lazy val http_json = project("http+json", "Dispatch HTTP+JSON", new HttpProject(_), http, json)
+  lazy val literaljson = project("literaljson", "Dispatch literaljson", new LiteralJsonProject(_), http)
   lazy val oauth = project("oauth", "Dispatch OAuth", new DispatchDefault(_), http)
   lazy val times = project("times", "Dispatch Times", new DispatchDefault(_), http, json, http_json)
   lazy val couch = project("couch", "Dispatch Couch", new DispatchDefault(_), http, json, http_json)
@@ -39,6 +40,10 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     val lag_net = "lag.net repository" at "http://www.lag.net/repo"
     val configgy = "net.lag" % "configgy" % "1.3" % "provided->default"
     val st = "org.scala-tools.testing" % "scalatest" % "0.9.5" % "test->default"
+  }
+  
+  class LiteralJsonProject(info: ProjectInfo) extends DispatchDefault(info) {
+    val literaljson = "literaljson" % "literaljson" % "0.1"
   }
   
   // parent project should not be published
