@@ -153,7 +153,7 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   def next(xf: Request.Xf) = new Request(host, creds, xf :: xfs)
   def next_uri(sxf: String => String) = next(Request.uri_xf(sxf))
   
-  def mimic(dest: HttpRequestBase)(req: HttpRequestBase) = {
+  def mimic[T <: HttpRequestBase](dest: T)(req: HttpRequestBase) = {
     dest.setURI(req.getURI)
     dest.setHeaders(req.getAllHeaders)
     dest
