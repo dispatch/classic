@@ -7,9 +7,14 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   override def parallelExecution = true
 
   lazy val http = project("http", "Dispatch HTTP", new HttpProject(_))
+  lazy val mime = project("mime", "Dispatch Mime", new DispatchDefault(_) {
+    val mime = "org.apache.httpcomponents" % "httpmime" % "4.0"
+  }, http)
   lazy val json = project("json", "Dispatch JSON", new DispatchDefault(_))
   lazy val http_json = project("http+json", "Dispatch HTTP+JSON", new HttpProject(_), http, json)
-  lazy val literaljson = project("lift-json", "Dispatch lift-json", new LiftJsonProject(_), http)
+  lazy val literaljson = project("lift-json", "Dispatch lift-json", new DispatchDefault(_) {
+    val literaljson = "net.liftweb" % "lift-json" % "1.1-M5"
+  }, http)
   lazy val oauth = project("oauth", "Dispatch OAuth", new DispatchDefault(_), http)
   lazy val times = project("times", "Dispatch Times", new DispatchDefault(_), http, json, http_json)
   lazy val couch = project("couch", "Dispatch Couch", new DispatchDefault(_), http, json, http_json)
@@ -40,10 +45,6 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     val lag_net = "lag.net repository" at "http://www.lag.net/repo"
     val configgy = "net.lag" % "configgy" % "1.3" % "provided->default"
     val st = "org.scala-tools.testing" % "scalatest" % "0.9.5" % "test->default"
-  }
-  
-  class LiftJsonProject(info: ProjectInfo) extends DispatchDefault(info) {
-    val literaljson = "net.liftweb" % "lift-json" % "1.1-M5"
   }
   
   // parent project should not be published
