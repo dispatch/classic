@@ -14,6 +14,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   lazy val http_json = project("http+json", "Dispatch HTTP+JSON", new HttpProject(_), http, json)
   lazy val literaljson = project("lift-json", "Dispatch lift-json", new DispatchDefault(_) {
     val literaljson = "net.liftweb" % "lift-json" % "1.1-M5"
+    override def crossScalaVersions = Set("2.7.5")
   }, http)
   lazy val oauth = project("oauth", "Dispatch OAuth", new DispatchDefault(_), http)
   lazy val times = project("times", "Dispatch Times", new DispatchDefault(_), http, json, http_json)
