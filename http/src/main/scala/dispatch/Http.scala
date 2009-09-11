@@ -137,8 +137,13 @@ object Handler {
     } } )
 }
 
-class Post(val values: Map[String, Any]) extends HttpPost {
+trait Post[P <: Post[P]] extends HttpPost { self: P =>
+  def values: Map[String, Any]
+  def add(more: Map[String, Any]): P
+}
+class SimplePost(val values: Map[String, Any]) extends Post[SimplePost] { 
   this setEntity new UrlEncodedFormEntity(Http.map2ee(values), UTF_8)
+  def add(more: Map[String, Any]) = new SimplePost(IMap.empty ++ values ++ more.elements)
 }
 
 /** Request descriptor, possibly contains a host, credentials, and a list of transformation functions. */
@@ -198,7 +203,10 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
     mimic(m)_
   }
   /** Post the given key value sequence and return response wrapper. (new request, mimics) */
-  def << (values: Map[String, Any]) = next { mimic(new Post(values))_ }
+  def << (values: Map[String, Any]) = next { 
+    case p: Post[_] => p.add(values)
+    case r => mimic(new SimplePost(values))(r)
+  }
   
   /** Add query parameters. (mutates request) */
   def <<? (values: Map[String, Any]) = next_uri { uri =>
@@ -211,7 +219,7 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   // generators that change request method without adding parameters
   
   /** HTTP post request. (new request, mimics) */
-  def POST = next { mimic(new Post(IMap.empty))_ }
+  def POST = next { mimic(new SimplePost(IMap.empty))_ }
     
   /** HTTP delete request. (new request, mimics) */
   def DELETE = next { mimic(new HttpDelete)_ }
