@@ -5,10 +5,14 @@ import org.apache.http.entity.mime.content.{FileBody, StringBody}
 
 import java.io.File
 
+/** Mime module for multipart form posting */
 object Mime {
+  /** Adds multipart operators to Request */
   implicit def Request2ExtendedRequest(r: Request) = new MimeRequest(r)
 
+  /** Request derivative with multipart operators */
   class MimeRequest(r: Request) {
+    /** Add file to multipart post, will convert other post methos to multipart */
     def <<= (name: String, file: File) = r.next {
       case post: MultipartPost => post.add(name, file)
       case p: Post[_] => r.mimic(new MultipartPost)(p).add(p.values).add(name, file)

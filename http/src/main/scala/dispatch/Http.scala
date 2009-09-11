@@ -137,10 +137,12 @@ object Handler {
     } } )
 }
 
+/** Post method that produces updated, self-typed copies when new parameters are added */
 trait Post[P <: Post[P]] extends HttpPost { self: P =>
   def values: Map[String, Any]
   def add(more: Map[String, Any]): P
 }
+/** Standard, URL-encoded form posting */
 class SimplePost(val values: Map[String, Any]) extends Post[SimplePost] { 
   this setEntity new UrlEncodedFormEntity(Http.map2ee(values), UTF_8)
   def add(more: Map[String, Any]) = new SimplePost(IMap.empty ++ values ++ more.elements)
