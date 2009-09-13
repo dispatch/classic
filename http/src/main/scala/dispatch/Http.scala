@@ -256,9 +256,9 @@ trait Handlers {
   /** Handle response as a scala.io.Source, in a block. */
   def >~ [T] (block: Source => T) = >> { stm => block(Source.fromInputStream(stm)) }
   /** Return response as a scala.io.Source. */
-  def as_source = >~ { s => s }
+  def as_source = >~ { so => so }
   /** Handle some non-huge response body as a String, in a block. */
-  def >- [T] (block: String => T) = >~ { _.mkString }
+  def >- [T] (block: String => T) = >~ { so => block(so.mkString) }
   /** Return some non-huge response as a String. */
   def as_str = >- { s => s }
   /** Write to the given OutputStream. */

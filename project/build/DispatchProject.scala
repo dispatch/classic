@@ -29,7 +29,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
     Credentials(Path.userHome / ".ivy2" / ".credentials", log)
     
-    val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2.1")
+    val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2.3")
 
     def sxrMainPath = outputPath / "classes.sxr"
     def sxrTestPath = outputPath / "test-classes.sxr"
