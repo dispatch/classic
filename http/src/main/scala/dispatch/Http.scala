@@ -231,7 +231,7 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   // end Request generators
 
   /** Builds underlying request starting with a blank get and applying transformers right to left. */
-  lazy val req = {
+  def req = {
     val start: HttpRequestBase = new HttpGet("")
     (xfs :\ start) { (a,b) => a(b) }
   }

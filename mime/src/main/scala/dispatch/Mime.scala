@@ -1,11 +1,14 @@
 package dispatch.mime
 
 import org.apache.http.entity.mime.{FormBodyPart, MultipartEntity}
-import org.apache.http.entity.mime.content.{FileBody, StringBody}
+import org.apache.http.entity.mime.content.{FileBody, StringBody, InputStreamBody, ContentBody}
 
-import java.io.File
+import java.io.{File, InputStream}
 
-/** Mime module for multipart form posting */
+/** Mime module for multipart form posting. Note that when using an InputStream generator, 
+  chuncked encoding will be used with no Content-Length header and the stream will be closed
+  after posting. It is therefore highly recommended that your generator always return a new 
+  stream instance, or a Request descriptor referencing it will fail after its first use. */
 object Mime {
   /** Adds multipart operators to Request */
   implicit def Request2ExtendedRequest(r: Request) = new MimeRequest(r)
@@ -13,25 +16,33 @@ object Mime {
   /** Request derivative with multipart operators */
   class MimeRequest(r: Request) {
     /** Add file to multipart post, will convert other post methods to multipart */
-    def << (name: String, file: File) = r next add(name, file, None)
+    def << (name: String, file: File) = 
+      r next add(name, new FileBody(file))
     /** Add file with content-type to multipart post, will convert other post methods to multipart */
-    def << (name: String, file: File, content_type: String) = r next add(name, file, Some(content_type))
+    def << (name: String, file: File, content_type: String) = 
+      r next add(name, new FileBody(file, content_type))
+
+    /** Add stream generator with content-type to multipart post, will convert other post methods to multipart */
+    def << (name: String, file_name: String, stream: () => InputStream, content_type: String) = 
+      r next add(name, new InputStreamBody(stream(), content_type, file_name))
+
+    /** Add stream generator to multipart post, will convert other post methods to multipart. */
+    def << (name: String, file_name: String, stream: () => InputStream) = 
+      r next add(name, new InputStreamBody(stream(), file_name))
     
-    private def add(name: String, file: File, content_type: Option[String]): Request.Xf = {
-      case post: MultipartPost => post.add(name, file, content_type)
-      case p: Post[_] => Request.mimic(new MultipartPost)(p).add(p.values).add(name, file, content_type)
-      case req => Request.mimic(new MultipartPost)(req).add(name, file, content_type)
+    private def add(name: String, content: => ContentBody): Request.Xf = {
+      case post: MultipartPost => post.add(name, content)
+      case p: Post[_] => Request.mimic(new MultipartPost)(p).add(p.values).add(name, content)
+      case req => Request.mimic(new MultipartPost)(req).add(name, content)
     }
     
   }
 }
 // Not yet supported by Dispatch OAuth
-class MultipartPost(val values: Map[String, Any], entity: MultipartEntity) extends Post[MultipartPost] {
+private [mime] class MultipartPost(val values: Map[String, Any], entity: MultipartEntity) extends Post[MultipartPost] {
   def this() = this(Map.empty, new MultipartEntity)
-  def add(name: String, file: File, content_type: Option[String]) = {
-    entity.addPart(name, 
-      content_type map { new FileBody(file, _) } getOrElse { new FileBody(file) }
-    )
+  def add(name: String, content: ContentBody) = {
+    entity.addPart(name, content)
     this
   }
   setEntity(entity)
