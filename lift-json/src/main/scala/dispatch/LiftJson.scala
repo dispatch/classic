@@ -1,7 +1,6 @@
 package dispatch.liftjson
 
-import net.liftweb.json.JsonAST._
-import net.liftweb.json.JsonParser._
+import net.liftweb.json._
 
 object Js {
   /** Add JSON-processing method ># to dispatch.Request */
@@ -11,6 +10,6 @@ object Js {
 
   class JsonRequest(r: Request) {
     /** Process response as JsValue in block */
-    def ># [T](block: JValue => T) = r >- { s => block(parse(s)) }
+    def ># [T](block: JsonAST.JValue => T) = r >- { s => block(JsonParser.parse(s)) }
   }
 }
