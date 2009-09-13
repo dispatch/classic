@@ -1,5 +1,6 @@
 package dispatch
 
+import io.Source
 import collection.Map
 import collection.immutable.{Map => IMap}
 import util.DynamicVariable
@@ -252,8 +253,12 @@ trait Handlers {
       new GZIPInputStream(ent.getContent)
     else ent.getContent
   ) } )
+  /** Handle response as a scala.io.Source, in a block. */
+  def >~ [T] (block: Source => T) = >> { stm => block(Source.fromInputStream(stm)) }
+  /** Return response as a scala.io.Source. */
+  def as_source = >~ { s => s }
   /** Handle some non-huge response body as a String, in a block. */
-  def >- [T] (block: String => T) = >> { stm => block(scala.io.Source.fromInputStream(stm).mkString) }
+  def >- [T] (block: String => T) = >~ { _.mkString }
   /** Return some non-huge response as a String. */
   def as_str = >- { s => s }
   /** Write to the given OutputStream. */
