@@ -115,6 +115,11 @@ object Request {
     req.setURI(URI.create(sxf(req.getURI.toString)))
     req
   }
+  def mimic[T <: HttpRequestBase](dest: T)(req: HttpRequestBase) = {
+    dest.setURI(req.getURI)
+    dest.setHeaders(req.getAllHeaders)
+    dest
+  }
 }
 
 /** Request handler, contains request descriptor and a function to transform the result. */
@@ -159,13 +164,7 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   
   def next(xf: Request.Xf) = new Request(host, creds, xf :: xfs)
   def next_uri(sxf: String => String) = next(Request.uri_xf(sxf))
-  
-  def mimic[T <: HttpRequestBase](dest: T)(req: HttpRequestBase) = {
-    dest.setURI(req.getURI)
-    dest.setHeaders(req.getAllHeaders)
-    dest
-  }
-  
+    
   // The below functions create new request descriptors based off of the current one.
   // Most are intended to be used as infix operators; those that don't take a parameter
   // have character names to be used with dot notation, e.g. /:("example.com").HEAD.secure >>> {...}
@@ -202,12 +201,12 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
     val m = new HttpPut
     m setEntity new StringEntity(body.toString, UTF_8)
     HttpProtocolParams.setUseExpectContinue(m.getParams, false)
-    mimic(m)_
+    Request.mimic(m)_
   }
   /** Post the given key value sequence and return response wrapper. (new request, mimics) */
   def << (values: Map[String, Any]) = next { 
     case p: Post[_] => p.add(values)
-    case r => mimic(new SimplePost(values))(r)
+    case r => Request.mimic(new SimplePost(values))(r)
   }
   
   /** Add query parameters. (mutates request) */
@@ -221,13 +220,13 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   // generators that change request method without adding parameters
   
   /** HTTP post request. (new request, mimics) */
-  def POST = next { mimic(new SimplePost(IMap.empty))_ }
+  def POST = next { Request.mimic(new SimplePost(IMap.empty))_ }
     
   /** HTTP delete request. (new request, mimics) */
-  def DELETE = next { mimic(new HttpDelete)_ }
+  def DELETE = next { Request.mimic(new HttpDelete)_ }
   
   /** HTTP head request. (new request, mimics). See >:> to access headers. */
-  def HEAD = next { mimic(new HttpHead)_ }
+  def HEAD = next { Request.mimic(new HttpHead)_ }
 
   // end Request generators
 
