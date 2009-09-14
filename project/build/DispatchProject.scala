@@ -23,13 +23,15 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   lazy val agg = project("agg", "Databinder Dispatch", new AggregateProject(_) {
     def projects = http :: json :: oauth :: times :: couch :: twitter :: Nil
   })
+  
+  val sxr_version = "0.2.3"
 
   class DispatchDefault(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins {
     override def managedStyle = ManagedStyle.Maven
     val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
     Credentials(Path.userHome / ".ivy2" / ".credentials", log)
     
-    val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2.3")
+    val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % sxr_version)
 
     def sxrMainPath = outputPath / "classes.sxr"
     def sxrTestPath = outputPath / "test-classes.sxr"
@@ -57,6 +59,8 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
 
     override val templateMappings = Map(
       "sbt.version" -> DispatchProject.this.sbtVersion.value,
+      "scala.version" -> DispatchProject.this.scalaVersion.value,
+      "sxr.version" -> sxr_version,
       "dispatch.version" -> version
     )
     // archetect project should not be published
