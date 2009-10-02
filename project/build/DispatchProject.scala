@@ -3,7 +3,7 @@ import archetect.ArchetectProject
 
 class DispatchProject(info: ProjectInfo) extends ParentProject(info)
 {
-  override def crossScalaVersions = Set("2.7.3", "2.7.4", "2.7.5", "2.7.6")
+  override def crossScalaVersions = Set("2.7.3", "2.7.4", "2.7.5", "2.7.6", "2.8.0-20090929.004247-+")
   override def parallelExecution = true
 
   lazy val http = project("http", "Dispatch HTTP", new HttpProject(_))
@@ -23,7 +23,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     def projects = http :: mime :: json :: http_json :: lift_json :: oauth :: times :: couch :: twitter :: Nil
   })
   
-  val sxr_version = "0.2.3"
+  val sxr_version = "0.2.4"
 
   class DispatchDefault(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins {
     override def managedStyle = ManagedStyle.Maven
@@ -86,7 +86,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   })
   
   abstract class AggregateProject(info: ProjectInfo) extends DefaultProject(info) {
-    protected def projects: Collection[DefaultProject]
+    protected def projects: Iterable[DefaultProject]
     
     override def compileAction = task { None }
     override def testCompileAction = task { None }
