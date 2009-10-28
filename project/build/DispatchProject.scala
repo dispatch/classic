@@ -19,6 +19,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   lazy val times = project("times", "Dispatch Times", new DispatchDefault(_), http, json, http_json)
   lazy val couch = project("couch", "Dispatch Couch", new DispatchDefault(_), http, json, http_json)
   lazy val twitter = project("twitter", "Dispatch Twitter", new DispatchDefault(_), http, json, http_json, oauth)
+  lazy val meetup = project("meetup", "Dispatch Meetup", new DispatchDefault(_), http, json, http_json, oauth)
   lazy val agg = project("agg", "Databinder Dispatch", new AggregateProject(_) {
     def projects = http :: mime :: json :: http_json :: lift_json :: oauth :: times :: couch :: twitter :: Nil
   })
