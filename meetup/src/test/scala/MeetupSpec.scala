@@ -10,9 +10,9 @@ class MeetupSpec extends Spec with ShouldMatchers {
   describe("Group Query") {
     val http = new Http
     it("should find groups in Brooklyn") {
-      val res = http(Group.query.city("Brooklyn", "NY"))
+      val res = http(Group.query.zip(11201))
       res.isEmpty should be (false)
-      res map Group.name forall { _.toLowerCase contains "#scala" } should be (true)
+      res map Group.urlname forall { _.toLowerCase contains "#scala" } should be (true)
     }
   }
 }
