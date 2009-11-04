@@ -26,16 +26,16 @@ object Auth {
   val svc = Meetup.host / "oauth"
 
   def request_token(consumer: Consumer) = 
-    svc.secure.POST / "request" <@ consumer as_token
+    svc / "request/" <@ consumer as_token
 
   def request_token(consumer: Consumer, oauth_callback: String) = 
-    svc.secure / "request" << 
+    svc / "request" << 
       Map("oauth_callback" -> oauth_callback) <@ consumer as_token
     
   def authorize_url(token: Token) = :/("www.meetup.com") / "authorize" <<? token
   
   def access_token(consumer: Consumer, token: Token) = 
-    svc.secure.POST / "access" <@ (consumer, token) >% { m =>
+    svc.POST / "access" <@ (consumer, token) >% { m =>
       (Token(m).get, m("user_id"), m("screen_name"))
     }
 }
