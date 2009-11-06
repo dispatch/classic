@@ -37,6 +37,7 @@ object OAuth {
     ) map { case (k, v) => k + "=" + v } mkString "&"
     
     val message = %%(method :: url :: encoded_ordered_params :: Nil)
+    println(message)
     
     val SHA1 = "HmacSHA1";
     val key_str = %%(consumer.secret :: (token map { _.secret } getOrElse "") :: Nil)
