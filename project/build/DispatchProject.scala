@@ -3,7 +3,7 @@ import archetect.ArchetectProject
 
 class DispatchProject(info: ProjectInfo) extends ParentProject(info)
 {
-  override def crossScalaVersions = Set("2.7.3", "2.7.4", "2.7.5", "2.7.6")
+  override def crossScalaVersions = Set("2.7.3", "2.7.4", "2.7.5", "2.7.6", "2.7.7")
   override def parallelExecution = true
 
   lazy val http = project("http", "Dispatch HTTP", new HttpProject(_))
