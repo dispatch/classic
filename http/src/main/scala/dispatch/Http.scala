@@ -4,7 +4,7 @@ import io.Source
 import collection.Map
 import collection.immutable.{Map => IMap}
 import util.DynamicVariable
-import java.io.{InputStream,OutputStream,BufferedInputStream,BufferedOutputStream}
+import java.io.{InputStream,OutputStream,BufferedInputStream,BufferedOutputStream,File}
 import java.net.URI
 import java.util.zip.GZIPInputStream
 
@@ -15,7 +15,7 @@ import org.apache.http.client.methods._
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.utils.URLEncodedUtils
 
-import org.apache.http.entity.StringEntity
+import org.apache.http.entity.{StringEntity,FileEntity}
 import org.apache.http.message.BasicNameValuePair
 import org.apache.http.protocol.HTTP.UTF_8
 import org.apache.http.params.{HttpProtocolParams, BasicHttpParams}
@@ -203,6 +203,11 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
     m setEntity new StringEntity(body.toString, UTF_8)
     HttpProtocolParams.setUseExpectContinue(m.getParams, false)
     Request.mimic(m)_
+  }
+  def <<< (file: File, content_type: String) = next {
+    val m = new HttpPut
+    m setEntity new FileEntity(file, content_type)
+    Request.mimic(m) _
   }
   /** Post the given key value sequence and return response wrapper. (new request, mimics) */
   def << (values: Map[String, Any]) = next { 
