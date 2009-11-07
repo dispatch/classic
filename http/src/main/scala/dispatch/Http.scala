@@ -253,13 +253,14 @@ trait Handlers {
   val request: Request
   
   /** Handle InputStream in block, handle gzip if so encoded. */
-  def >> [T] (block: InputStream => T) = Handler(request, { ent => block (
+  def >> [T] (block: (InputStream, String) => T) = Handler(request, { ent => block (
     if(ent.getContentEncoding != null && ent.getContentEncoding.getValue == "gzip") 
       new GZIPInputStream(ent.getContent)
     else ent.getContent
+    , EntityUtils.getContentCharSet(ent)
   ) } )
   /** Handle response as a scala.io.Source, in a block. */
-  def >~ [T] (block: Source => T) = >> { stm => block(Source.fromInputStream(stm)) }
+  def >~ [T] (block: Source => T) = >> { (stm, charset) => block(Source.fromInputStream(stm, charset)) }
   /** Return response as a scala.io.Source. */
   def as_source = >~ { so => so }
   /** Handle some non-huge response body as a String, in a block. */
@@ -269,7 +270,7 @@ trait Handlers {
   /** Write to the given OutputStream. */
   def >>> [OS <: OutputStream](out: OS) = Handler(request, { ent => ent.writeTo(out); out })
   /** Process response as XML document in block */
-  def <> [T] (block: xml.Elem => T) = >> { stm => block(xml.XML.load(stm)) }
+  def <> [T] (block: xml.Elem => T) = >> { (stm, charset) => block(xml.XML.load(stm, charset)) }
   
   /** Process header as Map in block. Map returns empty set for header name misses. */
   def >:> [T] (block: IMap[String, Set[String]] => T) = 
