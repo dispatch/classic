@@ -6,6 +6,7 @@ class TwineProject(info: ProjectInfo) extends DefaultProject(info)
   with AutoCompilerPlugins
 {
   val lag_net = "lag.net repository" at "http://www.lag.net/repo"
+  val databinder_net = "databinder.net repository" at "http://databinder.net/repo"
   
   val configgy = "net.lag" % "configgy" % "1.3" intransitive()
   val dispatch = "net.databinder" %% "dispatch-twitter" % "{{dispatch.version}}"
