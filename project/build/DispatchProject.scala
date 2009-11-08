@@ -28,8 +28,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
 
   class DispatchDefault(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins {
     override def managedStyle = ManagedStyle.Maven
-    val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
-    Credentials(Path.userHome / ".ivy2" / ".credentials", log)
+    lazy val publishTo = Resolver.file("Databinder Repository", new java.io.File("/var/dbwww/repo"))
     
     val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % sxr_version)
 
