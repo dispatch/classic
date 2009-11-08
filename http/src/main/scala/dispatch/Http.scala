@@ -17,7 +17,6 @@ import org.apache.http.client.utils.URLEncodedUtils
 
 import org.apache.http.entity.{StringEntity,FileEntity}
 import org.apache.http.message.BasicNameValuePair
-import org.apache.http.protocol.HTTP.UTF_8
 import org.apache.http.params.{HttpProtocolParams, BasicHttpParams}
 import org.apache.http.util.EntityUtils
 import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials, Credentials}
@@ -81,7 +80,7 @@ class Http {
   /** Apply Response Handler if reponse code returns true from chk. */
   def when[T](chk: Int => Boolean)(hand: Handler[T]) = x(hand.request) {
     case (code, res, ent) if chk(code) => hand.block(code, res, ent)
-    case (code, _, Some(ent)) => throw StatusCode(code, EntityUtils.toString(ent, UTF_8))
+    case (code, _, Some(ent)) => throw StatusCode(code, EntityUtils.toString(ent, Request.factoryCharset))
     case (code, _, _)         => throw StatusCode(code, "[no entity]")
   }
   /** Apply a custom block in addition to predefined response Handler. */
@@ -93,14 +92,14 @@ class Http {
 }
 
 /** Nil request, useful to kick off a descriptors that don't have a factory. */
-object /\ extends Request(None, None, Nil)
+object /\ extends Request(None)
 
 /* Factory for requests from a host */
 object :/ {
   def apply(hostname: String, port: Int): Request = 
-    new Request(Some(new HttpHost(hostname, port)), None, Nil)
+    new Request(Some(new HttpHost(hostname, port)))
 
-  def apply(hostname: String): Request = new Request(Some(new HttpHost(hostname)), None, Nil)
+  def apply(hostname: String): Request = new Request(Some(new HttpHost(hostname)))
 }
 
 /** Factory for requests from a directory, prepends '/'. */
@@ -121,6 +120,8 @@ object Request {
     dest.setHeaders(req.getAllHeaders)
     dest
   }
+  /** Dispatch's factory-default charset, utf-8 */
+  val factoryCharset = org.apache.http.protocol.HTTP.UTF_8
 }
 
 /** Request handler, contains request descriptor and a function to transform the result. */
@@ -150,20 +151,27 @@ trait Post[P <: Post[P]] extends HttpPost { self: P =>
 }
 /** Standard, URL-encoded form posting */
 class SimplePost(val values: Map[String, Any]) extends Post[SimplePost] { 
-  this setEntity new UrlEncodedFormEntity(Http.map2ee(values), UTF_8)
+  this setEntity new UrlEncodedFormEntity(Http.map2ee(values), Request.factoryCharset)
   def add(more: Map[String, Any]) = new SimplePost(IMap.empty ++ values ++ more.elements)
 }
 
 /** Request descriptor, possibly contains a host, credentials, and a list of transformation functions. */
-class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xfs: List[Request.Xf]) extends Handlers {
-
+class Request(
+  val host: Option[HttpHost], 
+  val creds: Option[Credentials], 
+  val xfs: List[Request.Xf], 
+  val defaultCharset: String
+) extends Handlers {
   /** Construct with path or full URI. */
-  def this(str: String) = this(None, None, Request.uri_xf(cur => cur + str)_ :: Nil)
+  def this(str: String) = this(None, None, Request.uri_xf(cur => cur + str)_ :: Nil, Request.factoryCharset)
   
   /** Construct as a clone, e.g. in class extends clause. */
-  def this(req: Request) = this(req.host, req.creds, req.xfs)
+  def this(req: Request) = this(req.host, req.creds, req.xfs, req.defaultCharset)
+
+  /** Construct with host only. */
+  def this(host: Option[HttpHost]) = this(host, None, Nil, Request.factoryCharset)
   
-  def next(xf: Request.Xf) = new Request(host, creds, xf :: xfs)
+  def next(xf: Request.Xf) = new Request(host, creds, xf :: xfs, defaultCharset)
   def next_uri(sxf: String => String) = next(Request.uri_xf(sxf))
     
   // The below functions create new request descriptors based off of the current one.
@@ -172,16 +180,20 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   
   /** Set credentials to be used for this request; requires a host value :/(...) upon execution. */
   def as (name: String, pass: String) = 
-    new Request(host, Some(new UsernamePasswordCredentials(name, pass)), xfs)
+    new Request(host, Some(new UsernamePasswordCredentials(name, pass)), xfs, defaultCharset)
   
   /** Convert this to a secure (scheme https) request if not already */
   def secure = new Request(host map { 
     h => new HttpHost(h.getHostName, h.getPort, "https") // default port -1 works for either
-  } orElse { error("secure requires an explicit host") }, creds, xfs)
+  } orElse { error("secure requires an explicit host") }, creds, xfs, defaultCharset)
   
   /** Combine this request with another. */
-  def <& (req: Request) = new Request(host orElse req.host, creds orElse req.creds, req.xfs ::: xfs)
-
+  def <& (req: Request) = new Request(host orElse req.host, creds orElse req.creds, req.xfs ::: xfs, defaultCharset)
+  
+  /** Set the default character set to be used when processing the request in Handler#>> and
+    derived operations >~, as_str, etc. (The 'factory' default is utf-8.) */
+  def >\ (charset: String) = new Request(host, creds, xfs, charset)
+  
   /** Combine this request with another handler. */
   def >& [T] (other: Handler[T]) = new Handler(this <& other.request, other.block)
   
@@ -200,10 +212,11 @@ class Request(val host: Option[HttpHost], val creds: Option[Credentials], val xf
   /** Put the given object.toString and return response wrapper. (new request, mimics) */
   def <<< (body: Any) = next {
     val m = new HttpPut
-    m setEntity new StringEntity(body.toString, UTF_8)
+    m setEntity new StringEntity(body.toString, Request.factoryCharset)
     HttpProtocolParams.setUseExpectContinue(m.getParams, false)
     Request.mimic(m)_
   }
+  /** Put the given file and return response wrapper. (new request, mimics) */
   def <<< (file: File, content_type: String) = next {
     val m = new HttpPut
     m setEntity new FileEntity(file, content_type)
@@ -252,25 +265,36 @@ trait Handlers {
   /** the below functions produce Handlers based on this request descriptor */
   val request: Request
   
+  /** Handle InputStream in block, handle gzip if so encoded. Passes on any charset
+      header value from response, otherwise the default charset. (See Request#>\) */
+  def >> [T] (block: (InputStream, String) => T) = Handler(request, { ent =>
+    val stm = (ent.getContent, ent.getContentEncoding) match {
+      case (stm, null) => stm
+      case (stm, enc) if enc.getValue == "gzip" => new GZIPInputStream(stm)
+      case (stm, _) => stm
+    }
+    val charset = EntityUtils.getContentCharSet(ent) match {
+      case null => request.defaultCharset
+      case charset => charset
+    }
+    block(stm, charset)
+  } )
   /** Handle InputStream in block, handle gzip if so encoded. */
-  def >> [T] (block: (InputStream, String) => T) = Handler(request, { ent => block (
-    if(ent.getContentEncoding != null && ent.getContentEncoding.getValue == "gzip") 
-      new GZIPInputStream(ent.getContent)
-    else ent.getContent
-    , EntityUtils.getContentCharSet(ent)
-  ) } )
-  /** Handle response as a scala.io.Source, in a block. */
+  def >> [T] (block: InputStream => T): Handler[T] = >> { (stm, charset) => block(stm) }
+  /** Handle response as a scala.io.Source, in a block. Note that Source may fail if the 
+      character set it receives (determined in >>) is incorrect. To process resources
+      that have incorrect charset headers, use >> ((InputStream, String) => T). */
   def >~ [T] (block: Source => T) = >> { (stm, charset) => block(Source.fromInputStream(stm, charset)) }
-  /** Return response as a scala.io.Source. */
+  /** Return response as a scala.io.Source. Charset note in >~  applies. */
   def as_source = >~ { so => so }
-  /** Handle some non-huge response body as a String, in a block. */
+  /** Handle some non-huge response body as a String, in a block. Charset note in >~  applies. */
   def >- [T] (block: String => T) = >~ { so => block(so.mkString) }
-  /** Return some non-huge response as a String. */
+  /** Return some non-huge response as a String. Charset note in >~  applies.*/
   def as_str = >- { s => s }
   /** Write to the given OutputStream. */
   def >>> [OS <: OutputStream](out: OS) = Handler(request, { ent => ent.writeTo(out); out })
   /** Process response as XML document in block */
-  def <> [T] (block: xml.Elem => T) = >> { (stm, charset) => block(xml.XML.load(stm, charset)) }
+  def <> [T] (block: xml.Elem => T) = >> { stm => block(xml.XML.load(stm)) }
   
   /** Process header as Map in block. Map returns empty set for header name misses. */
   def >:> [T] (block: IMap[String, Set[String]] => T) = 
@@ -298,7 +322,7 @@ class ConfiguredHttpClient extends DefaultHttpClient {
   override def createHttpParams = {
     val params = new BasicHttpParams
     HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1)
-    HttpProtocolParams.setContentCharset(params, UTF_8)
+    HttpProtocolParams.setContentCharset(params, Request.factoryCharset)
     HttpProtocolParams.setUseExpectContinue(params, false)
     params
   }
@@ -342,13 +366,13 @@ object Http extends Http {
     values.toSeq map { case (k, v) => new BasicNameValuePair(k, v.toString) } toArray : _*
   )
   /** @return %-encoded string for use in URLs */
-  def % (s: String) = java.net.URLEncoder.encode(s, UTF_8)
+  def % (s: String) = java.net.URLEncoder.encode(s, Request.factoryCharset)
 
   /** @return %-decoded string e.g. from query string or form body */
-  def -% (s: String) = java.net.URLDecoder.decode(s, UTF_8)
+  def -% (s: String) = java.net.URLDecoder.decode(s, Request.factoryCharset)
   
   /** @return formatted and %-encoded query string, e.g. name=value&name2=value2 */
-  def q_str (values: Map[String, Any]) = URLEncodedUtils.format(map2ee(values), UTF_8)
+  def q_str (values: Map[String, Any]) = URLEncodedUtils.format(map2ee(values), Request.factoryCharset)
 
   /** @return formatted query string prepended by ? unless values map is empty  */
   def ? (values: Map[String, Any]) = if (values.isEmpty) "" else "?" + q_str(values)
