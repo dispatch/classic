@@ -39,11 +39,15 @@ class Http {
   /** Info Logger for this instance, default returns Connfiggy if on classpath else console logger. */
   lazy val log: Logger = try {
     new Logger {
-      val delegate = net.lag.logging.Logger.get
-      def info(msg: String, items: Any*) { delegate.info(msg, items: _*) }
+      def getObject(name: String) = Class.forName(name + "$").getField("MODULE$").get(null)
+      // using delegate, repeating parameters aren't working with structural typing in 2.7.x
+      val delegate = getObject("net.lag.logging.Logger")
+        .asInstanceOf[{ def get(n: String): { def ifInfo(o: => Object) } }]
+        .get(classOf[Http].getCanonicalName)
+      def info(msg: String, items: Any*) { delegate.ifInfo(msg.format(items: _*)) }
     }
   } catch {
-    case e: NoClassDefFoundError => new Logger {
+    case e: ClassNotFoundException => new Logger {
       def info(msg: String, items: Any*) { 
         println("INF: [console logger] dispatch: " + msg.format(items: _*)) 
       }
