@@ -3,7 +3,7 @@ import archetect.ArchetectProject
 
 class DispatchProject(info: ProjectInfo) extends ParentProject(info)
 {
-  override def crossScalaVersions = Set("2.7.3", "2.7.4", "2.7.5", "2.7.6", "2.8.0-20090929.004247-+")
+  override def crossScalaVersions = Set("2.7.3", "2.7.4", "2.7.5", "2.7.6", "2.7.7", "2.8.0.Beta1-RC1")
   override def parallelExecution = true
 
   lazy val http = project("http", "Dispatch HTTP", new HttpProject(_))
@@ -19,6 +19,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   lazy val times = project("times", "Dispatch Times", new DispatchDefault(_), http, json, http_json)
   lazy val couch = project("couch", "Dispatch Couch", new DispatchDefault(_), http, json, http_json)
   lazy val twitter = project("twitter", "Dispatch Twitter", new DispatchDefault(_), http, json, http_json, oauth)
+  lazy val meetup = project("meetup", "Dispatch Meetup", new DispatchDefault(_), http, json, http_json, oauth)
   lazy val agg = project("agg", "Databinder Dispatch", new AggregateProject(_) {
     def projects = http :: mime :: json :: http_json :: lift_json :: oauth :: times :: couch :: twitter :: Nil
   })
@@ -27,8 +28,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
 
   class DispatchDefault(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins {
     override def managedStyle = ManagedStyle.Maven
-    val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
-    Credentials(Path.userHome / ".ivy2" / ".credentials", log)
+    lazy val publishTo = Resolver.file("Databinder Repository", new java.io.File("/var/dbwww/repo"))
     
     val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % sxr_version)
 
@@ -45,7 +45,8 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.0"
     val jcip = "net.jcip" % "jcip-annotations" % "1.0" % "provided->default"
     val lag_net = "lag.net repository" at "http://www.lag.net/repo"
-    val configgy = "net.lag" % "configgy" % "1.3" % "provided->default"
+    val configgy = "net.lag" % "configgy" % "1.4" % "provided->default"
+    val configgy_test = "net.lag" % "configgy" % "1.3" % "test->default"
     val st = "org.scala-tools.testing" % "scalatest" % "0.9.5" % "test->default"
   }
   
