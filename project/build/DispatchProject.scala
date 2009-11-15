@@ -30,7 +30,10 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     override def managedStyle = ManagedStyle.Maven
     lazy val publishTo = Resolver.file("Databinder Repository", new java.io.File("/var/dbwww/repo"))
     
-    val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % sxr_version)
+    val st = "org.scala-tools.testing" % "scalatest" % "0.9.5" % "test->default"
+    val sxr = if (scalaVersion.value == "2.7.6")
+      compilerPlugin("org.scala-tools.sxr" %% "sxr" % sxr_version)
+    else st // reference scalatest twice, no harm done
 
     def sxrMainPath = outputPath / "classes.sxr"
     def sxrTestPath = outputPath / "test-classes.sxr"
@@ -46,7 +49,6 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     val jcip = "net.jcip" % "jcip-annotations" % "1.0" % "provided->default"
     val lag_net = "lag.net repository" at "http://www.lag.net/repo"
     val configgy_test = "net.lag" % "configgy" % "1.4" % "test->default"
-    val st = "org.scala-tools.testing" % "scalatest" % "0.9.5" % "test->default"
   }
   
   // parent project should not be published
