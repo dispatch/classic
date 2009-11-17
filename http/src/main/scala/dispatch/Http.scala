@@ -55,9 +55,9 @@ class Http {
   }
   
   /** Execute method for the given host, with logging. */
-  def execute(host: HttpHost, req: HttpUriRequest) = {
+  def execute(host: HttpHost, req: HttpUriRequest): HttpResponse = {
     log.info("%s %s%s", req.getMethod, host, req.getURI)
-    client.execute(host, req) 
+    client.crutchExecute(host, req)
   }
   /** Execute for given optional parametrs, with logging. Creates local scope for credentials. */
   val execute: (Option[HttpHost], Option[Credentials], HttpUriRequest) => HttpResponse = {
@@ -322,7 +322,7 @@ trait Handlers {
 
 /** Basic extension of DefaultHttpClient defaulting to Http 1.1, UTF8, and no Expect-Continue.
     Scopes authorization credentials to particular requests thorugh a DynamicVariable. */
-class ConfiguredHttpClient extends DefaultHttpClient { 
+class ConfiguredHttpClient extends HttpCrutch { 
   override def createHttpParams = {
     val params = new BasicHttpParams
     HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1)
