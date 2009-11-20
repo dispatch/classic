@@ -1,5 +1,6 @@
 package dispatch.couch
 
+import dispatch._
 import json._
 import JsHttp._
 

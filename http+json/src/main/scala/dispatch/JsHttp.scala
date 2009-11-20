@@ -1,4 +1,5 @@
 package dispatch.json
+import dispatch._
 
 trait JsHttp extends Js {
   /** Add JSON-processing method ># to dispatch.Request */

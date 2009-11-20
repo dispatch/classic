@@ -1,4 +1,5 @@
 package dispatch.liftjson
+import dispatch._
 
 import net.liftweb.json._
 

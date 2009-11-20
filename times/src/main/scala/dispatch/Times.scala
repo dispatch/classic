@@ -1,4 +1,5 @@
 package dispatch.times
+import dispatch._
 
 import json._
 import Js._

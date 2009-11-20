@@ -1,4 +1,5 @@
 package dispatch.meetup
+import dispatch._
 
 import json._
 import JsHttp._

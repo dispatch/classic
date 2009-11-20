@@ -1,4 +1,5 @@
 package dispatch.oauth
+import dispatch._
 
 import collection.Map
 import collection.immutable.{TreeMap, Map=>IMap}
@@ -93,8 +94,8 @@ object OAuth {
       case null => IMap.empty
       case query => IMap.empty ++ query.split('&').map { nvp =>
         ( nvp split "=" map Http.-% ) match { 
-          case Seq(name, value) => name -> value
-          case Seq(name) => name -> ""
+          case Array(name) => name -> ""
+          case Array(name, value) => name -> value
         }
       }
     }

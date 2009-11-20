@@ -1,4 +1,5 @@
 package dispatch.mime
+import dispatch._
 
 import org.apache.http.entity.mime.{FormBodyPart, MultipartEntity}
 import org.apache.http.entity.mime.content.{FileBody, StringBody, InputStreamBody, ContentBody}
