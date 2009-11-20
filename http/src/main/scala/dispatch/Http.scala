@@ -47,7 +47,7 @@ class Http {
       def info(msg: String, items: Any*) { delegate.ifInfo(msg.format(items: _*)) }
     }
   } catch {
-    case e: ClassNotFoundException => new Logger {
+    case _: ClassNotFoundException | _: NoClassDefFoundError => new Logger {
       def info(msg: String, items: Any*) { 
         println("INF: [console logger] dispatch: " + msg.format(items: _*)) 
       }
