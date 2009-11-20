@@ -288,7 +288,18 @@ trait Handlers {
   /** Handle response as a scala.io.Source, in a block. Note that Source may fail if the 
       character set it receives (determined in >>) is incorrect. To process resources
       that have incorrect charset headers, use >> ((InputStream, String) => T). */
-  def >~ [T] (block: Source => T) = >> { (stm, charset) => block(Source.fromInputStream(stm, charset)) }
+  def >~ [T] (block: Source => T) = >> { (stm, charset) => 
+    // 2.8 only: block(Source.fromInputStream(stm)(charset)
+    import java.io._
+    def read(reader: BufferedReader, buf: StringBuilder) {
+      val line = reader.readLine()
+      if (line != null)
+        read(reader, buf.append(line + "\n"))
+    }
+    val buf = new StringBuilder()
+    read(new BufferedReader(new InputStreamReader(stm, charset)), buf)
+    block(Source.fromString(buf.toString))
+  }
   /** Return response as a scala.io.Source. Charset note in >~  applies. */
   def as_source = >~ { so => so }
   /** Handle some non-huge response body as a String, in a block. Charset note in >~  applies. */
