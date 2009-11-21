@@ -21,18 +21,19 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   lazy val couch = project("couch", "Dispatch Couch", new DispatchDefault(_), http, json, http_json)
   lazy val twitter = project("twitter", "Dispatch Twitter", new DispatchDefault(_), http, json, http_json, oauth)
   lazy val meetup = project("meetup", "Dispatch Meetup", new DispatchDefault(_), http, json, http_json, oauth)
+  def dispatch_modules = http :: mime :: json :: http_json :: lift_json :: oauth :: times :: couch :: twitter :: meetup:: Nil
   lazy val agg = project("agg", "Databinder Dispatch", new AggregateProject(_) {
-    def projects = http :: mime :: json :: http_json :: lift_json :: oauth :: times :: couch :: twitter :: Nil
+    def projects = dispatch_modules
   })
   
-  val sxr_version = "0.2.4"
+  val sxr_version = "0.2.3"
 
   class DispatchDefault(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins {
     override def managedStyle = ManagedStyle.Maven
     lazy val publishTo = Resolver.file("Databinder Repository", new java.io.File("/var/dbwww/repo"))
     
     val st = "org.scala-tools.testing" % "scalatest" % "0.9.5" % "test->default"
-    val sxr = if (scalaVersion.value == "2.7.6")
+    val sxr = if (ScalaVersion.current == Some("2.7.6"))
       compilerPlugin("org.scala-tools.sxr" %% "sxr" % sxr_version)
     else st // reference scalatest twice, no harm done
 
@@ -52,6 +53,10 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     val configgy_test = "net.lag" % "configgy" % "1.4" % "test->default"
   }
   
+  lazy val publishExtras = task { None } dependsOn
+    (agg.doc, examples.publishExamples) dependsOn
+    (dispatch_modules map { _.publishSxr } : _*)
+	
   // parent project should not be published
   override def publishAction = task { None }
   override def publishConfiguration = publishLocalConfiguration
