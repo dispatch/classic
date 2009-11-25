@@ -8,3 +8,4 @@ project/boot
 project/plugins/project/
 src_managed/
 *.test.conf
+*.cfg
