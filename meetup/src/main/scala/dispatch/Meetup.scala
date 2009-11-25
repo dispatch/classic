@@ -1,8 +1,6 @@
 package dispatch.meetup
 import dispatch._
 
-import json._
-import JsHttp._
 import oauth._
 import oauth.OAuth._
 
@@ -14,18 +12,14 @@ object Meetup {
 case class Group(consumer: Consumer, access: Token) {
   val query = new GroupsBuilder(Map())
   def query(params: (String, Any)*) = new GroupsBuilder(Map(params: _*))
-  class GroupsBuilder(params: Map[String, Any]) extends Builder[Handler[List[JsObject]]] {
+  class GroupsBuilder(params: Map[String, Any]) extends Builder[Handler[String]] {
     private def param(key: String)(value: Any) = new GroupsBuilder(params + (key -> value))
 
     val zip = param("zip")_
-    def product = Meetup.svc / "groups.json" <@ (consumer, access) ># ('results ! (list ! obj))
+    def product = Meetup.svc / "groups.json" <<? params <@ (consumer, access) as_str
   }
 }
-object Group {
-  val urlname = 'group_urlname ? str
-  val zip = 'zip ? str
-  val city = 'city ? str
-}
+
 object Auth {
   val svc = :/("www.meetup.com") / "oauth"
 
@@ -39,5 +33,5 @@ object Auth {
   def authorize_url(token: Token) = :/("www.meetup.com") / "authorize/" <<? token
   
   def access_token(consumer: Consumer, token: Token) = 
-    svc.POST / "access/" <@ (consumer, token) >% { m => Token(m).get }
+    svc.POST / "access/" <@ (consumer, token) as_token
 }
