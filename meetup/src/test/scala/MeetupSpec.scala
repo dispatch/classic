@@ -6,7 +6,6 @@ class MeetupSpec extends Spec with ShouldMatchers {
   import meetup._
   import oauth._
   import Http._
-  import json.Js._
   
   val conf = new java.io.File("meetup.test.conf")
   if (conf.exists) {
@@ -20,9 +19,6 @@ class MeetupSpec extends Spec with ShouldMatchers {
     describe("Group Query") {
       val http = new Http
       it("should find groups in Brooklyn") {
-        val res = http(group.query.zip(11201))
-        res.isEmpty should be (false)
-        res map Group.city forall { _.toLowerCase contains "brooklyn" } should be (true)
       }
     }
   }
