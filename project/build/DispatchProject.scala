@@ -53,9 +53,8 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     val configgy_test = "net.lag" % "configgy" % "1.4" % "test->default"
   }
   
-  lazy val publishExtras = task { None } dependsOn
-    (agg.doc, examples.publishExamples) dependsOn
-    (dispatch_modules map { _.publishSxr } : _*)
+  lazy val publishExtras = task { None } dependsOn 
+    (agg.doc :: examples.publishExamples :: dispatch_modules.map { _.publishSxr } : _*)
 	
   // parent project should not be published
   override def publishAction = task { None }
