@@ -92,7 +92,7 @@ object OAuth {
     
     val split_decode: (String => IMap[String, String]) = {
       case null => IMap.empty
-      case query => IMap.empty ++ query.split('&').map { nvp =>
+      case query => IMap.empty ++ query.trim.split('&').map { nvp =>
         ( nvp split "=" map Http.-% ) match { 
           case Array(name) => name -> ""
           case Array(name, value) => name -> value
