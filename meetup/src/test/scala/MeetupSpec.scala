@@ -7,18 +7,22 @@ class MeetupSpec extends Spec with ShouldMatchers {
   import oauth._
   import Http._
   
-  val conf = new java.io.File("meetup.test.conf")
+  val conf = new java.io.File("meetup.test.cfg")
   if (conf.exists) {
     import _root_.net.lag.configgy.{Configgy => C}
     C.configure(conf.getPath)
     
     val consumer = Consumer(C.config.getString("oauth_consumer_key").get, C.config.getString("oauth_consumer_secret").get)
     val Some(token) = Token(C.config.asMap)
-    val group = Group(consumer, token)
+    val client = OAuthClient(consumer, token)
 
     describe("Group Query") {
       val http = new Http
-      it("should find groups in Brooklyn") {
+      val groups = Groups(client)
+      it("should find knitting groups in Brooklyn") {
+        val res = http(groups.cityUS("Brooklyn", "NY").topic("knitting"))
+        res.results.size should be > (0)
+        res.results forall { _.topics exists { _.name.toLowerCase == "knitting" } } should be (true)
       }
     }
   }
