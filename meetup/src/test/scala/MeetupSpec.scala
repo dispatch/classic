@@ -25,5 +25,13 @@ class MeetupSpec extends Spec with ShouldMatchers {
         res.results forall { _.topics exists { _.name.toLowerCase == "knitting" } } should be (true)
       }
     }
+    describe("Event Query") {
+      val http = new Http
+      val events = Events(client)
+      it("should find New York Scala events") {
+        val res = http(events.group_id(1377720).after("05002008")) // nyc scala 4ever!
+        res.results.size should be > (5)
+      }
+    }
   }
 }

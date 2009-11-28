@@ -115,3 +115,76 @@ case class Group(
 )
 case class GroupTopic(id: String, urlkey: String, name: String)
 
+object Events extends MeetupMethod {
+  def apply(client: Client) = {
+    class GroupBuilder(params: Map[String, Any]) extends Builder[Handler[EventResponse]] {
+      private def param(key: String)(value: Any) = new GroupBuilder(params + (key -> value))
+
+      val member_id = param("member_id")_
+      val group_urlname = param("group_urlname")_
+      val topic = param("topic")_
+      def topic(topic: Any, groupnum: Any) = param("topic")(topic).param("groupnum")(groupnum)
+      val group_id = param("group_id")_
+      val zip = param("zip")_
+      def geo(lat: Any, lon: Any) = param("lat")(lat).param("lon")(lon)
+      def city(city: Any, country: Any) = param("city")(city).param("country")(country)
+      def cityUS(city: Any, state: Any) = param("city")(city).param("state")(state).param("country")("us")
+      val radius = param("radius")_
+      val after = param("after")_
+      val before = param("before")_
+
+      private def order(value: String) = param("order")(value)
+      def order_time = order("time")
+      def order_group = order("group")
+      def order_location = order("location")
+      def order_topic = order("topic")
+  
+      def request = client((_: Request) / "events" <<? params)
+      def product = request ># { _.extract[EventResponse] }
+    }
+    new GroupBuilder(Map()) 
+  }
+}
+case class EventResponse(results: List[Event], meta: Meta)
+class Event(
+  val name: String,
+  val id: String,
+  val time: Date,
+  val description: String,
+  val event_url: String,
+  val photo_url: String,
+  val group_name: String,
+  val group_photo_url: String,
+  val group_id: String,
+  val attendee_count: String,
+  val rsvpcount: String,
+  val no_rsvpcount: String,
+  val maybe_rsvpcount: String,
+  val rsvp_cutoff: String,
+  val rsvp_closed: String,
+  val rsvp_limit: String,
+  val venue_name: String,
+  val venue_id: String,
+  val venue_address1: String,
+  val venue_address2: String,
+  val venue_address3: String,
+  val venue_city: String,
+  val venue_state: String,
+  val venue_zip: String,
+  val venue_phone: String,
+  val venue_lat: String,
+  val venue_lon: String,
+  val venue_map: String,
+  val organizer_id: String,
+  val organizer_name: String,
+  val allow_maybe_rsvp: String,
+  val myrsvp: String,
+  val fee: String,
+  val feecurrency: String,
+  val feedesc: Option[String],
+  val ismeetup: String,
+  val updated: Date,
+  val lat: String,
+  val lon: String,
+  val questions: List[String]
+) { override def toString = "Event: %s on %s" format (name, time) }
