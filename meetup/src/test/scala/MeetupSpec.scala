@@ -20,17 +20,17 @@ class MeetupSpec extends Spec with ShouldMatchers {
     describe("Group Query") {
       it("should find knitting groups in Brooklyn") {
         val http = new Http
-        val group_topics = http(client(Groups.cityUS("Brooklyn", "NY").topic("knitting")) ># { jv =>
-          Response.results(jv).map(Group.topics)
-        })
+        val group_topics = http(client(Groups.cityUS("Brooklyn", "NY").topic("knitting")) ># (
+          Response.results >~> Group.topics
+        ))
         group_topics.size should be > (0)
         group_topics forall { _.flatMap(GroupTopic.name) exists { _.toLowerCase == "knitting" } } should be (true)
       }
     }
     describe("Event Query") {
-      val http = new Http
+      implicit val http = new Http
       it("should find New York Scala events") {
-        val res = http(client(Events.group_id(1377720).after("05002008")) ># Response.results) // nyc scala 4ever!
+        val (res, meta) = client.call(Events.group_id(1377720).after("05002008")) // nyc scala 4ever!
         res.size should be > (5)
       }
     }

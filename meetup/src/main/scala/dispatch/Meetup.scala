@@ -13,6 +13,8 @@ import java.util.Date
 /** Client is a function to wrap API operations */
 abstract class Client extends ((Request => Request) => Request) {
   val host = :/("api.meetup.com")
+  def call(method: Request => Request)(implicit http: Http) =
+    http(apply(method) ># (Response.results ~ Response.meta))
 }
 
 /** Supplies a host and signs the request */
@@ -177,5 +179,5 @@ object Event {
   val updated = 'updated ? date
   val lat = 'lat ? str
   val lon = 'lon ? str
-  val questions = 'questions ? ary andThen { _ flatMap str }
+  val questions = 'questions ? ary >>~> str 
 }
