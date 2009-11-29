@@ -59,38 +59,28 @@ object Meta {
   val link = 'link ? str
   val url = 'url ? str
 }
-trait MeetupMethod {
-  implicit val formats = new DefaultFormats {
-    override def dateFormatter =
-      new java.text.SimpleDateFormat("E MMM dd HH:mm:ss zz yyyy")
-  }
-}
-object Groups extends MeetupMethod {
-  def apply(client: Client) = {
-    class GroupBuilder(params: Map[String, Any]) extends Builder[Request] {
-      private def param(key: String)(value: Any) = new GroupBuilder(params + (key -> value))
+object Groups extends GroupsBuilder(Map())
+private[meetup] class GroupsBuilder(params: Map[String, Any]) extends Builder[Request => Request] {
+  private def param(key: String)(value: Any) = new GroupsBuilder(params + (key -> value))
 
-      val member_id = param("member_id")_
-      val urlname = param("group_urlname")_
-      val topic = param("topic")_
-      def topic(topic: Any, groupnum: Any) = param("topic")(topic).param("groupnum")(groupnum)
-      val id = param("id")_
-      val zip = param("zip")_
-      def geo(lat: Any, lon: Any) = param("lat")(lat).param("lon")(lon)
-      def city(city: Any, country: Any) = param("city")(city).param("country")(country)
-      def cityUS(city: Any, state: Any) = param("city")(city).param("state")(state).param("country")("us")
-      val radius = param("radius")_
+  val member_id = param("member_id")_
+  val urlname = param("group_urlname")_
+  val topic = param("topic")_
+  def topic(topic: Any, groupnum: Any) = param("topic")(topic).param("groupnum")(groupnum)
+  val id = param("id")_
+  val zip = param("zip")_
+  def geo(lat: Any, lon: Any) = param("lat")(lat).param("lon")(lon)
+  def city(city: Any, country: Any) = param("city")(city).param("country")(country)
+  def cityUS(city: Any, state: Any) = param("city")(city).param("state")(state).param("country")("us")
+  val radius = param("radius")_
 
-      private def order(value: String) = param("order")(value)
-      def order_ctime = order("ctime")
-      def order_name = order("name")
-      def order_location = order("location")
-      def order_members = order("members")
-  
-      def product = client((_: Request) / "groups" <<? params)
-    }
-    new GroupBuilder(Map()) 
-  }
+  private def order(value: String) = param("order")(value)
+  def order_ctime = order("ctime")
+  def order_name = order("name")
+  def order_location = order("location")
+  def order_members = order("members")
+
+  def product = (_: Request) / "groups" <<? params
 }
 
 object Group {

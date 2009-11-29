@@ -15,13 +15,12 @@ class MeetupSpec extends Spec with ShouldMatchers {
     
     val consumer = Consumer(C.config.getString("oauth_consumer_key").get, C.config.getString("oauth_consumer_secret").get)
     val Some(token) = Token(C.config.asMap)
-    val client = OAuthClient(consumer, token)
+    val test_client = OAuthClient(consumer, token)
 
     describe("Group Query") {
-      val http = new Http
-      val groups = Groups(client)
       it("should find knitting groups in Brooklyn") {
-        val group_topics = http(groups.cityUS("Brooklyn", "NY").topic("knitting") ># { jv =>
+        val http = new Http
+        val group_topics = http(test_client(Groups.cityUS("Brooklyn", "NY").topic("knitting")) ># { jv =>
           Response.results(jv).map(Group.topics)
         })
         group_topics.size should be > (0)
