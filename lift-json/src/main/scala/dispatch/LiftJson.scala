@@ -26,6 +26,7 @@ object Js {
     case JString(s) => s :: Nil
     case _ => Nil
   }
+  val date = str // todo
   val int: (JValue => List[BigInt]) = {
     case JInt(i) => i :: Nil
     case _ => Nil
