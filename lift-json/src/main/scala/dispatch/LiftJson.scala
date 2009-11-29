@@ -37,6 +37,7 @@ object Js {
   class SymOp(sym: Symbol) {
     def ?[T](block: JValue => List[T]): JValue => List[T] = {
       case JObject(l) => l filter { _.name == sym.name } flatMap { jf => block(jf.value) }
+      case JField(name, value) if name == sym.name => block(value) 
       case _ => Nil
     }
   }
