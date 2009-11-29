@@ -16,12 +16,6 @@ object Js {
     def ># [T](block: JValue => T) = r >- { s => block(JsonParser.parse(s)) }
     def as_pretty = ># { js => pretty(render(js))}
   }
-  implicit def sym2op(sym: Symbol) = new {
-    def ?[T](block: JValue => List[T]): JValue => List[T] = {
-      case JObject(l) => l filter { _.name == sym.name } flatMap { jf => block(jf.value) }
-      case _ => Nil
-    }
-  }
   val str: (JValue => List[String]) = {
     case JString(s) => s :: Nil
     case _ => Nil
@@ -38,5 +32,12 @@ object Js {
   val ary: (JValue => List[JValue]) = {
     case JArray(l) => l
     case _ => Nil
+  }
+  implicit def sym2op(sym: Symbol) = new SymOp(sym)
+  class SymOp(sym: Symbol) {
+    def ?[T](block: JValue => List[T]): JValue => List[T] = {
+      case JObject(l) => l filter { _.name == sym.name } flatMap { jf => block(jf.value) }
+      case _ => Nil
+    }
   }
 }
