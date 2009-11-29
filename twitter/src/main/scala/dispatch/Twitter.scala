@@ -12,8 +12,6 @@ object Twitter {
 }
 
 object Search extends Js {
-  /* @deprecated use SearchBuilder#rpp */
-  def apply(query: String, rpp: Int) = new SearchBuilder(Map.empty).q(query).rpp(20)
   def apply(query: String, params: (String, Any)*) = new SearchBuilder(Map(params: _*)).q(query)
   
   class SearchBuilder(params: Map[String, Any]) extends Builder[Handler[List[JsObject]]] {
