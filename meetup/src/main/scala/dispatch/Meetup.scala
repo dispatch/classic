@@ -43,18 +43,22 @@ object Auth {
     svc.POST / "access/" <@ (consumer, token) as_token
 }
 
+object Response {
+  val results = 'results ? ary
+  val meta = 'meta ? obj
+}
 /** Metadata returned with every API response */
-case class Meta(
-  count: Int,
-  next: String,
-  total_count: Int,
-  title: String,
-  updated: Date,
-  description: String,
-  method: String,
-  link: String,
-  url: String
-)
+object Meta {
+  val count = 'count ? int
+  val next = 'next ? str
+  val total_count = 'total_count ? int
+  val title = 'title ? str
+  val updated = 'updated ? str
+  val description = 'description ? str
+  val method = 'method ? str
+  val link = 'link ? str
+  val url = 'url ? str
+}
 trait MeetupMethod {
   implicit val formats = new DefaultFormats {
     override def dateFormatter =
@@ -63,7 +67,7 @@ trait MeetupMethod {
 }
 object Groups extends MeetupMethod {
   def apply(client: Client) = {
-    class GroupBuilder(params: Map[String, Any]) extends Builder[Handler[GroupResponse]] {
+    class GroupBuilder(params: Map[String, Any]) extends Builder[Request] {
       private def param(key: String)(value: Any) = new GroupBuilder(params + (key -> value))
 
       val member_id = param("member_id")_
@@ -83,38 +87,40 @@ object Groups extends MeetupMethod {
       def order_location = order("location")
       def order_members = order("members")
   
-      def request = client((_: Request) / "groups" <<? params)
-      def product = request ># { _.extract[GroupResponse] }
+      def product = client((_: Request) / "groups" <<? params)
     }
     new GroupBuilder(Map()) 
   }
 }
 
-case class GroupResponse(results: List[Group], meta: Meta)
-case class Group(
-  name: String,
-  group_photo_count: String,
-  zip: String,
-  lat: String,
-  lon: String,
-  photo_url: String,
-  link: String,
-  organizer_name: String,
-  city: String,
-  country: String,
-  who: String,
-  id: String,
-  topics: List[GroupTopic],
-  organizerProfileURL: String,
-  updated: Date,
-  created: Date,
-  description: String,
-  rating: String,
-  members: String,
-  daysleft: String
-)
-case class GroupTopic(id: String, urlkey: String, name: String)
-
+object Group {
+  val name = 'name ? str
+  val group_photo_count = 'group_photo_count ? str
+  val zip = 'zip ? str
+  val lat = 'lat ? str
+  val lon = 'lon ? str
+  val photo_url = 'photo_url ? str
+  val link = 'link ? str
+  val organizer_name = 'organizer_name ? str
+  val city = 'city ? str
+  val country = 'country ? str
+  val who = 'who ? str
+  val id = 'id ? str
+  val topics = 'topics ? ary
+  val organizerProfileURL = 'organizerProfileURL ? str
+  val updated = 'updated ? str
+  val created = 'created ? str
+  val description = 'description ? str
+  val rating = 'rating ? str
+  val members = 'members ? str
+  val daysleft = 'daysleft ? str
+}
+object GroupTopic {
+  val id = 'id ? str
+  val urlkey = 'urlkey ? str
+  val name = 'name ? str
+}
+/*
 object Events extends MeetupMethod {
   def apply(client: Client) = {
     class GroupBuilder(params: Map[String, Any]) extends Builder[Handler[EventResponse]] {
@@ -187,4 +193,4 @@ class Event(
   val lat: String,
   val lon: String,
   val questions: List[String]
-) { override def toString = "Event: %s on %s" format (name, time) }
+) { override def toString = "Event: %s on %s" format (name, time) } */

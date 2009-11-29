@@ -4,6 +4,7 @@ import org.scalatest.matchers.ShouldMatchers
 class MeetupSpec extends Spec with ShouldMatchers {
   import dispatch._
   import meetup._
+  import dispatch.liftjson.Js._
   import oauth._
   import Http._
   
@@ -20,18 +21,20 @@ class MeetupSpec extends Spec with ShouldMatchers {
       val http = new Http
       val groups = Groups(client)
       it("should find knitting groups in Brooklyn") {
-        val res = http(groups.cityUS("Brooklyn", "NY").topic("knitting"))
-        res.results.size should be > (0)
-        res.results forall { _.topics exists { _.name.toLowerCase == "knitting" } } should be (true)
+        val group_topics = http(groups.cityUS("Brooklyn", "NY").topic("knitting") ># { jv =>
+          Response.results(jv).map(Group.topics)
+        })
+        group_topics.size should be > (0)
+        group_topics forall { _.flatMap(GroupTopic.name) exists { _.toLowerCase == "knitting" } } should be (true)
       }
     }
     describe("Event Query") {
-      val http = new Http
+/*      val http = new Http
       val events = Events(client)
       it("should find New York Scala events") {
         val res = http(events.group_id(1377720).after("05002008")) // nyc scala 4ever!
         res.results.size should be > (5)
-      }
+      }*/
     }
   }
 }
