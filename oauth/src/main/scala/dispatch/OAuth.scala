@@ -78,7 +78,7 @@ object OAuth {
       val oauth_url = Http.to_uri(r.host, req).toString.split('?')(0)
       val query_params = split_decode(req.getURI.getRawQuery)
       val oauth_params = OAuth.sign(req.getMethod, oauth_url, query_params ++ (req match {
-        case before: Post[_] => before.values
+        case before: Post[_] => before.oauth_values
         case _ => IMap()
       }), consumer, token, verifier )
       req.addHeader("Authorization", "OAuth " + oauth_params.map { 

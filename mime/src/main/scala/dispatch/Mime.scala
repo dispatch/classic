@@ -39,8 +39,10 @@ object Mime {
     
   }
 }
-// Not yet supported by Dispatch OAuth
+
 private [mime] class MultipartPost(val values: Map[String, Any], entity: MultipartEntity) extends Post[MultipartPost] {
+  /** No values in a multi-part post are included in the OAuth base string */
+  override def oauth_values = Map.empty
   def this() = this(Map.empty, new MultipartEntity)
   def add(name: String, content: ContentBody) = {
     entity.addPart(name, content)

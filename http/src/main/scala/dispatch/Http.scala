@@ -151,6 +151,8 @@ object Handler {
 /** Post method that produces updated, self-typed copies when new parameters are added */
 trait Post[P <: Post[P]] extends HttpPost { self: P =>
   def values: Map[String, Any]
+  /** Values that should be considered in an OAuth base string, defaults to all values.*/
+  def oauth_values = values
   def add(more: Map[String, Any]): P
 }
 /** Standard, URL-encoded form posting */
