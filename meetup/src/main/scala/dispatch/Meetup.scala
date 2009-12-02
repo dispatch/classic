@@ -110,14 +110,12 @@ object Group extends Location {
   val rating = 'rating ? str
   val members = 'members ? str
   val daysleft = 'daysleft ? str
-}
-object GroupTopic {
-  val id = 'id ? str
-  val urlkey = 'urlkey ? str
-  val name = 'name ? str
-  val city = 'city ? str
-  val state = 'state ? str
-  val country = 'country ? str
+  
+  object Topic {
+    val id = 'id ? str
+    val urlkey = 'urlkey ? str
+    val name = 'name ? str
+  }
 }
 
 object Events extends EventsBuilder(Map())

@@ -24,7 +24,7 @@ class MeetupSpec extends Spec with ShouldMatchers {
           Response.results >~> Group.topics
         ))
         group_topics.size should be > (0)
-        group_topics forall { _.flatMap(GroupTopic.name) exists { _.toLowerCase == "knitting" } } should be (true)
+        group_topics forall { _.flatMap(Group.Topic.name) exists { _.toLowerCase == "knitting" } } should be (true)
       }
     }
     describe("Event Query") {
