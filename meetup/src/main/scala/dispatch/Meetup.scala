@@ -85,17 +85,21 @@ private[meetup] class GroupsBuilder(params: Map[String, Any]) extends Builder[Re
   def product = (_: Request) / "groups" <<? params
 }
 
-object Group {
-  val name = 'name ? str
-  val group_photo_count = 'group_photo_count ? str
-  val zip = 'zip ? str
+trait Location {
   val lat = 'lat ? str
   val lon = 'lon ? str
+  val city = 'city ? str
+  val state = 'state ? str
+  val country = 'country ? str
+  val zip = 'zip ? str
+}
+
+object Group extends Location {
+  val name = 'name ? str
+  val group_photo_count = 'group_photo_count ? str
   val photo_url = 'photo_url ? str
   val link = 'link ? str
   val organizer_name = 'organizer_name ? str
-  val city = 'city ? str
-  val country = 'country ? str
   val who = 'who ? str
   val id = 'id ? str
   val topics = 'topics ? ary
@@ -111,6 +115,9 @@ object GroupTopic {
   val id = 'id ? str
   val urlkey = 'urlkey ? str
   val name = 'name ? str
+  val city = 'city ? str
+  val state = 'state ? str
+  val country = 'country ? str
 }
 
 object Events extends EventsBuilder(Map())
@@ -139,7 +146,7 @@ private[meetup] class EventsBuilder(params: Map[String, Any]) extends Builder[Re
   def product = (_: Request) / "events" <<? params
 }
 
-object Event {
+object Event extends Location {
   val name = 'name ? str
   val id = 'id ? str
   val time = 'time ? date
@@ -177,7 +184,28 @@ object Event {
   val feedesc = 'feedesc ? str
   val ismeetup = 'ismeetup ? str
   val updated = 'updated ? date
-  val lat = 'lat ? str
-  val lon = 'lon ? str
   val questions = 'questions ? ary >>~> str 
+}
+
+object Members extends MembersBuilder(Map())
+private[meetup] class MembersBuilder(params: Map[String, Any]) extends Builder[Request => Request] {
+  private def param(key: String)(value: Any) = new MembersBuilder(params + (key -> value))
+
+  val member_id = param("member_id")_
+  def self = param("relation")("self")
+  val group_id = param("group_id")_
+  def topic(topic: Any, groupnum: Any) = param("topic")(topic).param("groupnum")(groupnum)
+  val group_urlname = param("group_urlname")_
+
+  def product = (_: Request) / "members" <<? params
+}
+
+object Member extends Location {
+  val name = 'name ? str
+  val id = 'id ? str
+  val photo_url = 'photo_url ? str
+  val link = 'link ? str
+  val visited = 'visited ? date
+  val joined = 'joined ? date
+  val bio = 'bio ? str
 }
