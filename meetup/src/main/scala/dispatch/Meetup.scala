@@ -1,20 +1,37 @@
 package dispatch.meetup
 import dispatch._
 
-import oauth._
-import oauth.OAuth._
+import dispatch.oauth._
+import dispatch.oauth.OAuth._
 
 import dispatch.liftjson.Js._
 import net.liftweb.json._
 import net.liftweb.json.JsonAST._
 
+import dispatch.mime.Mime._
+
 import java.util.Date
+import java.io.File
 
 /** Client is a function to wrap API operations */
 abstract class Client extends ((Request => Request) => Request) {
+  import Http.builder2product
   val host = :/("api.meetup.com")
-  def call(method: Request => Request)(implicit http: Http) =
-    http(apply(method) ># (Response.results ~ Response.meta))
+  def call[T](method: Method[T])(implicit http: Http) =
+    http(method.default_handler(apply(method)))
+}
+
+trait Method[T] extends Builder[Request => Request] {
+  /** default handler used by Client#call. You can also apply the client 
+      to a Method and define your own request handler. */
+  def default_handler: Request => Handler[T]
+}
+
+trait ReadMethod extends Method[(List[JValue],List[JValue])] {
+  def default_handler = _ ># (Response.results ~ Response.meta)
+}
+trait WriteMethod extends Method[(List[String],List[String])] {
+  def default_handler = _ ># (WriteResponse.description ~ WriteResponse.details)
 }
 
 /** Supplies a host and signs the request */
@@ -49,6 +66,10 @@ object Response {
   val results = 'results ? ary
   val meta = 'meta ? obj
 }
+object WriteResponse {
+  val description = 'description ? str
+  val details = 'details ? str
+}
 /** Metadata returned with every API response */
 object Meta {
   val count = 'count ? int
@@ -62,7 +83,7 @@ object Meta {
   val url = 'url ? str
 }
 object Groups extends GroupsBuilder(Map())
-private[meetup] class GroupsBuilder(params: Map[String, Any]) extends Builder[Request => Request] {
+private[meetup] class GroupsBuilder(params: Map[String, Any]) extends ReadMethod {
   private def param(key: String)(value: Any) = new GroupsBuilder(params + (key -> value))
 
   val member_id = param("member_id")_
@@ -114,7 +135,7 @@ object GroupTopic {
 }
 
 object Events extends EventsBuilder(Map())
-private[meetup] class EventsBuilder(params: Map[String, Any]) extends Builder[Request => Request] {
+private[meetup] class EventsBuilder(params: Map[String, Any]) extends ReadMethod {
   private def param(key: String)(value: Any) = new EventsBuilder(params + (key -> value))
 
   val member_id = param("member_id")_
@@ -181,3 +202,15 @@ object Event {
   val lon = 'lon ? str
   val questions = 'questions ? ary >>~> str 
 }
+
+object PhotoUpload extends PhotoUploadBuilder(None, Map())
+private[meetup] class PhotoUploadBuilder(photo: Option[File], params: Map[String, Any]) extends WriteMethod {
+  private def param(key: String)(value: Any) = new PhotoUploadBuilder(photo, params + (key -> value))
+
+  val event_id = param("event_id")_
+  def photo(photo: File) = new PhotoUploadBuilder(Some(photo), params)
+  val caption = param("caption")_
+
+  def product = (_: Request) / "photo" <<? params << ("photo", photo.getOrElse { error("photo not specified for PhotoUpload") } )
+}
+
