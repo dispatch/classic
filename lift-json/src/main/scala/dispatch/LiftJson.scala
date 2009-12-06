@@ -33,16 +33,19 @@ object Js {
     case JArray(l) => l
     case _ => Nil
   }
-  implicit def jvcomb(block: JValue => List[JValue]) = new JvComb(block)
-  class JvComb(block: JValue => List[JValue]) {
-    /** @return function that returns a tuple of block and other's output */
-    def ~ [T](other: JValue => T) = { jv: JValue => (block(jv), other(jv)) }
+  implicit def jvlistcomb(block: JValue => List[JValue]) = new JvListComb(block)
+  class JvListComb(block: JValue => List[JValue]) {
     /** Synonym for Function1#andThen */
     def ~>[T](next: List[JValue] => T) = block andThen next
     /** @return a function mapping next over block's output */
     def >~>[T](next: JValue => T) = ~> { _ map next }
     /** @return a function flat-mapping next over block's output */
     def >>~>[T](next: JValue => List[T]) = ~> { _ flatMap next }
+  }
+  implicit def jvcomb[T](block: JValue => T) = new JvComb(block)
+  class JvComb[T](block: JValue => T) {
+    /** @return function that returns a tuple of block and other's output */
+    def ~ [O](other: JValue => O) = { jv: JValue => (block(jv), other(jv)) }
   }
   implicit def sym2op(sym: Symbol) = new SymOp(sym)
   class SymOp(sym: Symbol) {
