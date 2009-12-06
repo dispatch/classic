@@ -14,8 +14,8 @@ import org.apache.http.client.methods.HttpRequestBase
 case class Consumer(key: String, secret: String)
 case class Token(value: String, secret: String)
 object Token {
-  def apply(m: Map[String, String]): Option[Token] = List("oauth_token", "oauth_token_secret").flatMap(m.get) match {
-    case value :: secret :: Nil => Some(Token(value, secret))
+  def apply[T <: Any](m: Map[String, T]): Option[Token] = List("oauth_token", "oauth_token_secret").flatMap(m.get) match {
+    case value :: secret :: Nil => Some(Token(value.toString, secret.toString))
     case _ => None
   }
 }

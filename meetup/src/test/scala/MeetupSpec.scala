@@ -16,6 +16,7 @@ class MeetupSpec extends Spec with ShouldMatchers {
     val consumer = Consumer(C.config.getString("oauth_consumer_key").get, C.config.getString("oauth_consumer_secret").get)
     val Some(token) = Token(C.config.asMap)
     val client = OAuthClient(consumer, token)
+    val nyseID = "05002008"
 
     describe("Group Query") {
       it("should find knitting groups in Brooklyn") {
@@ -30,8 +31,21 @@ class MeetupSpec extends Spec with ShouldMatchers {
     describe("Event Query") {
       implicit val http = new Http
       it("should find New York Scala events") {
-        val (res, meta) = client.call(Events.group_id(1377720).after("05002008")) // nyc scala 4ever!
+        val (res, meta) = client.call(Events.group_id(1377720).after(nyseID)) // nyc scala 4ever!
         res.size should be > (5)
+      }
+    }
+    describe("Member and Group query") {
+      implicit val http = new Http
+      it("should find NYSE members") {
+        val NYSE = "New-York-Scala-Enthusiasts"
+        val (res, meta) = client.call(Members.group_urlname(NYSE))
+        val ids = for (r <- res; id <- Member.id(r)) yield id
+        ids.size should be > (5)
+        ids.forall { id =>
+          val (res, meta) = client.call(Groups.member_id(id))
+          res.forall { g => Group.id(g).exists { _ == nyseID } }
+        } should be (true)
       }
     }
   }

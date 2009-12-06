@@ -35,12 +35,10 @@ object Auth {
   def request_token(consumer: Consumer) = 
     svc.POST / "request/" <@ consumer as_token
 
-  def request_token(consumer: Consumer, oauth_callback: String) = 
-    svc / "request/" << 
-      Map("oauth_callback" -> oauth_callback) <@ consumer as_token
-    
   def authorize_url(token: Token) = :/("www.meetup.com") / "authorize/" <<? token
-  
+  def authorize_url(token: Token, oauth_callback: String): Request = 
+    authorize_url(token) <<? Map("oauth_callback" -> oauth_callback)  
+    
   def access_token(consumer: Consumer, token: Token) = 
     svc.POST / "access/" <@ (consumer, token) as_token
 }
@@ -96,6 +94,7 @@ trait Location {
 
 object Group extends Location {
   val name = 'name ? str
+  val urlname = 'group_urlname ? str
   val group_photo_count = 'group_photo_count ? str
   val photo_url = 'photo_url ? str
   val link = 'link ? str
