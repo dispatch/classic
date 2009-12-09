@@ -22,7 +22,7 @@ import org.apache.http.util.EntityUtils
 import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials, Credentials}
 
 case class StatusCode(code: Int, contents:String)
-  extends Exception("Exceptional resoponse code: " + code + "\n" + contents)
+  extends Exception("Exceptional response code: " + code + "\n" + contents)
 
 /** Simple info logger */
 trait Logger { def info(msg: String, items: Any*) }
