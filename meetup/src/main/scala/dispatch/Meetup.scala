@@ -47,16 +47,14 @@ case class APIKeyClient(apikey: String) extends Client {
 
 /** Access point for tokens and authorization URLs */
 object Auth {
-  val w_host = :/("www.meetup.com")
-  val svc = w_host / "oauth"
-  val m_host = :/("m.meetup.com")
+  val host = :/("www.meetup.com")
+  val svc = host / "oauth"
 
   def request_token(consumer: Consumer) = 
     svc.POST / "request/" <@ consumer as_token
 
-  private def authorize(host: Request)(token: Token) = host / "authorize/" <<? token
-  val authorize_url = authorize(w_host) _
-  val m_authorize_url = authorize(m_host) _
+  def authorize_url(token: Token) = host / "authorize/" <<? token
+  def m_authorize_url(token: Token) = authorize_url(token) <<? Map("set_mobile" -> "on")
   def callback(oauth_callback: String) = Map("oauth_callback" -> oauth_callback)
   
   def access_token(consumer: Consumer, token: Token) = 
