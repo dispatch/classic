@@ -142,6 +142,8 @@ object Group extends Location {
 object Events extends EventsBuilder(Map())
 private[meetup] class EventsBuilder(params: Map[String, Any]) extends ReadMethod {
   private def param(key: String)(value: Any) = new EventsBuilder(params + (key -> value))
+  private val df = new java.text.SimpleDateFormat("MMddyyyy")
+  private def date_param(key: String)(value: Date) = param(key)(df.format(value))
 
   val member_id = param("member_id")_
   val group_urlname = param("group_urlname")_
@@ -153,8 +155,8 @@ private[meetup] class EventsBuilder(params: Map[String, Any]) extends ReadMethod
   def city(city: Any, country: Any) = param("city")(city).param("country")(country)
   def cityUS(city: Any, state: Any) = param("city")(city).param("state")(state).param("country")("us")
   val radius = param("radius")_
-  val after = param("after")_
-  val before = param("before")_
+  val after = date_param("after")_
+  val before = date_param("before")_
 
   private def order(value: String) = param("order")(value)
   def order_time = order("time")
