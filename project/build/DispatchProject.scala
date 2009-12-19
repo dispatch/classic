@@ -14,7 +14,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   lazy val http_json = project("http+json", "Dispatch HTTP JSON", new HttpProject(_), http, json)
   lazy val lift_json = project("lift-json", "Dispatch lift-json", new DispatchDefault(_) {
     val databinder_net = "databinder.net repository" at "http://databinder.net/repo"
-    val lift_json = "net.liftweb" %% "lift-json" % "1.1-M6"
+    val lift_json = "net.liftweb" %% "lift-json" % "1.1-M8"
   }, http)
   lazy val oauth = project("oauth", "Dispatch OAuth", new DispatchDefault(_), http)
   lazy val times = project("times", "Dispatch Times", new DispatchDefault(_), http, json, http_json)

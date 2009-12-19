@@ -47,15 +47,16 @@ case class APIKeyClient(apikey: String) extends Client {
 
 /** Access point for tokens and authorization URLs */
 object Auth {
-  val svc = :/("www.meetup.com") / "oauth"
+  val host = :/("www.meetup.com")
+  val svc = host / "oauth"
 
   def request_token(consumer: Consumer) = 
     svc.POST / "request/" <@ consumer as_token
 
-  def authorize_url(token: Token) = :/("www.meetup.com") / "authorize/" <<? token
-  def authorize_url(token: Token, oauth_callback: String): Request = 
-    authorize_url(token) <<? Map("oauth_callback" -> oauth_callback)  
-    
+  def authorize_url(token: Token) = host / "authorize/" <<? token
+  def m_authorize_url(token: Token) = authorize_url(token) <<? Map("set_mobile" -> "on")
+  def callback(oauth_callback: String) = Map("oauth_callback" -> oauth_callback)
+  
   def access_token(consumer: Consumer, token: Token) = 
     svc.POST / "access/" <@ (consumer, token) as_token
 }
@@ -141,6 +142,8 @@ object Group extends Location {
 object Events extends EventsBuilder(Map())
 private[meetup] class EventsBuilder(params: Map[String, Any]) extends ReadMethod {
   private def param(key: String)(value: Any) = new EventsBuilder(params + (key -> value))
+  private val df = new java.text.SimpleDateFormat("MMddyyyy")
+  private def date_param(key: String)(value: Date) = param(key)(df.format(value))
 
   val member_id = param("member_id")_
   val group_urlname = param("group_urlname")_
@@ -152,8 +155,8 @@ private[meetup] class EventsBuilder(params: Map[String, Any]) extends ReadMethod
   def city(city: Any, country: Any) = param("city")(city).param("country")(country)
   def cityUS(city: Any, state: Any) = param("city")(city).param("state")(state).param("country")("us")
   val radius = param("radius")_
-  val after = param("after")_
-  val before = param("before")_
+  val after = date_param("after")_
+  val before = date_param("before")_
 
   private def order(value: String) = param("order")(value)
   def order_time = order("time")
@@ -236,5 +239,5 @@ private[meetup] class PhotoUploadBuilder(photo: Option[File], params: Map[String
   def photo(photo: File) = new PhotoUploadBuilder(Some(photo), params)
   val caption = param("caption")_
 
-  def product = (_: Request) / "photo" <<? params << ("photo", photo.getOrElse { error("photo not specified for PhotoUpload") } )
+  def product = (_: Request) / "photo" <<? params <<* ("photo", photo.getOrElse { error("photo not specified for PhotoUpload") } )
 }

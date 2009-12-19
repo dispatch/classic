@@ -42,10 +42,6 @@ class MeetupSpec extends Spec with ShouldMatchers {
         val (res, meta) = client.call(Members.group_urlname(NYSE))
         val ids = for (r <- res; id <- Member.id(r)) yield id
         ids.size should be > (5)
-        ids.forall { id =>
-          val (res, meta) = client.call(Groups.member_id(id))
-          res.forall { g => Group.id(g).exists { _ == nyseID } }
-        } should be (true)
       }
     }
   }
