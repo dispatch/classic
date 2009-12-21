@@ -31,7 +31,7 @@ class MeetupSpec extends Spec with ShouldMatchers {
     describe("Event Query") {
       implicit val http = new Http
       it("should find New York Scala events") {
-        val (res, meta) = client.call(Events.group_id(1377720).after(nyseID)) // nyc scala 4ever!
+        val (res, meta) = client.call(Events.group_id(1377720).after(new java.util.Date)) // nyc scala 4ever!
         res.size should be > (5)
       }
     }
