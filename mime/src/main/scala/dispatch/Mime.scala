@@ -1,6 +1,7 @@
 package dispatch.mime
 import dispatch._
 import java.io.{FilterOutputStream, OutputStream}
+import org.apache.http.HttpEntity
 import org.apache.http.entity.HttpEntityWrapper
 import org.apache.http.entity.mime.{FormBodyPart, MultipartEntity}
 import org.apache.http.entity.mime.content.{FileBody, StringBody, InputStreamBody, ContentBody}
@@ -41,9 +42,13 @@ object Mime {
     }
     
   }
+  type ProgressListener = {
+    def transferred(num: Long): Unit
+  }
+  type Entity = HttpEntity { def addPart(name: String, body: ContentBody)  }
 }
 
-private [mime] class MultipartPost(val values: Map[String, Any], entity: MultipartEntity) extends Post[MultipartPost] {
+private [mime] class MultipartPost(val values: Map[String, Any], entity: Mime.Entity) extends Post[MultipartPost] {
   /** No values in a multi-part post are included in the OAuth base string */
   override def oauth_values = Map.empty
   def this() = this(Map.empty, new MultipartEntity)
@@ -58,13 +63,11 @@ private [mime] class MultipartPost(val values: Map[String, Any], entity: Multipa
     }
     Request.mimic(new MultipartPost(values ++ more.elements, entity))(this)
   }
-  type ProgressListener = {
-    def transferred(num: Long): Unit
-  }
 }
 
 class CountingMultipartEntity(delegate: MultipartEntity, 
-    listener: MultipartPost#ProgressListener) extends HttpEntityWrapper(delegate) {
+    listener: Mime.ProgressListener) extends HttpEntityWrapper(delegate) {
+  def addPart(name: String, body: ContentBody) { delegate.addPart(name, body) }
   override def writeTo(out: OutputStream) {
     super.writeTo(new FilterOutputStream(out) {
       var transferred = 0L
