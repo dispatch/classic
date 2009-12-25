@@ -41,22 +41,22 @@ object Mime {
       case req => block(Request.mimic(new MultipartPost)(req))
     }
     def add(name: String, content: => ContentBody) = with_mpp { _.add(name, content) }
-    def >?> (listener: ProgressListener) = with_mpp { _.listen(listener) }
+    def >?> (listener: PostListener) = r next with_mpp { _.listen(listener) }
   }
-  type ProgressListener = Long => Unit
-  type Entity = HttpEntity { def addPart(name: String, body: ContentBody)  }
+  type PostListener = Long => Unit
+  trait Entity extends HttpEntity { def addPart(name: String, body: ContentBody)  }
 }
 
-private [mime] class MultipartPost(entity: Mime.Entity) extends Post[MultipartPost] {
+class MultipartPost(entity: Mime.Entity) extends Post[MultipartPost] {
   setEntity(entity)
   /** No values in a multi-part post are included in the OAuth base string */
   override def oauth_values = Map.empty
-  def this() = this(new MultipartEntity)
+  def this() = this(new MultipartEntity with Mime.Entity)
   def add(name: String, content: ContentBody) = {
     entity.addPart(name, content)
     this
   }
-  def listen(listener: Mime.ProgressListener) = Request.mimic(
+  def listen(listener: Mime.PostListener) = Request.mimic(
     new MultipartPost(new CountingMultipartEntity(entity, listener))
   )(this)
   def add(more: collection.Map[String, Any]) = {
@@ -68,7 +68,7 @@ private [mime] class MultipartPost(entity: Mime.Entity) extends Post[MultipartPo
 }
 
 class CountingMultipartEntity(delegate: Mime.Entity, 
-    listener: Mime.ProgressListener) extends HttpEntityWrapper(delegate) {
+    listener: Mime.PostListener) extends HttpEntityWrapper(delegate) with Mime.Entity {
   def addPart(name: String, body: ContentBody) { delegate.addPart(name, body) }
   override def writeTo(out: OutputStream) {
     super.writeTo(new FilterOutputStream(out) {
