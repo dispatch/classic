@@ -1,6 +1,7 @@
 package dispatch.mime
 import dispatch._
-
+import java.io.{FilterOutputStream, OutputStream}
+import org.apache.http.entity.HttpEntityWrapper
 import org.apache.http.entity.mime.{FormBodyPart, MultipartEntity}
 import org.apache.http.entity.mime.content.{FileBody, StringBody, InputStreamBody, ContentBody}
 
@@ -56,5 +57,29 @@ private [mime] class MultipartPost(val values: Map[String, Any], entity: Multipa
       entity.addPart(key, new StringBody(value.toString))
     }
     Request.mimic(new MultipartPost(values ++ more.elements, entity))(this)
+  }
+  type ProgressListener = {
+    def transferred(num: Long): Unit
+  }
+}
+
+class CountingMultipartEntity(delegate: MultipartEntity, 
+    listener: MultipartPost#ProgressListener) extends HttpEntityWrapper(delegate) {
+  override def writeTo(out: OutputStream) {
+    super.writeTo(new FilterOutputStream(out) {
+      var transferred = 0L
+      def wrote(len: Int) {
+        transferred += len
+        listener.transferred(transferred)
+      }
+      override def write(b: Array[Byte], off: Int, len: Int) {
+        super.write(b, off, len)
+        wrote(len)
+      }
+      override def write(b: Int) {
+        super.write(b)
+        wrote(1)
+      }
+    })
   }
 }
