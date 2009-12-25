@@ -35,37 +35,39 @@ object Mime {
     def << (name: String, file_name: String, stream: () => InputStream) = 
       r next add(name, new InputStreamBody(stream(), file_name))
     
-    private def add(name: String, content: => ContentBody): Request.Xf = {
-      case post: MultipartPost => post.add(name, content)
-      case p: Post[_] => Request.mimic(new MultipartPost)(p).add(p.values).add(name, content)
-      case req => Request.mimic(new MultipartPost)(req).add(name, content)
+    private def with_mpp(block: MultipartPost => MultipartPost): Request.Xf = {
+      case post: MultipartPost => block(post)
+      case p: Post[_] => block(Request.mimic(new MultipartPost)(p).add(p.oauth_values))
+      case req => block(Request.mimic(new MultipartPost)(req))
     }
-    
+    def add(name: String, content: => ContentBody) = with_mpp { _.add(name, content) }
+    def >?> (listener: ProgressListener) = with_mpp { _.listen(listener) }
   }
-  type ProgressListener = {
-    def transferred(num: Long): Unit
-  }
+  type ProgressListener = Long => Unit
   type Entity = HttpEntity { def addPart(name: String, body: ContentBody)  }
 }
 
-private [mime] class MultipartPost(val values: Map[String, Any], entity: Mime.Entity) extends Post[MultipartPost] {
+private [mime] class MultipartPost(entity: Mime.Entity) extends Post[MultipartPost] {
+  setEntity(entity)
   /** No values in a multi-part post are included in the OAuth base string */
   override def oauth_values = Map.empty
-  def this() = this(Map.empty, new MultipartEntity)
+  def this() = this(new MultipartEntity)
   def add(name: String, content: ContentBody) = {
     entity.addPart(name, content)
     this
   }
-  setEntity(entity)
+  def listen(listener: Mime.ProgressListener) = Request.mimic(
+    new MultipartPost(new CountingMultipartEntity(entity, listener))
+  )(this)
   def add(more: collection.Map[String, Any]) = {
     more.elements foreach { case (key, value) =>
       entity.addPart(key, new StringBody(value.toString))
     }
-    Request.mimic(new MultipartPost(values ++ more.elements, entity))(this)
+    this
   }
 }
 
-class CountingMultipartEntity(delegate: MultipartEntity, 
+class CountingMultipartEntity(delegate: Mime.Entity, 
     listener: Mime.ProgressListener) extends HttpEntityWrapper(delegate) {
   def addPart(name: String, body: ContentBody) { delegate.addPart(name, body) }
   override def writeTo(out: OutputStream) {
@@ -73,7 +75,7 @@ class CountingMultipartEntity(delegate: MultipartEntity,
       var transferred = 0L
       def wrote(len: Int) {
         transferred += len
-        listener.transferred(transferred)
+        listener(transferred)
       }
       override def write(b: Array[Byte], off: Int, len: Int) {
         super.write(b, off, len)
