@@ -43,7 +43,7 @@ object Mime {
     def add(name: String, content: => ContentBody) = with_mpp { _.add(name, content) }
     def >?> (listener: PostListener) = r next with_mpp { _.listen(listener) }
   }
-  type PostListener = Long => Unit
+  type PostListener = (Long, Long) => Unit
   trait Entity extends HttpEntity { def addPart(name: String, body: ContentBody)  }
 }
 
@@ -73,17 +73,11 @@ class CountingMultipartEntity(delegate: Mime.Entity,
   override def writeTo(out: OutputStream) {
     super.writeTo(new FilterOutputStream(out) {
       var transferred = 0L
-      def wrote(len: Int) {
-        transferred += len
-        listener(transferred)
-      }
-      override def write(b: Array[Byte], off: Int, len: Int) {
-        super.write(b, off, len)
-        wrote(len)
-      }
+      val total = delegate.getContentLength
       override def write(b: Int) {
         super.write(b)
-        wrote(1)
+        transferred += 1
+        listener(transferred, total)
       }
     })
   }
