@@ -150,15 +150,16 @@ object Handler {
 
 /** Post method that produces updated, self-typed copies when new parameters are added */
 trait Post[P <: Post[P]] extends HttpPost { self: P =>
-  def values: Map[String, Any]
-  /** Values that should be considered in an OAuth base string, defaults to all values.*/
-  def oauth_values = values
+  /** Values that should be considered in an OAuth base string */
+  def oauth_values: IMap[String, Any]
   def add(more: Map[String, Any]): P
+  /** not all implementations retain values (which can be files or streams) */
+  @deprecated def values = oauth_values
 }
 /** Standard, URL-encoded form posting */
-class SimplePost(val values: Map[String, Any]) extends Post[SimplePost] { 
-  this setEntity new UrlEncodedFormEntity(Http.map2ee(values), Request.factoryCharset)
-  def add(more: Map[String, Any]) = new SimplePost(IMap.empty ++ values ++ more.elements)
+class SimplePost(val oauth_values: IMap[String, Any]) extends Post[SimplePost] { 
+  this setEntity new UrlEncodedFormEntity(Http.map2ee(oauth_values), Request.factoryCharset)
+  def add(more: Map[String, Any]) = new SimplePost(IMap.empty ++ oauth_values ++ more.elements)
 }
 
 /** Request descriptor, possibly contains a host, credentials, and a list of transformation functions. */
@@ -231,7 +232,7 @@ class Request(
   /** Post the given key value sequence and return response wrapper. (new request, mimics) */
   def << (values: Map[String, Any]) = next { 
     case p: Post[_] => p.add(values)
-    case r => Request.mimic(new SimplePost(values))(r)
+    case r => Request.mimic(new SimplePost(IMap.empty ++ values))(r)
   }
   
   /** Add query parameters. (mutates request) */

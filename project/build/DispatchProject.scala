@@ -3,7 +3,6 @@ import archetect.ArchetectProject
 
 class DispatchProject(info: ProjectInfo) extends ParentProject(info)
 {
-  override def crossScalaVersions = Set("2.7.3", "2.7.4", "2.7.5", "2.7.6", "2.7.7", "2.8.0.Beta1-RC1")
   override def parallelExecution = true
 
   lazy val http = project("http", "Dispatch HTTP", new HttpProject(_))
@@ -32,8 +31,9 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     override def managedStyle = ManagedStyle.Maven
     lazy val publishTo = Resolver.file("Databinder Repository", new java.io.File("/var/dbwww/repo"))
     
+    val snapshots = "Scala Tools Snapshots" at "http://nexus.scala-tools.org/content/repositories/snapshots/"
     val st = "org.scala-tools.testing" % "scalatest" % "0.9.5" % "test->default"
-    val sxr = if (ScalaVersion.current == Some("2.7.6"))
+    val sxr = if (buildScalaInstance.version == "2.7.6")
       compilerPlugin("org.scala-tools.sxr" %% "sxr" % sxr_version)
     else st // reference scalatest twice, no harm done
 
@@ -64,8 +64,8 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     import Process._
 
     override val templateMappings = Map(
-      "sbt.version" -> DispatchProject.this.sbtVersion.value,
-      "scala.version" -> DispatchProject.this.scalaVersion.value,
+      "sbt.version" -> "0.5.6",
+      "scala.version" -> "2.7.6",
       "sxr.version" -> sxr_version,
       "dispatch.version" -> version
     )

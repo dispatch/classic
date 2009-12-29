@@ -1,6 +1,8 @@
 package dispatch.mime
 import dispatch._
-
+import java.io.{FilterOutputStream, OutputStream}
+import org.apache.http.HttpEntity
+import org.apache.http.entity.HttpEntityWrapper
 import org.apache.http.entity.mime.{FormBodyPart, MultipartEntity}
 import org.apache.http.entity.mime.content.{FileBody, StringBody, InputStreamBody, ContentBody}
 
@@ -33,28 +35,50 @@ object Mime {
     def << (name: String, file_name: String, stream: () => InputStream) = 
       r next add(name, new InputStreamBody(stream(), file_name))
     
-    private def add(name: String, content: => ContentBody): Request.Xf = {
-      case post: MultipartPost => post.add(name, content)
-      case p: Post[_] => Request.mimic(new MultipartPost)(p).add(p.values).add(name, content)
-      case req => Request.mimic(new MultipartPost)(req).add(name, content)
+    private def with_mpp(block: MultipartPost => MultipartPost): Request.Xf = {
+      case post: MultipartPost => block(post)
+      case p: Post[_] => block(Request.mimic(new MultipartPost)(p).add(p.oauth_values))
+      case req => block(Request.mimic(new MultipartPost)(req))
     }
-    
+    def add(name: String, content: => ContentBody) = with_mpp { _.add(name, content) }
+    def >?> (listener: PostListener) = r next with_mpp { _.listen(listener) }
   }
+  type PostListener = (Long, Long) => Unit
+  trait Entity extends HttpEntity { def addPart(name: String, body: ContentBody)  }
 }
 
-private [mime] class MultipartPost(val values: Map[String, Any], entity: MultipartEntity) extends Post[MultipartPost] {
+class MultipartPost(entity: Mime.Entity) extends Post[MultipartPost] {
+  setEntity(entity)
   /** No values in a multi-part post are included in the OAuth base string */
   override def oauth_values = Map.empty
-  def this() = this(Map.empty, new MultipartEntity)
+  def this() = this(new MultipartEntity with Mime.Entity)
   def add(name: String, content: ContentBody) = {
     entity.addPart(name, content)
     this
   }
-  setEntity(entity)
+  def listen(listener: Mime.PostListener) = Request.mimic(
+    new MultipartPost(new CountingMultipartEntity(entity, listener))
+  )(this)
   def add(more: collection.Map[String, Any]) = {
     more.elements foreach { case (key, value) =>
       entity.addPart(key, new StringBody(value.toString))
     }
-    Request.mimic(new MultipartPost(values ++ more.elements, entity))(this)
+    this
+  }
+}
+
+class CountingMultipartEntity(delegate: Mime.Entity, 
+    listener: Mime.PostListener) extends HttpEntityWrapper(delegate) with Mime.Entity {
+  def addPart(name: String, body: ContentBody) { delegate.addPart(name, body) }
+  override def writeTo(out: OutputStream) {
+    super.writeTo(new FilterOutputStream(out) {
+      var transferred = 0L
+      val total = delegate.getContentLength
+      override def write(b: Int) {
+        super.write(b)
+        transferred += 1
+        listener(transferred, total)
+      }
+    })
   }
 }
