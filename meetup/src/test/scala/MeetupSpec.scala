@@ -33,6 +33,7 @@ class MeetupSpec extends Spec with ShouldMatchers {
       it("should find New York Scala events") {
         val (res, meta) = client.call(Events.group_id(1377720).after(new java.util.Date)) // nyc scala 4ever!
         res.size should be > (5)
+        meta flatMap Meta.count should equal (List(res.size))
       }
     }
     describe("Member and Group query") {
