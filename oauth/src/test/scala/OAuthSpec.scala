@@ -1,7 +1,6 @@
-import org.scalatest.Spec
-import org.scalatest.matchers.ShouldMatchers
+import org.specs._
 
-class OAuthSpec extends Spec with ShouldMatchers {
+class OAuthSpec extends Specification {
   import dispatch._
   import oauth._
   import OAuth._
@@ -9,8 +8,8 @@ class OAuthSpec extends Spec with ShouldMatchers {
   val svc = :/("term.ie") / "oauth" / "example"
   val consumer = Consumer("key", "secret")
   
-  describe("OAuth test host") {
-    it("should echo parameters from protected service") {
+  "OAuth test host" should {
+    "echo parameters from protected service" in {
       val h = new Http
       val request_token = h(svc / "request_token.php" <@ consumer as_token)
       val access_token = h(svc / "access_token" <@ (consumer, request_token) as_token)
@@ -18,7 +17,7 @@ class OAuthSpec extends Spec with ShouldMatchers {
         "pita" -> "-._~")
       h(
         svc / "echo_api.php" <<? payload <@ (consumer, access_token) >% {
-          _ should be (payload)
+          _ must_== (payload)
         }
       )
     }

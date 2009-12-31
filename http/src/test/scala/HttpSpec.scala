@@ -1,7 +1,6 @@
-import org.scalatest.{Spec, BeforeAndAfter}
-import org.scalatest.matchers.ShouldMatchers
+import org.specs._
 
-class HttpSpec extends Spec with ShouldMatchers with BeforeAndAfter {
+class HttpSpec extends Specification {
   import dispatch._
   import Http._
   
@@ -9,84 +8,75 @@ class HttpSpec extends Spec with ShouldMatchers with BeforeAndAfter {
 
   val jane = "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.\n"
   
-  describe("Singleton Http test get") {
+  "Singleton Http test get" should {
     val req: Request = "http://technically.us/test.text"
-    it("should throw exception if credentials are specified without explicit host") {
-      intercept[Exception] {
-        Http (req as ("user", "pass") as_str)
-      }
+    "throw exception if credentials are specified without explicit host" in {
+      Http (req as ("user", "pass") as_str) must throwAn[Exception]
     }
     get_specs(req)
   }
-  describe("Bound host get") {
+  "Bound host get" should {
     val req = :/("technically.us") / "test.text"
-    it("should not throw exception if credentials are specified with explicit host") {
-      Http (req as ("user", "pass") as_str) should equal (jane)
+    "not throw exception if credentials are specified with explicit host" in {
+      Http (req as ("user", "pass") as_str) must_== (jane)
     }
     get_specs(req)
   }
-  describe("Combined request get") {
+  "Combined request get" should {
     get_specs(:/("technically.us") <& /("test.text"))
   }
-  describe("Backwards combined request get") {
+  "Backwards combined request get" should {
     get_specs(/("test.text") <& :/("technically.us"))
   }
   def get_specs(test: Request) = {
     val http = new Http // using a single-threaded Http instance
-    it("should equal expected string") {
-      http(test.as_str) should equal (jane)
+    "equal expected string" in {
+      http(test.as_str) must_== jane
     }
-    it("should stream to expected sting") {
-      http(test >> { stm => io.Source.fromInputStream(stm).mkString }) should equal (jane)
+    "stream to expected sting" in {
+      http(test >> { stm => scala.io.Source.fromInputStream(stm).mkString }) must_== jane
     }
-    it("should write to expected sting bytes") {
-      http(test >>> new java.io.ByteArrayOutputStream).toByteArray should equal (jane.getBytes)
+    "write to expected sting bytes" in {
+      http(test >>> new java.io.ByteArrayOutputStream).toByteArray.toList must_== jane.getBytes.toList
     }
     
-    it("should throw status code exception when applied to non-existent resource") {
-      intercept[StatusCode] {
-        http (test / "do_not_want" as_str)
-      }
+    "throw status code exception when applied to non-existent resource" in {
+      http (test / "do_not_want" as_str) must throwA[StatusCode]
     }
 
-    it("should allow any status code with x") {
+    "allow any status code with x" in {
       http x (test / "do_not_want" as_str) {
         case (404, _, _, out) => out()
         case _ => "success is failure"
-      } should include ("404 Not Found")
+      } must include ("404 Not Found")
     }
 
-    it("should serve a gzip header") {
-      http(test.gzip >:> { _(CONTENT_ENCODING) }) should equal (Set("gzip"))
+    "serve a gzip header" in {
+      http(test.gzip >:> { _(CONTENT_ENCODING) }) must_== (Set("gzip"))
     }
 
-    it("should equal expected string with gzip encoding") {
-      http(test.gzip >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) } ) should 
-        equal (jane, Set("gzip"))
+    "equal expected string with gzip encoding" in {
+      http(test.gzip >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) } ) must_== (jane, Set("gzip"))
     }
 
-    it("should equal expected string with a gzip defaulter") {
+    "equal expected string with a gzip defaulter" in {
       val my_defualts = /\.gzip
-      http(my_defualts <& test >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) } ) should 
-        equal (jane, Set("gzip"))
+      http(my_defualts <& test >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) } ) must_== (jane, Set("gzip"))
     }
 
-    it("should equal expected string without gzip encoding") {
-      http(test >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) }) should 
-        equal (jane, Set())
+    "equal expected string without gzip encoding" in {
+      http(test >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) }) must_== (jane, Set())
     }
   }
-  describe("Path building responses") {
+  "Path building responses" should {
     // using singleton Http, will need to shut down after all tests
     val test2 = "and they were both ever sensible of the warmest gratitude\n"
-    it("should work with chaining") {
-      Http( :/("technically.us") / "test" / "test.text" as_str ) should equal (test2)
+    "work with chaining" in {
+      Http( :/("technically.us") / "test" / "test.text" as_str ) must_== test2
     }
-    it("should work with factories") {
-      Http( :/("technically.us") <& /("test") <& /("test.text") as_str ) should equal (test2)
+    "work with factories" in {
+      Http( :/("technically.us") <& /("test") <& /("test.text") as_str ) must_== test2
     }
   }
-  override def afterAll {
-    Http.shutdown
-  }
+  doAfterSpec { Http.shutdown  }
 }

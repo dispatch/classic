@@ -1,7 +1,6 @@
-import org.scalatest.Spec
-import org.scalatest.matchers.ShouldMatchers
+import org.specs._
 
-class CouchSpec extends Spec with ShouldMatchers {
+class CouchSpec extends Specification {
   import dispatch._
   import dispatch.couch._
   import dispatch.json._
@@ -9,7 +8,7 @@ class CouchSpec extends Spec with ShouldMatchers {
 
   val http = new Http
   val test = Db(Couch(), "test") // these tests expect CouchDB to be running at 127.0.0.1 on port 5984
-  val empty = Doc(test, "empty")
+  val empty_doc = Doc(test, "empty_doc")
   val full = Doc(test, "full")
   
   object Test extends Id {
@@ -17,48 +16,48 @@ class CouchSpec extends Spec with ShouldMatchers {
   }
   val example = "Ah, you ladies! Always on the spot when there's something happening!"
   
-  describe("Database and document create") {
-    it("should create a database") {
+  "Database and document create" should {
+    "create a database" in {
       http(test.create)
-      http(test as_str) should startWith("""{"db_name":"test","doc_count":0""")
+      http(test as_str) must startWith("""{"db_name":"test","doc_count":0""")
     }
-    it("should create an empty document") {
-      http(empty <<< Js() >|)
-      http(empty ># Id._id) should equal (empty.id) 
+    "create an empty_doc document" in {
+      http(empty_doc <<< Js() >|)
+      http(empty_doc ># Id._id) must_== empty_doc.id
     }
-    it("should create a document with content") {
+    "create a document with content" in {
       val content = (Test.content << example)(Js())
       http(full <<< content >|)
-      http(full ># Test.content) should equal (example)
+      http(full ># Test.content) must_== example
     }
-    it("should return new documents from all_docs") {
-      http(test.all_docs) should equal (List(empty.id, full.id))
-    }
-  }
-  describe("Document update") {
-    it("should update a remote document") {
-      val js = http(empty ># { Test.content << example })
-      http(empty.update(js))
-      http(empty ># Test.content) should equal (example)
-    }
-    it("should update local revisions to avoid update conflicts") {
-      val js = http(empty ># { Test.content << "1" })
-      val update1 = http(empty.update(js))
-      val update2 = http(empty.update((Test.content << "2")(update1)))
-      http(empty ># Test.content) should equal ("2")
+    "return new documents from all_docs" in {
+      http(test.all_docs) must_== List(empty_doc.id, full.id)
     }
   }
-  describe("Document and database delete") {
+  "Document update" should {
+    "update a remote document" in {
+      val js = http(empty_doc ># { Test.content << example })
+      http(empty_doc.update(js))
+      http(empty_doc ># Test.content) must_== example
+    }
+    "update local revisions to avoid update conflicts" in {
+      val js = http(empty_doc ># { Test.content << "1" })
+      val update1 = http(empty_doc.update(js))
+      val update2 = http(empty_doc.update((Test.content << "2")(update1)))
+      http(empty_doc ># Test.content) must_== "2"
+    }
+  }
+  "Document and database delete" should {
     import org.apache.http.HttpResponse
     import org.apache.http.HttpEntity
-    it("should delete a document") {
+    "delete a document" in {
       http(full.delete(http(full ># Test._rev)))
-      (http when { _ == 404 }) (full ># ('error ! str)) should equal ("not_found")
+      (http when { _ == 404 }) (full ># ('error ! str)) must_== "not_found"
     }
-    it("should delete a database") {
+    "delete a database" in {
       http(test.delete)
       // just another way of checking that it returns 404
-      (http x test) { (status, _, _) => status } should equal (404)
+      (http x test) { (status, _, _) => status } must_== 404
     }
   }
 }

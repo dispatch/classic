@@ -1,7 +1,6 @@
-import org.scalatest.Spec
-import org.scalatest.matchers.ShouldMatchers
+import org.specs._
 
-class JsonSpec extends Spec with ShouldMatchers {
+class JsonSpec extends Specification {
   import dispatch.json._
   import JsHttp._
 
@@ -21,18 +20,18 @@ class JsonSpec extends Spec with ShouldMatchers {
   /** mock ># of Http#Response */
   object res { def ># [T](f: JsF[T]) = f(js) }
   
-  describe("Parsed Json") {
-    it("should equal expected map") {
-      js.self should equal (expected_map)
+  "Parsed Json" should {
+    "equal expected map" in {
+      js.self must_== expected_map
     }
-    it("should equal expected list") {
-      js_list.self should equal (expected_list)
+    "equal expected list" in {
+      js_list.self must_== expected_list
     }
-    it("should equal itself serilized and reparsed") {
-      js should equal (JsValue.fromString(JsValue.toJson(js)))
+    "equal itself serilized and reparsed" in {
+      js must_== JsValue.fromString(JsValue.toJson(js))
     }
   }
-  describe("Nested extractor object") {
+  "Nested extractor object" should {
     object TestExtractor extends Js {
       val a = new Obj('a) {
         val a = ('a ? str)
@@ -42,94 +41,94 @@ class JsonSpec extends Spec with ShouldMatchers {
       }
       val b = 'b ? (list ! num)
     }
-    it("should match against top level object") {
+    "match against top level object" in {
       val TestExtractor.a(a) = js
-      a should equal (expected_map(JsString('a)))
+      a must_== expected_map(JsString('a))
     }
-    it("should match against second level string") {
+    "match against second level string" in {
       val TestExtractor.a.a(a) = js
-      a should equal ("a string")
+      a must_== "a string"
     }
-    it("should match against third level number") {
+    "match against third level number" in {
       val TestExtractor.a.b.pi(p) = js
-      p should equal (3.14159265)
+      p must_== 3.14159265
     }
-    it("should match against a numeric list") {
+    "match against a numeric list" in {
       val TestExtractor.b(b) = js
-      b should equal (List(1,2,3))
+      b must_== List(1,2,3)
     }
-    it("should replace second level string") {
-      res ># (TestExtractor.a.a << "land, ho") should equal (Js(
+    "replace second level string" in {
+      res ># (TestExtractor.a.a << "land, ho") must_== (Js(
         """ { "a": {"a": "land, ho", "b": {"pi": 3.14159265 } }, "b": [1,2,3] } """
       ))
     }
   }
-  describe("Flat extractors") {
+  "Flat extractors" should {
     val a = 'a ? obj
     val aa = 'a ? str
     val b = 'b ? obj
     val pi = 'pi ? num
     val l = 'b ? list
-    it("should extract a top level object") {
+    "extract a top level object" in {
       val a(a0) = js
-      a0 should equal (expected_map(JsString('a)))
+      a0 must_== expected_map(JsString('a))
     }
-    it("should deeply extract a third level number") {
+    "deeply extract a third level number" in {
       val a(b(pi(pi0))) = js
-      pi0 should equal (3.14159265)
+      pi0 must_== 3.14159265
     }
-    it("should match against an unextracted list") {
+    "match against an unextracted list" in {
       val l(l0) = js
-      l0 should equal (List(JsValue(1), JsValue(2), JsValue(3)))
+      l0 must_== List(JsValue(1), JsValue(2), JsValue(3))
     }
     val num_list = list ! num
-    it("should match for an unenclosed Json list") {
+    "match for an unenclosed Json list" in {
       val num_list(l0) = js_list
-      l0 should equal (List(1,2,3))
+      l0 must_== List(1,2,3)
     }
-    it("should pattern-match correct elements") {
+    "pattern-match correct elements" in {
       (js match {
         case b(b0) => b0
         case a(a0) => a0
-      }) should equal (expected_map(JsString('a)))
+      }) must_== expected_map(JsString('a))
     }
-    it("should awkwardly replace second level string") {
+    "awkwardly replace second level string" in {
       val a(a0) = js
-      res ># (a << (aa << "barnacles, ahoy")(a0)) should equal (Js(
+      res ># (a << (aa << "barnacles, ahoy")(a0)) must_== (Js(
         """ { "a": {"a": "barnacles, ahoy", "b": {"pi": 3.14159265 } }, "b": [1,2,3] } """
       ))
     }
   }
-  describe("Function extractor") {
-    it("should extract a top level object") {
-      res ># ('a ! obj) should equal (expected_map(JsString('a)))
+  "Function extractor" should {
+    "extract a top level object" in {
+      res ># ('a ! obj) must_== expected_map(JsString('a))
     }
-    it("should extract a tuple of top level objects") {
-      res ># %('a ! obj, 'b ! list, 'b ! list) should 
-        equal (expected_map(JsString('a)), expected_list, expected_list)
+    "extract a tuple of top level objects" in {
+      res ># %('a ! obj, 'b ! list, 'b ! list) must_==
+       (expected_map(JsString('a)), expected_list, expected_list)
     }
-    it("should extract a second level string") {
-      res ># { ('a ! obj) andThen ('a ! str) } should equal ("a string")
+    "extract a second level string" in {
+      res ># { ('a ! obj) andThen ('a ! str) } must_== "a string"
     }
-    it("should extract a third level number") {
-      res ># { ('a ! obj) andThen ('b ! obj) andThen ('pi ! num) } should equal (3.14159265)
+    "extract a third level number" in {
+      res ># { ('a ! obj) andThen ('b ! obj) andThen ('pi ! num) } must_== 3.14159265
     }
-    it("should work with map") {
-      List(js, js, js).map ('b ! (list ! num)) should equal (List.tabulate(3, _ => List(1,2,3)))
+    "work with map" in {
+      List(js, js, js).map ('b ! (list ! num)) must_== List.tabulate(3, _ => List(1,2,3))
     }
     def fun_l[T](ext: JsF[T]) = ext(js_list)
-    it("should extract unenclosed Json list") {
-      fun_l(list ! num) should equal (List(1,2,3))
+    "extract unenclosed Json list" in {
+      fun_l(list ! num) must_== List(1,2,3)
     }
   }
-  describe("assertion inserting") {
-    it("should replace second level string") {
-      res ># ('a << ('a << "barnacles, ahoy")) should equal (Js(
+  "assertion inserting" should {
+    "replace second level string" in {
+      res ># ('a << ('a << "barnacles, ahoy")) must_== (Js(
         """ { "a": {"a": "barnacles, ahoy", "b": {"pi": 3.14159265 } }, "b": [1,2,3] } """
       ))
     }
-    it("should replace a second level object with a string") {
-      res ># ('a << ('b << "bonzai!")) should equal (Js(
+    "replace a second level object with a string" in {
+      res ># ('a << ('b << "bonzai!")) must_== (Js(
         """ { "a": {"a": "a string", "b": "bonzai!" } , "b": [1,2,3] } """
       ))
     }
