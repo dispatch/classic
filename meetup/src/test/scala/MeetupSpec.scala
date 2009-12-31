@@ -1,7 +1,6 @@
-import org.scalatest.Spec
-import org.scalatest.matchers.ShouldMatchers
+import org.specs._
 
-class MeetupSpec extends Spec with ShouldMatchers {
+class MeetupSpec extends Specification {
   import dispatch._
   import meetup._
   import dispatch.liftjson.Js._
@@ -18,31 +17,37 @@ class MeetupSpec extends Spec with ShouldMatchers {
     val client = OAuthClient(consumer, token)
     val nyseID = "05002008"
 
-    describe("Group Query") {
-      it("should find knitting groups in Brooklyn") {
+    "Group Query" should {
+      "find knitting groups in Brooklyn" in {
         val http = new Http
         val group_topics = http(client(Groups.cityUS("Brooklyn", "NY").topic("knitting")) ># (
           Response.results >~> Group.topics
         ))
-        group_topics.size should be > (0)
-        group_topics forall { _.flatMap(Group.Topic.name) exists { _.toLowerCase == "knitting" } } should be (true)
+        group_topics.size must be > (0)
+        group_topics forall { _.flatMap(Group.Topic.name) exists { _.toLowerCase == "knitting" } } must_== true
       }
     }
-    describe("Event Query") {
+    "Event Query" should {
       implicit val http = new Http
-      it("should find New York Scala events") {
-        val (res, meta) = client.call(Events.group_id(1377720).after(new java.util.Date)) // nyc scala 4ever!
-        res.size should be > (5)
-        meta flatMap Meta.count should equal (List(res.size))
+      "find New York Scala events" in {
+        import java.util.Calendar
+        val cal = Calendar.getInstance
+        cal.add(Calendar.YEAR, -1)
+        val (res, meta) = client.call(Events.group_id(1377720)
+          .after(cal.getTime)
+          .before(new java.util.Date)
+        )
+        res.size must be > (5)
+        meta flatMap Meta.count must_== List(res.size)
       }
     }
-    describe("Member and Group query") {
+    "Member and Group query" should {
       implicit val http = new Http
-      it("should find NYSE members") {
+      "find NYSE members" in {
         val NYSE = "New-York-Scala-Enthusiasts"
         val (res, meta) = client.call(Members.group_urlname(NYSE))
         val ids = for (r <- res; id <- Member.id(r)) yield id
-        ids.size should be > (5)
+        ids.size must be > (5)
       }
     }
   }
