@@ -42,10 +42,10 @@ object Mime {
     }
     def add(name: String, content: => ContentBody) = with_mpp { _.add(name, content) }
     /** Add a listener function to be called as bytes are uploaded */
-    def >?> (listener: PostListener) = r next with_mpp { _.listen(listener) }
+    def >?> (listener_f: ListenerF) = r next with_mpp { _.listen(listener_f) }
   }
-  /** First parameter is the number of bytes transferred, the second is the total content length (if available) */
-  type PostListener = (Long, Long) => Unit
+  /** First function takes the total bytes being posted, second is called with the running count */
+  type ListenerF = Long => Long => Unit
   trait Entity extends HttpEntity { def addPart(name: String, body: ContentBody)  }
 }
 
@@ -58,8 +58,8 @@ class MultipartPost(entity: Mime.Entity) extends Post[MultipartPost] {
     entity.addPart(name, content)
     this
   }
-  def listen(listener: Mime.PostListener) = Request.mimic(
-    new MultipartPost(new CountingMultipartEntity(entity, listener))
+  def listen(listener_f: Mime.ListenerF) = Request.mimic(
+    new MultipartPost(new CountingMultipartEntity(entity, listener_f))
   )(this)
   def add(more: collection.Map[String, Any]) = {
     more.elements foreach { case (key, value) =>
@@ -69,17 +69,24 @@ class MultipartPost(entity: Mime.Entity) extends Post[MultipartPost] {
   }
 }
 
+/** Byte-counting entity writer used when a listener function is passed in to the MimeRequest. */
 class CountingMultipartEntity(delegate: Mime.Entity, 
-    listener: Mime.PostListener) extends HttpEntityWrapper(delegate) with Mime.Entity {
+    listener_f: Mime.ListenerF) extends HttpEntityWrapper(delegate) with Mime.Entity {
   def addPart(name: String, body: ContentBody) { delegate.addPart(name, body) }
   override def writeTo(out: OutputStream) {
+    import scala.actors.Actor._
     super.writeTo(new FilterOutputStream(out) {
       var transferred = 0L
-      val total = delegate.getContentLength
+      val sent = listener_f(delegate.getContentLength)
+      val listener = actor { loop { react {
+          case l: Long => sent(l)
+      } } }
+      
+      listener_f(delegate.getContentLength)
       override def write(b: Int) {
         super.write(b)
         transferred += 1
-        listener(transferred, total)
+        listener ! transferred
       }
     })
   }
