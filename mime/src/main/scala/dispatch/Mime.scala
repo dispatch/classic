@@ -77,16 +77,16 @@ class CountingMultipartEntity(delegate: Mime.Entity,
     import scala.actors.Actor._
     super.writeTo(new FilterOutputStream(out) {
       var transferred = 0L
-      val sent = listener_f(delegate.getContentLength)
+      val total = delegate.getContentLength
+      val sent = listener_f(total)
       val listener = actor { loop { react {
-          case l: Long => sent(l)
+        case l: Long => sent(l)
       } } }
-      
-      listener_f(delegate.getContentLength)
       override def write(b: Int) {
         super.write(b)
         transferred += 1
-        listener ! transferred
+        if (transferred % 1024 == 0 || transferred == total)
+          listener ! transferred
       }
     })
   }
