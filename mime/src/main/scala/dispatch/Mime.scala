@@ -44,7 +44,8 @@ object Mime {
     /** Add a listener function to be called as bytes are uploaded */
     def >?> (listener_f: ListenerF) = r next with_mpp { _.listen(listener_f) }
   }
-  /** First function takes the total bytes being posted, second is called with the running count */
+  /** Post listener function. Called once with the total bytes; the function returned is
+    called with the bytes uploaded at each kilobyte boundary, and when complete. */
   type ListenerF = Long => Long => Unit
   trait Entity extends HttpEntity { def addPart(name: String, body: ContentBody)  }
 }
