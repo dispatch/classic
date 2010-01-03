@@ -41,8 +41,10 @@ object Mime {
       case req => block(Request.mimic(new MultipartPost)(req))
     }
     def add(name: String, content: => ContentBody) = with_mpp { _.add(name, content) }
+    /** Add a listener function to be called as bytes are uploaded */
     def >?> (listener: PostListener) = r next with_mpp { _.listen(listener) }
   }
+  /** First parameter is the number of bytes transferred, the second is the total content length (if available) */
   type PostListener = (Long, Long) => Unit
   trait Entity extends HttpEntity { def addPart(name: String, body: ContentBody)  }
 }
