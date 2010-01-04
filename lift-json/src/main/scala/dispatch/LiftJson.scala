@@ -47,6 +47,11 @@ object Js {
     /** @return function that returns a tuple of block and other's output */
     def ~ [O](other: JValue => O) = { jv: JValue => (block(jv), other(jv)) }
   }
+  implicit def jvbind[A <: JValue](list: List[A]) = new JvBind(list)
+  class JvBind[A <: JValue](list: List[A]) {
+    /** @return synonym for flatMap (bind in Haskell) */
+    def >>=[B](f: A => Iterable[B]) = list.flatMap(f)
+  }
   implicit def sym2op(sym: Symbol) = new SymOp(sym)
   class SymOp(sym: Symbol) {
     def ?[T](block: JValue => List[T]): JValue => List[T] = {

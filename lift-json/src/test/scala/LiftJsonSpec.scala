@@ -1,25 +1,24 @@
-import org.scalatest.Spec
-import org.scalatest.matchers.ShouldMatchers
+import org.specs._
 
-class LiftJsonSpec extends Spec with ShouldMatchers {
+class LiftJsonSpec extends Specification {
   import dispatch._
   import dispatch.liftjson.Js._
   import net.liftweb.json.JsonAST._
 
   val test = :/("technically.us") / "test.json"
   
-  describe("Json Parsing") {
-    it("should find title of test glossary") {
+  "Json Parsing" should {
+    "find title of test glossary" in {
       val http = new Http
       http(test ># { js =>
         for (JString(s) <- js \ "glossary" \ "title") yield s
-      } ) should equal (List("example glossary"))
+      } ) must_== List("example glossary")
     }
-    it("should find reference list") {
+    "find reference list" in {
       val http = new Http
       http(test ># { js =>
         for (JField("GlossSeeAlso", JArray(l)) <- js; JString(s) <- l) yield s
-      } ) should equal (List("GML","XML"))
+      } ) must_== List("GML","XML")
     }
   }
 }

@@ -38,7 +38,7 @@ class MeetupSpec extends Specification {
           .before(new java.util.Date)
         )
         res.size must be > (5)
-        meta flatMap Meta.count must_== List(res.size)
+        (meta >>= Meta.count) must_== List(res.size)
       }
     }
     "Member and Group query" should {

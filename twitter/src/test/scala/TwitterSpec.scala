@@ -1,18 +1,17 @@
-import org.scalatest.Spec
-import org.scalatest.matchers.ShouldMatchers
+import org.specs._
 
-class TwitterSpec extends Spec with ShouldMatchers {
+class TwitterSpec extends Specification {
   import dispatch._
   import Http._
   import json.Js._
   import twitter._
   
-  describe("Twitter Search") {
+  "Twitter Search" should {
     val http = new Http
-    it("should find tweets containing #scala") {
+    "find tweets containing #scala" in {
       val res = http(Search("#scala"))
-      res.isEmpty should be (false)
-      res map Status.text forall { _.toLowerCase contains "#scala" } should be (true)
+      res.isEmpty must beFalse
+      res map Status.text forall { _.toLowerCase contains "#scala" } must beTrue
     }
   }
 }
