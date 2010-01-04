@@ -25,6 +25,10 @@ object Js {
     case JInt(i) => i :: Nil
     case _ => Nil
   }
+  val double: (JValue => List[Double]) = {
+    case JDouble(d) => d :: Nil
+    case _ = Nil
+  }
   val obj: (JValue => List[JField]) = {
     case JObject(l) => l
     case _ => Nil
