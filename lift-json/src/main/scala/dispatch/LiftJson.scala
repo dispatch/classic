@@ -27,11 +27,11 @@ object Js {
   }
   val double: (JValue => List[Double]) = {
     case JDouble(d) => d :: Nil
-    case _ = Nil
+    case _ => Nil
   }
   val bool: (JValue => List[Boolean]) = {
     case JBool(b) => b :: Nil
-    case _ = Nil
+    case _ => Nil
   }
   val obj: (JValue => List[JField]) = {
     case JObject(l) => l
@@ -40,6 +40,9 @@ object Js {
   val ary: (JValue => List[JValue]) = {
     case JArray(l) => l
     case _ => Nil
+  }
+  def in[T <: JValue](values: T*): (JValue => List[T]) = { value =>
+    values filter { _ == value } toList
   }
   implicit def jvlistcomb(block: JValue => List[JValue]) = new JvListComb(block)
   class JvListComb(block: JValue => List[JValue]) {

@@ -157,6 +157,7 @@ private[meetup] class EventsBuilder(params: Map[String, Any]) extends ReadMethod
   val radius = param("radius")_
   val after = date_param("after")_
   val before = date_param("before")_
+  def status(s: Event.Status*) = param("status")(s map { _.values } mkString ",")
 
   private def order(value: String) = param("order")(value)
   def order_time = order("time")
@@ -171,6 +172,10 @@ object Event extends Location {
   val name = 'name ? str
   val id = 'id ? str
   val time = 'time ? date
+  sealed abstract trait Status extends JString
+  object Upcoming extends JString("upcoming") with Status
+  object Past extends JString("past") with Status
+  val status = 'status ? in(Upcoming, Past)
   val description = 'description ? str
   val event_url = 'event_url ? str
   val photo_url = 'photo_url ? str
