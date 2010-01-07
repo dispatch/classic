@@ -7,7 +7,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
 
   lazy val http = project("http", "Dispatch HTTP", new HttpProject(_))
   lazy val mime = project("mime", "Dispatch Mime", new DispatchDefault(_) {
-    val mime = "org.apache.httpcomponents" % "httpmime" % "4.0"
+    val mime = "org.apache.httpcomponents" % "httpmime" % "4.0.1"
   }, http)
   lazy val json = project("json", "Dispatch JSON", new DispatchDefault(_))
   lazy val http_json = project("http+json", "Dispatch HTTP JSON", new HttpProject(_), http, json)
@@ -47,7 +47,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   }
     
   class HttpProject(info: ProjectInfo) extends DispatchDefault(info) {
-    val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.0"
+    val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.0.1"
     val jcip = "net.jcip" % "jcip-annotations" % "1.0" % "provided->default"
     val lag_net = "lag.net repository" at "http://www.lag.net/repo"
     val configgy_test = "net.lag" % "configgy" % "1.4" % "test->default"
