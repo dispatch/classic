@@ -153,8 +153,6 @@ trait Post[P <: Post[P]] extends HttpPost { self: P =>
   /** Values that should be considered in an OAuth base string */
   def oauth_values: IMap[String, Any]
   def add(more: Map[String, Any]): P
-  /** not all implementations retain values (which can be files or streams) */
-  @deprecated def values = oauth_values
 }
 /** Standard, URL-encoded form posting */
 class SimplePost(val oauth_values: IMap[String, Any]) extends Post[SimplePost] { 
