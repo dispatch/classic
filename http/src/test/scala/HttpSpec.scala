@@ -29,43 +29,47 @@ class HttpSpec extends Specification {
     get_specs(/("test.text") <& :/("technically.us"))
   }
   def get_specs(test: Request) = {
-    val http = new Http // using a single-threaded Http instance
-    "equal expected string" in {
-      http(test.as_str) must_== jane
-    }
-    "stream to expected sting" in {
-      http(test >> { stm => scala.io.Source.fromInputStream(stm).mkString }) must_== jane
-    }
-    "write to expected sting bytes" in {
-      http(test >>> new java.io.ByteArrayOutputStream).toByteArray.toList must_== jane.getBytes.toList
-    }
-    
+    val http = new Http with Threads
+    // start some connections as futures
+    val string = http.future(test.as_str)
+    val stream = http.future(test >> { stm => scala.io.Source.fromInputStream(stm).mkString })
+    val bytes = http.future(test >>> new java.io.ByteArrayOutputStream)
+    // test a few other things
     "throw status code exception when applied to non-existent resource" in {
       http (test / "do_not_want" as_str) must throwA[StatusCode]
     }
-
     "allow any status code with x" in {
       http x (test / "do_not_want" as_str) {
         case (404, _, _, out) => out()
         case _ => "success is failure"
       } must include ("404 Not Found")
     }
-
     "serve a gzip header" in {
       http(test.gzip >:> { _(CONTENT_ENCODING) }) must_== (Set("gzip"))
     }
-
+    // check back on the futures
+    "equal expected string" in {
+      string() must_== jane
+    }
+    "stream to expected sting" in {
+      stream() must_== jane
+    }
+    "write to expected sting bytes" in {
+      bytes().toByteArray.toList must_== jane.getBytes.toList
+    }
+    
+    val h = new Http // single threaded Http instance
     "equal expected string with gzip encoding" in {
-      http(test.gzip >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) } ) must_== (jane, Set("gzip"))
+      h(test.gzip >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) } ) must_== (jane, Set("gzip"))
     }
 
     "equal expected string with a gzip defaulter" in {
       val my_defualts = /\.gzip
-      http(my_defualts <& test >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) } ) must_== (jane, Set("gzip"))
+      h(my_defualts <& test >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) } ) must_== (jane, Set("gzip"))
     }
 
     "equal expected string without gzip encoding" in {
-      http(test >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) }) must_== (jane, Set())
+      h(test >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) }) must_== (jane, Set())
     }
   }
   "Path building responses" should {

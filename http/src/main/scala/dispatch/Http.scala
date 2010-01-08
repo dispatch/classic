@@ -351,31 +351,38 @@ class ConfiguredHttpClient extends DefaultHttpClient {
   })
 }
 
+/** Client with a ThreadSafeClientConnManager */
+class ThreadSafeHttpClient extends ConfiguredHttpClient {
+  import org.apache.http.conn.scheme.{Scheme,SchemeRegistry,PlainSocketFactory}
+  import org.apache.http.conn.ssl.SSLSocketFactory
+  import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
+  override def createClientConnectionManager() = {
+    val registry = new SchemeRegistry()
+    registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80))
+    registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443))
+    new ThreadSafeClientConnManager(getParams(), registry)
+  }
+}
+
+/** Http with a thread-safe client and non-blocking interfaces */
+trait Threads extends Http {
+  override val client = new ThreadSafeHttpClient
+  /** Shutdown connection manager, threads. (Needed to close console cleanly.) */
+  def shutdown() = client.getConnectionManager.shutdown()
+
+  def future[T](hand: Handler[T]) = scala.actors.Futures.future(apply(hand))
+}
+
 /** Used by client APIs to build Handler or other objects via chaining, completed implicitly.
   * @see Http#builder2product */
 trait Builder[T] { def product:T }
 
 /** May be used directly from any thread. */
-object Http extends Http {
-  import org.apache.http.conn.scheme.{Scheme,SchemeRegistry,PlainSocketFactory}
-  import org.apache.http.conn.ssl.SSLSocketFactory
-  import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
-  
+object Http extends Http with Threads {
   /** import to support e.g. Http("http://example.com/" >>> System.out) */
   implicit def str2req(str: String) = new Request(str)
   
   implicit def builder2product[T](builder: Builder[T]) = builder.product
-
-  override val client = new ConfiguredHttpClient {
-    override def createClientConnectionManager() = {
-      val registry = new SchemeRegistry()
-      registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80))
-      registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443))
-      new ThreadSafeClientConnManager(getParams(), registry)
-    }
-  }
-  /** Shutdown connection manager, threads. (Needed to close console cleanly.) */
-  def shutdown() = client.getConnectionManager.shutdown()
 
   /** Convert repeating name value tuples to list of pairs for httpclient */
   def map2ee(values: Map[String, Any]) = java.util.Arrays asList (
