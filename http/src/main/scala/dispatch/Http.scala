@@ -29,12 +29,7 @@ trait Logger { def info(msg: String, items: Any*) }
 
 /** Http access point. Standard instances to be used by a single thread. */
 class Http {
-  val credentials = new DynamicVariable[Option[(AuthScope, Credentials)]](None)
   val client = new ConfiguredHttpClient
-  
-  def credentialsProvider = new BasicCredentialsProvider {
-    override def getCredentials(scope: AuthScope) = null
-  }
   
   /** Info Logger for this instance, default returns Connfiggy if on classpath else console logger. */
   lazy val log: Logger = try {
