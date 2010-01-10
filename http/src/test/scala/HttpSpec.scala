@@ -32,7 +32,12 @@ class HttpSpec extends Specification {
     val http = new Http with Threads
     // start some connections as futures
     val string = http.future(test.as_str)
-    val stream = http.future(test >> { stm => scala.io.Source.fromInputStream(stm).mkString })
+    val stream = http.future(test >> { stm => 
+      // the nested scenario here contrived fails with actors.Futures
+      http.future(test >> { stm =>
+        scala.io.Source.fromInputStream(stm).mkString
+      })
+    })
     val bytes = http.future(test >>> new java.io.ByteArrayOutputStream)
     // test a few other things
     "throw status code exception when applied to non-existent resource" in {
@@ -52,7 +57,7 @@ class HttpSpec extends Specification {
       string() must_== jane
     }
     "stream to expected sting" in {
-      stream() must_== jane
+      stream()() must_== jane
     }
     "write to expected sting bytes" in {
       bytes().toByteArray.toList must_== jane.getBytes.toList

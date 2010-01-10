@@ -365,7 +365,26 @@ trait Threads extends Http {
   /** Shutdown connection manager, threads. (Needed to close console cleanly.) */
   def shutdown() = client.getConnectionManager.shutdown()
 
-  def future[T](hand: Handler[T]) = scala.actors.Futures.future(apply(hand))
+  type Future[T] = Function0[T] {
+    def isSet: Boolean
+  }
+  import java.util.concurrent.{Executors,Callable}
+  def futuresExecutor = Executors.newCachedThreadPool
+  private lazy val executor = futuresExecutor
+  /** Wraps java.util.concurrent.Future */
+  class ConcFuture[T](f: => T) extends Function0[T] {
+    val delegate = executor.submit(new Callable[T]{
+      def call = f
+    })
+    def isSet = delegate.isDone
+    def apply() = delegate.get()
+  }
+  /** A structural type describes the returned future, currently a ConcFuture.
+    * @see Http#apply for handling conditions
+    * @return future for the applied Handler. */
+  def future[T](hand: Handler[T]): Threads#Future[T] = concFuture(hand)
+  def concFuture[T](hand: Handler[T]) = new ConcFuture(apply(hand))
+  def actorsFuture[T](hand: Handler[T]) = scala.actors.Futures.future(apply(hand))
 }
 
 /** Used by client APIs to build Handler or other objects via chaining, completed implicitly.
