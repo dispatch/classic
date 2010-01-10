@@ -28,7 +28,7 @@ case class StatusCode(code: Int, contents:String)
 trait Logger { def info(msg: String, items: Any*) }
 
 /** Http access point. Standard instances to be used by a single thread. */
-class Http {
+class Http extends HttpExecutor {
   val client = new ConfiguredHttpClient
   
   /** Info Logger for this instance, default returns Connfiggy if on classpath else console logger. */
@@ -64,10 +64,24 @@ class Http {
       log.info("%s %s", req.getMethod, req.getURI)
       client.execute(req)
   }
-  /** Execute full request-response handler. */
-  def x[T](hand: Handler[T]): T = x(hand.request)(hand.block)
-  /** Execute request and handle response codes, response, and entity in block */
-  def x [T](req: Request)(block: Handler.F[T]) = {
+  /** Unadorned handler return type */
+  type HttpPackage[T] = T
+  /** Synchronously access and return plain result value  */
+  def relay[T](result: => T) = result
+}
+
+/** Defines request execution and response status code behaviors */
+trait HttpExecutor {
+  /** Type of value returned from request execution */
+  type HttpPackage[T]
+  /** Package the result value */
+  def relay[T](result: => T): HttpPackage[T]
+  /** Execute the request against an HttpClient */
+  val execute: (Option[HttpHost], Option[Credentials], HttpUriRequest) => HttpResponse
+  /** Execute full request-response handler, passed through relay. */
+  def x[T](hand: Handler[T]): HttpPackage[T] = x(hand.request)(hand.block)
+  /** Execute request with handler, passed through relay. */
+  def x [T](req: Request)(block: Handler.F[T]) = relay {
     val res = execute(req.host, req.creds, req.req)
     val ent = res.getEntity match {
       case null => None
@@ -364,13 +378,13 @@ trait Threads extends Http {
   override val client = new ThreadSafeHttpClient
   /** Shutdown connection manager, threads. (Needed to close console cleanly.) */
   def shutdown() = client.getConnectionManager.shutdown()
-
+  /** Structural type coinciding with scala.actors.Future */
   type Future[T] = Function0[T] {
     def isSet: Boolean
   }
   import java.util.concurrent.{Executors,Callable}
-  def futuresExecutor = Executors.newCachedThreadPool
-  private lazy val executor = futuresExecutor
+  def futureExecutor = Executors.newCachedThreadPool
+  private lazy val executor = futureExecutor
   /** Wraps java.util.concurrent.Future */
   class ConcFuture[T](f: => T) extends Function0[T] {
     val delegate = executor.submit(new Callable[T]{
@@ -379,12 +393,18 @@ trait Threads extends Http {
     def isSet = delegate.isDone
     def apply() = delegate.get()
   }
-  /** A structural type describes the returned future, currently a ConcFuture.
-    * @see Http#apply for handling conditions
-    * @return future for the applied Handler. */
-  def future[T](hand: Handler[T]): Threads#Future[T] = concFuture(hand)
-  def concFuture[T](hand: Handler[T]) = new ConcFuture(apply(hand))
-  def actorsFuture[T](hand: Handler[T]) = scala.actors.Futures.future(apply(hand))
+  /** @return an asynchronous Http interface that relays responses through a Threads#Future */
+  lazy val future = concFuture
+  /** @return interface using concurrent future */
+  lazy val concFuture = new FutureHttpExecutor { def relay[T](result: => T) = new ConcFuture(result) }
+  /** @return interface using actors future */
+  lazy val actorsFuture = new FutureHttpExecutor { def relay[T](result: => T) = scala.actors.Futures.future(result) }
+  trait FutureHttpExecutor extends HttpExecutor {
+    /** Wrap response in a Future */
+    type HttpPackage[T] = Future[T]
+    /** Use parent client excution */
+    val execute = Threads.this.execute
+  }
 }
 
 /** Used by client APIs to build Handler or other objects via chaining, completed implicitly.
