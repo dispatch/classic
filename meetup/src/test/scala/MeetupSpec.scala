@@ -40,6 +40,12 @@ class MeetupSpec extends Specification {
         res.size must be > (5)
         (meta >>= Meta.count) must_== List(res.size)
       }
+      "find upcoming events" in {
+        val (res, meta) = client.call(Events.topic("technology"))
+        val statuses = res flatMap Event.status
+        statuses must notBeEmpty
+        statuses must notExist { _ != Event.Upcoming }
+      }
     }
     "Member and Group query" should {
       implicit val http = new Http
