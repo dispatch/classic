@@ -34,8 +34,10 @@ class HttpSpec extends Specification {
     val string = http.future(test.as_str)
     val stream = http.future(test >> { stm => 
       // the nested scenario here contrived fails with actors.Futures
-      http.future(test >> { stm =>
+      http.future((test >> { stm =>
         scala.io.Source.fromInputStream(stm).mkString
+      }) ~> { string =>
+        string // identity function
       })
     })
     val bytes = http.future(test >>> new java.io.ByteArrayOutputStream)

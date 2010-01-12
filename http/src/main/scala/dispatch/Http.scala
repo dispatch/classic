@@ -138,7 +138,9 @@ object Request {
 }
 
 /** Request handler, contains request descriptor and a function to transform the result. */
-case class Handler[T](request: Request, block: Handler.F[T]) extends Handlers {
+case class Handler[T](request: Request, block: Handler.F[T]) {
+  /** @return new Handler composing after with this Handler's block */
+  def ~> [R](after: T => R) = Handler(request, (code, res, ent) => after(block(code,res,ent)))
   /** Create a new handler with block that receives all response parameters and
       this handler's block converted to parameterless function. */
   def apply[R](next: (Int, HttpResponse, Option[HttpEntity], () => T) => R) =
