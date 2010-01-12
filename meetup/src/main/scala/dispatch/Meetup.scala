@@ -17,7 +17,7 @@ import java.io.File
 abstract class Client extends ((Request => Request) => Request) {
   import Http.builder2product
   val host = :/("api.meetup.com")
-  def call[T](method: Method[T])(implicit http: Http) =
+  def call[T](method: Method[T])(implicit http: Http): T =
     http(method.default_handler(apply(method)))
 }
 
