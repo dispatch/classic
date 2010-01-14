@@ -21,6 +21,8 @@ import org.apache.http.params.{HttpProtocolParams, BasicHttpParams}
 import org.apache.http.util.EntityUtils
 import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials, Credentials}
 
+import org.apache.commons.codec.binary.Base64.encodeBase64
+
 case class StatusCode(code: Int, contents:String)
   extends Exception("Exceptional response code: " + code + "\n" + contents)
 
@@ -180,9 +182,14 @@ class Request(
   // Most are intended to be used as infix operators; those that don't take a parameter
   // have character names to be used with dot notation, e.g. :/("example.com").HEAD.secure >>> {...}
   
-  /** Set credentials to be used for this request; requires a host value :/(...) upon execution. */
+  /** Set credentials that may be used for basic or digest auth; requires a host value :/(...) upon execution. */
   def as (name: String, pass: String) = 
     new Request(host, Some(new UsernamePasswordCredentials(name, pass)), xfs, defaultCharset)
+
+  /** Add basic auth header unconditionally to this request. Does not wait for a 401 response. */
+  def as_! (name: String, pass: String) = this <:< IMap("Authorization" -> (
+    "Basic " + new String(encodeBase64("%s:%s".format(name, pass).getBytes))
+  ))
   
   /** Convert this to a secure (scheme https) request if not already */
   def secure = new Request(host map { 
