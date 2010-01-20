@@ -170,7 +170,7 @@ trait Post[P <: Post[P]] extends HttpPost { self: P =>
 /** Standard, URL-encoded form posting */
 class SimplePost(val oauth_values: IMap[String, Any]) extends Post[SimplePost] { 
   this setEntity new UrlEncodedFormEntity(Http.map2ee(oauth_values), Request.factoryCharset)
-  def add(more: Map[String, Any]) = new SimplePost(IMap.empty ++ oauth_values ++ more.elements)
+  def add(more: Map[String, Any]) = new SimplePost(oauth_values ++ more.elements)
 }
 
 /** Request descriptor, possibly contains a host, credentials, and a list of transformation functions. */
@@ -247,7 +247,7 @@ class Request(
   }
   /** Post the given key value sequence and return response wrapper. (new request, mimics) */
   def << (values: Map[String, Any]) = next { 
-    case p: Post[_] => p.add(values)
+    case p: Post[_] => Request.mimic(p.add(values))(p)
     case r => Request.mimic(new SimplePost(IMap.empty ++ values))(r)
   }
   
