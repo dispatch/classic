@@ -50,6 +50,12 @@ object OAuth {
     oauth_params + ("oauth_signature" -> sig)
   }
   
+  /** Out-of-band callback code */
+  val oob = "oob"
+  
+  /** Map with oauth_callback set to the given url */
+  def callback(url: String) = IMap("oauth_callback" -> url)
+  
   //normalize to OAuth percent encoding
   private def %% (str: String): String = (Http % str) replace ("+", "%20") replace ("%7E", "~")
   private def %% (s: Seq[String]): String = s map %% mkString "&"

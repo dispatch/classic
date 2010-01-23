@@ -50,15 +50,17 @@ object Auth {
   val host = :/("www.meetup.com")
   val svc = host / "oauth"
 
-  def request_token(consumer: Consumer) = 
-    svc.POST / "request/" <@ consumer as_token
+  /** Get a request token with no callback URL, out-of-band authorization assumed */
+  def request_token(consumer: Consumer): Handler[Token] = request_token(consumer, OAuth.oob)
+
+  def request_token(consumer: Consumer, callback_url: String) = 
+    svc / "request/" << OAuth.callback(callback_url) <@ consumer as_token
 
   def authorize_url(token: Token) = host / "authorize/" <<? token
   def m_authorize_url(token: Token) = authorize_url(token) <<? Map("set_mobile" -> "on")
-  def callback(oauth_callback: String) = Map("oauth_callback" -> oauth_callback)
   
-  def access_token(consumer: Consumer, token: Token) = 
-    svc.POST / "access/" <@ (consumer, token) as_token
+  def access_token(consumer: Consumer, token: Token, verifier: String) = 
+    svc.POST / "access/" <@ (consumer, token, verifier) as_token
 }
 
 object Response {

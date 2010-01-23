@@ -92,12 +92,11 @@ object Auth {
   
   val svc = Twitter.host / "oauth"
 
-  def request_token(consumer: Consumer) = 
-    svc.secure.POST / "request_token" <@ consumer as_token
+  /** Get a request token with no callback URL, out-of-band authorization assumed */
+  def request_token(consumer: Consumer): Handler[Token] = request_token(consumer, OAuth.oob)
 
-  def request_token(consumer: Consumer, oauth_callback: String) = 
-    svc.secure / "request_token" << 
-      Map("oauth_callback" -> oauth_callback) <@ consumer as_token
+  def request_token(consumer: Consumer, callback_url: String) = 
+    svc.secure / "request_token" << OAuth.callback(callback_url) <@ consumer as_token
     
   def authorize_url(token: Token) = svc / "authorize" <<? token
   def authenticate_url(token: Token) = svc / "authenticate" <<? token
