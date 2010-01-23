@@ -65,7 +65,7 @@ class HttpSpec extends Specification {
       bytes().toByteArray.toList must_== jane.getBytes.toList
     }
     
-    val h = new Http // single threaded Http instance
+    val h = (new Http).on_error { case _ =>  } // single threaded Http instance
     "equal expected string with gzip encoding" in {
       h(test.gzip >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) } ) must_== (jane, Set("gzip"))
     }
