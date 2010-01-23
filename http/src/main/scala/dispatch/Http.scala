@@ -72,7 +72,9 @@ class Http extends HttpExecutor {
   def relay[T](result: => T) = result
 }
 
-/** Defines request execution and response status code behaviors */
+/** Defines request execution and response status code behaviors. Implemented methods are finalized
+    as any overrides would be lost when instantiating delegate executors, is in Threads#future. 
+    Delegates should chain to parent `relay` and `execute` implementations. */
 trait HttpExecutor {
   /** Type of value returned from request execution */
   type HttpPackage[T]
@@ -81,9 +83,9 @@ trait HttpExecutor {
   /** Execute the request against an HttpClient */
   val execute: (Option[HttpHost], Option[Credentials], HttpUriRequest) => HttpResponse
   /** Execute full request-response handler, passed through relay. */
-  def x[T](hand: Handler[T]): HttpPackage[T] = x(hand.request)(hand.block)
+  final def x[T](hand: Handler[T]): HttpPackage[T] = x(hand.request)(hand.block)
   /** Execute request with handler, passed through relay. */
-  def x [T](req: Request)(block: Handler.F[T]) = relay {
+  final def x [T](req: Request)(block: Handler.F[T]) = relay {
     val res = execute(req.host, req.creds, req.req)
     val ent = res.getEntity match {
       case null => None
@@ -93,17 +95,17 @@ trait HttpExecutor {
     finally { ent foreach (_.consumeContent) }
   }
   /** Apply Response Handler if reponse code returns true from chk. */
-  def when[T](chk: Int => Boolean)(hand: Handler[T]) = x(hand.request) {
+  final def when[T](chk: Int => Boolean)(hand: Handler[T]) = x(hand.request) {
     case (code, res, ent) if chk(code) => hand.block(code, res, ent)
     case (code, _, Some(ent)) => throw StatusCode(code, EntityUtils.toString(ent, Request.factoryCharset))
     case (code, _, _)         => throw StatusCode(code, "[no entity]")
   }
   /** Apply a custom block in addition to predefined response Handler. */
-  def also[A,B](hand: Handler[B])(block: Handler.F[A]) = 
+  final def also[A,B](hand: Handler[B])(block: Handler.F[A]) = 
     x(hand.request) { (code, res, ent) => ( hand.block(code, res, ent), block(code, res, ent) ) }
   
   /** Apply handler block when response code is 200 - 204 */
-  def apply[T](hand: Handler[T]) = (this when {code => (200 to 204) contains code})(hand)
+  final def apply[T](hand: Handler[T]) = (this when {code => (200 to 204) contains code})(hand)
 }
 
 /** Nil request, useful to kick off a descriptors that don't have a factory. */
@@ -405,12 +407,16 @@ trait Threads extends Http {
   /** @return an asynchronous Http interface that relays responses through a Threads#Future */
   lazy val future = concFuture
   /** @return interface using concurrent future */
-  lazy val concFuture = new FutureHttpExecutor { def relay[T](result: => T) = new ConcFuture(result) }
+  val concFuture = new FutureHttpExecutor(_: PartialFunction[Throwable, Unit]) { def fut_relay[T](result: => T) = new ConcFuture(result) }
   /** @return interface using actors future */
-  lazy val actorsFuture = new FutureHttpExecutor { def relay[T](result: => T) = scala.actors.Futures.future(result) }
-  trait FutureHttpExecutor extends HttpExecutor {
+  val actorsFuture  = new FutureHttpExecutor(_: PartialFunction[Throwable, Unit]) { def fut_relay[T](result: => T) = scala.actors.Futures.future(result) }
+  abstract class FutureHttpExecutor(on_error: PartialFunction[Throwable, Unit]) extends HttpExecutor {
     /** Wrap response in a Future */
     type HttpPackage[T] = Future[T]
+    def fut_relay[T](result: => T): Future[T]
+    final def relay[T](result: => T) = fut_relay { try { Threads.this.relay(result) } catch {
+      case e if on_error.isDefinedAt(e) => on_error(e); throw e
+    } }
     /** Use parent client excution */
     val execute = Threads.this.execute
   }
