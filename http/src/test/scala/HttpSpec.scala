@@ -31,9 +31,9 @@ class HttpSpec extends Specification {
   def get_specs(test: Request) = {
     val http = new Http with Threads
     // start some connections as futures
-    val string = http.future_error {
+    val string = http on_error {
       case e => print(e.getMessage) // compilation test
-    } (test.as_str)
+    } future (test.as_str)
     val stream = http.future(test >> { stm => 
       // the nested scenario here contrived fails with actors.Futures
       http.future((test >> { stm =>
