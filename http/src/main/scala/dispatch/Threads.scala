@@ -51,3 +51,16 @@ trait FuturableExecutor extends HttpExecutor {
     def pack[T](result: => T) = future(FuturableExecutor.this.pack(result))
   }
 }
+
+/** Client with a ThreadSafeClientConnManager */
+class ThreadSafeHttpClient extends ConfiguredHttpClient {
+  import org.apache.http.conn.scheme.{Scheme,SchemeRegistry,PlainSocketFactory}
+  import org.apache.http.conn.ssl.SSLSocketFactory
+  import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
+  override def createClientConnectionManager() = {
+    val registry = new SchemeRegistry()
+    registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80))
+    registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443))
+    new ThreadSafeClientConnManager(getParams(), registry)
+  }
+}
