@@ -69,23 +69,23 @@ class Http extends HttpExecutor {
   /** Unadorned handler return type */
   type HttpPackage[T] = T
   /** Synchronously access and return plain result value  */
-  def relay[T](result: => T) = result
+  def pack[T](result: => T) = result
 }
 
 /** Defines request execution and response status code behaviors. Implemented methods are finalized
     as any overrides would be lost when instantiating delegate executors, is in Threads#future. 
-    Delegates should chain to parent `relay` and `execute` implementations. */
+    Delegates should chain to parent `pack` and `execute` implementations. */
 trait HttpExecutor {
   /** Type of value returned from request execution */
   type HttpPackage[T]
   /** Package the result value */
-  def relay[T](result: => T): HttpPackage[T]
+  def pack[T](result: => T): HttpPackage[T]
   /** Execute the request against an HttpClient */
   val execute: (Option[HttpHost], Option[Credentials], HttpUriRequest) => HttpResponse
-  /** Execute full request-response handler, passed through relay. */
+  /** Execute full request-response handler, passed through pack. */
   final def x[T](hand: Handler[T]): HttpPackage[T] = x(hand.request)(hand.block)
-  /** Execute request with handler, passed through relay. */
-  final def x [T](req: Request)(block: Handler.F[T]) = relay {
+  /** Execute request with handler, passed through pack. */
+  final def x [T](req: Request)(block: Handler.F[T]) = pack {
     val res = execute(req.host, req.creds, req.req)
     val ent = res.getEntity match {
       case null => None
@@ -106,22 +106,6 @@ trait HttpExecutor {
   
   /** Apply handler block when response code is 200 - 204 */
   final def apply[T](hand: Handler[T]) = (this when {code => (200 to 204) contains code})(hand)
-
-  trait ChainExecutor extends HttpExecutor {
-    type InPackage[T] = HttpExecutor.this.HttpPackage[T]
-    type OutPackage[T]
-    def f[T] : InPackage[T] => OutPackage[InPackage[T]]
-    type HttpPackage[T] = OutPackage[InPackage[T]]
-    val execute = HttpExecutor.this.execute
-    def relay[T](result: => T) = f(HttpExecutor.this.relay(result))
-  }
-  def on_error(block: PartialFunction[Throwable, Unit]) = new ChainExecutor {
-    type OutPackage[T] = T
-    def f[T] = { incoming => try { incoming } catch {
-        case e if block.isDefinedAt(e) => block(e); throw e
-      }
-    }
-  }
 }
 
 /** Nil request, useful to kick off a descriptors that don't have a factory. */
@@ -401,12 +385,11 @@ class ThreadSafeHttpClient extends ConfiguredHttpClient {
 }
 
 /** Http with a thread-safe client and non-blocking interfaces */
-trait Threads extends Http with ThreadsHttpExecutor {
+trait Threads extends Http {
   override val client = new ThreadSafeHttpClient
   /** Shutdown connection manager, threads. (Needed to close console cleanly.) */
   def shutdown() = client.getConnectionManager.shutdown()
-}
-trait ThreadsHttpExecutor extends HttpExecutor {
+
   /** Structural type coinciding with scala.actors.Future */
   type Future[T] = Function0[T] {
     def isSet: Boolean
@@ -422,19 +405,24 @@ trait ThreadsHttpExecutor extends HttpExecutor {
     def isSet = delegate.isDone
     def apply() = delegate.get()
   }
-  /** @return an asynchronous Http interface that relays responses through a Threads#Future */
-  lazy val future = concFuture
+  /** @return an asynchronous Http interface that packs responses through a Threads#Future */
+  def future_error = concFuture _
+  lazy val future = concFuture { case e => () }
   /** @return interface using concurrent future */
-  def concFuture = new FutureExe {
-    def f[T] = { incoming => new ConcFuture(incoming) }
+  def concFuture(error: PartialFunction[Throwable, Unit]) = new FutureExecutor(error) {
+    def future[T](result: => T) = new ConcFuture(result)
   }
   /** @return interface using actors future */
-  def actorsFuture = new FutureExe {
-    def f[T] = { in => scala.actors.Futures.future(in) }
+  def actorsFuture(error: PartialFunction[Throwable, Unit]) = new FutureExecutor(error) {
+    def future[T](result: => T) = scala.actors.Futures.future(result)
   }
-  trait FutureExe extends ChainExecutor {
-    /** Wrap response in a Future */
-    type OutPackage[T] = Future[T]
+  abstract class FutureExecutor(error: PartialFunction[Throwable, Unit]) extends HttpExecutor {
+    def future[T](result: => T): Future[T]
+    val execute = Threads.this.execute
+    type HttpPackage[T] = Future[T]
+    def pack[T](result: => T) = try { future(result) } catch {
+      case e if error.isDefinedAt(e) => e; throw e
+    }
   }
 }
 

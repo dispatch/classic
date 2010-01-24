@@ -31,7 +31,9 @@ class HttpSpec extends Specification {
   def get_specs(test: Request) = {
     val http = new Http with Threads
     // start some connections as futures
-    val string = http.future(test.as_str)
+    val string = http.future_error {
+      case e => print(e.getMessage) // compilation test
+    } (test.as_str)
     val stream = http.future(test >> { stm => 
       // the nested scenario here contrived fails with actors.Futures
       http.future((test >> { stm =>
@@ -65,7 +67,7 @@ class HttpSpec extends Specification {
       bytes().toByteArray.toList must_== jane.getBytes.toList
     }
     
-    val h = (new Http).on_error { case _ =>  } // single threaded Http instance
+    val h = new Http// single threaded Http instance
     "equal expected string with gzip encoding" in {
       h(test.gzip >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) } ) must_== (jane, Set("gzip"))
     }
