@@ -14,7 +14,7 @@ trait FuturableExecutor extends HttpExecutor {
     val execute = FuturableExecutor.this.execute
     type HttpPackage[T] = FuturableExecutor.this.HttpPackage[T]
     def pack[T](result: => T) = try { FuturableExecutor.this.pack(result) } catch {
-      case e if error.isDefinedAt(e) => e; throw e
+      case e if error.isDefinedAt(e) => error(e); throw e
     }
     override def futureExecutor = FuturableExecutor.this.executor
   }
