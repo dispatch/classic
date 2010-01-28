@@ -218,23 +218,29 @@ class Request(
   /* Add a gzip acceptance header */
   def gzip = this <:< IMap("Accept-Encoding" -> "gzip")
 
-  /** Put the given object.toString and return response wrapper. (new request, mimics) */
+  /** Put the given object.toString. (new request, mimics) */
   def <<< (body: Any) = next {
     val m = new HttpPut
     m setEntity new StringEntity(body.toString, Request.factoryCharset)
     HttpProtocolParams.setUseExpectContinue(m.getParams, false)
     Request.mimic(m)_
   }
-  /** Put the given file and return response wrapper. (new request, mimics) */
+  /** Put the given file. (new request, mimics) */
   def <<< (file: File, content_type: String) = next {
     val m = new HttpPut
     m setEntity new FileEntity(file, content_type)
     Request.mimic(m) _
   }
-  /** Post the given key value sequence and return response wrapper. (new request, mimics) */
+  /** Post the given key value sequence. (new request, mimics) */
   def << (values: Map[String, Any]) = next { 
     case p: Post[_] => Request.mimic(p.add(values))(p)
     case r => Request.mimic(new SimplePost(IMap.empty ++ values))(r)
+  }
+  /** Post the given string value. (new request, mimics) */
+  def << (string_body: String) = next { 
+    val m = new HttpPost
+    m setEntity new StringEntity(string_body, Request.factoryCharset)
+    Request.mimic(m)_
   }
   
   /** Add query parameters. (mutates request) */
