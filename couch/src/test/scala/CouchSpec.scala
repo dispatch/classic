@@ -1,6 +1,6 @@
 import org.specs._
 
-class CouchSpec extends Specification {
+object CouchSpec extends Specification {
   import dispatch._
   import dispatch.couch._
   import dispatch.json._

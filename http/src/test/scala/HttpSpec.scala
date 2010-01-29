@@ -1,6 +1,6 @@
 import org.specs._
 
-class HttpSpec extends Specification {
+object HttpSpec extends Specification {
   import dispatch._
   import Http._
   

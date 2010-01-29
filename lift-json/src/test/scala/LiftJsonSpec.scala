@@ -1,6 +1,6 @@
 import org.specs._
 
-class LiftJsonSpec extends Specification {
+object LiftJsonSpec extends Specification {
   import dispatch._
   import dispatch.liftjson.Js._
   import net.liftweb.json.JsonAST._

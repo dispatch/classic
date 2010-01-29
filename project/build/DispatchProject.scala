@@ -34,8 +34,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     override def managedStyle = ManagedStyle.Maven
     lazy val publishTo = Resolver.file("Databinder Repository", new java.io.File("/var/dbwww/repo"))
     
-    val snapshots = "Scala Tools Snapshots" at "http://www.scala-tools.org/repo-snapshots/"
-    val specs = "org.scala-tools.testing" % "specs" % "1.6.2-SNAPSHOT" % "test->default"
+    val specs = "org.scala-tools.testing" % "specs" % "1.6.1" % "test->default"
     val sxr = if (buildScalaInstance.version == "2.7.6")
       compilerPlugin("org.scala-tools.sxr" %% "sxr" % sxr_version)
     else specs // reference twice, no harm done
