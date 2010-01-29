@@ -1,6 +1,6 @@
 import org.specs._
 
-class TwitterSpec extends Specification {
+object TwitterSpec extends Specification {
   import dispatch._
   import Http._
   import json.Js._
