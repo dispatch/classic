@@ -21,6 +21,8 @@ import org.apache.http.params.{HttpProtocolParams, BasicHttpParams}
 import org.apache.http.util.EntityUtils
 import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials, Credentials}
 
+import org.apache.commons.codec.binary.Base64.encodeBase64
+
 case class StatusCode(code: Int, contents:String)
   extends Exception("Exceptional response code: " + code + "\n" + contents)
 
@@ -29,12 +31,7 @@ trait Logger { def info(msg: String, items: Any*) }
 
 /** Http access point. Standard instances to be used by a single thread. */
 class Http {
-  val credentials = new DynamicVariable[Option[(AuthScope, Credentials)]](None)
   val client = new ConfiguredHttpClient
-  
-  def credentialsProvider = new BasicCredentialsProvider {
-    override def getCredentials(scope: AuthScope) = null
-  }
   
   /** Info Logger for this instance, default returns Connfiggy if on classpath else console logger. */
   lazy val log: Logger = try {
@@ -159,7 +156,7 @@ trait Post[P <: Post[P]] extends HttpPost { self: P =>
 /** Standard, URL-encoded form posting */
 class SimplePost(val oauth_values: IMap[String, Any]) extends Post[SimplePost] { 
   this setEntity new UrlEncodedFormEntity(Http.map2ee(oauth_values), Request.factoryCharset)
-  def add(more: Map[String, Any]) = new SimplePost(IMap.empty ++ oauth_values ++ more.elements)
+  def add(more: Map[String, Any]) = new SimplePost(oauth_values ++ more.elements)
 }
 
 /** Request descriptor, possibly contains a host, credentials, and a list of transformation functions. */
@@ -185,9 +182,14 @@ class Request(
   // Most are intended to be used as infix operators; those that don't take a parameter
   // have character names to be used with dot notation, e.g. :/("example.com").HEAD.secure >>> {...}
   
-  /** Set credentials to be used for this request; requires a host value :/(...) upon execution. */
+  /** Set credentials that may be used for basic or digest auth; requires a host value :/(...) upon execution. */
   def as (name: String, pass: String) = 
     new Request(host, Some(new UsernamePasswordCredentials(name, pass)), xfs, defaultCharset)
+
+  /** Add basic auth header unconditionally to this request. Does not wait for a 401 response. */
+  def as_! (name: String, pass: String) = this <:< IMap("Authorization" -> (
+    "Basic " + new String(encodeBase64("%s:%s".format(name, pass).getBytes))
+  ))
   
   /** Convert this to a secure (scheme https) request if not already */
   def secure = new Request(host map { 
@@ -216,23 +218,29 @@ class Request(
   /* Add a gzip acceptance header */
   def gzip = this <:< IMap("Accept-Encoding" -> "gzip")
 
-  /** Put the given object.toString and return response wrapper. (new request, mimics) */
+  /** Put the given object.toString. (new request, mimics) */
   def <<< (body: Any) = next {
     val m = new HttpPut
     m setEntity new StringEntity(body.toString, Request.factoryCharset)
     HttpProtocolParams.setUseExpectContinue(m.getParams, false)
     Request.mimic(m)_
   }
-  /** Put the given file and return response wrapper. (new request, mimics) */
+  /** Put the given file. (new request, mimics) */
   def <<< (file: File, content_type: String) = next {
     val m = new HttpPut
     m setEntity new FileEntity(file, content_type)
     Request.mimic(m) _
   }
-  /** Post the given key value sequence and return response wrapper. (new request, mimics) */
+  /** Post the given key value sequence. (new request, mimics) */
   def << (values: Map[String, Any]) = next { 
-    case p: Post[_] => p.add(values)
+    case p: Post[_] => Request.mimic(p.add(values))(p)
     case r => Request.mimic(new SimplePost(IMap.empty ++ values))(r)
+  }
+  /** Post the given string value. (new request, mimics) */
+  def << (string_body: String) = next { 
+    val m = new HttpPost
+    m setEntity new StringEntity(string_body, Request.factoryCharset)
+    Request.mimic(m)_
   }
   
   /** Add query parameters. (mutates request) */

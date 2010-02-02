@@ -7,13 +7,16 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
 
   lazy val http = project("http", "Dispatch HTTP", new HttpProject(_))
   lazy val mime = project("mime", "Dispatch Mime", new DispatchDefault(_) {
-    val mime = "org.apache.httpcomponents" % "httpmime" % "4.0"
+    val mime = "org.apache.httpcomponents" % "httpmime" % "4.0.1"
   }, http)
   lazy val json = project("json", "Dispatch JSON", new DispatchDefault(_))
   lazy val http_json = project("http+json", "Dispatch HTTP JSON", new HttpProject(_), http, json)
   lazy val lift_json = project("lift-json", "Dispatch lift-json", new DispatchDefault(_) {
     val databinder_net = "databinder.net repository" at "http://databinder.net/repo"
-    val lift_json = "net.liftweb" %% "lift-json" % "1.1-M8"
+    val (lj_org, lj_name, lj_version) = ("net.liftweb", "lift-json", "1.1-M8")
+    val lift_json =
+      if (buildScalaVersion startsWith "2.7.") lj_org % lj_name % lj_version
+      else lj_org %% lj_name % lj_version
   }, http)
   lazy val oauth = project("oauth", "Dispatch OAuth", new DispatchDefault(_), http)
   lazy val times = project("times", "Dispatch Times", new DispatchDefault(_), http, json, http_json)
@@ -47,7 +50,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   }
     
   class HttpProject(info: ProjectInfo) extends DispatchDefault(info) {
-    val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.0"
+    val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.0.1"
     val jcip = "net.jcip" % "jcip-annotations" % "1.0" % "provided->default"
     val lag_net = "lag.net repository" at "http://www.lag.net/repo"
     val configgy_test = "net.lag" % "configgy" % "1.4" % "test->default"
