@@ -35,9 +35,10 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     lazy val publishTo = Resolver.file("Databinder Repository", new java.io.File("/var/dbwww/repo"))
     
     val specs = "org.scala-tools.testing" % "specs" % "1.6.1" % "test->default"
-    val sxr = if (buildScalaInstance.version == "2.7.6")
-      compilerPlugin("org.scala-tools.sxr" %% "sxr" % sxr_version)
-    else specs // reference twice, no harm done
+    val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % sxr_version)
+    override def excludeIDs = 
+      if (buildScalaInstance.version == "2.7.6") super.excludeIDs
+      else specs :: sxr :: super.excludeIDs.toList
 
     def sxrMainPath = outputPath / "classes.sxr"
     def sxrTestPath = outputPath / "test-classes.sxr"
