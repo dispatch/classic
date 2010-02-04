@@ -67,11 +67,10 @@ object HttpSpec extends Specification {
       bytes().toByteArray.toList must_== jane.getBytes.toList
     }
     
-    val h = new Http// single threaded Http instance
-    "equal expected string with gzip encoding" in {
-      h(test.gzip >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) } ) must_== (jane, Set("gzip"))
+    "equal expected string with gzip encoding, using future" in {
+      http.future(test.gzip >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) } )() must_== (jane, Set("gzip"))
     }
-
+    val h = new Http// single threaded Http instance
     "equal expected string with a gzip defaulter" in {
       val my_defualts = /\.gzip
       h(my_defualts <& test >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) } ) must_== (jane, Set("gzip"))
