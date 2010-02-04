@@ -238,6 +238,26 @@ object Member extends Location {
   val bio = 'bio ? str
 }
 
+object Rsvps extends RsvpsBuilder(Map())
+private[meetup] class RsvpsBuilder(params: Map[String, Any]) extends ReadMethod {
+  private def param(key: String)(value: Any) = new RsvpsBuilder(params + (key -> value))
+
+  val event_id = param("event_id")_
+
+  def product = (_: Request) / "rsvps" <<? params
+}
+
+object Rsvp extends Location {
+  val name = 'name ? str
+  val id = 'id ? str
+  val photo_url = 'photo_url ? str
+  val link = 'link ? str
+  val comment = 'comment ? str
+  val response = 'response ? str
+  val created = 'created ? date
+  val update = 'updated ? date
+}
+
 object PhotoUpload extends PhotoUploadBuilder(None, Map())
 private[meetup] class PhotoUploadBuilder(photo: Option[File], params: Map[String, Any]) extends WriteMethod {
   private def param(key: String)(value: Any) = new PhotoUploadBuilder(photo, params + (key -> value))
