@@ -5,7 +5,8 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
 {
   override def parallelExecution = true
 
-  lazy val http = project("http", "Dispatch HTTP", new HttpProject(_))
+  lazy val futures = project("futures", "Dispatch Futures", new DispatchDefault(_))
+  lazy val http = project("http", "Dispatch HTTP", new HttpProject(_), futures)
   lazy val mime = project("mime", "Dispatch Mime", new DispatchDefault(_) {
     val mime = "org.apache.httpcomponents" % "httpmime" % "4.0.1"
   }, http)
