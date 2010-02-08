@@ -81,7 +81,10 @@ class CountingMultipartEntity(delegate: Mime.Entity,
       val total = delegate.getContentLength
       val sent = listener_f(total)
       val listener = actor { loop { react {
-        case l: Long => sent(l)
+        case l: Long => {
+          sent(l)
+          if (l == total) exit()
+        }
       } } }
       override def write(b: Int) {
         super.write(b)
