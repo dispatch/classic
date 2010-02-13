@@ -1,7 +1,7 @@
 import sbt._
 import archetect.ArchetectProject
 
-class DispatchProject(info: ProjectInfo) extends ParentProject(info) with posterous.Post
+class DispatchProject(info: ProjectInfo) extends ParentProject(info) with posterous.Publish
 {
   override def parallelExecution = true
 
