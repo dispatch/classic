@@ -1,7 +1,7 @@
 import sbt._
 import archetect.ArchetectProject
 
-class DispatchProject(info: ProjectInfo) extends ParentProject(info)
+class DispatchProject(info: ProjectInfo) extends ParentProject(info) with posterous.Post
 {
   override def parallelExecution = true
 
@@ -24,17 +24,24 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   lazy val couch = project("couch", "Dispatch Couch", new DispatchDefault(_), http, json, http_json)
   lazy val twitter = project("twitter", "Dispatch Twitter", new DispatchDefault(_), http, json, http_json, oauth)
   lazy val meetup = project("meetup", "Dispatch Meetup", new DispatchDefault(_), http, lift_json, oauth, mime)
-  def dispatch_modules = http :: mime :: json :: http_json :: lift_json :: oauth :: times :: couch :: twitter :: meetup:: Nil
+
+  lazy val examples = project("examples", "Dispatch Examples", new DispatchExamples(_))
   lazy val agg = project("agg", "Databinder Dispatch", new AggregateProject(_) {
     def projects = dispatch_modules
   })
   
+  def dispatch_modules = subProjects.values.toList.flatMap {
+    case dm: DispatchDefault => List(dm)
+    case _ => Nil
+  }
+  override def dependencies = dispatch_modules
+
   val sxr_version = "0.2.3"
 
+  override def managedStyle = ManagedStyle.Maven
+  lazy val publishTo = Resolver.file("Databinder Repository", new java.io.File("/var/dbwww/repo"))
+
   class DispatchDefault(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins {
-    override def managedStyle = ManagedStyle.Maven
-    lazy val publishTo = Resolver.file("Databinder Repository", new java.io.File("/var/dbwww/repo"))
-    
     val specs = "org.scala-tools.testing" % "specs" % "1.6.1" % "test->default"
     val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % sxr_version)
     override def excludeIDs = 
@@ -60,11 +67,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
   lazy val publishExtras = task { None } dependsOn 
     (agg.doc :: examples.publishExamples :: dispatch_modules.map { _.publishSxr } : _*)
 	
-  // parent project should not be published
-  override def publishAction = task { None }
-  override def publishConfiguration = publishLocalConfiguration
-  
-  lazy val examples = project("examples", "Dispatch Examples", new DefaultProject(_) with ArchetectProject {
+  class DispatchExamples(info: ProjectInfo) extends DefaultProject(info) with ArchetectProject {
     import Process._
 
     override val templateMappings = Map(
@@ -73,11 +76,8 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
       "sxr.version" -> sxr_version,
       "dispatch.version" -> version
     )
-    // archetect project should not be published
-    override def publishAction = task { None }
-    override def publishConfiguration = publishLocalConfiguration
     lazy val examplesInstaller = dynamic(examplesInstallerTasks) dependsOn (archetect, publishLocal)
-
+    
     def examplesInstallerTasks = task { None } named("examples-installer-complete") dependsOn (
       ("src" / "arc" * "*").get.map { proj =>
         val proj_target = arcOutput / proj.asFile.getName
@@ -94,14 +94,10 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info)
     val publishExamplesPath = Path.fromFile("/var/dbwww/dispatch-examples/")
     lazy val publishExamples = copyTask((outputPath / "arc" * "*" / "target" ##) * "*.jar", 
         publishExamplesPath) dependsOn(examplesInstaller)
-  })
+  }
   
   abstract class AggregateProject(info: ProjectInfo) extends DefaultProject(info) {
     protected def projects: Iterable[DefaultProject]
-    
-    override def compileAction = task { None }
-    override def testCompileAction = task { None }
-    override def publishAction = task { None }
     
     def concatenatePaths(f: DefaultProject => PathFinder) = 
       (Path.emptyPathFinder /: projects.map(f)) { _ +++ _ }
