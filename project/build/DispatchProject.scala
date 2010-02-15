@@ -68,7 +68,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   override def extraTags = "configgy" :: Nil
   
   lazy val publishExtras = task { None } dependsOn 
-    (agg.doc :: examples.publishExamples :: dispatch_modules.map { _.publishSxr } : _*)
+    (agg.doc :: examples.publishExamples :: publishCurrentNotes :: dispatch_modules.map { _.publishSxr } : _*)
 	
   class DispatchExamples(info: ProjectInfo) extends DefaultProject(info) with ArchetectProject {
     import Process._
