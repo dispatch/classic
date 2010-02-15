@@ -39,7 +39,8 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   val sxr_version = "0.2.3"
 
   override def managedStyle = ManagedStyle.Maven
-  lazy val publishTo = Resolver.file("Databinder Repository", new java.io.File("/var/dbwww/repo"))
+  val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
+  Credentials(Path.userHome / ".ivy2" / ".credentials", log)
 
   class DispatchModule(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins {
     val specs = "org.scala-tools.testing" % "specs" % "1.6.1" % "test->default"
@@ -63,6 +64,8 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
     val lag_net = "lag.net repository" at "http://www.lag.net/repo"
     val configgy_test = "net.lag" % "configgy" % "1.4" % "test->default"
   }
+  
+  override def extraTags = "configgy" :: Nil
   
   lazy val publishExtras = task { None } dependsOn 
     (agg.doc :: examples.publishExamples :: dispatch_modules.map { _.publishSxr } : _*)
