@@ -74,8 +74,9 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
     import Process._
 
     override val templateMappings = Map(
-      "sbt.version" -> "0.5.6",
-      "scala.version" -> "2.7.6",
+      "sbt.version" -> sbtVersion.value,
+      "def.scala.version" -> defScalaVersion.value,
+      "build.scala.versions" -> "2.7.6",
       "sxr.version" -> sxr_version,
       "dispatch.version" -> version
     )
