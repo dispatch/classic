@@ -14,6 +14,8 @@ class TwineProject(info: ProjectInfo) extends DefaultProject(info)
   override def installActions = update.name :: script.name :: readme.name :: Nil
   
   val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "{{sxr.version}}")
+  
+  override def disableCrossPaths = true
 	
   // will use proguard to make one runnable jar later, for now a crazy long classpath will do
   lazy val script = task {
