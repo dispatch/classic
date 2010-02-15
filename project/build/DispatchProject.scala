@@ -101,6 +101,8 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   }
   
   abstract class AggregateProject(info: ProjectInfo) extends DefaultProject(info) {
+    override def compileAction = task { None }
+    override def testCompileAction = task { None }
     protected def projects: Iterable[DefaultProject]
     
     def concatenatePaths(f: DefaultProject => PathFinder) = 
