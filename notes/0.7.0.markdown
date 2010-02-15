@@ -1,0 +1,27 @@
+The big news is built-in support for non-blocking HTTP interaction. Although asynchronous execution can be implemented fairly directly in Scala, the new non-blocking interface guarantees that a thread-safe instance of HttpClient is in use and simplifies exception handling.
+
+The foundation of this support is in a new module `dispatch-futures`, which has no dependencies and may be used from other libraries. It defines a structural type `dispatch.futures.Futures.Future` that corresponds with `scala.actors.Future`, though its current default implementation is a `java.util.concurrent.Future`. The `dispatch-http` module now depends on `dispatch-futures` and includes a `dispatch.Threads` mix-in for the base `dispatch.Http` class that enables asynchronous interaction. It can be used as follows:
+
+    import dispatch._
+    val http = new Http with Threads
+    val fut_str = http.future(:/("example.com") as_str)
+    // returns immediately. If we later need that string...
+    fut_str() // blocks until it is available
+
+If you *won't* ever access the results from the main thread, you may want to process any exception it throws:
+
+    http on_error {
+      case e => println(e.getMessage)
+    } future (:/("example.com") >- { str =>
+      // do something with this string as soon as it's available
+    })
+
+If you want to describe future-interaction with a fully defined request `Handler` like the one returned by `dispatch.meetup.Auth.access_token()`, you can extend it with the new `~>` operator defined on `Handler`:
+
+    http.future(Auth.access_token(consumer, request_token, verifier) ~> { access_token =>
+      // I'm in the vault!
+    })// <- returns immediately
+
+And [by request][forum], the `<<` operator on Request is now overloaded to support plain string POSTs.
+
+[forum]: http://n2.nabble.com/How-to-POST-XML-td4457822.html
