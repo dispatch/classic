@@ -1,6 +1,6 @@
 import org.specs._
 
-class JsonSpec extends Specification {
+object JsonSpec extends Specification {
   import dispatch.json._
   import JsHttp._
 

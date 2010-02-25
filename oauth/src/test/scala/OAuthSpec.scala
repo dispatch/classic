@@ -1,6 +1,6 @@
 import org.specs._
 
-class OAuthSpec extends Specification {
+object OAuthSpec extends Specification {
   import dispatch._
   import oauth._
   import OAuth._

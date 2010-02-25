@@ -30,7 +30,7 @@ case class StatusCode(code: Int, contents:String)
 trait Logger { def info(msg: String, items: Any*) }
 
 /** Http access point. Standard instances to be used by a single thread. */
-class Http {
+class Http extends HttpExecutor {
   val client = new ConfiguredHttpClient
   
   /** Info Logger for this instance, default returns Connfiggy if on classpath else console logger. */
@@ -54,7 +54,7 @@ class Http {
   /** Execute method for the given host, with logging. */
   def execute(host: HttpHost, req: HttpUriRequest): HttpResponse = {
     log.info("%s %s%s", req.getMethod, host, req.getURI)
-    client.crutchExecute(host, req)
+    client.execute(host, req)
   }
   /** Execute for given optional parametrs, with logging. Creates local scope for credentials. */
   val execute: (Option[HttpHost], Option[Credentials], HttpUriRequest) => HttpResponse = {
@@ -66,10 +66,26 @@ class Http {
       log.info("%s %s", req.getMethod, req.getURI)
       client.execute(req)
   }
-  /** Execute full request-response handler. */
-  def x[T](hand: Handler[T]): T = x(hand.request)(hand.block)
-  /** Execute request and handle response codes, response, and entity in block */
-  def x [T](req: Request)(block: Handler.F[T]) = {
+  /** Unadorned handler return type */
+  type HttpPackage[T] = T
+  /** Synchronously access and return plain result value  */
+  def pack[T](result: => T) = result
+}
+
+/** Defines request execution and response status code behaviors. Implemented methods are finalized
+    as any overrides would be lost when instantiating delegate executors, is in Threads#future. 
+    Delegates should chain to parent `pack` and `execute` implementations. */
+trait HttpExecutor {
+  /** Type of value returned from request execution */
+  type HttpPackage[T]
+  /** Package the result value */
+  def pack[T](result: => T): HttpPackage[T]
+  /** Execute the request against an HttpClient */
+  val execute: (Option[HttpHost], Option[Credentials], HttpUriRequest) => HttpResponse
+  /** Execute full request-response handler, passed through pack. */
+  final def x[T](hand: Handler[T]): HttpPackage[T] = x(hand.request)(hand.block)
+  /** Execute request with handler, passed through pack. */
+  final def x [T](req: Request)(block: Handler.F[T]) = pack {
     val res = execute(req.host, req.creds, req.req)
     val ent = res.getEntity match {
       case null => None
@@ -79,17 +95,17 @@ class Http {
     finally { ent foreach (_.consumeContent) }
   }
   /** Apply Response Handler if reponse code returns true from chk. */
-  def when[T](chk: Int => Boolean)(hand: Handler[T]) = x(hand.request) {
+  final def when[T](chk: Int => Boolean)(hand: Handler[T]) = x(hand.request) {
     case (code, res, ent) if chk(code) => hand.block(code, res, ent)
     case (code, _, Some(ent)) => throw StatusCode(code, EntityUtils.toString(ent, Request.factoryCharset))
     case (code, _, _)         => throw StatusCode(code, "[no entity]")
   }
   /** Apply a custom block in addition to predefined response Handler. */
-  def also[A,B](hand: Handler[B])(block: Handler.F[A]) = 
+  final def also[A,B](hand: Handler[B])(block: Handler.F[A]) = 
     x(hand.request) { (code, res, ent) => ( hand.block(code, res, ent), block(code, res, ent) ) }
   
   /** Apply handler block when response code is 200 - 204 */
-  def apply[T](hand: Handler[T]) = (this when {code => (200 to 204) contains code})(hand)
+  final def apply[T](hand: Handler[T]) = (this when {code => (200 to 204) contains code})(hand)
 }
 
 /** Nil request, useful to kick off a descriptors that don't have a factory. */
@@ -126,7 +142,9 @@ object Request {
 }
 
 /** Request handler, contains request descriptor and a function to transform the result. */
-case class Handler[T](request: Request, block: Handler.F[T]) extends Handlers {
+case class Handler[T](request: Request, block: Handler.F[T]) {
+  /** @return new Handler composing after with this Handler's block */
+  def ~> [R](after: T => R) = Handler(request, (code, res, ent) => after(block(code,res,ent)))
   /** Create a new handler with block that receives all response parameters and
       this handler's block converted to parameterless function. */
   def apply[R](next: (Int, HttpResponse, Option[HttpEntity], () => T) => R) =
@@ -150,8 +168,6 @@ trait Post[P <: Post[P]] extends HttpPost { self: P =>
   /** Values that should be considered in an OAuth base string */
   def oauth_values: IMap[String, Any]
   def add(more: Map[String, Any]): P
-  /** not all implementations retain values (which can be files or streams) */
-  @deprecated def values = oauth_values
 }
 /** Standard, URL-encoded form posting */
 class SimplePost(val oauth_values: IMap[String, Any]) extends Post[SimplePost] { 
@@ -344,7 +360,7 @@ trait Handlers {
 
 /** Basic extension of DefaultHttpClient defaulting to Http 1.1, UTF8, and no Expect-Continue.
     Scopes authorization credentials to particular requests thorugh a DynamicVariable. */
-class ConfiguredHttpClient extends HttpCrutch { 
+class ConfiguredHttpClient extends DefaultHttpClient { 
   override def createHttpParams = {
     val params = new BasicHttpParams
     HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1)
@@ -366,26 +382,11 @@ class ConfiguredHttpClient extends HttpCrutch {
 trait Builder[T] { def product:T }
 
 /** May be used directly from any thread. */
-object Http extends Http {
-  import org.apache.http.conn.scheme.{Scheme,SchemeRegistry,PlainSocketFactory}
-  import org.apache.http.conn.ssl.SSLSocketFactory
-  import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
-  
+object Http extends Http with Threads {
   /** import to support e.g. Http("http://example.com/" >>> System.out) */
   implicit def str2req(str: String) = new Request(str)
   
   implicit def builder2product[T](builder: Builder[T]) = builder.product
-
-  override val client = new ConfiguredHttpClient {
-    override def createClientConnectionManager() = {
-      val registry = new SchemeRegistry()
-      registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80))
-      registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443))
-      new ThreadSafeClientConnManager(getParams(), registry)
-    }
-  }
-  /** Shutdown connection manager, threads. (Needed to close console cleanly.) */
-  def shutdown() = client.getConnectionManager.shutdown()
 
   /** Convert repeating name value tuples to list of pairs for httpclient */
   def map2ee(values: Map[String, Any]) = java.util.Arrays asList (

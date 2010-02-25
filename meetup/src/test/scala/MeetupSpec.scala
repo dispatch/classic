@@ -1,6 +1,6 @@
 import org.specs._
 
-class MeetupSpec extends Specification {
+object MeetupSpec extends Specification {
   import dispatch._
   import meetup._
   import dispatch.liftjson.Js._
