@@ -356,6 +356,13 @@ trait Handlers {
       (a.block(code, res, opt_ent), b.block(code,res,opt_ent))
     } )
   }
+  /** Chain two request handlers. First handler returns a second, which may use
+      values obtained by the first. Both are run on the same request. */
+  def >+> [T] (block: Handlers => Handler[Handler[T]]) = {
+    new Handler[T] ( request, { (code, res, opt_ent) =>
+      (block(new Handlers { val request = /\})).block(code, res, opt_ent).block(code, res, opt_ent)
+    } )
+  }
 }
 
 /** Basic extension of DefaultHttpClient defaulting to Http 1.1, UTF8, and no Expect-Continue.
