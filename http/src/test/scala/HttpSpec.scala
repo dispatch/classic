@@ -76,8 +76,10 @@ object HttpSpec extends Specification {
       h(my_defualts <& test >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) } ) must_== (jane, Set("gzip"))
     }
 
-    "equal expected string without gzip encoding" in {
-      h(test >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) }) must_== (jane, Set())
+    "equal expected string without gzip encoding, with handler chaining" in {
+      h(test >+> { r => r >:> { headers =>
+        r >- { (_, headers(CONTENT_ENCODING)) }
+      } }) must_== (jane, Set())
     }
   }
   "Path building responses" should {
