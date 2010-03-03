@@ -1,0 +1,2 @@
+* Handler chaining with the `>+>` operator, to use more than one handler against the same request with overlapping scopes
+* Use `defaultCharset` charset established by `>\` for POST `<<` and PUT `<<<`
