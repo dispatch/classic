@@ -215,7 +215,7 @@ class Request(
   /** Combine this request with another. */
   def <& (req: Request) = new Request(host orElse req.host, creds orElse req.creds, req.xfs ::: xfs, defaultCharset)
   
-  /** Set the default character set to be used when processing the request in Handler#>> and
+  /** Set the default character set to be used when processing the request in <<, <<<, Handler#>> and
     derived operations >~, as_str, etc. (The 'factory' default is utf-8.) */
   def >\ (charset: String) = new Request(host, creds, xfs, charset)
   
@@ -237,7 +237,7 @@ class Request(
   /** Put the given object.toString. (new request, mimics) */
   def <<< (body: Any) = next {
     val m = new HttpPut
-    m setEntity new StringEntity(body.toString, Request.factoryCharset)
+    m setEntity new StringEntity(body.toString, defaultCharset)
     HttpProtocolParams.setUseExpectContinue(m.getParams, false)
     Request.mimic(m)_
   }
@@ -255,7 +255,7 @@ class Request(
   /** Post the given string value. (new request, mimics) */
   def << (string_body: String) = next { 
     val m = new HttpPost
-    m setEntity new StringEntity(string_body, Request.factoryCharset)
+    m setEntity new StringEntity(string_body, defaultCharset)
     Request.mimic(m)_
   }
   
