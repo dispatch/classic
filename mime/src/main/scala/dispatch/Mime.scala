@@ -16,8 +16,17 @@ object Mime {
   /** Adds multipart operators to Request */
   implicit def Request2ExtendedRequest(r: Request) = new MimeRequest(r)
 
+  type Headers = Map[String, List[String]]
+  type MultipartBlock[T] = (Headers, InputStream) => T
+
   /** Request derivative with multipart operators */
   class MimeRequest(r: Request) {
+    def >--> [T] (multipart_block: MultipartBlock[T]) = r >+> { r2 => 
+      r2 >:> { headers => 
+        r2 >> headers("Content-Type").find { h => true }.map(mime_stream_parser(multipart_block)).get
+      }
+    }
+
     /** Add file to multipart post, will convert other post methods to multipart */
     def << (name: String, file: File) = 
       r next add(name, new FileBody(file))
@@ -48,6 +57,29 @@ object Mime {
     called with the bytes uploaded at each kilobyte boundary, and when complete. */
   type ListenerF = Long => Long => Unit
   trait Entity extends HttpEntity { def addPart(name: String, body: ContentBody)  }
+  
+  def mime_stream_parser[T](multipart_block: MultipartBlock[T])(content_type: String)(stm: InputStream) = {
+    import org.apache.james.mime4j.parser.{MimeTokenStream, EntityStates}
+    val m = new MimeTokenStream()
+    m.parseHeadless(stm, content_type)
+    val empty_headers = Map.empty[String, List[String]]
+    def walk(state: Int, headers: Headers, outs: List[T]): List[T] = {
+      import EntityStates._
+      state match {
+        case T_END_OF_STREAM => outs
+        case T_FIELD =>
+          val added = headers + ((m.getField.getName, 
+            m.getField.getBody :: headers.getOrElse(m.getField.getName, Nil)))
+            walk(m.next(), added, outs)
+        case T_BODY =>
+          val output = multipart_block(headers, m.getInputStream)
+          walk(m.next(), empty_headers, output :: outs)
+        case state =>
+          walk(m.next(), headers, outs)
+      }
+    }
+    walk(m.getState, empty_headers, Nil).reverse
+  }
 }
 
 class MultipartPost(entity: Mime.Entity) extends Post[MultipartPost] {
