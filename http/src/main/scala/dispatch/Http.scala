@@ -170,9 +170,10 @@ trait Post[P <: Post[P]] extends HttpPost { self: P =>
   def add(more: Map[String, Any]): P
 }
 /** Standard, URL-encoded form posting */
-class SimplePost(val oauth_values: IMap[String, Any]) extends Post[SimplePost] { 
-  this setEntity new UrlEncodedFormEntity(Http.map2ee(oauth_values), Request.factoryCharset)
-  def add(more: Map[String, Any]) = new SimplePost(oauth_values ++ more.elements)
+class SimplePost(val oauth_values: IMap[String, Any], charset: String) extends Post[SimplePost] { 
+  @deprecated def this(oauth_values: IMap[String, Any]) = this(oauth_values, Request.factoryCharset)
+  this setEntity new UrlEncodedFormEntity(Http.map2ee(oauth_values), charset)
+  def add(more: Map[String, Any]) = new SimplePost(oauth_values ++ more.elements, charset)
 }
 
 /** Request descriptor, possibly contains a host, credentials, and a list of transformation functions. */
@@ -250,7 +251,7 @@ class Request(
   /** Post the given key value sequence. (new request, mimics) */
   def << (values: Map[String, Any]) = next { 
     case p: Post[_] => Request.mimic(p.add(values))(p)
-    case r => Request.mimic(new SimplePost(IMap.empty ++ values))(r)
+    case r => Request.mimic(new SimplePost(IMap.empty ++ values, defaultCharset))(r)
   }
   /** Post the given string value. (new request, mimics) */
   def << (string_body: String) = next { 
@@ -270,7 +271,7 @@ class Request(
   // generators that change request method without adding parameters
   
   /** HTTP post request. (new request, mimics) */
-  def POST = next { Request.mimic(new SimplePost(IMap.empty))_ }
+  def POST = next { Request.mimic(new SimplePost(IMap.empty, defaultCharset))_ }
     
   /** HTTP delete request. (new request, mimics) */
   def DELETE = next { Request.mimic(new HttpDelete)_ }
