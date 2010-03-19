@@ -21,6 +21,8 @@ object Mime {
 
   /** Request derivative with multipart operators */
   class MimeRequest(r: Request) {
+    /** Process parts of a multipart response in a block. The block is called once for each part
+        with a Map[String,List[String]] of its headers and an InputStream of the body. */
     def >--> [T] (multipart_block: MultipartBlock[T]) = r >+> { r2 => 
       r2 >:> { headers => 
         r2 >> headers("Content-Type").find { h => true }.map(mime_stream_parser(multipart_block)).get

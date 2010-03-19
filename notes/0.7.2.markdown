@@ -1,2 +1,7 @@
+* Use `defaultCharset` charset established by `>\` for POST `<<` and PUT `<<<`, [requested on the forum][charset]
 * Handler chaining with the `>+>` operator, to use more than one handler against the same request with overlapping scopes
-* Use `defaultCharset` charset established by `>\` for POST `<<` and PUT `<<<`
+* Multipart response handling with the [`>-->` operator][mime] in `dispatch-mime`, to support [Riak link-walking and map-reduce][riak]
+
+[charset]: http://n2.nabble.com/Charset-issue-td4664456.html#a4664456
+[riak]: http://blog.basho.com/2010/02/24/link-walking-by-example/
+[mime]: http://databinder.net/dispatch-doc/dispatch/mime/Mime$object.MimeRequest.html
