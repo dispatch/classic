@@ -17,9 +17,10 @@ import org.apache.http.client.utils.URLEncodedUtils
 
 import org.apache.http.entity.{StringEntity,FileEntity}
 import org.apache.http.message.BasicNameValuePair
-import org.apache.http.params.{HttpProtocolParams, BasicHttpParams}
+import org.apache.http.params.{HttpProtocolParams, BasicHttpParams, HttpParams}
 import org.apache.http.util.EntityUtils
 import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials, Credentials}
+import org.apache.http.conn.params.ConnRouteParams
 
 import org.apache.commons.codec.binary.Base64.encodeBase64
 
@@ -361,12 +362,21 @@ trait Handlers {
 /** Basic extension of DefaultHttpClient defaulting to Http 1.1, UTF8, and no Expect-Continue.
     Scopes authorization credentials to particular requests thorugh a DynamicVariable. */
 class ConfiguredHttpClient extends DefaultHttpClient { 
+  protected def configureProxy(params: HttpParams) = {
+    val sys = System.getProperties()
+    val host = sys.getProperty("https.proxyHost", sys.getProperty("http.proxyHost", ""))
+    val port = sys.getProperty("https.proxyPort", sys.getProperty("http.proxyPort", "0")).toInt
+    if (!"".equals(host) && (port != 0))
+      ConnRouteParams.setDefaultProxy(params, new HttpHost(host, port))
+    params
+  }
+
   override def createHttpParams = {
     val params = new BasicHttpParams
     HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1)
     HttpProtocolParams.setContentCharset(params, Request.factoryCharset)
     HttpProtocolParams.setUseExpectContinue(params, false)
-    params
+    configureProxy(params)
   }
   val credentials = new DynamicVariable[Option[(AuthScope, Credentials)]](None)
   setCredentialsProvider(new BasicCredentialsProvider {
