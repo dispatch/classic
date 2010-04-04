@@ -9,7 +9,7 @@ object Callbacks {
   import java.util.{ Timer, TimerTask }
   
   class HasCallbacks[T](f: Futures.Future[T]) {
-    def afterMatch(cb: PartialFunction[Any, Unit]) = Callbacks.after(f)(cb)
+    def afterMatch(cb: PartialFunction[Any, Unit]) = Callbacks.afterMatch(f)(cb)
     def after(cb: T => Any) = Callbacks.after(f)(cb)
   }
   
