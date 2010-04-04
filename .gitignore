@@ -3,8 +3,8 @@
 .settings
 target
 scratch.scala
-lib_managed/
+lib_managed
 project/boot
-project/plugins/project/
-src_managed/
+project/plugins/project
+src_managed
 *.cfg
