@@ -1,0 +1,4 @@
+* Proxy support contributed by [Max Afonov][maxaf], uses [standard system properties][jp].
+
+[maxaf]:http://github.com/maxaf
+[jp]:http://java.sun.com/javase/6/docs/technotes/guides/net/proxies.html
