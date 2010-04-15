@@ -14,7 +14,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   lazy val http_json = project("http+json", "Dispatch HTTP JSON", new HttpProject(_), http, json)
   lazy val lift_json = project("lift-json", "Dispatch lift-json", new DispatchModule(_) {
     val databinder_net = "databinder.net repository" at "http://databinder.net/repo"
-    val (lj_org, lj_name, lj_version) = ("net.liftweb", "lift-json", "2.0-M3")
+    val (lj_org, lj_name, lj_version) = ("net.liftweb", "lift-json", "2.0-M4")
     val lift_json =
       if (buildScalaVersion startsWith "2.7.") lj_org % lj_name % lj_version
       else lj_org %% lj_name % lj_version
