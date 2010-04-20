@@ -101,8 +101,9 @@ trait HttpExecutor {
     case (code, _, Some(ent)) => throw StatusCode(code, EntityUtils.toString(ent, Request.factoryCharset))
     case (code, _, _)         => throw StatusCode(code, "[no entity]")
   }
-  /** Apply a custom block in addition to predefined response Handler. */
-  final def also[A,B](hand: Handler[B])(block: Handler.F[A]) = 
+  /** Http#x and Handler#apply together for similar operations, and access to the first
+      handler's result value. See 404 test in HttpSpec for an example. */
+  @deprecated final def also[A,B](hand: Handler[B])(block: Handler.F[A]) = 
     x(hand.request) { (code, res, ent) => ( hand.block(code, res, ent), block(code, res, ent) ) }
   
   /** Apply handler block when response code is 200 - 204 */
