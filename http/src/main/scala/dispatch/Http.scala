@@ -237,8 +237,10 @@ class Request(
   /* Add a gzip acceptance header */
   def gzip = this <:< IMap("Accept-Encoding" -> "gzip")
 
-  /** Put the given object.toString. (new request, mimics) */
-  def <<< (body: Any) = next {
+  /** Use <<< with a string to post string content */
+  @deprecated def <<< (body: Any): Request = <<<(body.toString)
+  /** Put the given string. (new request, mimics) */
+  def <<< (body: String): Request = next {
     val m = new HttpPut
     m setEntity new StringEntity(body.toString, defaultCharset)
     HttpProtocolParams.setUseExpectContinue(m.getParams, false)
