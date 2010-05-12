@@ -161,7 +161,10 @@ object Handler {
   def apply[T](req: Request, block: HttpEntity => T): Handler[T] = 
     Handler(req, { (code, res, ent) => ent match {
       case Some(ent) => block(ent) 
-      case None => error("response has no entity: " + res)
+      case None => error("""
+        | Response has no HttpEntity: %s
+        | If no response body is expected, use a handler such as 
+        | Handlers#>| that does not require one.""".stripMargin.format(res))
     } } )
 }
 
