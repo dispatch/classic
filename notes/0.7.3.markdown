@@ -1,0 +1,8 @@
+* Proxy support contributed by [Max Afonov][maxaf], uses [standard system properties][jp].
+* lift-json dependency updated to [2.0-M4][m4]
+* Cross-published for [Scala 2.8.0.RC1][rc1]
+
+[maxaf]: http://github.com/maxaf
+[jp]: http://java.sun.com/javase/6/docs/technotes/guides/net/proxies.html
+[m4]: http://implicit.ly/ann-lift-20-m4-release
+[rc1]: http://www.scala-lang.org/node/5982

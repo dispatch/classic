@@ -101,8 +101,9 @@ trait HttpExecutor {
     case (code, _, Some(ent)) => throw StatusCode(code, EntityUtils.toString(ent, Request.factoryCharset))
     case (code, _, _)         => throw StatusCode(code, "[no entity]")
   }
-  /** Apply a custom block in addition to predefined response Handler. */
-  final def also[A,B](hand: Handler[B])(block: Handler.F[A]) = 
+  /** Http#x and Handler#apply together for similar operations, and access to the first
+      handler's result value. See 404 test in HttpSpec for an example. */
+  @deprecated final def also[A,B](hand: Handler[B])(block: Handler.F[A]) = 
     x(hand.request) { (code, res, ent) => ( hand.block(code, res, ent), block(code, res, ent) ) }
   
   /** Apply handler block when response code is 200 - 204 */
@@ -160,7 +161,10 @@ object Handler {
   def apply[T](req: Request, block: HttpEntity => T): Handler[T] = 
     Handler(req, { (code, res, ent) => ent match {
       case Some(ent) => block(ent) 
-      case None => error("response has no entity: " + res)
+      case None => error("""
+        | Response has no HttpEntity: %s
+        | If no response body is expected, use a handler such as 
+        | Handlers#>| that does not require one.""".stripMargin.format(res))
     } } )
 }
 
@@ -236,8 +240,10 @@ class Request(
   /* Add a gzip acceptance header */
   def gzip = this <:< IMap("Accept-Encoding" -> "gzip")
 
-  /** Put the given object.toString. (new request, mimics) */
-  def <<< (body: Any) = next {
+  /** Use <<< with a string to post string content */
+  @deprecated def <<< (body: Any): Request = <<<(body.toString)
+  /** Put the given string. (new request, mimics) */
+  def <<< (body: String): Request = next {
     val m = new HttpPut
     m setEntity new StringEntity(body.toString, defaultCharset)
     HttpProtocolParams.setUseExpectContinue(m.getParams, false)

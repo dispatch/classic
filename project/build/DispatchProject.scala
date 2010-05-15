@@ -14,7 +14,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   lazy val http_json = project("http+json", "Dispatch HTTP JSON", new HttpProject(_), http, json)
   lazy val lift_json = project("lift-json", "Dispatch lift-json", new DispatchModule(_) {
     val databinder_net = "databinder.net repository" at "http://databinder.net/repo"
-    val (lj_org, lj_name, lj_version) = ("net.liftweb", "lift-json", "2.0-M3")
+    val (lj_org, lj_name, lj_version) = ("net.liftweb", "lift-json", "2.0-M5")
     val lift_json =
       if (buildScalaVersion startsWith "2.7.") lj_org % lj_name % lj_version
       else lj_org %% lj_name % lj_version
@@ -42,20 +42,8 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
   Credentials(Path.userHome / ".ivy2" / ".credentials", log)
 
-  class DispatchModule(info: ProjectInfo) extends DefaultProject(info) with AutoCompilerPlugins {
+  class DispatchModule(info: ProjectInfo) extends DefaultProject(info) with sxr.Publish {
     val specs = "org.scala-tools.testing" % "specs" % "1.6.1" % "test->default"
-    val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % sxr_version)
-    override def excludeIDs = 
-      if (buildScalaInstance.version == "2.7.6") super.excludeIDs
-      else specs :: sxr :: super.excludeIDs.toList
-
-    def sxrMainPath = outputPath / "classes.sxr"
-    def sxrTestPath = outputPath / "test-classes.sxr"
-    def sxrPublishPath = Path.fromFile("/var/dbwww/sxr") / normalizedName / version.toString
-    lazy val publishSxr = 
-      syncTask(sxrMainPath, sxrPublishPath / "main") dependsOn(
-        syncTask(sxrTestPath, sxrPublishPath / "test") dependsOn(testCompile)
-      )
   }
     
   class HttpProject(info: ProjectInfo) extends DispatchModule(info) {
@@ -69,7 +57,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   
   lazy val publishExtras = task { None } dependsOn 
     (agg.doc :: examples.publishExamples :: publishCurrentNotes :: dispatch_modules.map { _.publishSxr } : _*)
-	
+
   class DispatchExamples(info: ProjectInfo) extends DefaultProject(info) with ArchetectProject {
     import Process._
 
