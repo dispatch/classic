@@ -7,6 +7,8 @@ import org.apache.http.params._
 import org.apache.http.conn.routing.HttpRoute
 import org.apache.http.conn.scheme._
 
+object GAEConnectionManager extends GAEConnectionManager
+
 class GAEConnectionManager extends ClientConnectionManager {
   val no_socket_factory = new SocketFactory {
     def connectSocket(sock: Socket, host: String, port: Int, localAddress: InetAddress, localPort: Int, params: HttpParams): Socket = null
@@ -20,20 +22,20 @@ class GAEConnectionManager extends ClientConnectionManager {
 
   override def getSchemeRegistry: SchemeRegistry = schemeRegistry
 
-  override def requestConnection(route: HttpRoute, state: AnyRef): ClientConnectionRequest =
+  override def requestConnection(route: HttpRoute, state: AnyRef): ClientConnectionRequest = {
+    val mgr = this
     new ClientConnectionRequest {
       def abortRequest = {}
-      def getConnection(timeout: Long, tunit: TimeUnit): ManagedClientConnection =
-        GAEConnectionManager.this.getConnection(route, state)
+      def getConnection(timeout: Long, tunit: TimeUnit): ManagedClientConnection = {
+	new GAEClientConnection(mgr, route, state)
+      }
     }
+  }
 
   override def releaseConnection(conn: ManagedClientConnection, validDuration: Long, timeUnit: TimeUnit) = {}
   override def closeIdleConnections(idletime: Long, tunit: TimeUnit) = {}
   override def closeExpiredConnections = {}
   override def shutdown = {}
-
-  private def getConnection(route: HttpRoute, state: AnyRef): ManagedClientConnection =
-    new GAEClientConnection(this, route, state)
 }
 
 import java.io._
@@ -61,7 +63,6 @@ class GAEClientConnection(var cm: ClientConnectionManager, var route: HttpRoute,
   def this(cm: ClientConnectionManager, route: HttpRoute, state: AnyRef) =
     this(cm, route, state, true)
 
-  private var connManager: ClientConnectionManager = _
   private var request: HTTPRequest = _
   private var response: HTTPResponse = _
   private var reusable: Boolean = _
@@ -175,10 +176,10 @@ class GAEClientConnection(var cm: ClientConnectionManager, var route: HttpRoute,
   override def getRemoteAddress: InetAddress = null
   override def getRemotePort: Int = {
     val host: HttpHost = route.getTargetHost
-    connManager.getSchemeRegistry.getScheme(host).resolvePort(host.getPort)
+    cm.getSchemeRegistry.getScheme(host).resolvePort(host.getPort)
   }
 
-  override def releaseConnection = connManager.releaseConnection(this, java.lang.Long.MAX_VALUE, TimeUnit.MILLISECONDS)
+  override def releaseConnection = cm.releaseConnection(this, java.lang.Long.MAX_VALUE, TimeUnit.MILLISECONDS)
 
   override def abortConnection = {
     unmarkReusable
