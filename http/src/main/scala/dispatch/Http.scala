@@ -21,6 +21,7 @@ import org.apache.http.params.{HttpProtocolParams, BasicHttpParams, HttpParams}
 import org.apache.http.util.EntityUtils
 import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials, Credentials}
 import org.apache.http.conn.params.ConnRouteParams
+import org.apache.http.conn.ClientConnectionManager
 
 import org.apache.commons.codec.binary.Base64.encodeBase64
 
@@ -373,14 +374,11 @@ trait Handlers {
   }
 }
 
-object ConfiguredHttpClient {
-  val GAE_TEST_CLASS = "com.google.appengine.api.utils.SystemProperty"
-  lazy val APP_ENGINE_? = try { Class.forName(GAE_TEST_CLASS); true } catch { case _ => false }
-}
-
 /** Basic extension of DefaultHttpClient defaulting to Http 1.1, UTF8, and no Expect-Continue.
     Scopes authorization credentials to particular requests thorugh a DynamicVariable. */
-class ConfiguredHttpClient extends DefaultHttpClient { 
+class ConfiguredHttpClient(conman: ClientConnectionManager) extends DefaultHttpClient(conman) { 
+  def this() = this(null)
+
   protected def configureProxy(params: HttpParams) = {
     val sys = System.getProperties()
     val host = sys.getProperty("https.proxyHost", sys.getProperty("http.proxyHost", ""))
