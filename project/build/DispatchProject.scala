@@ -14,12 +14,12 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   lazy val json = project("json", "Dispatch JSON", new DispatchModule(_))
   lazy val http_json = project("http+json", "Dispatch HTTP JSON", new HttpProject(_), http, json)
 
-  lazy val http_gae = project("http-gae", "Dispatch HTTP on App Engine", new HttpProject(_) {
+  lazy val http_gae = project("http-gae", "Dispatch HTTP GAE", new HttpProject(_) {
     val bum_gae = "bumnetworks GAE artifacts" at "http://www.bumnetworks.com/gae"
     val gae_api = "com.google.appengine" % "appengine-api-1.0-sdk" % "1.3.4"
   }, http)
 
-  lazy val http_gae_json = project("http-gae+json", "Dispatch HTTP on App Engine w/JSON", new HttpProject(_), http_gae, json)
+  lazy val http_gae_json = project("http-gae+json", "Dispatch HTTP GAE JSON", new HttpProject(_), http_gae, json)
 
   lazy val lift_json = project("lift-json", "Dispatch lift-json", new DispatchModule(_) {
     val databinder_net = "databinder.net repository" at "http://databinder.net/repo"
