@@ -367,6 +367,11 @@ trait Handlers {
   }
 }
 
+object ConfiguredHttpClient {
+  val GAE_TEST_CLASS = "com.google.appengine.api.utils.SystemProperty"
+  lazy val APP_ENGINE_? = try { Class.forName(GAE_TEST_CLASS); true } catch { case _ => false }
+}
+
 /** Basic extension of DefaultHttpClient defaulting to Http 1.1, UTF8, and no Expect-Continue.
     Scopes authorization credentials to particular requests thorugh a DynamicVariable. */
 class ConfiguredHttpClient extends DefaultHttpClient { 
