@@ -57,7 +57,7 @@ object OAuth {
   def callback(url: String) = IMap("oauth_callback" -> url)
   
   //normalize to OAuth percent encoding
-  private def %% (str: String): String = (Http % str) replace ("+", "%20") replace ("%7E", "~")
+  private def %% (str: String): String = (Http % str) replace ("+", "%20") replace ("%7E", "~") replace ("*", "%2A")
   private def %% (s: Seq[String]): String = s map %% mkString "&"
   private def %% (t: (String, Any)): (String, String) = (%%(t._1), %%(t._2.toString))
   
