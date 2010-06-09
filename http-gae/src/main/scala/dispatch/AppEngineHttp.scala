@@ -8,9 +8,9 @@ class AppEngineConfiguredClient(conman: ClientConnectionManager) extends Configu
   override protected def configureProxy(params: HttpParams) = params
 }
 
-object AppEngineHttp {
+object AppEngineHttp extends AppEngineHttp with HttpImplicits {
   import dispatch.gae._
-  val gae_connection_manager = new GAEConnectionManager
+  private val gae_connection_manager = new GAEConnectionManager
 }
 
 class AppEngineHttp extends Http {

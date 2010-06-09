@@ -409,7 +409,9 @@ class ConfiguredHttpClient(conman: ClientConnectionManager) extends DefaultHttpC
 trait Builder[T] { def product:T }
 
 /** May be used directly from any thread. */
-object Http extends Http with Threads {
+object Http extends Http with Threads with HttpImplicits
+
+trait HttpImplicits {
   /** import to support e.g. Http("http://example.com/" >>> System.out) */
   implicit def str2req(str: String) = new Request(str)
   
