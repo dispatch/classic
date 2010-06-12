@@ -19,8 +19,6 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
     val gae_api = "com.google.appengine" % "appengine-api-1.0-sdk" % "1.3.4"
   }, http)
 
-  lazy val http_gae_json = project("http-gae+json", "Dispatch HTTP GAE JSON", new HttpProject(_), http_gae, http_json)
-
   lazy val lift_json = project("lift-json", "Dispatch lift-json", new DispatchModule(_) {
     val databinder_net = "databinder.net repository" at "http://databinder.net/repo"
     val (lj_org, lj_name, lj_version) = ("net.liftweb", "lift-json", "2.0-M5")
