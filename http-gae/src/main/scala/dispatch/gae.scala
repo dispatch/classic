@@ -27,7 +27,7 @@ class GAEConnectionManager extends ClientConnectionManager {
     new ClientConnectionRequest {
       def abortRequest = {}
       def getConnection(timeout: Long, tunit: TimeUnit): ManagedClientConnection = {
-	new GAEClientConnection(mgr, route, state)
+        new GAEClientConnection(mgr, route, state)
       }
     }
   }
@@ -50,8 +50,6 @@ import org.apache.http.params._
 import org.apache.http.protocol._
 
 import com.google.appengine.api.urlfetch._
-
-import scala.collection.JavaConversions._
 
 object GAEClientConnection {
   private var urlFS: URLFetchService = URLFetchServiceFactory.getURLFetchService
@@ -128,7 +126,9 @@ class GAEClientConnection(var cm: ClientConnectionManager, var route: HttpRoute,
                                                        this.response.getResponseCode,
                                                        null)
 
-    for (h <- this.response.getHeaders) {
+    val i = this.response.getHeaders.iterator
+    while (i.hasNext) {
+      val h = i.next
       response.addHeader(h.getName, h.getValue)
     }
 
