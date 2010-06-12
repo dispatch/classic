@@ -1,1 +1,9 @@
 * Deprecate `Http#also` since `Http#x` with `Handler#apply`  can do the same thing, but better.
+* Deprecate <<< (a: Any) in favor of <<< (s: String)
+* Improve error message for [missing entity error][noentity]
+* [Encode asterisks][aster] according to the OAuth spec
+* Depend on lift-json M5
+* Cross-publish for Scala 2.8.0.RC3
+
+[noentity]: http://databinder.3617998.n2.nabble.com/No-Entity-Error-td5036081.html
+[aster]: http://github.com/n8han/Databinder-Dispatch/commit/24b4d7542cc59d582a2a3f06de5b08147ba9e7ce
