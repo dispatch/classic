@@ -9,6 +9,8 @@ import org.apache.http.conn.scheme._
 
 object GAEConnectionManager extends GAEConnectionManager
 
+// adapted from this Java impl: http://esxx.blogspot.com/2009/06/using-apaches-httpclient-on-google-app.html
+
 class GAEConnectionManager extends ClientConnectionManager {
   val no_socket_factory = new SocketFactory {
     def connectSocket(sock: Socket, host: String, port: Int, localAddress: InetAddress, localPort: Int, params: HttpParams): Socket = null
