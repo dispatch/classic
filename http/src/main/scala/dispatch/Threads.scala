@@ -2,8 +2,12 @@ package dispatch
 
 /** Http with a thread-safe client and non-blocking interfaces */
 trait Threads extends Http with FuturableExecutor {
-  override val client = new ThreadSafeHttpClient
-  /** Shutdown connection manager, threads. (Needed to close console cleanly.) */
+  override val client = new ThreadSafeHttpClient(maxConnections, maxConnectionsPerRoute)
+  /** Maximum number of connections in pool, default is 50 */
+  def maxConnections = 50
+  /** Maximum number of connections one one route, default is maxConnections */
+  def maxConnectionsPerRoute = maxConnections
+  /** Shutdown connection manager if no longer in use. */
   def shutdown() = client.getConnectionManager.shutdown()
 }
 trait FuturableExecutor extends HttpExecutor {
@@ -28,14 +32,18 @@ trait FuturableExecutor extends HttpExecutor {
 }
 
 /** Client with a ThreadSafeClientConnManager */
-class ThreadSafeHttpClient extends ConfiguredHttpClient {
+class ThreadSafeHttpClient(maxConnections: Int, maxConnectionsPerRoute: Int) 
+    extends ConfiguredHttpClient {
   import org.apache.http.conn.scheme.{Scheme,SchemeRegistry,PlainSocketFactory}
   import org.apache.http.conn.ssl.SSLSocketFactory
   import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
-  override def createClientConnectionManager() = {
+  override def createClientConnectionManager = {
     val registry = new SchemeRegistry()
     registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80))
     registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443))
-    new ThreadSafeClientConnManager(getParams(), registry)
+    val cm = new ThreadSafeClientConnManager(getParams(), registry)
+    cm.setMaxTotalConnections(maxConnections)
+    cm.setDefaultMaxPerRoute(maxConnectionsPerRoute)
+    cm
   }
 }
