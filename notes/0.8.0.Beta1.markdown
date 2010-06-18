@@ -2,7 +2,8 @@ Welcome to the Dispatch 0.8.0 release track! This line depends on HttpComponents
 
 Unless you need an 0.8 feature *now*, you can save yourself some trouble by staying with the 0.7 line, where all bug fixes as well as all new features that don't require HttpComponents 4.1 will land until the final release of 0.8.0.
 
-* New `http-gae` module for Google App Engine support, contributed by [maxaf][maxaf]!
-* Configurable max pooled connections in `dispatch.Threads`
+* New `http-gae` module for Google App Engine support, contributed by [maxaf][maxaf]
+* Configurable max pooled connections in [dispatch.Threads][threads]
 
 [maxaf]: http://github.com/maxaf
+[threads]: http://sourced.implicit.ly/net.databinder/dispatch-http/0.8.0.Beta1/Threads.scala.html#6788
