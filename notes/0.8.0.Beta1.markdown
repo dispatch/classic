@@ -1,4 +1,4 @@
-Welcome to the Dispatch 0.8.0 release track! This line depends on HttpComponents 4.1, currently in alpha2. To keep things simple we're just doing beta incrementals until they release a final (whenever that is).
+Welcome to the Dispatch 0.8.0 track! This line depends on HttpComponents 4.1, currently in alpha2. To keep things simple we're just doing beta incrementals until they release a final.
 
 Unless you need an 0.8 feature *now*, you can save yourself some trouble by staying with the 0.7 line, where all bug fixes as well as all new features that don't require HttpComponents 4.1 will land until the final release of 0.8.0.
 
