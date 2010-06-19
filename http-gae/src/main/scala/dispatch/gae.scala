@@ -103,9 +103,9 @@ class GAEClientConnection(var cm: ClientConnectionManager, var route: HttpRoute,
     }
     catch {
       case ex: URISyntaxException =>
-        throw new IOException("Malformed request URI: " + ex.getMessage, ex)
+        throw new IOException("Malformed request URI: " + ex.getMessage)
       case ex: IllegalArgumentException =>
-        throw new IOException("Unsupported HTTP method: " + ex.getMessage, ex)
+        throw new IOException("Unsupported HTTP method: " + ex.getMessage)
     }
 
     for (h <- request.getAllHeaders)
