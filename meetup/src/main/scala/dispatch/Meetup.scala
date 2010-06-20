@@ -281,5 +281,5 @@ private[meetup] class PhotoUploadBuilder(photo: Option[File], params: Map[String
   def photo(photo: File) = new PhotoUploadBuilder(Some(photo), params)
   val caption = param("caption")_
 
-  def complete = (_: Request) / "photo" <<? params <<* ("photo", photo.getOrElse { error("photo not specified for PhotoUpload") } )
+  def complete = (_: Request) / "photo" <<? params << ("photo", photo.getOrElse { error("photo not specified for PhotoUpload") } )
 }
