@@ -36,8 +36,8 @@ trait Method[T] extends MethodBuilder {
 trait ReadMethod extends Method[(List[JValue],List[JValue])] {
   def default_handler = _ ># (Response.results ~ Response.meta)
 }
-trait WriteMethod extends Method[WriteResponse] {
-  def default_handler = _ ># WriteResponse
+trait WriteMethod extends Method[JValue] {
+  def default_handler = _ ># identity[JValue]
 }
 
 /** Supplies a host and signs the request */
@@ -73,25 +73,14 @@ object Response {
   val results = 'results ? ary
   val meta = 'meta ? obj
 }
-case class WriteResponse(description: Option[String], details: Option[String], code: Option[String])
-object WriteResponse extends (JValue => WriteResponse) {
-  val description = 'description ? str
-  val details = 'details ? str
-  val code = 'code ? str
-  
-  def apply(js: JValue): WriteResponse = WriteResponse(
-    description(js).headOption,
-    details(js).headOption,
-    code(js).headOption
-  )
-}
+
 /** Metadata returned with every API response */
 object Meta {
   val count = 'count ? int
   val next = 'next ? str
   val total_count = 'total_count ? int
   val title = 'title ? str
-  val updated = 'updated ? date
+  val updated = 'updated ? datestr
   val description = 'description ? str
   val method = 'method ? str
   val link = 'link ? str
@@ -142,8 +131,8 @@ object Group extends Location {
   val id = 'id ? str
   val topics = 'topics ? ary
   val organizerProfileURL = 'organizerProfileURL ? str
-  val updated = 'updated ? date
-  val created = 'created ? date
+  val updated = 'updated ? datestr
+  val created = 'created ? datestr
   val description = 'description ? str
   val rating = 'rating ? str
   val members = 'members ? str
@@ -188,7 +177,7 @@ private[meetup] class EventsBuilder(params: Map[String, Any]) extends ReadMethod
 object Event extends Location {
   val name = 'name ? str
   val id = 'id ? str
-  val time = 'time ? date
+  val time = 'time ? datestr
   sealed abstract trait Status extends JString
   object Upcoming extends JString("upcoming") with Status
   object Past extends JString("past") with Status
@@ -226,7 +215,7 @@ object Event extends Location {
   val feecurrency = 'feecurrency ? str
   val feedesc = 'feedesc ? str
   val ismeetup = 'ismeetup ? str
-  val updated = 'updated ? date
+  val updated = 'updated ? datestr
   val questions = 'questions ? ary >>~> str 
 }
 
@@ -248,8 +237,8 @@ object Member extends Location {
   val id = 'id ? str
   val photo_url = 'photo_url ? str
   val link = 'link ? str
-  val visited = 'visited ? date
-  val joined = 'joined ? date
+  val visited = 'visited ? datestr
+  val joined = 'joined ? datestr
   val bio = 'bio ? str
 }
 
@@ -269,8 +258,8 @@ object Rsvp extends Location {
   val link = 'link ? str
   val comment = 'comment ? str
   val response = 'response ? str
-  val created = 'created ? date
-  val update = 'updated ? date
+  val created = 'created ? datestr
+  val update = 'updated ? datestr
 }
 
 object PhotoUpload extends PhotoUploadBuilder(None, Map())

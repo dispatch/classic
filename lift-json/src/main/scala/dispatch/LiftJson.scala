@@ -5,7 +5,9 @@ import net.liftweb.json._
 import JsonAST._
 import JsonDSL._
 
-object Js {
+import java.util.Date
+
+object Js extends TypeMappers {
   /** Add JSON-processing method ># to dispatch.Request */
   implicit def Request2JsonRequest(r: dispatch.Request) = new JsonRequest(r)
   /** Add String conversion since Http#str2req implicit will not chain. */
@@ -16,42 +18,14 @@ object Js {
     def ># [T](block: JValue => T) = r >- { s => block(JsonParser.parse(s)) }
     def as_pretty = ># { js => pretty(render(js))}
   }
-  val str: (JValue => List[String]) = {
-    case JString(s) => s :: Nil
-    case _ => Nil
-  }
-  val date = str // todo
-  val int: (JValue => List[BigInt]) = {
-    case JInt(i) => i :: Nil
-    case _ => Nil
-  }
-  val double: (JValue => List[Double]) = {
-    case JDouble(d) => d :: Nil
-    case _ => Nil
-  }
-  val bool: (JValue => List[Boolean]) = {
-    case JBool(b) => b :: Nil
-    case _ => Nil
-  }
-  val obj: (JValue => List[JField]) = {
-    case JObject(l) => l
-    case _ => Nil
-  }
-  val ary: (JValue => List[JValue]) = {
-    case JArray(l) => l
-    case _ => Nil
-  }
-  def in[T <: JValue](values: T*): (JValue => List[T]) = { value =>
-    values filter { _ == value } toList
-  }
-  implicit def jvlistcomb(block: JValue => List[JValue]) = new JvListComb(block)
-  class JvListComb(block: JValue => List[JValue]) {
+  implicit def jvlistcomb[LT](block: JValue => List[LT]) = new JvListComb(block)
+  class JvListComb[LT](block: JValue => List[LT]) {
     /** Synonym for Function1#andThen */
-    def ~>[T](next: List[JValue] => T) = block andThen next
+    def ~>[T](next: List[LT] => T) = block andThen next
     /** @return a function mapping next over block's output */
-    def >~>[T](next: JValue => T) = ~> { _ map next }
+    def >~>[T](next: LT => T) = ~> { _ map next }
     /** @return a function flat-mapping next over block's output */
-    def >>~>[T](next: JValue => List[T]) = ~> { _ flatMap next }
+    def >>~>[T](next: LT => List[T]) = ~> { _ flatMap next }
   }
   implicit def jvcomb[T](block: JValue => T) = new JvComb(block)
   class JvComb[T](block: JValue => T) {
@@ -70,5 +44,37 @@ object Js {
       case JField(name, value) if name == sym.name => block(value) 
       case _ => Nil
     }
+  }
+}
+trait TypeMappers {
+  import Js._
+  val str: (JValue => List[String]) = {
+    case JString(s) => s :: Nil
+    case _ => Nil
+  }
+  val datestr = str // todo
+  val int: (JValue => List[BigInt]) = {
+    case JInt(i) => i :: Nil
+    case _ => Nil
+  }
+  val date = int >~> { millis => new Date(millis.intValue) }
+  val double: (JValue => List[Double]) = {
+    case JDouble(d) => d :: Nil
+    case _ => Nil
+  }
+  val bool: (JValue => List[Boolean]) = {
+    case JBool(b) => b :: Nil
+    case _ => Nil
+  }
+  val obj: (JValue => List[JField]) = {
+    case JObject(l) => l
+    case _ => Nil
+  }
+  val ary: (JValue => List[JValue]) = {
+    case JArray(l) => l
+    case _ => Nil
+  }
+  def in[T <: JValue](values: T*): (JValue => List[T]) = { value =>
+    values filter { _ == value } toList
   }
 }
