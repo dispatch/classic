@@ -72,3 +72,19 @@ object Container {
   val created = 'created ? date
   val updated = 'updated ? date
 }
+
+object Events extends EventsMethod(Map.empty)
+private[everywhere] class EventsMethod(params: Map[String, Any]) extends ReadMethod {
+  private def param(key: String)(value: Any) = new EventsMethod(params + (key -> value))
+
+  val event_id = param("event_id")_
+  val urlname = param("urlname")_
+  val container_id = param("container_id")_
+  def geo(lat: BigDecimal, lon: BigDecimal) = param("lat")(lat).param("lon")(lon)
+  def before(date: Date) = param("before")(date.getTime)
+  def after(date: Date) = param("after")(date.getTime)
+  def upcoming = param("status")("upcoming")
+  def past = param("status")("past")
+  val fields = param("fields")_
+  def complete = (_: Request) / "events" <<? params
+}
