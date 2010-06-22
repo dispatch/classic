@@ -24,13 +24,12 @@ private[everywhere] class ContainersMethod(params: Map[String, Any]) extends Rea
   val urlname = param("urlname")_
   val container_id = param("container_id")_
   val link = param("link")_
-  val fields = param("fields")_
+  def fields(fields: Iterable[String]) = param("fields")(fields.mkString(","))
   def complete = (_: Request) / "containers" <<? params
 }
 
 trait ContainerMethod extends WriteMethod {
   protected def param(key: String)(value: Any): ContainerMethod
-  val name = param("name")_
   val description = param("description")_
   val link = param("link")_
   val link_name = param("link_name")_
@@ -43,7 +42,9 @@ trait ContainerMethod extends WriteMethod {
   def date_scheduling = param("scheduling")("date")
   def datetime_scheduling = param("scheduling")("datetime")
 }
-object ContainerCreate extends ContainerCreateMethod(Map.empty)
+object ContainerCreate {
+  def apply(name: String) = new ContainerCreateMethod(Map("name" -> name))
+}
 private[everywhere] class ContainerCreateMethod(params: Map[String, Any]) extends ContainerMethod {
   protected def param(key: String)(value: Any) = new ContainerCreateMethod(params + (key -> value))
   def complete = (_: Request) / "container" << params
@@ -51,6 +52,7 @@ private[everywhere] class ContainerCreateMethod(params: Map[String, Any]) extend
 object ContainerEdit { def apply(id: Int) = new ContainerEditMethod(id, Map.empty) }
 private[everywhere] class ContainerEditMethod(id: Int, params: Map[String, Any]) extends ContainerMethod {
   protected def param(key: String)(value: Any) = new ContainerEditMethod(id, params + (key -> value))
+  val name = param("name")_
   override def complete = (_: Request) / "container" / id.toString << params
 }
 
@@ -85,6 +87,34 @@ private[everywhere] class EventsMethod(params: Map[String, Any]) extends ReadMet
   def after(date: Date) = param("after")(date.getTime)
   def upcoming = param("status")("upcoming")
   def past = param("status")("past")
-  val fields = param("fields")_
+  def fields(fields: Iterable[String]) = param("fields")(fields.mkString(","))
   def complete = (_: Request) / "events" <<? params
+}
+trait EventMethod extends WriteMethod {
+  protected def param(key: String)(value: Any): EventMethod
+  def geo(lat: BigDecimal, lon: BigDecimal) = param("lat")(lat).param("lon")(lon)
+  def city(city: String, country: String) = param("city")(city).param("country")(country)
+  def cityUS(city: String, state: String) = param("city")(city).param("country")("us").param("state")(state)
+  val zip = param("zip")_
+  val address1 = param("address1")_
+  def time(time: Date) = param("time")(time.getTime)
+  val description = param("description")_
+  val title = param("title")_
+  val venue_name = param("venue_name")_
+  def fields(fields: Iterable[String]) = param("fields")(fields.mkString(","))
+}
+object EventCreate {
+  def apply(name: String) = new EventCreateMethod(Map.empty)
+}
+private[everywhere] class EventCreateMethod(params: Map[String, Any]) extends EventMethod {
+  protected def param(key: String)(value: Any) = new EventCreateMethod(params + (key -> value))
+  val urlname = param("urlname")_
+  val container_id = param("container_id")_
+  def complete = (_: Request) / "event" << params
+}
+object EventEdit { def apply(id: Int) = new EventEditMethod(id, Map.empty) }
+private[everywhere] class EventEditMethod(id: Int, params: Map[String, Any]) extends EventMethod {
+  protected def param(key: String)(value: Any) = new EventEditMethod(id, params + (key -> value))
+  def organize(setting: Boolean) = param("organize")(setting)
+  override def complete = (_: Request) / "event" / id.toString << params
 }
