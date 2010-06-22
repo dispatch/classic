@@ -59,9 +59,8 @@ trait TypeMappers {
   val date = int >~> { millis => new Date(millis.intValue) }
   def datestr(format: String) = {
     val df = new java.text.SimpleDateFormat(format)
-    str >>~> { ds => df.parse(ds) match {
-      case null => Nil
-      case date => date :: Nil
+    str >>~> { ds => try { df.parse(ds) :: Nil } catch {
+      case e: java.text.ParseException => Nil
     } }
   }
   val double: (JValue => List[Double]) = {
