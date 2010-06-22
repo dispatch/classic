@@ -13,6 +13,12 @@ import dispatch.mime.Mime._
 import java.util.Date
 import java.io.File
 
+/** Mapper specific to the Meetup API */
+object MeetupTypeMaps {
+  val mudatestr = datestr("EEE MMM dd HH:mm:ss")
+}
+import MeetupTypeMaps.mudatestr
+
 /** Client is a function to wrap API operations */
 abstract class Client extends ((Request => Request) => Request) {
   import Http.builder2product
@@ -80,7 +86,7 @@ object Meta {
   val next = 'next ? str
   val total_count = 'total_count ? int
   val title = 'title ? str
-  val updated = 'updated ? datestr
+  val updated = 'updated ? mudatestr
   val description = 'description ? str
   val method = 'method ? str
   val link = 'link ? str
@@ -131,8 +137,8 @@ object Group extends Location {
   val id = 'id ? str
   val topics = 'topics ? ary
   val organizerProfileURL = 'organizerProfileURL ? str
-  val updated = 'updated ? datestr
-  val created = 'created ? datestr
+  val updated = 'updated ? mudatestr
+  val created = 'created ? mudatestr
   val description = 'description ? str
   val rating = 'rating ? str
   val members = 'members ? str
@@ -177,7 +183,7 @@ private[meetup] class EventsBuilder(params: Map[String, Any]) extends ReadMethod
 object Event extends Location {
   val name = 'name ? str
   val id = 'id ? str
-  val time = 'time ? datestr
+  val time = 'time ? mudatestr
   sealed abstract trait Status extends JString
   object Upcoming extends JString("upcoming") with Status
   object Past extends JString("past") with Status
@@ -215,7 +221,7 @@ object Event extends Location {
   val feecurrency = 'feecurrency ? str
   val feedesc = 'feedesc ? str
   val ismeetup = 'ismeetup ? str
-  val updated = 'updated ? datestr
+  val updated = 'updated ? mudatestr
   val questions = 'questions ? ary >>~> str 
 }
 
@@ -237,8 +243,8 @@ object Member extends Location {
   val id = 'id ? str
   val photo_url = 'photo_url ? str
   val link = 'link ? str
-  val visited = 'visited ? datestr
-  val joined = 'joined ? datestr
+  val visited = 'visited ? mudatestr
+  val joined = 'joined ? mudatestr
   val bio = 'bio ? str
 }
 
@@ -258,8 +264,8 @@ object Rsvp extends Location {
   val link = 'link ? str
   val comment = 'comment ? str
   val response = 'response ? str
-  val created = 'created ? datestr
-  val update = 'updated ? datestr
+  val created = 'created ? mudatestr
+  val update = 'updated ? mudatestr
 }
 
 object PhotoUpload extends PhotoUploadBuilder(None, Map())

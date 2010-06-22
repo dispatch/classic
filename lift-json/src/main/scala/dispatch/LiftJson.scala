@@ -52,12 +52,18 @@ trait TypeMappers {
     case JString(s) => s :: Nil
     case _ => Nil
   }
-  val datestr = str // todo
   val int: (JValue => List[BigInt]) = {
     case JInt(i) => i :: Nil
     case _ => Nil
   }
   val date = int >~> { millis => new Date(millis.intValue) }
+  def datestr(format: String) = {
+    val df = new java.text.SimpleDateFormat(format)
+    str >>~> { ds => df.parse(ds) match {
+      case null => Nil
+      case date => date :: Nil
+    } }
+  }
   val double: (JValue => List[Double]) = {
     case JDouble(d) => d :: Nil
     case _ => Nil
