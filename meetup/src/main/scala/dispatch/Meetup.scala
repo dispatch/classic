@@ -39,10 +39,10 @@ trait Method[T] extends MethodBuilder {
   def default_handler: Request => Handler[T]
 }
 
-trait ReadMethod extends Method[(List[JValue],List[JValue])] {
+trait QueryMethod extends Method[(List[JValue],List[JValue])] {
   def default_handler = _ ># (Response.results ~ Response.meta)
 }
-trait WriteMethod extends Method[JValue] {
+trait ResourceMethod extends Method[JValue] {
   def default_handler = _ ># identity[JValue]
 }
 
@@ -93,7 +93,7 @@ object Meta {
   val url = 'url ? str
 }
 object Groups extends GroupsBuilder(Map())
-private[meetup] class GroupsBuilder(params: Map[String, Any]) extends ReadMethod {
+private[meetup] class GroupsBuilder(params: Map[String, Any]) extends QueryMethod {
   private def param(key: String)(value: Any) = new GroupsBuilder(params + (key -> value))
 
   val member_id = param("member_id")_
@@ -152,7 +152,7 @@ object Group extends Location {
 }
 
 object Events extends EventsBuilder(Map())
-private[meetup] class EventsBuilder(params: Map[String, Any]) extends ReadMethod {
+private[meetup] class EventsBuilder(params: Map[String, Any]) extends QueryMethod {
   private def param(key: String)(value: Any) = new EventsBuilder(params + (key -> value))
   private val df = new java.text.SimpleDateFormat("MMddyyyy")
   private def date_param(key: String)(value: Date) = param(key)(df.format(value))
@@ -226,7 +226,7 @@ object Event extends Location {
 }
 
 object Members extends MembersBuilder(Map())
-private[meetup] class MembersBuilder(params: Map[String, Any]) extends ReadMethod {
+private[meetup] class MembersBuilder(params: Map[String, Any]) extends QueryMethod {
   private def param(key: String)(value: Any) = new MembersBuilder(params + (key -> value))
 
   val member_id = param("member_id")_
@@ -249,7 +249,7 @@ object Member extends Location {
 }
 
 object Rsvps extends RsvpsBuilder(Map())
-private[meetup] class RsvpsBuilder(params: Map[String, Any]) extends ReadMethod {
+private[meetup] class RsvpsBuilder(params: Map[String, Any]) extends QueryMethod {
   private def param(key: String)(value: Any) = new RsvpsBuilder(params + (key -> value))
 
   val event_id = param("event_id")_
@@ -269,7 +269,7 @@ object Rsvp extends Location {
 }
 
 object PhotoUpload extends PhotoUploadBuilder(None, Map())
-private[meetup] class PhotoUploadBuilder(photo: Option[File], params: Map[String, Any]) extends WriteMethod {
+private[meetup] class PhotoUploadBuilder(photo: Option[File], params: Map[String, Any]) extends ResourceMethod {
   private def param(key: String)(value: Any) = new PhotoUploadBuilder(photo, params + (key -> value))
 
   val event_id = param("event_id")_

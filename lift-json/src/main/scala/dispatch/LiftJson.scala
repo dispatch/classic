@@ -82,4 +82,7 @@ trait TypeMappers {
   def in[T <: JValue](values: T*): (JValue => List[T]) = { value =>
     values filter { _ == value } toList
   }
+  class Obj(name: Symbol) extends (JValue => List[JField]) {
+    def apply(jv: JValue) = (name ? obj)(jv)
+  }
 }
