@@ -77,6 +77,25 @@ object Container {
   val updated = 'updated ? date
 }
 
+object AlertsGet {
+  def apply(container_id: Int) = new ResourceMethod {
+    def complete = (_: Request) / "container" / container_id.toString / "alerts"
+  }
+}
+object Alerts {
+  val comments = 'comments ? bool
+  val rsvps = 'rsvps ? bool
+  val updates = 'updates ? bool
+}
+object AlertsEdit { def apply(container_id: Int) = new AlertsEditMethod(container_id, Map.empty) }
+private[everywhere] class AlertsEditMethod(container_id: Int, params: Map[String, Boolean]) extends ResourceMethod {
+  protected def param(key: String)(value: Boolean) = new AlertsEditMethod(container_id, params + (key -> value))
+  val comments = param("comments")_
+  val rsvps = param("rsvps")_
+  val updates = param("updates")_
+  def complete = (_: Request) / "container" / container_id.toString / "alerts" << params
+}
+
 object Events extends EventsMethod(Map.empty)
 private[everywhere] class EventsMethod(params: Map[String, Any]) extends QueryMethod {
   private def param(key: String)(value: Any) = new EventsMethod(params + (key -> value))
@@ -150,11 +169,13 @@ object Event {
     val name = this >>~> 'name ? str
     val urlname = this >>~> 'urlname ? str
   }
-  object organizer extends Obj('organizer){
-    val member_id = this >>~> 'member_id ? int
-    val name = this >>~> 'name ? str
-  }
+  object organizer extends MemberSummary('organizer)
   val rsvp_count = 'rsvp_count ? int
+}
+
+private[everywhere] class MemberSummary(property: Symbol) extends Obj(property) {
+  val member_id = this >>~> 'member_id ? int
+  val name = this >>~> 'name ? str
 }
 
 object Rsvps extends RsvpsMethod(Map.empty)
@@ -164,4 +185,49 @@ private[everywhere] class RsvpsMethod(params: Map[String, Any]) extends QueryMet
   val event_id = param("event_id")_
   val member_id = param("member_id")_
   def complete = (_: Request) / "rsvps" <<? params
+}
+object RsvpCreate {
+  def apply(event_id: Int) = new ResourceMethod {
+    def complete = (_: Request) / "rsvp" << Map("event_id" -> event_id)
+  }
+}
+object RsvpDelete {
+  def apply(event_id: Int) = new ResourceMethod {
+    def complete = (_: Request).DELETE / "rsvp" / event_id.toString
+  }
+}
+object Rsvp {
+  val id = 'id ? int
+  val event_id = 'event_id ? int
+  val created = 'created ? date
+  object member extends MemberSummary('member)
+}
+
+object Comments extends CommentsMethod(Map.empty)
+private[everywhere] class CommentsMethod(params: Map[String, Any]) extends QueryMethod {
+  private def param(key: String)(value: Any) = new CommentsMethod(params + (key -> value))
+
+  val container_id = param("container_id")_
+  val urlname = param("urlname")_
+  val event_id = param("event_id")_
+  val member_id = param("member_id")_
+  val comment_id = param("comment_id")_
+  def complete = (_: Request) / "comments" <<? params
+}
+object CommentCreate {
+  def apply(event_id: Int, comment: String) = new ResourceMethod {
+    def complete = (_: Request) / "comment" << Map("event_id" -> event_id, "comment" -> comment)
+  }
+}
+object CommentDelete {
+  def apply(comment_id: Int) = new ResourceMethod {
+    def complete = (_: Request).DELETE / "comment" / comment_id.toString
+  }
+}
+object Comment {
+  val id = 'id ? int
+  val comment = 'comment ? str
+  val event_id = 'event_id ? int
+  val created = 'created ? date
+  object member extends MemberSummary('member)
 }
