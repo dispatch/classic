@@ -29,7 +29,7 @@ object Couch {
 case class Db(couch: Couch, name: String) extends Request(couch / name) with Js {
   val all_docs =  this / "_all_docs" ># Couch.id_rows
 
-  val create = this <<< Nil >|
+  val create = this <<< "" >|
   val delete = DELETE >|
 }
 
@@ -37,7 +37,7 @@ import java.net.URLEncoder.encode
 
 /** Requests on a particular document in a particular database. */
 case class Doc(db: Db, id: String) extends Request(db / encode(id)) with Js {
-  def update(js: JsValue) = this <<< js ># { 
+  def update(js: JsValue) = this <<< js.toString ># { 
     case Updated.rev(rev) => (Id._rev << rev)(js)
   }
   private object Updated { val rev = 'rev ? str }

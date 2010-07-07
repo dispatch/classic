@@ -21,7 +21,13 @@ abstract class Client extends ((Request => Request) => Request) {
     http(method.default_handler(apply(method)))
 }
 
-trait Method[T] extends Builder[Request => Request] {
+trait MethodBuilder extends Builder[Request => Request] {
+  final def product = setup andThen complete
+  def setup = identity[Request] _
+  def complete: Request => Request
+}
+
+trait Method[T] extends MethodBuilder {
   /** default handler used by Client#call. You can also apply the client 
       to a Method and define your own request handler. */
   def default_handler: Request => Handler[T]
@@ -30,8 +36,8 @@ trait Method[T] extends Builder[Request => Request] {
 trait ReadMethod extends Method[(List[JValue],List[JValue])] {
   def default_handler = _ ># (Response.results ~ Response.meta)
 }
-trait WriteMethod extends Method[(List[String],List[String])] {
-  def default_handler = _ ># (WriteResponse.description ~ WriteResponse.details)
+trait WriteMethod extends Method[WriteResponse] {
+  def default_handler = _ ># WriteResponse
 }
 
 /** Supplies a host and signs the request */
@@ -67,9 +73,17 @@ object Response {
   val results = 'results ? ary
   val meta = 'meta ? obj
 }
-object WriteResponse {
+case class WriteResponse(description: Option[String], details: Option[String], code: Option[String])
+object WriteResponse extends (JValue => WriteResponse) {
   val description = 'description ? str
   val details = 'details ? str
+  val code = 'code ? str
+  
+  def apply(js: JValue): WriteResponse = WriteResponse(
+    description(js).headOption,
+    details(js).headOption,
+    code(js).headOption
+  )
 }
 /** Metadata returned with every API response */
 object Meta {
@@ -104,7 +118,8 @@ private[meetup] class GroupsBuilder(params: Map[String, Any]) extends ReadMethod
   def order_location = order("location")
   def order_members = order("members")
 
-  def product = (_: Request) / "groups" <<? params
+  // the type of Response can be inferred when support for 2.8 RCs is dropped
+  def complete = (_: Request) / "groups" <<? params
 }
 
 trait Location {
@@ -167,7 +182,7 @@ private[meetup] class EventsBuilder(params: Map[String, Any]) extends ReadMethod
   def order_location = order("location")
   def order_topic = order("topic")
 
-  def product = (_: Request) / "events" <<? params
+  def complete = (_: Request) / "events" <<? params
 }
 
 object Event extends Location {
@@ -225,7 +240,7 @@ private[meetup] class MembersBuilder(params: Map[String, Any]) extends ReadMetho
   def topic(topic: Any, groupnum: Any) = param("topic")(topic).param("groupnum")(groupnum)
   val group_urlname = param("group_urlname")_
 
-  def product = (_: Request) / "members" <<? params
+  def complete = (_: Request) / "members" <<? params
 }
 
 object Member extends Location {
@@ -244,7 +259,7 @@ private[meetup] class RsvpsBuilder(params: Map[String, Any]) extends ReadMethod 
 
   val event_id = param("event_id")_
 
-  def product = (_: Request) / "rsvps" <<? params
+  def complete = (_: Request) / "rsvps" <<? params
 }
 
 object Rsvp extends Location {
@@ -266,5 +281,5 @@ private[meetup] class PhotoUploadBuilder(photo: Option[File], params: Map[String
   def photo(photo: File) = new PhotoUploadBuilder(Some(photo), params)
   val caption = param("caption")_
 
-  def product = (_: Request) / "photo" <<? params <<* ("photo", photo.getOrElse { error("photo not specified for PhotoUpload") } )
+  def complete = (_: Request) / "photo" <<? params <<* ("photo", photo.getOrElse { error("photo not specified for PhotoUpload") } )
 }
