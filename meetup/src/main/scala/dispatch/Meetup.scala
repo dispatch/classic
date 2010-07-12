@@ -66,13 +66,13 @@ object Auth {
   def request_token(consumer: Consumer): Handler[Token] = request_token(consumer, OAuth.oob)
 
   def request_token(consumer: Consumer, callback_url: String) = 
-    svc / "request/" << OAuth.callback(callback_url) <@ consumer as_token
+    svc / "request" << OAuth.callback(callback_url) <@ consumer as_token
 
-  def authorize_url(token: Token) = host / "authorize/" <<? token
+  def authorize_url(token: Token) = host / "authorize" <<? token
   def m_authorize_url(token: Token) = authorize_url(token) <<? Map("set_mobile" -> "on")
   
   def access_token(consumer: Consumer, token: Token, verifier: String) = 
-    svc.POST / "access/" <@ (consumer, token, verifier) as_token
+    svc.POST / "access" <@ (consumer, token, verifier) as_token
 }
 
 object Response {
