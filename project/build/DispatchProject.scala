@@ -43,7 +43,11 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   Credentials(Path.userHome / ".ivy2" / ".credentials", log)
 
   class DispatchModule(info: ProjectInfo) extends DefaultProject(info) with sxr.Publish {
-    val specs = "org.scala-tools.testing" % "specs" % "1.6.1" % "test->default"
+    val specs =
+      if (buildScalaVersion startsWith "2.7.") 
+        "org.scala-tools.testing" % "specs" % "1.6.2.2" % "test->default"
+      else
+        "org.scala-tools.testing" %% "specs" % "1.6.5" % "test->default"
   }
     
   class HttpProject(info: ProjectInfo) extends DispatchModule(info) {
