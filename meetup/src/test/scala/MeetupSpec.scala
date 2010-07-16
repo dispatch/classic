@@ -7,13 +7,18 @@ object MeetupSpec extends Specification {
   import oauth._
   import Http._
   
-  val conf = new java.io.File("meetup.test.cfg")
+  val conf = new java.io.File("meetup.test.properties")
   if (conf.exists) {
-    import _root_.net.lag.configgy.{Configgy => C}
-    C.configure(conf.getPath)
+    val config = {
+      val stm = new java.io.FileInputStream(conf)
+      val props = new java.util.Properties
+      props.load(stm)
+      stm.close()
+      props
+    }
     
-    val consumer = Consumer(C.config.getString("oauth_consumer_key").get, C.config.getString("oauth_consumer_secret").get)
-    val Some(token) = Token(C.config.asMap)
+    val consumer = Consumer(config.getProperty("oauth_consumer_key"), config.getProperty("oauth_consumer_secret"))
+    val token = Token(config.getProperty("oauth_token"), config.getProperty("oauth_token_secret"))
     val client = OAuthClient(consumer, token)
     val nyseID = "05002008"
 
