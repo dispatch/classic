@@ -113,8 +113,7 @@ private[meetup] class GroupsBuilder(params: Map[String, Any]) extends QueryMetho
   def order_location = order("location")
   def order_members = order("members")
 
-  // the type of Response can be inferred when support for 2.8 RCs is dropped
-  def complete = (_: Request) / "groups" <<? params
+  def complete = _ / "groups" <<? params
 }
 
 trait Location {
@@ -177,7 +176,7 @@ private[meetup] class EventsBuilder(params: Map[String, Any]) extends QueryMetho
   def order_location = order("location")
   def order_topic = order("topic")
 
-  def complete = (_: Request) / "events" <<? params
+  def complete = _ / "events" <<? params
 }
 
 object Event extends Location {
@@ -235,7 +234,7 @@ private[meetup] class MembersBuilder(params: Map[String, Any]) extends QueryMeth
   def topic(topic: Any, groupnum: Any) = param("topic")(topic).param("groupnum")(groupnum)
   val group_urlname = param("group_urlname")_
 
-  def complete = (_: Request) / "members" <<? params
+  def complete = _ / "members" <<? params
 }
 
 object Member extends Location {
@@ -254,7 +253,7 @@ private[meetup] class RsvpsBuilder(params: Map[String, Any]) extends QueryMethod
 
   val event_id = param("event_id")_
 
-  def complete = (_: Request) / "rsvps" <<? params
+  def complete = _ / "rsvps" <<? params
 }
 
 object Rsvp extends Location {
@@ -276,5 +275,5 @@ private[meetup] class PhotoUploadBuilder(photo: Option[File], params: Map[String
   def photo(photo: File) = new PhotoUploadBuilder(Some(photo), params)
   val caption = param("caption")_
 
-  def complete = (_: Request) / "photo" <<? params << ("photo", photo.getOrElse { error("photo not specified for PhotoUpload") } )
+  def complete = _ / "photo" <<? params << ("photo", photo.getOrElse { error("photo not specified for PhotoUpload") } )
 }
