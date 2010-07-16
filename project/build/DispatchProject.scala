@@ -54,7 +54,6 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
     val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.0.1"
     val jcip = "net.jcip" % "jcip-annotations" % "1.0" % "provided->default"
     val lag_net = "lag.net repository" at "http://www.lag.net/repo"
-    val configgy_test = "net.lag" % "configgy" % "1.4" % "test->default"
   }
   
   override def extraTags = "configgy" :: Nil
