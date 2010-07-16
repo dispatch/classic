@@ -114,7 +114,7 @@ object JsonSpec extends Specification {
       res ># { ('a ! obj) andThen ('b ! obj) andThen ('pi ! num) } must_== 3.14159265
     }
     "work with map" in {
-      List(js, js, js).map ('b ! (list ! num)) must_== List.tabulate(3, _ => List(1,2,3))
+      List(js, js, js).map ('b ! (list ! num)) must_== (1 to 3).map{ _ => List(1,2,3) }.toList
     }
     def fun_l[T](ext: JsF[T]) = ext(js_list)
     "extract unenclosed Json list" in {
