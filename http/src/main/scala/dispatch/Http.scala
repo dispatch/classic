@@ -101,10 +101,6 @@ trait HttpExecutor {
     case (code, _, Some(ent)) => throw StatusCode(code, EntityUtils.toString(ent, Request.factoryCharset))
     case (code, _, _)         => throw StatusCode(code, "[no entity]")
   }
-  /** Http#x and Handler#apply together for similar operations, and access to the first
-      handler's result value. See 404 test in HttpSpec for an example. */
-  @deprecated final def also[A,B](hand: Handler[B])(block: Handler.F[A]) = 
-    x(hand.request) { (code, res, ent) => ( hand.block(code, res, ent), block(code, res, ent) ) }
   
   /** Apply handler block when response code is 200 - 204 */
   final def apply[T](hand: Handler[T]) = (this when {code => (200 to 204) contains code})(hand)
@@ -176,7 +172,6 @@ trait Post[P <: Post[P]] extends HttpPost { self: P =>
 }
 /** Standard, URL-encoded form posting */
 class SimplePost(val oauth_values: IMap[String, Any], charset: String) extends Post[SimplePost] { 
-  @deprecated def this(oauth_values: IMap[String, Any]) = this(oauth_values, Request.factoryCharset)
   this setEntity new UrlEncodedFormEntity(Http.map2ee(oauth_values), charset)
   def add(more: Map[String, Any]) = new SimplePost(oauth_values ++ more.elements, charset)
 }
@@ -240,8 +235,6 @@ class Request(
   /* Add a gzip acceptance header */
   def gzip = this <:< IMap("Accept-Encoding" -> "gzip")
 
-  /** Use <<< with a string to post string content */
-  @deprecated def <<< (body: Any): Request = <<<(body.toString)
   /** Put the given string. (new request, mimics) */
   def <<< (body: String): Request = next {
     val m = new HttpPut
