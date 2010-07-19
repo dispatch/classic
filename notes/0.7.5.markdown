@@ -1,0 +1,5 @@
+* [Meetup Everywhere API][everywhere] wrapper in [Everywhere.scala][source]
+* Cross-built for Scala 2.7.5, 2.7.6, 2.7.7, *and* 2.8.0
+
+[everywhere]: http://www.meetup.com/meetup_api/everywhere
+[source]: http://sourced.implicit.ly/net.databinder/dispatch-meetup/0.7.5/dispatch/Everywhere.scala.html
