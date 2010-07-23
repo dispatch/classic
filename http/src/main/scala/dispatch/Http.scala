@@ -371,10 +371,10 @@ trait Handlers {
 class ConfiguredHttpClient extends DefaultHttpClient { 
   protected def configureProxy(params: HttpParams) = {
     val sys = System.getProperties()
-    val host = sys.getProperty("https.proxyHost", sys.getProperty("http.proxyHost", ""))
-    val port = sys.getProperty("https.proxyPort", sys.getProperty("http.proxyPort", "0")).toInt
-    if (!"".equals(host) && (port != 0))
-      ConnRouteParams.setDefaultProxy(params, new HttpHost(host, port))
+    val host = sys.getProperty("https.proxyHost", sys.getProperty("http.proxyHost"))
+    val port = sys.getProperty("https.proxyPort", sys.getProperty("http.proxyPort"))
+    if (host != null && port != null)
+      ConnRouteParams.setDefaultProxy(params, new HttpHost(host, port.toInt))
     params
   }
 
