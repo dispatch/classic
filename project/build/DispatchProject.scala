@@ -27,6 +27,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
 
   lazy val examples = project("examples", "Dispatch Examples", new DispatchExamples(_))
   lazy val agg = project("agg", "Databinder Dispatch", new AggregateProject(_) {
+    override def disableCrossPaths = true
     def projects = dispatch_modules
   })
   
