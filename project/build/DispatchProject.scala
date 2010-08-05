@@ -56,8 +56,6 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
     val lag_net = "lag.net repository" at "http://www.lag.net/repo"
   }
   
-  override def extraTags = "configgy" :: Nil
-  
   lazy val publishExtras = task { None } dependsOn 
     (agg.doc :: examples.publishExamples :: publishCurrentNotes :: dispatch_modules.map { _.publishSxr } : _*)
 
