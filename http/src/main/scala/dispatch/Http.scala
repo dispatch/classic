@@ -385,6 +385,14 @@ class ConfiguredHttpClient extends DefaultHttpClient {
     HttpProtocolParams.setUseExpectContinue(params, false)
     configureProxy(params)
   }
+  /** Follow response redirect regardless of request method */
+  override def createRedirectHandler = new org.apache.http.impl.client.DefaultRedirectHandler {
+    import org.apache.http.protocol.HttpContext
+    import org.apache.http.HttpStatus._
+    override def isRedirectRequested(res: HttpResponse, ctx: HttpContext) =
+      (SC_MOVED_TEMPORARILY :: SC_MOVED_PERMANENTLY :: SC_TEMPORARY_REDIRECT :: 
+       SC_SEE_OTHER :: Nil) contains res.getStatusLine.getStatusCode
+  }
   val credentials = new DynamicVariable[Option[(AuthScope, Credentials)]](None)
   setCredentialsProvider(new BasicCredentialsProvider {
     override def getCredentials(scope: AuthScope) = credentials.value match {
