@@ -3,24 +3,20 @@ package dispatch
 import io.Source
 import collection.Map
 import collection.immutable.{Map => IMap}
-import util.DynamicVariable
 import java.io.{InputStream,OutputStream,BufferedInputStream,BufferedOutputStream,File}
 import java.net.URI
 import java.util.zip.GZIPInputStream
 
-import org.apache.http._
-import org.apache.http.client._
-import org.apache.http.impl.client.{DefaultHttpClient, BasicCredentialsProvider}
+import org.apache.http.{HttpHost,HttpResponse,HttpEntity}
 import org.apache.http.client.methods._
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.utils.URLEncodedUtils
+import org.apache.http.auth.{AuthScope,UsernamePasswordCredentials,Credentials}
+import org.apache.http.params.HttpProtocolParams
 
 import org.apache.http.entity.{StringEntity,FileEntity}
 import org.apache.http.message.BasicNameValuePair
-import org.apache.http.params.{HttpProtocolParams, BasicHttpParams, HttpParams}
 import org.apache.http.util.EntityUtils
-import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials, Credentials}
-import org.apache.http.conn.params.ConnRouteParams
 
 import org.apache.commons.codec.binary.Base64.encodeBase64
 
@@ -364,42 +360,6 @@ trait Handlers {
       (block(new Handlers { val request = /\})).block(code, res, opt_ent).block(code, res, opt_ent)
     } )
   }
-}
-
-/** Basic extension of DefaultHttpClient defaulting to Http 1.1, UTF8, and no Expect-Continue.
-    Scopes authorization credentials to particular requests thorugh a DynamicVariable. */
-class ConfiguredHttpClient extends DefaultHttpClient { 
-  protected def configureProxy(params: HttpParams) = {
-    val sys = System.getProperties()
-    val host = sys.getProperty("https.proxyHost", sys.getProperty("http.proxyHost"))
-    val port = sys.getProperty("https.proxyPort", sys.getProperty("http.proxyPort"))
-    if (host != null && port != null)
-      ConnRouteParams.setDefaultProxy(params, new HttpHost(host, port.toInt))
-    params
-  }
-
-  override def createHttpParams = {
-    val params = new BasicHttpParams
-    HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1)
-    HttpProtocolParams.setContentCharset(params, Request.factoryCharset)
-    HttpProtocolParams.setUseExpectContinue(params, false)
-    configureProxy(params)
-  }
-  /** Follow response redirect regardless of request method */
-  override def createRedirectHandler = new org.apache.http.impl.client.DefaultRedirectHandler {
-    import org.apache.http.protocol.HttpContext
-    import org.apache.http.HttpStatus._
-    override def isRedirectRequested(res: HttpResponse, ctx: HttpContext) =
-      (SC_MOVED_TEMPORARILY :: SC_MOVED_PERMANENTLY :: SC_TEMPORARY_REDIRECT :: 
-       SC_SEE_OTHER :: Nil) contains res.getStatusLine.getStatusCode
-  }
-  val credentials = new DynamicVariable[Option[(AuthScope, Credentials)]](None)
-  setCredentialsProvider(new BasicCredentialsProvider {
-    override def getCredentials(scope: AuthScope) = credentials.value match {
-      case Some((auth_scope, creds)) if scope.`match`(auth_scope) >= 0 => creds
-      case _ => null
-    }
-  })
 }
 
 /** Used by client APIs to build Handler or other objects via chaining, completed implicitly.
