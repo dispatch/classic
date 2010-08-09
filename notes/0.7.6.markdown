@@ -1,0 +1,1 @@
+* Enabled redirect handling for all request methods
