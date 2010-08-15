@@ -28,12 +28,14 @@ trait Logger { def info(msg: String, items: Any*) }
 
 /** Http access point. Standard instances to be used by a single thread. */
 class Http extends HttpExecutor {
-  val client = new ConfiguredHttpClient
+  val client = make_client
+  /** Defaults to dispatch.ConfiguredHttpClient, override to customize. */
+  def make_client = new ConfiguredHttpClient
   
-  lazy val log: Logger = get_logger
+  lazy val log: Logger = make_logger
 
   /** Info Logger for this instance, default returns Connfiggy if on classpath else console logger. */
-  def get_logger = try {
+  def make_logger = try {
     new Logger {
       def getObject(name: String) = Class.forName(name + "$").getField("MODULE$").get(null)
       // using delegate, repeating parameters aren't working with structural typing in 2.7.x
