@@ -50,10 +50,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   class HttpProject(info: ProjectInfo) extends DispatchModule(info) {
     val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.0.1"
     val jcip = "net.jcip" % "jcip-annotations" % "1.0" % "provided->default"
-    val lag_net = "lag.net repository" at "http://www.lag.net/repo"
   }
-  
-  override def extraTags = "configgy" :: Nil
   
   lazy val publishExtras = task { None } dependsOn 
     (agg.doc :: examples.publishExamples :: publishCurrentNotes :: dispatch_modules.map { _.publishSxr } : _*)
