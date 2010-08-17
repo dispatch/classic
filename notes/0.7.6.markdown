@@ -1,0 +1,4 @@
+* Support for Google [ClientLogin] authorization by [Chris Lewis]
+
+[ClientLogin]: http://code.google.com/apis/accounts/docs/AuthForInstalledApps.html
+[Chris Lewis]: http://github.com/chrislewis
