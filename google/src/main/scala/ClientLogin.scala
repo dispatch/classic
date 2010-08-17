@@ -44,7 +44,7 @@ object ClientLogin {
   class RequestSigner(r: Request) {
     def <@(token: Token) = r <:< Map("Authorization" -> ("GoogleLogin auth=" + token.value))
     /* Extract an authorized token from a response source. */
-    def authorizer = r >~ { auth_token(_).getOrElse { error("Authorization response contained no token!") }}
+    def authorize = r >~ { auth_token(_).getOrElse { error("Authorization response contained no token!") }}
   }
   
   implicit def AuthRequest2Request(a_req: AuthRequest) = svc << a_req.as_map
