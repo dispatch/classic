@@ -1,3 +1,7 @@
 * Enabled redirect handling for all request methods
 * Dropped compilation for Scala 2.7.5, 2.7.6
 * dispatch-lift-json depends lift-json 2.1-M1
+* Support for Google [ClientLogin] authorization by [Chris Lewis]
+
+[ClientLogin]: http://code.google.com/apis/accounts/docs/AuthForInstalledApps.html
+[Chris Lewis]: http://github.com/chrislewis

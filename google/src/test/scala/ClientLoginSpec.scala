@@ -16,10 +16,9 @@ object ClientLoginSpec extends Specification {
     "find contacts" in {
       val http = new Http
       val auth_req = AuthRequest("cp", email, password)
-
-      val res = http(auth_req >~ auth_token) map { t: Token =>
-        http(:/("www.google.com") / "m8" / "feeds" / "contacts" / auth_req.email / "full" <@ t <> { _ \\ "feed" })
-      }
+      
+      val token = http(auth_req authorize)
+      val res = http(:/("www.google.com") / "m8" / "feeds" / "contacts" / auth_req.email / "full" <@ token <> { _ \\ "feed" })
       
       res must notBeEmpty
       res map { _ \ "entry" must notBeEmpty }
