@@ -26,6 +26,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
     override def disableCrossPaths = true
     def projects = dispatch_modules
   })
+  lazy val google = project("google", "Google", new DispatchModule(_), http)
   
   def dispatch_modules = subProjects.values.toList.flatMap {
     case dm: DispatchModule => List(dm)
