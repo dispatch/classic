@@ -109,6 +109,7 @@ trait Js {
     /** @return an assertion extracting function (JsF) */
     def ! [T](cst: Extract[T]): JsF[T] = Js.ext2fun(new Property(sym, cst))
 
+    /** @return a optional extracting function */
     def ?? [T](cst: Extract[T]): JsValue => Option[T] = jsv => new Property(sym,cst).unapply(jsv) 
     
     /** @return new JsObject with the given sym property replaced by t */
