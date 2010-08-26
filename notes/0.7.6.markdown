@@ -1,1 +1,3 @@
 * Enabled redirect handling for all request methods
+* Depends on lift-json 2.0-M5
+* Added the optional "oauth_version" parameter to the OAuth Authorization header, because stream.twitter.com requires it.
