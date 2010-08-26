@@ -29,7 +29,8 @@ object OAuth {
       "oauth_consumer_key" -> consumer.key,
       "oauth_signature_method" -> "HMAC-SHA1",
       "oauth_timestamp" -> (System.currentTimeMillis / 1000).toString,
-      "oauth_nonce" -> System.nanoTime.toString
+      "oauth_nonce" -> System.nanoTime.toString,
+      "oauth_version" -> "1.0"
     ) ++ token.map { "oauth_token" -> _.value } ++ 
       verifier.map { "oauth_verifier" -> _ }
     
