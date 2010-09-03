@@ -21,6 +21,8 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   lazy val twitter = project("twitter", "Dispatch Twitter", new DispatchModule(_), http, json, http_json, oauth)
   lazy val meetup = project("meetup", "Dispatch Meetup", new DispatchModule(_), http, lift_json, oauth, mime)
 
+  lazy val aws_s3 = project("aws-s3", "Dispatch S3", new DispatchModule(_), http)
+
   lazy val examples = project("examples", "Dispatch Examples", new DispatchExamples(_))
   lazy val agg = project("agg", "Databinder Dispatch", new AggregateProject(_) {
     override def disableCrossPaths = true
