@@ -9,7 +9,6 @@ object S3 {
 
   import java.util.{Date,Locale,SimpleTimeZone}
   import java.text.SimpleDateFormat
-  import mime.Mime._
 
   val UTF_8 = "UTF-8"
 
