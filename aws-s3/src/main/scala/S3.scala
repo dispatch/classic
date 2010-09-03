@@ -16,7 +16,7 @@ object S3 {
     this.setTimeZone(new SimpleTimeZone(0, "GMT"))
   }
 
-  def trim(s: String): String = s.dropWhile(_ == ' ').reverse.dropWhile(_ == ' ').reverse
+  def trim(s: String): String = s.dropWhile(_ == ' ').reverse.dropWhile(_ == ' ').reverse.toString
 
   def sign(method: String, path: String, secretKey: String, date: Date,
            contentType: Option[String], contentMd5: Option[String], amzHeaders: Map[String,Set[String]]) = {
