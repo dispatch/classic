@@ -59,7 +59,7 @@ case class APIKeyClient(apikey: String) extends Client {
 
 /** Access point for tokens and authorization URLs */
 object Auth {
-  val host = :/("www.meetup.com")
+  val host = :/("api.meetup.com").secure
   val svc = host / "oauth"
 
   /** Get a request token with no callback URL, out-of-band authorization assumed */
@@ -68,7 +68,7 @@ object Auth {
   def request_token(consumer: Consumer, callback_url: String) = 
     svc / "request" << OAuth.callback(callback_url) <@ consumer as_token
 
-  def authorize_url(token: Token) = host / "authorize" <<? token
+  def authorize_url(token: Token) = :/("www.meetup.com") / "authorize" <<? token
   def m_authorize_url(token: Token) = authorize_url(token) <<? Map("set_mobile" -> "on")
   
   def access_token(consumer: Consumer, token: Token, verifier: String) = 
