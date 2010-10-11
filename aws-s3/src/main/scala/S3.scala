@@ -38,9 +38,26 @@ object S3 {
   implicit def Request2S3RequestSigner(r: String) = new S3RequestSigner(new Request(r))
 
   class S3RequestSigner(r: Request) extends Request(r) {
+    import org.apache.http.util.EntityUtils
+    import org.apache.http.entity.BufferedHttpEntity
+
     type EntityHolder <: org.apache.http.client.methods.HttpEntityEnclosingRequestBase
 
+    private def md5(bytes: Array[Byte]) = {
+      import java.security.MessageDigest
+
+      val r = MessageDigest.getInstance("MD5")
+      r.reset
+      r.update(bytes)
+      new String(encodeBase64(r.digest))
+    }
+
     def <@ (accessKey: String, secretKey: String): Request = r next { req =>
+      req match {
+        case m: EntityHolder => req.addHeader("Content-MD5", md5(EntityUtils.toByteArray(new BufferedHttpEntity(m.getEntity))))
+        case m => {}
+      }
+
       val path = Http.to_uri(r.host, req).getPath
       
       val contentType = req.getAllHeaders.filter(_.getName.toLowerCase == "content-type").toList match {
