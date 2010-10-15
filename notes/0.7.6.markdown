@@ -1,0 +1,11 @@
+* Enabled redirect handling for all request methods
+* Dropped compilation for Scala 2.7.5, 2.7.6
+* dispatch-lift-json depends lift-json 2.1-M1
+* Support for Google [ClientLogin][ClientLogin] authorization by [Chris Lewis][Chris Lewis]
+* Optional Json extractor `??` contributed by [musk][musk]
+* Added the optional "oauth_version" parameter to the OAuth Authorization header, because stream.twitter.com [requires it][stream].
+
+[ClientLogin]: http://code.google.com/apis/accounts/docs/AuthForInstalledApps.html
+[Chris Lewis]: http://github.com/chrislewis
+[musk]: http://github.com/musk
+[stream]: http://databinder.3617998.n2.nabble.com/OAuth-fails-for-stream-twitter-com-td5448011.html#a5448011

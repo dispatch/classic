@@ -2,7 +2,7 @@ package dispatch
 
 /** Http with a thread-safe client and non-blocking interfaces */
 trait Threads extends Http with FuturableExecutor {
-  override val client = new ThreadSafeHttpClient
+  override def make_client = new ThreadSafeHttpClient
   /** Shutdown connection manager, threads. (Needed to close console cleanly.) */
   def shutdown() = client.getConnectionManager.shutdown()
 }
