@@ -6,14 +6,18 @@ import dispatch.Http._
 import ClientLogin._
 
 object ClientLoginSpec extends Specification {
-  
-  val conf = new java.util.Properties
-  conf.load(new java.io.FileInputStream("google.clientlogin.props"))
-  val email = conf.getProperty("email")
-  val password = conf.getProperty("password")
+  val config = "google.clientlogin.props"
+  lazy val conf = {
+    val c = new java.util.Properties
+    c.load(new java.io.FileInputStream(config))
+    c
+  }
+  def email = conf.getProperty("email")
+  def password = conf.getProperty("password")
   
   "Authorized request for contacts" should {
     "find contacts" in {
+      (new java.io.File(config)).exists must beTrue.orSkip
       val http = new Http
       val auth_req = AuthRequest("cp", email, password)
       
