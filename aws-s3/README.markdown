@@ -1,3 +1,12 @@
+Amazon S3 module
+=============
+
+The `aws-s3` module provides basic support for interacting with Amazon's
+S3 service by providing additional handlers which sign the HTTP
+request in accordance with the [S3 authentication specifications][1].  
+The module also provides a convenience class for interacting with S3
+Buckets. 
+
 ## Usage ##
 To use the `aws-s3` module, you will need to first sign up for the S3
 service.  Afterwards, Amazon should provide you with an AWS Access Key
