@@ -48,6 +48,9 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
         "org.scala-tools.testing" % "specs" % "1.6.2.2" % "test->default"
       else
         "org.scala-tools.testing" %% "specs" % "1.6.5" % "test->default"
+    override def packageSrcJar = defaultJarPath("-sources.jar")
+    lazy val sourceArtifact = Artifact.sources(artifactID)
+    override def packageToPublishActions = super.packageToPublishActions ++ Seq(packageSrc)
   }
     
   class HttpProject(info: ProjectInfo) extends DispatchModule(info) {
