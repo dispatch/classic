@@ -22,7 +22,8 @@ import MeetupTypeMaps.mudatestr
 /** Client is a function to wrap API operations */
 abstract class Client extends ((Request => Request) => Request) {
   import Http.builder2product
-  val host = :/("api.meetup.com")
+  val hostname = "api.meetup.com"
+  val host: Request
   def call[T](method: Method[T])(implicit http: Http): T =
     http(method.default_handler(apply(method)))
 }
@@ -48,11 +49,13 @@ trait ResourceMethod extends Method[JValue] {
 
 /** Supplies a host and signs the request */
 case class OAuthClient(consumer: Consumer, access: Token) extends Client {
+  val host = :/(hostname)
   def apply(block: Request => Request): Request =
     block(host) <@ (consumer, access)
 }
 /** Supplies a host and adds an API key */
 case class APIKeyClient(apikey: String) extends Client {
+  val host = :/(hostname).secure
   def apply(block: Request => Request): Request =
     block(host) <<? Map("key" -> apikey)
 }
@@ -91,6 +94,10 @@ object Meta {
   val method = 'method ? str
   val link = 'link ? str
   val url = 'url ? str
+  object GeoIp extends Obj('geo_ip) {
+    val lat = this >>~> 'lat ? double
+    val lon = this >>~> 'lon ? double
+  }
 }
 object Groups extends GroupsBuilder(Map())
 private[meetup] class GroupsBuilder(params: Map[String, Any]) extends QueryMethod {
@@ -224,6 +231,54 @@ object Event extends Location {
   val questions = 'questions ? ary >>~> str 
 }
 
+object OpenEvents extends OpenEventsBuilder(Map())
+private[meetup] class OpenEventsBuilder(params: Map[String, Any]) extends QueryMethod {
+  private def param(key: String)(value: Any) = new OpenEventsBuilder(params + (key -> value))
+  private def date_param(key: String)(value: Date) = param(key)(value.getTime)
+
+  val zip = param("zip")_
+  def geo(lat: Any, lon: Any) = param("lat")(lat).param("lon")(lon)
+  def city(city: Any, country: Any) = param("city")(city).param("country")(country)
+  def cityUS(city: Any, state: Any) = param("city")(city).param("state")(state).param("country")("us")
+  def topic(topics: String*) = param("topic")(topics.mkString(","))
+  def text(text: String) = param("text")_
+  def time(from: Option[Date], to: Option[Date]) = param("time")(
+    (from :: to :: Nil) map { _.map { _.getTime.toString } getOrElse "" } mkString ","
+  )
+  def status(s: Event.Status*) = param("status")(s map { _.values } mkString ",")
+
+  def complete = _ / "2" / "open_events" <<? params
+}
+
+object OpenEvent {
+  val id = 'id ? str
+  val name = 'name ?str
+  val time = 'time ? date
+  val status = 'status ? in(Event.Upcoming, Event.Past)
+  val description = 'description ? str
+  val event_url = 'event_url ? str
+  val photo_url = 'photo_url ? str
+  val yes_rsvp_count = 'yes_rsvp_count ? int
+  val maybe_rsvp_count = 'maybe_rsvp_count ? int
+  val distance = 'distance ? double
+  val trending_rank = 'trending_rank ? int
+  val venue_visibility = 'venue_visibility ? bool
+  object group extends Obj('group){
+    val id = this >>~> 'id ? int
+    val name = this >>~> 'name ? str
+    val urlname = this >>~> 'urlname ? str
+    val join_mode = this >>~> 'join_mode ? str
+  }
+  object venue extends Obj('venue) with Location {
+    val id = this >>~> 'id ? int
+    val name = this >>~> 'venue ? str
+    val address_1 = this >>~> 'address_1 ? str
+    val address_2 = this >>~> 'address_2 ? str
+    val address_3 = this >>~> 'address_3 ? str
+    val phone = this >>~> 'phone ? str
+  }
+}
+
 object Members extends MembersBuilder(Map())
 private[meetup] class MembersBuilder(params: Map[String, Any]) extends QueryMethod {
   private def param(key: String)(value: Any) = new MembersBuilder(params + (key -> value))
@@ -233,6 +288,7 @@ private[meetup] class MembersBuilder(params: Map[String, Any]) extends QueryMeth
   val group_id = param("group_id")_
   def topic(topic: Any, groupnum: Any) = param("topic")(topic).param("groupnum")(groupnum)
   val group_urlname = param("group_urlname")_
+  def fields(fields: String*) = param("fields")(fields.mkString(","))
 
   def complete = _ / "members" <<? params
 }
