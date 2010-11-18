@@ -22,12 +22,12 @@ object CouchSpec extends Specification {
       http(test as_str) must startWith("""{"db_name":"test","doc_count":0""")
     }
     "create an empty_doc document" in {
-      http(empty_doc <<< Js() >|)
+      http(empty_doc <<< Js().toString >|)
       http(empty_doc ># Id._id) must_== empty_doc.id
     }
     "create a document with content" in {
       val content = (Test.content << example)(Js())
-      http(full <<< content >|)
+      http(full <<< content.toString >|)
       http(full ># Test.content) must_== example
     }
     "return new documents from all_docs" in {

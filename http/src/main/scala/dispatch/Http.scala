@@ -3,23 +3,20 @@ package dispatch
 import io.Source
 import collection.Map
 import collection.immutable.{Map => IMap}
-import util.DynamicVariable
 import java.io.{InputStream,OutputStream,BufferedInputStream,BufferedOutputStream,File}
 import java.net.URI
 import java.util.zip.GZIPInputStream
 
-import org.apache.http._
-import org.apache.http.client._
-import org.apache.http.impl.client.{DefaultHttpClient, BasicCredentialsProvider}
+import org.apache.http.{HttpHost,HttpResponse,HttpEntity}
 import org.apache.http.client.methods._
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.utils.URLEncodedUtils
+import org.apache.http.auth.{AuthScope,UsernamePasswordCredentials,Credentials}
+import org.apache.http.params.HttpProtocolParams
 
 import org.apache.http.entity.{StringEntity,FileEntity}
 import org.apache.http.message.BasicNameValuePair
-import org.apache.http.params.{HttpProtocolParams, BasicHttpParams, HttpParams}
 import org.apache.http.util.EntityUtils
-import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials, Credentials}
 import org.apache.http.conn.params.ConnRouteParams
 import org.apache.http.conn.ClientConnectionManager
 
@@ -33,10 +30,14 @@ trait Logger { def info(msg: String, items: Any*) }
 
 /** Http access point. Standard instances to be used by a single thread. */
 class Http extends HttpExecutor {
-  val client = new ConfiguredHttpClient
+  val client = make_client
+  /** Defaults to dispatch.ConfiguredHttpClient, override to customize. */
+  def make_client = new ConfiguredHttpClient
   
+  lazy val log: Logger = make_logger
+
   /** Info Logger for this instance, default returns Connfiggy if on classpath else console logger. */
-  lazy val log: Logger = try {
+  def make_logger = try {
     new Logger {
       def getObject(name: String) = Class.forName(name + "$").getField("MODULE$").get(null)
       // using delegate, repeating parameters aren't working with structural typing in 2.7.x
@@ -102,10 +103,6 @@ trait HttpExecutor {
     case (code, _, Some(ent)) => throw StatusCode(code, EntityUtils.toString(ent, Request.factoryCharset))
     case (code, _, _)         => throw StatusCode(code, "[no entity]")
   }
-  /** Http#x and Handler#apply together for similar operations, and access to the first
-      handler's result value. See 404 test in HttpSpec for an example. */
-  @deprecated final def also[A,B](hand: Handler[B])(block: Handler.F[A]) = 
-    x(hand.request) { (code, res, ent) => ( hand.block(code, res, ent), block(code, res, ent) ) }
   
   /** Apply handler block when response code is 200 - 204 */
   final def apply[T](hand: Handler[T]) = (this when {code => (200 to 204) contains code})(hand)
@@ -177,7 +174,6 @@ trait Post[P <: Post[P]] extends HttpPost { self: P =>
 }
 /** Standard, URL-encoded form posting */
 class SimplePost(val oauth_values: IMap[String, Any], charset: String) extends Post[SimplePost] { 
-  @deprecated def this(oauth_values: IMap[String, Any]) = this(oauth_values, Request.factoryCharset)
   this setEntity new UrlEncodedFormEntity(Http.map2ee(oauth_values), charset)
   def add(more: Map[String, Any]) = new SimplePost(oauth_values ++ more.elements, charset)
 }
@@ -241,8 +237,6 @@ class Request(
   /* Add a gzip acceptance header */
   def gzip = this <:< IMap("Accept-Encoding" -> "gzip")
 
-  /** Use <<< with a string to post string content */
-  @deprecated def <<< (body: Any): Request = <<<(body.toString)
   /** Put the given string. (new request, mimics) */
   def <<< (body: String): Request = next {
     val m = new HttpPut
@@ -372,34 +366,6 @@ trait Handlers {
       (block(new Handlers { val request = /\})).block(code, res, opt_ent).block(code, res, opt_ent)
     } )
   }
-}
-
-/** Basic extension of DefaultHttpClient defaulting to Http 1.1, UTF8, and no Expect-Continue.
-    Scopes authorization credentials to particular requests thorugh a DynamicVariable. */
-class ConfiguredHttpClient extends DefaultHttpClient { 
-  protected def configureProxy(params: HttpParams) = {
-    val sys = System.getProperties()
-    val host = sys.getProperty("https.proxyHost", sys.getProperty("http.proxyHost", ""))
-    val port = sys.getProperty("https.proxyPort", sys.getProperty("http.proxyPort", "0")).toInt
-    if (!"".equals(host) && (port != 0))
-      ConnRouteParams.setDefaultProxy(params, new HttpHost(host, port))
-    params
-  }
-
-  override def createHttpParams = {
-    val params = new BasicHttpParams
-    HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1)
-    HttpProtocolParams.setContentCharset(params, Request.factoryCharset)
-    HttpProtocolParams.setUseExpectContinue(params, false)
-    configureProxy(params)
-  }
-  val credentials = new DynamicVariable[Option[(AuthScope, Credentials)]](None)
-  setCredentialsProvider(new BasicCredentialsProvider {
-    override def getCredentials(scope: AuthScope) = credentials.value match {
-      case Some((auth_scope, creds)) if scope.`match`(auth_scope) >= 0 => creds
-      case _ => null
-    }
-  })
 }
 
 /** Used by client APIs to build Handler or other objects via chaining, completed implicitly.

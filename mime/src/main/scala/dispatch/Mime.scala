@@ -32,8 +32,6 @@ object Mime {
     /** Add file to multipart post, will convert other post methods to multipart */
     def << (name: String, file: File) = 
       r next add(name, new FileBody(file))
-    /** Alias for <<, needed by 2.8.0.Beta1-RC1's type inferencer, can go away now */
-    @deprecated def <<* (name: String, file: File) = << (name, file)
     /** Add file with content-type to multipart post, will convert other post methods to multipart */
     def << (name: String, file: File, content_type: String) = 
       r next add(name, new FileBody(file, content_type))

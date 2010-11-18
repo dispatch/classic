@@ -2,12 +2,14 @@ package dispatch
 
 /** Http with a thread-safe client and non-blocking interfaces */
 trait Threads extends Http with FuturableExecutor {
-  override val client = new ThreadSafeHttpClient(maxConnections, maxConnectionsPerRoute)
   /** Maximum number of connections in pool, default is 50 */
   def maxConnections = 50
   /** Maximum number of connections one one route, default is maxConnections */
   def maxConnectionsPerRoute = maxConnections
   /** Shutdown connection manager if no longer in use. */
+
+  override def make_client = new ThreadSafeHttpClient(maxConnections, maxConnectionsPerRoute)
+  /** Shutdown connection manager, threads. (Needed to close console cleanly.) */
   def shutdown() = client.getConnectionManager.shutdown()
 }
 trait FuturableExecutor extends HttpExecutor {
