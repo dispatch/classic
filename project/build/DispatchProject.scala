@@ -12,8 +12,9 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   }, http)
   lazy val json = project("json", "Dispatch JSON", new DispatchModule(_))
   lazy val http_json = project("http+json", "Dispatch HTTP JSON", new HttpProject(_), http, json)
+  def clunkcompile[T](for27: T, for28: T) = if (buildScalaVersion.startsWith("2.7")) for27 else for28
   lazy val lift_json = project("lift-json", "Dispatch lift-json", new DispatchModule(_) {
-    val lift_json = "net.liftweb" %% "lift-json" % "2.1-M1"
+    val lift_json = "net.liftweb" % ("lift-json_" + clunkcompile("2.7.7", "2.8.0")) % "2.2-M1"
   }, http)
   lazy val oauth = project("oauth", "Dispatch OAuth", new DispatchModule(_), http)
   lazy val times = project("times", "Dispatch Times", new DispatchModule(_), http, json, http_json)
@@ -43,11 +44,10 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   Credentials(Path.userHome / ".ivy2" / ".credentials", log)
 
   class DispatchModule(info: ProjectInfo) extends DefaultProject(info) with sxr.Publish {
-    val specs =
-      if (buildScalaVersion startsWith "2.7.") 
-        "org.scala-tools.testing" % "specs" % "1.6.2.2" % "test->default"
-      else
-        "org.scala-tools.testing" %% "specs" % "1.6.5" % "test->default"
+    val specs = 
+      clunkcompile(
+        "org.scala-tools.testing" % "specs" % "1.6.2.2" % "test->default",
+        "org.scala-tools.testing" % "specs_2.8.1" % "1.6.6" % "test->default")
     override def packageSrcJar = defaultJarPath("-sources.jar")
     lazy val sourceArtifact = Artifact.sources(artifactID)
     override def packageToPublishActions = super.packageToPublishActions ++ Seq(packageSrc)

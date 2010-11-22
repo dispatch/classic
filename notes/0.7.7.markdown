@@ -1,10 +1,10 @@
-Amazon S3 module
-----------------
-The `aws-s3` module provides basic support for interacting with Amazon's
-S3 service by providing additional handlers which sign the HTTP
-request in accordance with the [S3 authentication specifications][1].  
-The module also provides a convenience class for interacting with S3
-Buckets.  See the [README][readme] for details.
+This release introduces an **Amazon S3** interface.
+
+The `aws-s3` module provides basic support for interacting with
+Amazon's S3 service. It supplies Dispatch handlers that sign requests
+in accordance with the [S3 authentication specifications][1] and a
+convenience class for interacting with S3 Buckets.  See the
+[module README][readme] for more information.
 
 [1]: http://docs.amazonwebservices.com/AmazonS3/index.html?RESTAuthentication.html
 [readme]: http://github.com/n8han/Databinder-Dispatch/tree/master/aws-s3/#readme
