@@ -69,7 +69,7 @@ object Auth {
   def request_token(consumer: Consumer): Handler[Token] = request_token(consumer, OAuth.oob)
 
   def request_token(consumer: Consumer, callback_url: String) = 
-    svc / "request" << OAuth.callback(callback_url) <@ consumer as_token
+    svc.POST / "request" <@ (consumer, callback_url) as_token
 
   def authorize_url(token: Token) = :/("www.meetup.com") / "authorize" <<? token
   def m_authorize_url(token: Token) = authorize_url(token) <<? Map("set_mobile" -> "on")
