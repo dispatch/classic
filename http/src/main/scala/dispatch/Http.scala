@@ -317,16 +317,7 @@ trait Handlers {
       character set it receives (determined in >>) is incorrect. To process resources
       that have incorrect charset headers, use >> ((InputStream, String) => T). */
   def >~ [T] (block: Source => T) = >> { (stm, charset) => 
-    // 2.8 only: block(Source.fromInputStream(stm)(charset)
-    import java.io._
-    def read(reader: BufferedReader, buf: StringBuilder) {
-      val ch = reader.read()
-      if (ch != -1)
-        read(reader, buf.append(ch.asInstanceOf[Char]))
-    }
-    val buf = new StringBuilder()
-    read(new BufferedReader(new InputStreamReader(stm, charset)), buf)
-    block(Source.fromString(buf.toString))
+    block(Source.fromInputStream(stm, charset))
   }
   /** Return response as a scala.io.Source. Charset note in >~  applies. */
   def as_source = >~ { so => so }
