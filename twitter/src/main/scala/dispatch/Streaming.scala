@@ -12,14 +12,12 @@ object UserStream {
   val host = :/("userstream.twitter.com").secure
   val svc = host / "2" / "user.json"
   def open(cons: Consumer, tok: Token, since_id: Option[String])
-          (make_listener: JValue => JValue => Unit) = {
+          (listener: JValue => Unit) = {
     val req = svc <<? (Map.empty ++ since_id.map { id => "since_id" -> id })
     req <@ (cons, tok) >> { (stm, charset) =>
-      val lines = Source.fromInputStream(stm, charset).getLines.filter {
+      Source.fromInputStream(stm, charset).getLines.filter {
         ! _.isEmpty
-      }.map(parse)
-      val listener = make_listener(lines.next())
-      lines.foreach(listener)
+      }.map(parse).foreach(listener)
     }
   }
 }
