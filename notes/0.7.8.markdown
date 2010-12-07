@@ -1,0 +1,23 @@
+Http
+----
+
+Uses `Source.fromInputStream` for `>~` instead of loading stream into
+a String first (it's a long story).
+  
+OAuth
+-----
+
+Transfers oauth_callback in header (with all other OAuth parameters)
+rather than post method body. The consumer-only signing application of
+the `<@` operator is now deprecated.
+
+Interfaces
+----------
+
+* Meetup: Added support for the Open Events method.
+* Twitter: Added a UserStream interface (sans Json schema for now)
+
+Twine
+-----
+
+Updated to work from its own repository, and also to use UserStream.
