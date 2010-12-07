@@ -1,24 +1,30 @@
 Http
 ----
 
-Uses `Source.fromInputStream` for `>~` instead of loading stream into
+Uses `Source.fromInputStream` for [>~][stm] instead of loading stream into
 a String first (it's a long story).
+
+[stm]: http://sourced.implicit.ly/net.databinder/dispatch-http/0.7.8/dispatch/Http.scala.html#20006
   
 OAuth
 -----
 
 Transfers oauth_callback in header (with all other OAuth parameters)
 rather than post method body. The consumer-only signing application of
-the `<@` operator is now deprecated. ([softprops][softprops])
+the [<@][sign] operator is now deprecated. ([softprops][softprops])
 
+[sign]: http://sourced.implicit.ly/net.databinder/dispatch-oauth/0.7.8/dispatch/OAuth.scala.html#21274
 [softprops]: https://github.com/softprops/
 
 Service Interfaces
 ------------------
 
 * Meetup: Added support for the Open Events method.
-* Twitter: Added a UserStream interface (sans Json schema for now),
+* Twitter: Added a [UserStream][us] interface (sans Json schema for now),
   and using api.twitter.com endpoint.
+
+[me]: http://sourced.implicit.ly/net.databinder/dispatch-meetup/0.7.8/dispatch/Meetup.scala.html#9449
+[us]: http://sourced.implicit.ly/net.databinder/dispatch-twitter/0.7.8/dispatch/Streaming.scala.html#9344
 
 Twine
 -----
@@ -26,3 +32,8 @@ Twine
 Updated to work from its [own repository][twine], and also to use UserStream.
 
 [twine]: https://github.com/n8han/dispatch-twine
+
+Other
+-----
+
+Source JARs now published to scala-tools. (Nadav Wiener)
