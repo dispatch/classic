@@ -9,7 +9,9 @@ OAuth
 
 Transfers oauth_callback in header (with all other OAuth parameters)
 rather than post method body. The consumer-only signing application of
-the `<@` operator is now deprecated.
+the `<@` operator is now deprecated. ([softprops][softprops])
+
+[softprops]: https://github.com/softprops/
 
 Interfaces
 ----------
@@ -20,4 +22,6 @@ Interfaces
 Twine
 -----
 
-Updated to work from its own repository, and also to use UserStream.
+Updated to work from its [own repository][twine], and also to use UserStream.
+
+[twine]: https://github.com/n8han/dispatch-twine
