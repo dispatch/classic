@@ -57,8 +57,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
     val jcip = "net.jcip" % "jcip-annotations" % "1.0" % "provided->default"
   }
   
-  lazy val publishExtras = task { None } dependsOn 
-    (agg.doc :: publishCurrentNotes :: dispatch_modules.map { _.publishSxr } : _*)
+  lazy val publishJavadocs = task { None } dependsOn agg.doc
 
   abstract class AggregateProject(info: ProjectInfo) extends DefaultProject(info) {
     override def compileAction = task { None }
