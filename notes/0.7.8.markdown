@@ -13,11 +13,12 @@ the `<@` operator is now deprecated. ([softprops][softprops])
 
 [softprops]: https://github.com/softprops/
 
-Interfaces
-----------
+Service Interfaces
+------------------
 
 * Meetup: Added support for the Open Events method.
-* Twitter: Added a UserStream interface (sans Json schema for now)
+* Twitter: Added a UserStream interface (sans Json schema for now),
+  and using api.twitter.com endpoint.
 
 Twine
 -----
