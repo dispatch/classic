@@ -19,12 +19,11 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   lazy val oauth = project("oauth", "Dispatch OAuth", new DispatchModule(_), http)
   lazy val times = project("times", "Dispatch Times", new DispatchModule(_), http, json, http_json)
   lazy val couch = project("couch", "Dispatch Couch", new DispatchModule(_), http, json, http_json)
-  lazy val twitter = project("twitter", "Dispatch Twitter", new DispatchModule(_), http, json, http_json, oauth)
+  lazy val twitter = project("twitter", "Dispatch Twitter", new DispatchModule(_), http, json, http_json, oauth, lift_json)
   lazy val meetup = project("meetup", "Dispatch Meetup", new DispatchModule(_), http, lift_json, oauth, mime)
 
   lazy val aws_s3 = project("aws-s3", "Dispatch S3", new DispatchModule(_), http)
 
-  lazy val examples = project("examples", "Dispatch Examples", new DispatchExamples(_))
   lazy val agg = project("agg", "Databinder Dispatch", new AggregateProject(_) {
     override def disableCrossPaths = true
     def projects = dispatch_modules
@@ -58,39 +57,8 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
     val jcip = "net.jcip" % "jcip-annotations" % "1.0" % "provided->default"
   }
   
-  lazy val publishExtras = task { None } dependsOn 
-    (agg.doc :: examples.publishExamples :: publishCurrentNotes :: dispatch_modules.map { _.publishSxr } : _*)
+  lazy val publishJavadocs = task { None } dependsOn agg.doc
 
-  class DispatchExamples(info: ProjectInfo) extends DefaultProject(info) with ArchetectProject {
-    import Process._
-
-    override val templateMappings = Map(
-      "sbt.version" -> sbtVersion.value,
-      "def.scala.version" -> defScalaVersion.value,
-      "build.scala.versions" -> "2.7.6",
-      "sxr.version" -> sxr_version,
-      "dispatch.version" -> version
-    )
-    lazy val examplesInstaller = dynamic(examplesInstallerTasks) dependsOn (archetect, publishLocal)
-    
-    def examplesInstallerTasks = task { None } named("examples-installer-complete") dependsOn (
-      ("src" / "arc" * "*").get.map { proj =>
-        val proj_target = arcOutput / proj.asFile.getName
-        val proj_target_target = proj_target / "target"
-        fileTask(proj_target_target from arcSource ** "*") {
-          proj_target_target.asFile.setLastModified(System.currentTimeMillis)
-          (new java.lang.ProcessBuilder("sbt", "clean", "installer") directory proj_target.asFile) ! log match {
-            case 0 => None
-            case code => Some("sbt failed on archetect project %s with code %d" format (proj_target, code))
-          }
-        }
-      }.toSeq: _*
-    )
-    val publishExamplesPath = Path.fromFile("/var/dbwww/dispatch-examples/")
-    lazy val publishExamples = copyTask((outputPath / "arc" * "*" / "target" ##) * "*.jar", 
-        publishExamplesPath) dependsOn(examplesInstaller)
-  }
-  
   abstract class AggregateProject(info: ProjectInfo) extends DefaultProject(info) {
     override def compileAction = task { None }
     override def testCompileAction = task { None }

@@ -72,16 +72,16 @@ object OAuth {
   
   class RequestSigner(r: Request) {
     
-    // sign requests with an Authorization header
-    /** sign an out-of-band request for an unauthorized token */
-    def <@ (consumer: Consumer): Request = sign(consumer, None, None, Some(oob))
-    /** sign a request for an unauthorized token with a callback */
+    /** @deprecated use <@ (consumer, callback) to pass the callback in the header for a request-token request */
+    @deprecated
+    def <@ (consumer: Consumer): Request = sign(consumer, None, None, None)
+    /** sign a request with a callback, e.g. a request-token request */
     def <@ (consumer: Consumer, callback: String): Request = sign(consumer, None, None, Some(callback))
-    /** sign a request for authorizing an unauthorized token */
-    def <@ (consumer: Consumer, token: Token): Request = sign(consumer, Some(token), None, None)
-    /** sign a request for an authorized token */
+    /** sign a request with a consumer, token, and verifier, e.g. access-token request */
     def <@ (consumer: Consumer, token: Token, verifier: String): Request = 
       sign(consumer, Some(token), Some(verifier), None)
+    /** sign a request with a consumer and a token, e.g. an OAuth-signed API request */
+    def <@ (consumer: Consumer, token: Token): Request = sign(consumer, Some(token), None, None)
     
     /** add token value as a query string parameter, for user authorization redirects */
     def <<? (token: Token) = r <<? IMap("oauth_token" -> token.value)

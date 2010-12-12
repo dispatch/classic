@@ -7,7 +7,7 @@ import oauth._
 import oauth.OAuth._
 
 object Twitter {
-  val host = :/("twitter.com")
+  val host = :/("api.twitter.com")
   val search = :/("search.twitter.com")
 }
 
@@ -96,7 +96,7 @@ object Auth {
   def request_token(consumer: Consumer): Handler[Token] = request_token(consumer, OAuth.oob)
 
   def request_token(consumer: Consumer, callback_url: String) = 
-    svc.secure / "request_token" << OAuth.callback(callback_url) <@ consumer as_token
+    svc.secure.POST / "request_token" <@ (consumer, callback_url) as_token
     
   def authorize_url(token: Token) = svc / "authorize" <<? token
   def authenticate_url(token: Token) = svc / "authenticate" <<? token
