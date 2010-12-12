@@ -167,6 +167,7 @@ private[meetup] class EventsBuilder(params: Map[String, Any]) extends QueryMetho
   val group_urlname = param("group_urlname")_
   val topic = param("topic")_
   def topic(topic: Any, groupnum: Any) = param("topic")(topic).param("groupnum")(groupnum)
+  def id(event_ids: String*) = param("id")(event_ids mkString ",")
   val group_id = param("group_id")_
   val zip = param("zip")_
   def geo(lat: Any, lon: Any) = param("lat")(lat).param("lon")(lon)
