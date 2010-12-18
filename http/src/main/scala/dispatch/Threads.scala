@@ -44,7 +44,7 @@ class ThreadSafeHttpClient(maxConnections: Int, maxConnectionsPerRoute: Int)
     registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80))
     registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443))
     val cm = new ThreadSafeClientConnManager(getParams(), registry)
-    cm.setMaxTotalConnections(maxConnections)
+    cm.setMaxTotal(maxConnections)
     cm.setDefaultMaxPerRoute(maxConnectionsPerRoute)
     cm
   }
