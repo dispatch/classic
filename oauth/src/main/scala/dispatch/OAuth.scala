@@ -24,7 +24,7 @@ object Token {
 object OAuth {
   /** @return oauth parameter map including signature */
   def sign(method: String, url: String, user_params: Map[String, Any], consumer: Consumer, 
-      token: Option[Token], verifier: Option[String]) = {
+      token: Option[Token], verifier: Option[String], callback: Option[String]) = {
     val oauth_params = IMap(
       "oauth_consumer_key" -> consumer.key,
       "oauth_signature_method" -> "HMAC-SHA1",
@@ -32,7 +32,8 @@ object OAuth {
       "oauth_nonce" -> System.nanoTime.toString,
       "oauth_version" -> "1.0"
     ) ++ token.map { "oauth_token" -> _.value } ++ 
-      verifier.map { "oauth_verifier" -> _ }
+      verifier.map { "oauth_verifier" -> _ } ++
+      callback.map { "oauth_callback" -> _ }
     
     val encoded_ordered_params = (
       new TreeMap[String, String] ++ (user_params ++ oauth_params map %%)
@@ -40,7 +41,7 @@ object OAuth {
     
     val message = %%(method :: url :: encoded_ordered_params :: Nil)
     
-    val SHA1 = "HmacSHA1";
+    val SHA1 = "HmacSHA1"
     val key_str = %%(consumer.secret :: (token map { _.secret } getOrElse "") :: Nil)
     val key = new crypto.spec.SecretKeySpec(bytes(key_str), SHA1)
     val sig = {
@@ -71,23 +72,28 @@ object OAuth {
   
   class RequestSigner(r: Request) {
     
-    // sign requests with an Authorization header
-    def <@ (consumer: Consumer): Request = sign(consumer, None, None)
-    def <@ (consumer: Consumer, token: Token): Request = sign(consumer, Some(token), None)
+    /** @deprecated use <@ (consumer, callback) to pass the callback in the header for a request-token request */
+    @deprecated
+    def <@ (consumer: Consumer): Request = sign(consumer, None, None, None)
+    /** sign a request with a callback, e.g. a request-token request */
+    def <@ (consumer: Consumer, callback: String): Request = sign(consumer, None, None, Some(callback))
+    /** sign a request with a consumer, token, and verifier, e.g. access-token request */
     def <@ (consumer: Consumer, token: Token, verifier: String): Request = 
-      sign(consumer, Some(token), Some(verifier))
+      sign(consumer, Some(token), Some(verifier), None)
+    /** sign a request with a consumer and a token, e.g. an OAuth-signed API request */
+    def <@ (consumer: Consumer, token: Token): Request = sign(consumer, Some(token), None, None)
     
     /** add token value as a query string parameter, for user authorization redirects */
     def <<? (token: Token) = r <<? IMap("oauth_token" -> token.value)
 
     /** Sign request by reading Post (<<) and query string parameters */
-    private def sign(consumer: Consumer, token: Option[Token], verifier: Option[String]) = r next { req =>
+    private def sign(consumer: Consumer, token: Option[Token], verifier: Option[String], callback: Option[String]) = r next { req =>
       val oauth_url = Http.to_uri(r.host, req).toString.split('?')(0)
       val query_params = split_decode(req.getURI.getRawQuery)
       val oauth_params = OAuth.sign(req.getMethod, oauth_url, query_params ++ (req match {
         case before: Post[_] => before.oauth_values
         case _ => IMap()
-      }), consumer, token, verifier )
+      }), consumer, token, verifier, callback)
       req.addHeader("Authorization", "OAuth " + oauth_params.map { 
         case (k, v) => (Http % k) + "=\"%s\"".format(Http % v)
       }.mkString(",") )
