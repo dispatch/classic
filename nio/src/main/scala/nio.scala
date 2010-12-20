@@ -1,6 +1,6 @@
 package dispatch.nio
 
-import org.apache.http.{HttpHost,HttpResponse,HttpEntity}
+import org.apache.http.{HttpHost,HttpRequest,HttpResponse,HttpEntity}
 import org.apache.http.auth.{AuthScope,UsernamePasswordCredentials,Credentials}
 import org.apache.http.client.methods._
 import org.apache.http.protocol._
@@ -12,11 +12,9 @@ import java.net.InetSocketAddress
 
 class HttpNio extends dispatch.HttpExecutor {
   
-  val execute: (Option[HttpHost], Option[Credentials], HttpUriRequest) => HttpResponse = {
-    case (Some(host), Some(creds), req) => error("todo")
-    case (None, Some(creds), _) => error("todo")
-    case (None, _, req) => error("todo")
-    case (Some(host), _, req) =>
+  val execute: (HttpHost, Option[Credentials], HttpRequest) => HttpResponse = {
+    case (host, Some(creds), req) => error("todo")
+    case (host, _, req) =>
       val params = new org.apache.http.params.SyncBasicHttpParams
       params
           .setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 5000)

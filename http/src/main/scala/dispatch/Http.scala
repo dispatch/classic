@@ -7,7 +7,7 @@ import java.io.{InputStream,OutputStream,BufferedInputStream,BufferedOutputStrea
 import java.net.URI
 import java.util.zip.GZIPInputStream
 
-import org.apache.http.{HttpHost,HttpResponse,HttpEntity}
+import org.apache.http.{HttpHost,HttpRequest,HttpResponse,HttpEntity}
 import org.apache.http.client.methods._
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.utils.URLEncodedUtils
@@ -55,19 +55,15 @@ class Http extends HttpExecutor {
   }
   
   /** Execute method for the given host, with logging. */
-  def execute(host: HttpHost, req: HttpUriRequest): HttpResponse = {
-    log.info("%s %s%s", req.getMethod, host, req.getURI)
+  def execute(host: HttpHost, req: HttpRequest): HttpResponse = {
+    log.info("%s %s", host.getHostName, req.getRequestLine)
     client.execute(host, req)
   }
   /** Execute for given optional parametrs, with logging. Creates local scope for credentials. */
-  val execute: (Option[HttpHost], Option[Credentials], HttpUriRequest) => HttpResponse = {
-    case (Some(host), Some(creds), req) =>
+  val execute: (HttpHost, Option[Credentials], HttpRequest) => HttpResponse = {
+    case (host, Some(creds), req) =>
       client.credentials.withValue(Some((new AuthScope(host.getHostName, host.getPort), creds)))(execute(host, req))
-    case (None, Some(creds), _) => error("Credentials specified without explicit host")
-    case (Some(host), _, req) => execute(host, req)
-    case (_, _, req) => 
-      log.info("%s %s", req.getMethod, req.getURI)
-      client.execute(req)
+    case (host, _, req) => execute(host, req)
   }
   /** Unadorned handler return type */
   type HttpPackage[T] = T
@@ -84,7 +80,7 @@ trait HttpExecutor {
   /** Package the result value */
   def pack[T](result: => T): HttpPackage[T]
   /** Execute the request against an HttpClient */
-  val execute: (Option[HttpHost], Option[Credentials], HttpUriRequest) => HttpResponse
+  val execute: (HttpHost, Option[Credentials], HttpRequest) => HttpResponse
   /** Execute full request-response handler, passed through pack. */
   final def x[T](hand: Handler[T]): HttpPackage[T] = x(hand.request)(hand.block)
   /** Execute request with handler, passed through pack. */
@@ -109,14 +105,14 @@ trait HttpExecutor {
 }
 
 /** Nil request, useful to kick off a descriptors that don't have a factory. */
-object /\ extends Request(None)
+object /\ extends Request(new HttpHost(""))
 
 /* Factory for requests from a host */
 object :/ {
   def apply(hostname: String, port: Int): Request = 
-    new Request(Some(new HttpHost(hostname, port)))
+    new Request(new HttpHost(hostname, port))
 
-  def apply(hostname: String): Request = new Request(Some(new HttpHost(hostname)))
+  def apply(hostname: String): Request = new Request(new HttpHost(hostname))
 }
 
 /** Factory for requests from a directory, prepends '/'. */
@@ -180,19 +176,25 @@ class SimplePost(val oauth_values: IMap[String, Any], charset: String) extends P
 
 /** Request descriptor, possibly contains a host, credentials, and a list of transformation functions. */
 class Request(
-  val host: Option[HttpHost], 
+  val host: HttpHost, 
   val creds: Option[Credentials], 
   val xfs: List[Request.Xf], 
   val defaultCharset: String
 ) extends Handlers {
   /** Construct with path or full URI. */
-  def this(str: String) = this(None, None, Request.uri_xf(cur => cur + str)_ :: Nil, Request.factoryCharset)
+  def this(str: String) = {
+    this(Http.to_host(str), None, { (req: HttpRequestBase) =>
+      val in = URI.create(str)
+      req.setURI(new URI(null, null, in.getPath, in.getQuery, null))
+      req
+    } :: Nil, Request.factoryCharset)
+  }
   
   /** Construct as a clone, e.g. in class extends clause. */
   def this(req: Request) = this(req.host, req.creds, req.xfs, req.defaultCharset)
 
   /** Construct with host only. */
-  def this(host: Option[HttpHost]) = this(host, None, Nil, Request.factoryCharset)
+  def this(host: HttpHost) = this(host, None, Nil, Request.factoryCharset)
   
   def next(xf: Request.Xf) = new Request(host, creds, xf :: xfs, defaultCharset)
   def next_uri(sxf: String => String) = next(Request.uri_xf(sxf))
@@ -211,12 +213,15 @@ class Request(
   ))
   
   /** Convert this to a secure (scheme https) request if not already */
-  def secure = new Request(host map { 
-    h => new HttpHost(h.getHostName, h.getPort, "https") // default port -1 works for either
-  } orElse { error("secure requires an explicit host") }, creds, xfs, defaultCharset)
+  def secure = new Request( 
+    // default port -1 works for either
+    new HttpHost(host.getHostName, host.getPort, "https"),
+    creds, xfs, defaultCharset)
   
   /** Combine this request with another. */
-  def <& (req: Request) = new Request(host orElse req.host, creds orElse req.creds, req.xfs ::: xfs, defaultCharset)
+  def <& (req: Request) = new Request(
+    if (host.getHostName.isEmpty) req.host else host, 
+    creds orElse req.creds, req.xfs ::: xfs, defaultCharset)
   
   /** Set the default character set to be used when processing the request in <<, <<<, Handler#>> and
     derived operations >~, as_str, etc. (The 'factory' default is utf-8.) */
@@ -389,6 +394,11 @@ trait HttpImplicits {
   def ? (values: Map[String, Any]) = if (values.isEmpty) "" else "?" + q_str(values)
   
   /** @return URI built from HttpHost if present combined with a HttpClient request object. */
-  def to_uri(host: Option[HttpHost], req: HttpRequestBase) =
-    URI.create(host.map(_.toURI).getOrElse("")).resolve(req.getURI)
+  def to_uri(host: HttpHost, req: HttpRequestBase) =
+    URI.create(host.toURI).resolve(req.getURI)
+
+  def to_host(uristr: String) = {
+    val uri = URI.create(uristr)
+    new HttpHost(uri.getHost, uri.getPort, uri.getScheme)
+  }
 }
