@@ -22,7 +22,6 @@ class HttpNio extends dispatch.HttpExecutor {
           .setIntParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE, 8 * 1024)
           .setBooleanParameter(CoreConnectionPNames.STALE_CONNECTION_CHECK, false)
           .setBooleanParameter(CoreConnectionPNames.TCP_NODELAY, true)
-          .setParameter(CoreProtocolPNames.USER_AGENT, "HttpComponents/1.1")
 
       val handler = new org.apache.http.nio.protocol.AsyncNHttpClientHandler(
         new ImmutableHttpProcessor(Array(
@@ -51,11 +50,13 @@ class HttpNio extends dispatch.HttpExecutor {
         params
       )
       val ioReactor = new DefaultConnectingIOReactor(2, params)
-      dispatch.futures.DefaultFuture.future {
-        ioReactor.execute(new DefaultClientIOEventDispatch(handler, params))
-      }
+      (new Thread(new Runnable {
+        def run { ioReactor.execute(new DefaultClientIOEventDispatch(handler, params)) }
+      })).start()
       ioReactor.connect(
-        new InetSocketAddress(host.getHostName, host.getPort),
+        new InetSocketAddress(
+          host.getHostName, 
+          if (host.getPort == -1) 80 else host.getPort),
         null,
         req,
         null
