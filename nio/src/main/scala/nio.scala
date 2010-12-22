@@ -22,19 +22,27 @@ class HttpNio extends dispatch.HttpExecutor {
 
   def execution_handler =
     new org.apache.http.nio.protocol.NHttpRequestExecutionHandler {
-      val request_object = "request_object"
+      val request_response = "request_response"
       def submitRequest(ctx: HttpContext) = {
         val flag = "umm_request_already_submitted"
         if (ctx.getAttribute(flag) == null) {
           ctx.setAttribute(flag, true)
           println("submitting request")
-          ctx.getAttribute(request_object).asInstanceOf[HttpRequest]
+          ctx.getAttribute(request_response) match {
+            case (req: HttpRequest, _) => req
+            case _ => error("request_response of wrong type")
+          }
         } else null
       }
       def finalizeContext(ctx: HttpContext) { }
-      def handleResponse(response: HttpResponse, ctx: HttpContext) { }
+      def handleResponse(response: HttpResponse, ctx: HttpContext) {
+        ctx.getAttribute(request_response) match {
+          case (_, block: (HttpResponse => Any)) => block(response)
+          case _ => error("request_response of wrong type")
+        }
+      }
       def initalizeContext(ctx: HttpContext, attachment: Any) {
-        ctx.setAttribute(request_object, attachment)
+        ctx.setAttribute(request_response, attachment)
       }
       def responseEntity(res: HttpResponse, ctx: HttpContext) =
         new org.apache.http.nio.entity.BufferingNHttpEntity(
@@ -65,22 +73,23 @@ class HttpNio extends dispatch.HttpExecutor {
       }
     })).start()
   
-  val execute: (HttpHost, Option[Credentials], HttpRequest) => HttpResponse = {
-    case (host, Some(creds), req) => error("todo")
-    case (host, _, req) =>
-
+  def execute[T](host: HttpHost, credsopt: Option[Credentials], 
+                 req: HttpRequest, block: HttpResponse => T): HttpPackage[T] =
+    credsopt.map { creds =>
+      error("todo")
+    } getOrElse {
       io_reactor.connect(
         new InetSocketAddress(
           host.getHostName, 
           if (host.getPort == -1) 80 else host.getPort),
         null,
-        req,
+        (req, block),
         null
       )
       Thread.sleep(3000)
       io_reactor.shutdown()
       error("help")
-  }
+    }
   /** Unadorned handler return type */
   type HttpPackage[T] = T
   def pack[T](result: => T) = result

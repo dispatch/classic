@@ -55,16 +55,21 @@ class Http extends HttpExecutor {
   }
   
   /** Execute method for the given host, with logging. */
-  def execute(host: HttpHost, req: HttpRequest): HttpResponse = {
+  private def execute(host: HttpHost, req: HttpRequest): HttpResponse = {
     log.info("%s %s", host.getHostName, req.getRequestLine)
     client.execute(host, req)
   }
   /** Execute for given optional parametrs, with logging. Creates local scope for credentials. */
-  val execute: (HttpHost, Option[Credentials], HttpRequest) => HttpResponse = {
-    case (host, Some(creds), req) =>
-      client.credentials.withValue(Some((new AuthScope(host.getHostName, host.getPort), creds)))(execute(host, req))
-    case (host, _, req) => execute(host, req)
-  }
+  def execute[T](host: HttpHost, credsopt: Option[Credentials], 
+                 req: HttpRequest, block: HttpResponse => T): HttpPackage[T] =
+    block(
+      credsopt.map { creds =>
+        client.credentials.withValue(Some((
+          new AuthScope(host.getHostName, host.getPort), creds)
+        ))(execute(host, req))
+      } getOrElse { execute(host, req) }
+    )
+
   /** Unadorned handler return type */
   type HttpPackage[T] = T
   /** Synchronously access and return plain result value  */
@@ -77,22 +82,21 @@ class Http extends HttpExecutor {
 trait HttpExecutor {
   /** Type of value returned from request execution */
   type HttpPackage[T]
-  /** Package the result value */
-  def pack[T](result: => T): HttpPackage[T]
   /** Execute the request against an HttpClient */
-  val execute: (HttpHost, Option[Credentials], HttpRequest) => HttpResponse
-  /** Execute full request-response handler, passed through pack. */
+  def execute[T](host: HttpHost, creds: Option[Credentials], 
+                 req: HttpRequest, block: HttpResponse => T): HttpPackage[T]
+  /** Execute full request-response handler, response in package. */
   final def x[T](hand: Handler[T]): HttpPackage[T] = x(hand.request)(hand.block)
-  /** Execute request with handler, passed through pack. */
-  final def x [T](req: Request)(block: Handler.F[T]) = pack {
-    val res = execute(req.host, req.creds, req.req)
-    val ent = res.getEntity match {
-      case null => None
-      case ent => Some(ent)
-    }
-    try { block(res.getStatusLine.getStatusCode, res, ent) }
-    finally { ent foreach (_.consumeContent) }
-  }
+  /** Execute request with handler, response in package. */
+  final def x[T](req: Request)(block: Handler.F[T]) =
+    execute(req.host, req.creds, req.req, { res =>
+      val ent = res.getEntity match {
+        case null => None
+        case ent => Some(ent)
+      }
+      try { block(res.getStatusLine.getStatusCode, res, ent) }
+      finally { ent foreach (_.consumeContent) }
+    })
   /** Apply Response Handler if reponse code returns true from chk. */
   final def when[T](chk: Int => Boolean)(hand: Handler[T]) = x(hand.request) {
     case (code, res, ent) if chk(code) => hand.block(code, res, ent)
