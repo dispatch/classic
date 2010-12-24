@@ -24,10 +24,9 @@ class HttpNio extends dispatch.HttpExecutor {
     new org.apache.http.nio.protocol.NHttpRequestExecutionHandler {
       val request_response = "request_response"
       def submitRequest(ctx: HttpContext) = {
-        val flag = "umm_request_already_submitted"
+        val flag = "request_submitted"
         if (ctx.getAttribute(flag) == null) {
           ctx.setAttribute(flag, true)
-          println("submitting request")
           ctx.getAttribute(request_response) match {
             case IOFuture(req: HttpRequest, _) => req
             case _ => error("request_response of wrong type")
@@ -96,16 +95,19 @@ class HttpNio extends dispatch.HttpExecutor {
   }
 }
 case class IOFuture[T](request: HttpRequest, block: HttpResponse => T) extends Function0[T] {
-  private var response: Option[HttpResponse] = None
-  def isSet = response.isDefined
-  def response_ready(res: HttpResponse) {
-    response = Some(res)
-    this.notify()
+  private val result_q = new java.util.concurrent.ArrayBlockingQueue[T](1)
+  private var result: Option[T] = None
+  def isSet = result.isDefined
+  private [nio] def response_ready(res: HttpResponse) {
+    result_q.put(block(res))
   }
   def apply(): T = {
     this.synchronized {
-      while (!isSet) { this.wait() }
-      response.map(block).getOrElse(apply())
+      result.getOrElse {
+        val r = result_q.take()
+        result = Some(r)
+        r
+      }
     }
   }
 }
