@@ -29,7 +29,7 @@ class HttpNio extends dispatch.HttpExecutor {
           ctx.setAttribute(flag, true)
           println("submitting request")
           ctx.getAttribute(request_response) match {
-            case (req: HttpRequest, _) => req
+            case IOFuture(req: HttpRequest, _) => req
             case _ => error("request_response of wrong type")
           }
         } else null
@@ -37,7 +37,7 @@ class HttpNio extends dispatch.HttpExecutor {
       def finalizeContext(ctx: HttpContext) { }
       def handleResponse(response: HttpResponse, ctx: HttpContext) {
         ctx.getAttribute(request_response) match {
-          case (_, block: (HttpResponse => Any)) => block(response)
+          case fut: IOFuture[_] => fut.response_ready(response)
           case _ => error("request_response of wrong type")
         }
       }
@@ -74,7 +74,8 @@ class HttpNio extends dispatch.HttpExecutor {
     })).start()
   
   def execute[T](host: HttpHost, credsopt: Option[Credentials], 
-                 req: HttpRequest, block: HttpResponse => T): HttpPackage[T] =
+                 req: HttpRequest, block: HttpResponse => T): HttpPackage[T] = {
+    val future = IOFuture(req, block)
     credsopt.map { creds =>
       error("todo")
     } getOrElse {
@@ -83,14 +84,28 @@ class HttpNio extends dispatch.HttpExecutor {
           host.getHostName, 
           if (host.getPort == -1) 80 else host.getPort),
         null,
-        (req, block),
+        future,
         null
       )
-      Thread.sleep(3000)
-      io_reactor.shutdown()
-      error("help")
+      future
     }
-  /** Unadorned handler return type */
-  type HttpPackage[T] = T
-  def pack[T](result: => T) = result
+  }
+  type HttpPackage[T] = dispatch.futures.Futures.Future[T]
+  def shutdown() {
+    io_reactor.shutdown()
+  }
+}
+case class IOFuture[T](request: HttpRequest, block: HttpResponse => T) extends Function0[T] {
+  private var response: Option[HttpResponse] = None
+  def isSet = response.isDefined
+  def response_ready(res: HttpResponse) {
+    response = Some(res)
+    this.notify()
+  }
+  def apply(): T = {
+    this.synchronized {
+      while (!isSet) { this.wait() }
+      response.map(block).getOrElse(apply())
+    }
+  }
 }
