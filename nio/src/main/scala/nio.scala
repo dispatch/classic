@@ -45,7 +45,7 @@ class HttpNio extends dispatch.HttpExecutor {
       }
       def responseEntity(res: HttpResponse, ctx: HttpContext) =
         new org.apache.http.nio.entity.BufferingNHttpEntity(
-          res.getEntity, new org.apache.http.nio.util.DirectByteBufferAllocator)
+          res.getEntity, new org.apache.http.nio.util.HeapByteBufferAllocator)
     }
 
   def http_handler =
