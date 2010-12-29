@@ -2,7 +2,7 @@ package dispatch
 
 import util.DynamicVariable
 import org.apache.http.{HttpHost,HttpVersion,HttpResponse}
-import org.apache.http.auth.{AuthScope, Credentials}
+import org.apache.http.auth.AuthScope
 import org.apache.http.impl.client.{DefaultHttpClient, BasicCredentialsProvider}
 import org.apache.http.conn.params.ConnRouteParams
 import org.apache.http.params.{HttpProtocolParams, BasicHttpParams, HttpParams}
@@ -37,7 +37,8 @@ class ConfiguredHttpClient extends DefaultHttpClient {
   val credentials = new DynamicVariable[Option[(AuthScope, Credentials)]](None)
   setCredentialsProvider(new BasicCredentialsProvider {
     override def getCredentials(scope: AuthScope) = credentials.value match {
-      case Some((auth_scope, creds)) if scope.`match`(auth_scope) >= 0 => creds
+      case Some((auth_scope, Credentials(n, p))) if scope.`match`(auth_scope) >= 0 =>
+        new org.apache.http.auth.UsernamePasswordCredentials(n, p)
       case _ => null
     }
   })

@@ -1,8 +1,6 @@
 package dispatch.nio
 
 import org.apache.http.{HttpHost,HttpRequest,HttpResponse,HttpEntity}
-import org.apache.http.auth.{AuthScope,UsernamePasswordCredentials,Credentials}
-import org.apache.http.client.methods._
 import org.apache.http.protocol._
 import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor
 import org.apache.http.impl.nio.DefaultClientIOEventDispatch;

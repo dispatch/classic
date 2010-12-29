@@ -1,7 +1,6 @@
 package dispatch
 
 import org.apache.http.{HttpHost,HttpRequest,HttpResponse}
-import org.apache.http.auth.Credentials
 
 /** Http with a thread-safe client and non-blocking interfaces */
 trait Threads extends Http with FuturableExecutor {
