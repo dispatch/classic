@@ -12,23 +12,31 @@ object Twitter {
 }
 
 object Search extends Js {
-  def apply(query: String, params: (String, Any)*) = new SearchBuilder(Map(params: _*)).q(query)
-  
-  class SearchBuilder(params: Map[String, Any]) extends Builder[Handler[List[JsObject]]] {
-    private def param(key: String)(value: Any) = new SearchBuilder(params + (key -> value))
-    
+  def apply(query: String, params: (String, Any)*) = new SearchBuilder(Map(params: _*), None).q(query)
+
+  class SearchBuilder(params: Map[String, Any], auth: Option[(Consumer, Token)]) extends Builder[Handler[List[JsObject]]] {
+    private def param(key: String)(value: Any) = new SearchBuilder(params + (key -> value), auth)
+
     val q = param("q")_
     val lang = param("lang")_
     val rpp = param("rpp")_
     val page = param("page")_
+    /** search as an authenticated user */
+    def as(consumer: Consumer, token: Token) = new SearchBuilder(params, Some(consumer, token))
     val since_id = param("since_id")_
-    private def geocode0(unit: String)(lat: Double, lon: Double, radius: Double) = 
+    private def geocode0(unit: String)(lat: Double, lon: Double, radius: Double) =
       param("geocode")(List(lat, lon, radius).mkString(",") + unit)
     val geocode = geocode0("km")_
     val geocode_mi = geocode0("mi")_
-    def product = Twitter.search / "search.json" <<? params ># ('results ! (list ! obj))
+    def product =
+      auth match {
+        case Some((consumer, token)) =>
+          Twitter.search / "search.json" <<? params <@(consumer, token) ># ('results ! (list ! obj))
+        case _ =>
+          Twitter.search / "search.json" <<? params ># ('results ! (list ! obj))
+      }
   }
-  
+
   val to_user_id = 'to_user_id ? num
   val from_user_id = 'from_user_id ? num
   val source = 'source ? str
@@ -41,13 +49,13 @@ object Search extends Js {
 
 object Status extends Request(Twitter.host / "statuses") {
   private def public_timeline = this / "public_timeline.json" ># (list ! obj)
-  
-  def friends_timeline(consumer: Consumer, token: Token, params: (String, Any)*) = 
+
+  def friends_timeline(consumer: Consumer, token: Token, params: (String, Any)*) =
     new FriendsTimelineBuilder(consumer, token, Map(params: _*))
 
-  class FriendsTimelineBuilder(consumer: Consumer, token: Token, params: Map[String, Any]) 
+  class FriendsTimelineBuilder(consumer: Consumer, token: Token, params: Map[String, Any])
       extends Builder[Handler[List[JsObject]]] {
-  
+
     private def param(key: String)(value: Any) =
       new FriendsTimelineBuilder(consumer, token, params + (key -> value))
     val since_id = param("since_id")_
@@ -59,7 +67,7 @@ object Status extends Request(Twitter.host / "statuses") {
 
   def update(status: String, consumer: Consumer, token: Token) =
     this / "update.json" << Map("status" -> status) <@ (consumer, token)
-  
+
   val text = 'text ? str
   val id = 'id ? num
   val user = new Obj('user) with UserProps // Obj assigns context to itself
@@ -67,7 +75,7 @@ object Status extends Request(Twitter.host / "statuses") {
   def rebracket(status: String) = status replace ("&gt;", ">") replace ("&lt;", "<")
 }
 
-case class Status(user_id: String) extends 
+case class Status(user_id: String) extends
     Request(Status / "user_timeline" / (user_id + ".json")) with Js {
 
   def timeline = this ># (list ! obj)
@@ -82,26 +90,26 @@ trait UserProps {
   val screen_name = 'screen_name ? str
 }
 
-case class User(user: String) extends 
+case class User(user: String) extends
     Request(Twitter.host / "users" / "show" / (user + ".json")) with Js {
 
   def show = this ># obj
 }
 
 object Auth {
-  
+
   val svc = Twitter.host / "oauth"
 
   /** Get a request token with no callback URL, out-of-band authorization assumed */
   def request_token(consumer: Consumer): Handler[Token] = request_token(consumer, OAuth.oob)
 
-  def request_token(consumer: Consumer, callback_url: String) = 
+  def request_token(consumer: Consumer, callback_url: String) =
     svc.secure.POST / "request_token" <@ (consumer, callback_url) as_token
-    
+
   def authorize_url(token: Token) = svc / "authorize" <<? token
   def authenticate_url(token: Token) = svc / "authenticate" <<? token
-  
-  def access_token(consumer: Consumer, token: Token, verifier: String) = 
+
+  def access_token(consumer: Consumer, token: Token, verifier: String) =
     svc.secure.POST / "access_token" <@ (consumer, token, verifier) >% { m =>
       (Token(m).get, m("user_id"), m("screen_name"))
     }
