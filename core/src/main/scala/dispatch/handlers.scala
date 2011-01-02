@@ -1,6 +1,7 @@
 package dispatch
 
 import org.apache.http.{HttpResponse,HttpEntity}
+import org.apache.http.util.EntityUtils
 import java.util.zip.GZIPInputStream
 import java.io.{InputStream,OutputStream}
 import scala.io.Source
@@ -45,10 +46,10 @@ class Handlers(request: Request) {
       case (stm, enc) if enc.getValue == "gzip" => new GZIPInputStream(stm)
       case (stm, _) => stm
     }
-    val charset = error("don't have entity utils here" ) /*EntityUtils.getContentCharSet(ent) match {
+    val charset = EntityUtils.getContentCharSet(ent) match {
       case null => request.defaultCharset
       case charset => charset
-    }*/
+    }
     block(stm, charset)
   } )
   /** Handle InputStream in block, handle gzip if so encoded. */
