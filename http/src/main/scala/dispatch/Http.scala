@@ -111,18 +111,6 @@ trait HttpExecutor {
   final def apply[T](hand: Handler[T]) = (this when {code => (200 to 204) contains code})(hand)
 }
 
-/** Post method that produces updated, self-typed copies when new parameters are added */
-trait Post[P <: Post[P]] extends HttpPost { self: P =>
-  /** Values that should be considered in an OAuth base string */
-  def oauth_values: IMap[String, Any]
-  def add(more: Map[String, Any]): P
-}
-/** Standard, URL-encoded form posting */
-class SimplePost(val oauth_values: IMap[String, Any], charset: String) extends Post[SimplePost] { 
-  this setEntity new UrlEncodedFormEntity(Http.map2ee(oauth_values), charset)
-  def add(more: Map[String, Any]) = new SimplePost(oauth_values ++ more.elements, charset)
-}
-
 /** Used by client APIs to build Handler or other objects via chaining, completed implicitly.
   * @see Http#builder2product */
 trait Builder[T] { def product:T }
