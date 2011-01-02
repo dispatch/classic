@@ -63,19 +63,18 @@ case class Request(
 }
 
 trait ImplicitRequestTerms {
-  implicit def toRequestTerms (req: Request) = new Request(req) with RequestTerms
+  implicit def toRequestTerms (req: Request) = new RequestTerms(req)
 }
 
 object RequestTerms extends ImplicitRequestTerms
 
-trait RequestTerms { self: Request =>
+class RequestTerms(subject: Request) {
   // The below functions create new request descriptors based off of the current one.
   // Most are intended to be used as infix operators; those that don't take a parameter
   // have character names to be used with dot notation, e.g. :/("example.com").HEAD.secure >>> {...}
   
   /** Set credentials that may be used for basic or digest auth; requires a host value :/(...) upon execution. */
-  def as (name: String, pass: String) = 
-    new Request(host, Some(Credentials(name, pass)), method, path, headers, body, defaultCharset)
+  def as (name: String, pass: String) = subject.copy(creds=Some(Credentials(name, pass)))
 
   /** Add basic auth header unconditionally to this request. Does not wait for a 401 response. */
   def as_! (name: String, pass: String) = {
@@ -88,93 +87,85 @@ trait RequestTerms { self: Request =>
   }
   
   /** Convert this to a secure (scheme https) request if not already */
-  def secure = new Request( 
+  def secure = subject.copy(
     // default port -1 works for either
-    new HttpHost(host.getHostName, host.getPort, "https"),
-    creds, method, path, headers, body, defaultCharset
+    host=new HttpHost(subject.host.getHostName, subject.host.getPort, "https")
   )
   
   /** Combine this request with another. */
-  def <& (req: Request) = new Request(
-    if (req.host.getHostName.isEmpty) host else req.host, 
-    req.creds orElse creds,
+  def <& (req: Request) = Request(
+    if (req.host.getHostName.isEmpty) subject.host else req.host, 
+    req.creds orElse subject.creds,
     req.method,
-    if (req.path.isEmpty) path else req.path,
-    req.headers ::: headers,
-    req.body orElse body,
-    if (Request.factoryCharset == req.defaultCharset) defaultCharset else req.defaultCharset
+    if (req.path.isEmpty) subject.path else req.path,
+    req.headers ::: subject.headers,
+    req.body orElse subject.body,
+    if (Request.factoryCharset == req.defaultCharset) subject.defaultCharset else req.defaultCharset
   )
   
   /** Set the default character set to be used when processing the request in <<, <<<, Handler#>> and
     derived operations >~, as_str, etc. (The 'factory' default is utf-8.) */
-  def >\ (charset: String) = new Request(
-    host, creds, method, path, headers, body, charset)
+  def >\ (charset: String) = subject.copy(defaultCharset=charset)
   
   /** Combine this request with another handler. */
   def >& [T] (other: Handler[T]) = new Handler(this <& other.request, other.block)
   
   /** Append an element to this request's path, joins with '/'. (mutates request) */
-  def / (path: String) = new Request(
-    host, creds, method, this.path + "/" + path, headers, body, defaultCharset)
+  def / (path: String) = subject.copy(path=subject.path + "/" + path)
   
   /** Add headers to this request. (mutates request) */
-  def <:< (values: Map[String, String]) = new Request(
-    host, creds, method, path, values.toList ::: headers, body, defaultCharset
+  def <:< (values: Map[String, String]) = subject.copy(
+    headers=values.toList ::: subject.headers
   )
 
   /* Add a gzip acceptance header */
   def gzip = this <:< Map("Accept-Encoding" -> "gzip")
 
   /** Put the given string. */
-  def <<< (stringbody: String): Request = this.PUT.copy(
-    body=Some(new org.apache.http.entity.StringEntity(stringbody, defaultCharset))
+  def <<< (stringbody: String): Request = PUT.copy(
+    body=Some(new org.apache.http.entity.StringEntity(stringbody, subject.defaultCharset))
   )
   /** Put the given file. (new request, mimics) */
-  def <<< (file: java.io.File, content_type: String) = this.PUT.copy(
+  def <<< (file: java.io.File, content_type: String) = PUT.copy(
     body=Some(new org.apache.http.entity.FileEntity(file, content_type))
   )
 
   /** Post the given key value sequence. (new request, mimics) */
-  def << (values: Iterable[(String, String)]): Request = this << form_join(
-    (this.body.map(EntityUtils.toString).filterNot { _.isEmpty }.toSeq ++
-      values.map(form_elem)
+  def << (values: Iterable[(String, String)]): Request = this << subject.form_join(
+    (subject.body.map(EntityUtils.toString).filterNot { _.isEmpty }.toSeq ++
+      values.map(subject.form_elem)
     )
   )
 
   /** Post the given string value. (new request, mimics) */
-  def << (string_body: String): Request = this.POST.copy(
-    body=Some(new org.apache.http.entity.StringEntity(string_body, defaultCharset))
+  def << (stringbody: String): Request = POST.copy(
+    body=Some(new org.apache.http.entity.StringEntity(stringbody, subject.defaultCharset))
   )
   
   /** Add query parameters. (mutates request) */
   def <<? (values: Iterable[(String, String)]) =
-    if (values.isEmpty) this
-    else new Request(
-      host,
-      creds,
-      method,
-      if (path contains '?') path + '&' + this.form_enc(values)
-      else path + (this ? values),
-      headers,
-      body,
-      defaultCharset
+    if (values.isEmpty) subject
+    else subject.copy(
+      path =
+        if (subject.path contains '?') subject.path + '&' + subject.form_enc(values)
+        else subject.path + (subject ? values)
     )
   
   /** HTTP post request. (new request, mimics) */
-  def POST = this.copy(method="POST")
+  def POST = subject.copy(method="POST")
 
   /** HTTP post request. (new request, mimics) */
-  def PUT = this.copy(method="PUT")
+  def PUT = subject.copy(method="PUT")
     
   /** HTTP delete request. (new request, mimics) */
-  def DELETE = this.copy(method="DELETE")
+  def DELETE = subject.copy(method="DELETE")
   
   /** HTTP head request. (new request, mimics). See >:> to access headers. */
-  def HEAD = this.copy(method="HEAD")
+  def HEAD = subject.copy(method="HEAD")
 
 
   /** @return URI based on this request, e.g. if needed outside Disptach. */
-  def to_uri = URI.create(host.toURI).resolve(path)
+  def to_uri = URI.create(subject.host.toURI).resolve(subject.path)
 }
 
 /** Nil request, useful to kick off a descriptors that don't have a factory. */
