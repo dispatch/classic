@@ -118,18 +118,10 @@ trait Builder[T] { def product:T }
 /** May be used directly from any thread. */
 object Http extends Http 
   with Threads 
-  with HttpImplicits 
+  with ImplicitBuilder 
   with ImplicitRequestTerms
   with ImplicitHandlers
 
-trait HttpImplicits {
-  /** import to support e.g. Http("http://example.com/" >>> System.out) */
-  implicit def str2req(str: String) = new Request(str)
-  
-  implicit def builder2product[T](builder: Builder[T]) = builder.product
-
-  /** Convert repeating name value tuples to list of pairs for httpclient */
-  def map2ee(values: Map[String, Any]) = java.util.Arrays asList (
-    values.toSeq map { case (k, v) => new BasicNameValuePair(k, v.toString) } toArray : _*
-  )
+trait ImplicitBuilder {
+  implicit def builderToProduct[T](builder: Builder[T]) = builder.product
 }
