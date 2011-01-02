@@ -59,7 +59,7 @@ object OAuth {
   def callback(url: String) = IMap("oauth_callback" -> url)
   
   //normalize to OAuth percent encoding
-  private def %% (str: String): String = (Http % str) replace ("+", "%20") replace ("%7E", "~") replace ("*", "%2A")
+  private def %% (str: String): String = (Request % str) replace ("+", "%20") replace ("%7E", "~") replace ("*", "%2A")
   private def %% (s: Seq[String]): String = s map %% mkString "&"
   private def %% (t: (String, Any)): (String, String) = (%%(t._1), %%(t._2.toString))
   
@@ -88,14 +88,14 @@ object OAuth {
 
     /** Sign request by reading Post (<<) and query string parameters */
     private def sign(consumer: Consumer, token: Option[Token], verifier: Option[String], callback: Option[String]) = r next { req =>
-      val oauth_url = Http.to_uri(r.host, req).toString.split('?')(0)
+      val oauth_url = Request.to_uri(r.host, req).toString.split('?')(0)
       val query_params = split_decode(req.getURI.getRawQuery)
       val oauth_params = OAuth.sign(req.getMethod, oauth_url, query_params ++ (req match {
         case before: Post[_] => before.oauth_values
         case _ => IMap()
       }), consumer, token, verifier, callback)
       req.addHeader("Authorization", "OAuth " + oauth_params.map { 
-        case (k, v) => (Http % k) + "=\"%s\"".format(Http % v)
+        case (k, v) => (Request % k) + "=\"%s\"".format(Request % v)
       }.mkString(",") )
       req
     }
@@ -106,7 +106,7 @@ object OAuth {
     val split_decode: (String => IMap[String, String]) = {
       case null => IMap.empty
       case query => IMap.empty ++ query.trim.split('&').map { nvp =>
-        ( nvp split "=" map Http.-% ) match { 
+        ( nvp split "=" map Request.-% ) match { 
           case Array(name) => name -> ""
           case Array(name, value) => name -> value
         }

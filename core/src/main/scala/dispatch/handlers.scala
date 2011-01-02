@@ -31,14 +31,12 @@ object Handler {
     } } )
 }
 
-trait ImplicitCoreHandlers {
-  implicit def toCoreHandlers (req: Request) = error("new Request(req) with CoreHandler")
+trait ImplicitHandlers {
+  implicit def toHandlers(req: Request) = new Handlers(req)
 }
+object Handlers extends ImplicitHandlers
 
-trait CoreHandlers {
-  /** the below functions produce Handlers based on this request descriptor */
-  val request: Request
-  
+class Handlers(request: Request) {
   /** Handle InputStream in block, handle gzip if so encoded. Passes on any charset
       header value from response, otherwise the default charset. (See Request#>\) */
   def >> [T] (block: (InputStream, String) => T) = Handler(request, { ent =>
@@ -84,17 +82,17 @@ trait CoreHandlers {
   def >| = Handler(request, (code, res, ent) => ())
 
   /** Split into two request handlers, return results of each in tuple. */
-  def >+ [A, B] (block: CoreHandlers => (Handler[A], Handler[B])) = {
+  def >+ [A, B] (block: Handlers => (Handler[A], Handler[B])) = {
     new Handler[(A,B)] ( request, { (code, res, opt_ent) =>
-      val (a, b) = block(new CoreHandlers { val request = /\ })
+      val (a, b) = block(new Handlers( /\ ))
       (a.block(code, res, opt_ent), b.block(code,res,opt_ent))
     } )
   }
   /** Chain two request handlers. First handler returns a second, which may use
       values obtained by the first. Both are run on the same request. */
-  def >+> [T] (block: CoreHandlers => Handler[Handler[T]]) = {
+  def >+> [T] (block: Handlers => Handler[Handler[T]]) = {
     new Handler[T] ( request, { (code, res, opt_ent) =>
-      (block(new CoreHandlers { val request = /\})).block(code, res, opt_ent).block(code, res, opt_ent)
+      (block(new Handlers( /\ ))).block(code, res, opt_ent).block(code, res, opt_ent)
     } )
   }
 }

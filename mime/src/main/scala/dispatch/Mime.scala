@@ -14,13 +14,14 @@ import java.io.{File, InputStream}
   stream instance, or a Request descriptor referencing it will fail after its first use. */
 object Mime {
   /** Adds multipart operators to Request */
-  implicit def Request2ExtendedRequest(r: Request) = new MimeRequest(r)
+  implicit def Request2ExtendedRequest(r: Request) = new MimeRequestTerms(r)
 
   type Headers = Map[String, List[String]]
   type MultipartBlock[T] = (Headers, InputStream) => T
 
   /** Request derivative with multipart operators */
-  class MimeRequest(r: Request) {
+  class MimeRequestTerms(r: Request) {
+    import Handlers._
     /** Process parts of a multipart response in a block. The block is called once for each part
         with a Map[String,List[String]] of its headers and an InputStream of the body. */
     def >--> [T] (multipart_block: MultipartBlock[T]) = r >+> { r2 => 

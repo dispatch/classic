@@ -132,7 +132,7 @@ object Http extends Http
   with Threads 
   with HttpImplicits 
   with ImplicitCoreRequestOps
-  with ImplicitCoreHandlers
+  with ImplicitHandlers
 
 trait HttpImplicits {
   /** import to support e.g. Http("http://example.com/" >>> System.out) */

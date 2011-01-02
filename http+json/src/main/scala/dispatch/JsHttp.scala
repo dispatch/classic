@@ -1,15 +1,15 @@
 package dispatch.json
 import dispatch._
 
-trait JsHttp extends Js {
+trait ImplicitJsHandlers {
   /** Add JSON-processing method ># to dispatch.Request */
-  implicit def Request2JsonRequest(r: Request) = new JsonRequest(r)
-  /** Add String conversion since Http#str2req implicit will not chain. */
-  implicit def String2JsonRequest(r: String) = new JsonRequest(new Request(r))
-
-  class JsonRequest(r: Request) {
-    /** Process response as JsValue in block */
-    def ># [T](block: json.Js.JsF[T]) = r >> { stm => block(json.Js(stm)) }
-  }
+  implicit def requestToJsHandlers(r: Request) = new JsHandlers(r)
+  implicit def stringToJsHandlers(r: String) = new JsHandlers(new Request(r))
 }
-object JsHttp extends JsHttp
+object JsHttp extends ImplicitJsHandlers
+
+class JsHandlers(subject: Request) {
+  import Handlers._
+  /** Process response as JsValue in block */
+  def ># [T](block: json.Js.JsF[T]) = subject >> { stm => block(json.Js(stm)) }
+}

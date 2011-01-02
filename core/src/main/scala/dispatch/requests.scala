@@ -59,6 +59,8 @@ trait ImplicitCoreRequestOps {
   implicit def toCoreRequestOps (req: Request) = new Request(req) with CoreRequestOps
 }
 
+object RequestTerms extends ImplicitCoreRequestOps
+
 trait CoreRequestOps { self: Request =>
   // The below functions create new request descriptors based off of the current one.
   // Most are intended to be used as infix operators; those that don't take a parameter

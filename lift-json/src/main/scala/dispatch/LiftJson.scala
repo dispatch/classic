@@ -7,17 +7,20 @@ import JsonDSL._
 
 import java.util.Date
 
-object Js extends TypeMappers {
+trait ImplicitJsonHandlers {
   /** Add JSON-processing method ># to dispatch.Request */
-  implicit def Request2JsonRequest(r: dispatch.Request) = new JsonRequest(r)
+  implicit def requestToJsonHandlers(r: dispatch.Request) = new JsonHandlers(r)
   /** Add String conversion since Http#str2req implicit will not chain. */
-  implicit def String2JsonRequest(r: String) = new JsonRequest(new Request(r))
+  implicit def stringToJsonHandlers(r: String) = new JsonHandlers(new Request(r))
+}
+class JsonHandlers(subject: Request) {
+  import Handlers._
+  /** Process response as JsValue in block */
+  def ># [T](block: JValue => T) = subject >- { s => block(JsonParser.parse(s)) }
+  def as_pretty = this ># { js => pretty(render(js))}
+}
 
-  class JsonRequest(r: Request) {
-    /** Process response as JsValue in block */
-    def ># [T](block: JValue => T) = r >- { s => block(JsonParser.parse(s)) }
-    def as_pretty = ># { js => pretty(render(js))}
-  }
+object Js extends TypeMappers with ImplicitJsonHandlers {
   implicit def jvlistcomb[LT](block: JValue => List[LT]) = new JvListComb(block)
   class JvListComb[LT](block: JValue => List[LT]) {
     /** Synonym for Function1#andThen */

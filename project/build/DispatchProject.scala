@@ -18,7 +18,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
     val mime4j = "org.apache.james" % "apache-mime4j" % "0.6"
   }, http)
   lazy val json = project("json", "Dispatch JSON", new DispatchModule(_))
-  lazy val http_json = project("http+json", "Dispatch HTTP JSON", new HttpProject(_), http, json)
+  lazy val http_json = project("http+json", "Dispatch HTTP JSON", new HttpProject(_), core, json)
   lazy val http_gae = project("http-gae", "Dispatch HTTP GAE", new HttpProject(_) {
     val bum_gae = "bumnetworks GAE artifacts" at "http://www.bumnetworks.com/gae"
     val gae_api = "com.google.appengine" % "appengine-api-1.0-sdk" % "1.3.4"
@@ -28,7 +28,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
 
   lazy val lift_json = project("lift-json", "Dispatch lift-json", new DispatchModule(_) {
     val lift_json = "net.liftweb" % ("lift-json_" + clunkcompile("2.7.7", "2.8.0")) % "2.2-M1"
-  }, http)
+  }, core)
   lazy val oauth = project("oauth", "Dispatch OAuth", new DispatchModule(_), http)
   lazy val times = project("times", "Dispatch Times", new DispatchModule(_), http, json, http_json)
   lazy val couch = project("couch", "Dispatch Couch", new DispatchModule(_), http, json, http_json)

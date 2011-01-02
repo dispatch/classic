@@ -70,7 +70,7 @@ class HttpNio extends dispatch.HttpExecutor {
       }
     })).start()
   
-  def execute[T](host: HttpHost, credsopt: Option[Credentials], 
+  def execute[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 
                  req: HttpRequest, block: HttpResponse => T): HttpPackage[T] = {
     val future = IOFuture(req, block)
     credsopt.map { creds =>
