@@ -9,7 +9,7 @@ object HttpSpec extends Specification {
   val jane = "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.\n"
   
   "Singleton Http test get" should {
-    val req: Request = "http://technically.us/test.text"
+    val req = new Request("http://technically.us/test.text")
     "not throw exception if credentials are specified without explicit host" in {
       Http (req as ("user", "pass") as_str) must_== (jane)
     }

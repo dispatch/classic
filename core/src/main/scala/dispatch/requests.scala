@@ -97,7 +97,7 @@ class RequestTerms(subject: Request) {
     if (req.host.getHostName.isEmpty) subject.host else req.host, 
     req.creds orElse subject.creds,
     req.method,
-    if (req.path.isEmpty) subject.path else req.path,
+    subject.path + req.path,
     req.headers ::: subject.headers,
     req.body orElse subject.body,
     if (Request.factoryCharset == req.defaultCharset) subject.defaultCharset else req.defaultCharset
