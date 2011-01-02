@@ -78,12 +78,14 @@ trait CoreRequestOps { self: Request =>
     new Request(host, Some(Credentials(name, pass)), method, path, headers, body, defaultCharset)
 
   /** Add basic auth header unconditionally to this request. Does not wait for a 401 response. */
-  def as_! (name: String, pass: String) = error("need a base64 encoder here")
-  /*this <:< Map("Authorization" -> (
-    "Basic " + new String(org.apache.commons.codec.binary.Base64.encodeBase64(
-      "%s:%s".format(name, pass).getBytes
+  def as_! (name: String, pass: String) = {
+    import javax.xml.bind.DatatypeConverter.{printBase64Binary=>base64}
+    this <:< Map("Authorization" -> (
+      "Basic " + new String(base64(
+        "%s:%s".format(name, pass).getBytes
+      ))
     ))
-  ))*/
+  }
   
   /** Convert this to a secure (scheme https) request if not already */
   def secure = new Request( 
