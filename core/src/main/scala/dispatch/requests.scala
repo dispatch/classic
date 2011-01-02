@@ -131,15 +131,17 @@ class RequestTerms(subject: Request) {
   )
 
   /** Post the given key value sequence. (new request, mimics) */
-  def << (values: Iterable[(String, String)]): Request = this << subject.form_join(
-    (subject.body.map(EntityUtils.toString).filterNot { _.isEmpty }.toSeq ++
-      values.map(subject.form_elem)
-    )
+  def << (values: Iterable[(String, String)]): Request = this << (
+    subject.form_join(
+      (subject.body.map(EntityUtils.toString).filterNot { _.isEmpty }.toSeq ++
+        values.map(subject.form_elem)
+      )
+    ), "application/x-www-form-urlencoded"
   )
-
   /** Post the given string value. (new request, mimics) */
-  def << (stringbody: String): Request = POST.copy(
-    body=Some(new org.apache.http.entity.StringEntity(stringbody, subject.defaultCharset))
+  def << (stringbody: String, contenttype: String): Request = POST.copy(
+    body=Some(new org.apache.http.entity.StringEntity(
+      stringbody, contenttype, subject.defaultCharset))
   )
   
   /** Add query parameters. (mutates request) */
