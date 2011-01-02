@@ -4,7 +4,7 @@ import collection.Map
 import collection.immutable.{Map => IMap}
 import java.net.URI
 
-import org.apache.http.message.BasicHttpRequest
+import org.apache.http.message.BasicHttpEntityEnclosingRequest
 import org.apache.http.{HttpHost,HttpRequest,HttpResponse,HttpEntity}
 import org.apache.http.client.methods._
 import org.apache.http.client.entity.UrlEncodedFormEntity
@@ -87,10 +87,11 @@ trait HttpExecutor {
   final def x[T](hand: Handler[T]): HttpPackage[T] = x(hand.request)(hand.block)
   /** Execute request with handler, response in package. */
   final def x[T](req: Request)(block: Handler.F[T]) = {
-    val request = new BasicHttpRequest(req.method, req.path)
+    val request = new BasicHttpEntityEnclosingRequest(req.method, req.path)
     req.headers.reverse.foreach {
       case (key, value) => request.addHeader(key, value)
     }
+    req.body.foreach(request.setEntity)
     execute(req.host, req.creds, request, { res =>
       val ent = res.getEntity match {
         case null => None
