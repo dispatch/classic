@@ -1,7 +1,7 @@
 package dispatch
 
 import util.DynamicVariable
-import org.apache.http.{HttpHost,HttpVersion,HttpResponse}
+import org.apache.http.{HttpHost,HttpVersion,HttpRequest,HttpResponse}
 import org.apache.http.auth.AuthScope
 import org.apache.http.impl.client.{DefaultHttpClient, BasicCredentialsProvider}
 import org.apache.http.conn.params.ConnRouteParams
@@ -27,13 +27,13 @@ class ConfiguredHttpClient extends DefaultHttpClient {
     configureProxy(params)
   }
   /** Follow response redirect regardless of request method */
-  override def createRedirectHandler = new org.apache.http.impl.client.DefaultRedirectHandler {
+  setRedirectStrategy(new org.apache.http.impl.client.DefaultRedirectStrategy {
     import org.apache.http.protocol.HttpContext
     import org.apache.http.HttpStatus._
-    override def isRedirectRequested(res: HttpResponse, ctx: HttpContext) =
+    override def isRedirected(req: HttpRequest, res: HttpResponse, ctx: HttpContext) =
       (SC_MOVED_TEMPORARILY :: SC_MOVED_PERMANENTLY :: SC_TEMPORARY_REDIRECT :: 
        SC_SEE_OTHER :: Nil) contains res.getStatusLine.getStatusCode
-  }
+  })
   val credentials = new DynamicVariable[Option[(AuthScope, Credentials)]](None)
   setCredentialsProvider(new BasicCredentialsProvider {
     override def getCredentials(scope: AuthScope) = credentials.value match {
