@@ -119,7 +119,7 @@ trait Builder[T] { def product:T }
 object Http extends Http 
   with Threads 
   with HttpImplicits 
-  with ImplicitCoreRequestOps
+  with ImplicitRequestTerms
   with ImplicitHandlers
 
 trait HttpImplicits {

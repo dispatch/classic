@@ -62,13 +62,13 @@ case class Request(
   def form_join(values: Iterable[String]) = values.mkString("&")
 }
 
-trait ImplicitCoreRequestOps {
-  implicit def toCoreRequestOps (req: Request) = new Request(req) with CoreRequestOps
+trait ImplicitRequestTerms {
+  implicit def toRequestTerms (req: Request) = new Request(req) with RequestTerms
 }
 
-object RequestTerms extends ImplicitCoreRequestOps
+object RequestTerms extends ImplicitRequestTerms
 
-trait CoreRequestOps { self: Request =>
+trait RequestTerms { self: Request =>
   // The below functions create new request descriptors based off of the current one.
   // Most are intended to be used as infix operators; those that don't take a parameter
   // have character names to be used with dot notation, e.g. :/("example.com").HEAD.secure >>> {...}
@@ -189,7 +189,7 @@ object :/ {
 }
 
 /** Factory for requests from a directory, prepends '/'. */
-object / extends ImplicitCoreRequestOps {
+object / extends ImplicitRequestTerms {
   def apply(path: String) = /\ / path
 }
 
