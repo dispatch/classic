@@ -12,29 +12,23 @@ object Twitter {
 }
 
 object Search extends Js {
-  def apply(query: String, params: (String, Any)*) = new SearchBuilder(Map(params: _*), None).q(query)
+  def apply(query: String, params: (String, Any)*) = new SearchBuilder(Map(params: _*), Map.empty[String, String]).q(query)
 
-  class SearchBuilder(params: Map[String, Any], auth: Option[(Consumer, Token)]) extends Builder[Handler[List[JsObject]]] {
-    private def param(key: String)(value: Any) = new SearchBuilder(params + (key -> value), auth)
-
+  class SearchBuilder(params: Map[String, Any], headers: Map[String, String]) extends Builder[Handler[List[JsObject]]] {
+    private def param(key: String)(value: Any) = new SearchBuilder(params + (key -> value), headers)
+    private def header(key: String)(value: String) = new SearchBuilder(params, headers + (key -> value))
     val q = param("q")_
     val lang = param("lang")_
     val rpp = param("rpp")_
     val page = param("page")_
-    /** search as an authenticated user */
-    def as(consumer: Consumer, token: Token) = new SearchBuilder(params, Some(consumer, token))
+    /** search rate limit conditions are higher for unique userAgents */
+    val user_agent = header("User-Agent")_
     val since_id = param("since_id")_
     private def geocode0(unit: String)(lat: Double, lon: Double, radius: Double) =
       param("geocode")(List(lat, lon, radius).mkString(",") + unit)
     val geocode = geocode0("km")_
     val geocode_mi = geocode0("mi")_
-    def product =
-      auth match {
-        case Some((consumer, token)) =>
-          Twitter.search / "search.json" <<? params <@(consumer, token) ># ('results ! (list ! obj))
-        case _ =>
-          Twitter.search / "search.json" <<? params ># ('results ! (list ! obj))
-      }
+    def product = Twitter.search / "search.json" <<? params <:< headers ># ('results ! (list ! obj))
   }
 
   val to_user_id = 'to_user_id ? num
@@ -94,6 +88,22 @@ case class User(user: String) extends
     Request(Twitter.host / "users" / "show" / (user + ".json")) with Js {
 
   def show = this ># obj
+}
+
+object Account extends
+   Request(Twitter.host / "account") with Js {
+   /** ip based rate limit status */
+   def rate_limit_status = this / "rate_limit_status.json" ># obj
+   /** authenticated user rate limit status */
+   def rate_limit_status_as(consumer: Consumer, token: Token) =
+     this / "rate_limit_status.json" <@(consumer, token) ># obj
+}
+
+object RateLimitStatus extends Js {
+  val remaining_hits = 'remaining_hits ? num
+  val reset_time_in_seconds = 'reset_time_in_seconds ? num
+  val hourly_limit = 'hourly_limit ? num
+  val reset_time = 'reset_time ? str
 }
 
 object Auth {
