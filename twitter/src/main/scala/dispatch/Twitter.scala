@@ -31,7 +31,7 @@ object Search extends Js {
     def product =
       auth match {
         case Some((consumer, token)) =>
-          Twitter.search / "search.json" <<? params <@(consumer, token) ># ('results ! (list ! obj))
+          Twitter.search.secure / "search.json" <<? params <@(consumer, token) ># ('results ! (list ! obj))
         case _ =>
           Twitter.search / "search.json" <<? params ># ('results ! (list ! obj))
       }
@@ -94,6 +94,18 @@ case class User(user: String) extends
     Request(Twitter.host / "users" / "show" / (user + ".json")) with Js {
 
   def show = this ># obj
+}
+
+object Account extends
+   Request(Twitter.host / "account") with Js {
+   def rate_limit_status = this / "rate_limit_status.json" ># obj
+}
+
+object RateLimitStatus extends Js {
+  val remaining_hits = 'remaining_hits ? num
+  val reset_time_in_seconds = 'reset_time_in_seconds ? num
+  val hourly_limit = 'hourly_limit ? num
+  val reset_time = 'reset_time ? str
 }
 
 object Auth {
