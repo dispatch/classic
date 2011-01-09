@@ -7,7 +7,7 @@ import net.liftweb.json._
 import net.liftweb.json.JsonAST._
 
 import dispatch.mime.Mime._
-
+import dispatch.Request._
 import java.util.Date
 
 trait EverywhereMethod extends MethodBuilder {
@@ -18,8 +18,8 @@ trait QueryMethod extends dispatch.meetup.QueryMethod with EverywhereMethod
 trait ResourceMethod extends dispatch.meetup.ResourceMethod with EverywhereMethod
 
 object Containers extends ContainersMethod(Map.empty)
-private[everywhere] class ContainersMethod(params: Map[String, Any]) extends QueryMethod {
-  private def param(key: String)(value: Any) = new ContainersMethod(params + (key -> value))
+private[everywhere] class ContainersMethod(params: Map[String, String]) extends QueryMethod {
+  private def param(key: String)(value: String) = new ContainersMethod(params + (key -> value))
 
   val urlname = param("urlname")_
   val container_id = param("container_id")_
@@ -45,13 +45,13 @@ trait ContainerMethod extends ResourceMethod {
 object ContainerCreate {
   def apply(name: String) = new ContainerCreateMethod(Map("name" -> name))
 }
-private[everywhere] class ContainerCreateMethod(params: Map[String, Any]) extends ContainerMethod {
-  protected def param(key: String)(value: Any) = new ContainerCreateMethod(params + (key -> value))
+private[everywhere] class ContainerCreateMethod(params: Map[String, String]) extends ContainerMethod {
+  protected def param(key: String)(value: Any) = new ContainerCreateMethod(params + (key -> value.toString))
   def complete = _ / "container" << params
 }
 object ContainerEdit { def apply(id: Int) = new ContainerEditMethod(id, Map.empty) }
-private[everywhere] class ContainerEditMethod(id: Int, params: Map[String, Any]) extends ContainerMethod {
-  protected def param(key: String)(value: Any) = new ContainerEditMethod(id, params + (key -> value))
+private[everywhere] class ContainerEditMethod(id: Int, params: Map[String, String]) extends ContainerMethod {
+  protected def param(key: String)(value: Any) = new ContainerEditMethod(id, params + (key -> value.toString))
   val name = param("name")_
   override def complete = _ / "container" / id.toString << params
 }
@@ -88,8 +88,8 @@ object Alerts {
   val updates = 'updates ? bool
 }
 object AlertsEdit { def apply(container_id: Int) = new AlertsEditMethod(container_id, Map.empty) }
-private[everywhere] class AlertsEditMethod(container_id: Int, params: Map[String, Boolean]) extends ResourceMethod {
-  protected def param(key: String)(value: Boolean) = new AlertsEditMethod(container_id, params + (key -> value))
+private[everywhere] class AlertsEditMethod(container_id: Int, params: Map[String, String]) extends ResourceMethod {
+  protected def param(key: String)(value: Boolean) = new AlertsEditMethod(container_id, params + (key -> value.toString))
   val comments = param("comments")_
   val rsvps = param("rsvps")_
   val updates = param("updates")_
@@ -97,8 +97,8 @@ private[everywhere] class AlertsEditMethod(container_id: Int, params: Map[String
 }
 
 object Events extends EventsMethod(Map.empty)
-private[everywhere] class EventsMethod(params: Map[String, Any]) extends QueryMethod {
-  private def param(key: String)(value: Any) = new EventsMethod(params + (key -> value))
+private[everywhere] class EventsMethod(params: Map[String, String]) extends QueryMethod {
+  private def param(key: String)(value: Any) = new EventsMethod(params + (key -> value.toString))
 
   val event_id = param("event_id")_
   val urlname = param("urlname")_
@@ -127,15 +127,15 @@ trait EventMethod extends ResourceMethod {
 object EventCreate {
   def apply(name: String) = new EventCreateMethod(Map.empty)
 }
-private[everywhere] class EventCreateMethod(params: Map[String, Any]) extends EventMethod {
-  protected def param(key: String)(value: Any) = new EventCreateMethod(params + (key -> value))
+private[everywhere] class EventCreateMethod(params: Map[String, String]) extends EventMethod {
+  protected def param(key: String)(value: Any) = new EventCreateMethod(params + (key -> value.toString))
   val urlname = param("urlname")_
   val container_id = param("container_id")_
   def complete = _ / "event" << params
 }
 object EventEdit { def apply(id: Int) = new EventEditMethod(id, Map.empty) }
-private[everywhere] class EventEditMethod(val id: Int, params: Map[String, Any]) extends EventMethod {
-  protected def param(key: String)(value: Any) = new EventEditMethod(id, params + (key -> value))
+private[everywhere] class EventEditMethod(val id: Int, params: Map[String, String]) extends EventMethod {
+  protected def param(key: String)(value: Any) = new EventEditMethod(id, params + (key -> value.toString))
   def organize(setting: Boolean) = param("organize")(setting)
   override def complete = _ / "event" / id.toString << params
 }
@@ -179,8 +179,8 @@ private[everywhere] class MemberSummary(property: Symbol) extends Obj(property) 
 }
 
 object Rsvps extends RsvpsMethod(Map.empty)
-private[everywhere] class RsvpsMethod(params: Map[String, Any]) extends QueryMethod {
-  private def param(key: String)(value: Any) = new RsvpsMethod(params + (key -> value))
+private[everywhere] class RsvpsMethod(params: Map[String, String]) extends QueryMethod {
+  private def param(key: String)(value: Any) = new RsvpsMethod(params + (key -> value.toString))
 
   val event_id = param("event_id")_
   val member_id = param("member_id")_
@@ -188,7 +188,7 @@ private[everywhere] class RsvpsMethod(params: Map[String, Any]) extends QueryMet
 }
 object RsvpCreate {
   def apply(event_id: Int) = new ResourceMethod {
-    def complete = _ / "rsvp" << Map("event_id" -> event_id)
+    def complete = _ / "rsvp" << Map("event_id" -> event_id.toString)
   }
 }
 object RsvpDelete {
@@ -204,8 +204,8 @@ object Rsvp {
 }
 
 object Comments extends CommentsMethod(Map.empty)
-private[everywhere] class CommentsMethod(params: Map[String, Any]) extends QueryMethod {
-  private def param(key: String)(value: Any) = new CommentsMethod(params + (key -> value))
+private[everywhere] class CommentsMethod(params: Map[String, String]) extends QueryMethod {
+  private def param(key: String)(value: Any) = new CommentsMethod(params + (key -> value.toString))
 
   val container_id = param("container_id")_
   val urlname = param("urlname")_
@@ -216,7 +216,7 @@ private[everywhere] class CommentsMethod(params: Map[String, Any]) extends Query
 }
 object CommentCreate {
   def apply(event_id: Int, comment: String) = new ResourceMethod {
-    def complete = _ / "comment" << Map("event_id" -> event_id, "comment" -> comment)
+    def complete = _ / "comment" << Map("event_id" -> event_id.toString, "comment" -> comment)
   }
 }
 object CommentDelete {

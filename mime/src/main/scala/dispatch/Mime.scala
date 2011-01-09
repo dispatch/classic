@@ -32,7 +32,7 @@ object Mime {
 
     /** Add file to multipart post, will convert other post methods to multipart */
     def << (name: String, file: File) = 
-      (name, new FileBody(file))
+      add(name, new FileBody(file))
     /** Add file with content-type to multipart post, will convert other post methods to multipart */
     def << (name: String, file: File, content_type: String) = 
       add(name, new FileBody(file, content_type))

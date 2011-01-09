@@ -11,7 +11,7 @@ class AppEngineConfiguredClient extends ConfiguredHttpClient {
   override protected def configureProxy(params: HttpParams) = params
 }
 
-object AppEngineHttp extends AppEngineHttp with HttpImplicits
+object AppEngineHttp extends AppEngineHttp
 
 class AppEngineHttp extends Http {
   override val client = new AppEngineConfiguredClient

@@ -3,6 +3,7 @@ package dispatch.twitter
 import dispatch._
 import dispatch.oauth._
 import OAuth._
+import Request._
 import net.liftweb.json.JsonParser.parse
 import net.liftweb.json.JsonAST.JValue
 import scala.io.Source

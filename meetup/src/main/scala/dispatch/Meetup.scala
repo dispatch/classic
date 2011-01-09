@@ -1,5 +1,6 @@
 package dispatch.meetup
 import dispatch._
+import dispatch.Request._
 
 import dispatch.oauth._
 import dispatch.oauth.OAuth._
@@ -21,7 +22,6 @@ import MeetupTypeMaps.mudatestr
 
 /** Client is a function to wrap API operations */
 abstract class Client extends ((Request => Request) => Request) {
-  import Http.builder2product
   val hostname = "api.meetup.com"
   val host: Request
   def call[T](method: Method[T])(implicit http: Http): T =
@@ -100,8 +100,8 @@ object Meta {
   }
 }
 object Groups extends GroupsBuilder(Map())
-private[meetup] class GroupsBuilder(params: Map[String, Any]) extends QueryMethod {
-  private def param(key: String)(value: Any) = new GroupsBuilder(params + (key -> value))
+private[meetup] class GroupsBuilder(params: Map[String, String]) extends QueryMethod {
+  private def param(key: String)(value: Any) = new GroupsBuilder(params + (key -> value.toString))
 
   val member_id = param("member_id")_
   val urlname = param("group_urlname")_
@@ -158,8 +158,8 @@ object Group extends Location {
 }
 
 object Events extends EventsBuilder(Map())
-private[meetup] class EventsBuilder(params: Map[String, Any]) extends QueryMethod {
-  private def param(key: String)(value: Any) = new EventsBuilder(params + (key -> value))
+private[meetup] class EventsBuilder(params: Map[String, String]) extends QueryMethod {
+  private def param(key: String)(value: Any) = new EventsBuilder(params + (key -> value.toString))
   private val df = new java.text.SimpleDateFormat("MMddyyyy")
   private def date_param(key: String)(value: Date) = param(key)(df.format(value))
 
@@ -233,8 +233,8 @@ object Event extends Location {
 }
 
 object OpenEvents extends OpenEventsBuilder(Map())
-private[meetup] class OpenEventsBuilder(params: Map[String, Any]) extends QueryMethod {
-  private def param(key: String)(value: Any) = new OpenEventsBuilder(params + (key -> value))
+private[meetup] class OpenEventsBuilder(params: Map[String, String]) extends QueryMethod {
+  private def param(key: String)(value: Any) = new OpenEventsBuilder(params + (key -> value.toString))
   private def date_param(key: String)(value: Date) = param(key)(value.getTime)
 
   val zip = param("zip")_
@@ -281,8 +281,8 @@ object OpenEvent {
 }
 
 object Members extends MembersBuilder(Map())
-private[meetup] class MembersBuilder(params: Map[String, Any]) extends QueryMethod {
-  private def param(key: String)(value: Any) = new MembersBuilder(params + (key -> value))
+private[meetup] class MembersBuilder(params: Map[String, String]) extends QueryMethod {
+  private def param(key: String)(value: Any) = new MembersBuilder(params + (key -> value.toString))
 
   val member_id = param("member_id")_
   def self = param("relation")("self")
@@ -305,8 +305,8 @@ object Member extends Location {
 }
 
 object Rsvps extends RsvpsBuilder(Map())
-private[meetup] class RsvpsBuilder(params: Map[String, Any]) extends QueryMethod {
-  private def param(key: String)(value: Any) = new RsvpsBuilder(params + (key -> value))
+private[meetup] class RsvpsBuilder(params: Map[String, String]) extends QueryMethod {
+  private def param(key: String)(value: Any) = new RsvpsBuilder(params + (key -> value.toString))
 
   val event_id = param("event_id")_
 
@@ -325,8 +325,8 @@ object Rsvp extends Location {
 }
 
 object PhotoUpload extends PhotoUploadBuilder(None, Map())
-private[meetup] class PhotoUploadBuilder(photo: Option[File], params: Map[String, Any]) extends ResourceMethod {
-  private def param(key: String)(value: Any) = new PhotoUploadBuilder(photo, params + (key -> value))
+private[meetup] class PhotoUploadBuilder(photo: Option[File], params: Map[String, String]) extends ResourceMethod {
+  private def param(key: String)(value: Any) = new PhotoUploadBuilder(photo, params + (key -> value.toString))
 
   val event_id = param("event_id")_
   def photo(photo: File) = new PhotoUploadBuilder(Some(photo), params)

@@ -5,6 +5,7 @@ import json._
 import JsHttp._
 import oauth._
 import oauth.OAuth._
+import dispatch.Request._
 
 object Twitter {
   val host = :/("api.twitter.com")
@@ -12,10 +13,10 @@ object Twitter {
 }
 
 object Search extends Js {
-  def apply(query: String, params: (String, Any)*) = new SearchBuilder(Map(params: _*), Map.empty[String, String]).q(query)
+  def apply(query: String, params: (String, String)*) = new SearchBuilder(Map(params: _*), Map.empty[String, String]).q(query)
 
-  class SearchBuilder(params: Map[String, Any], headers: Map[String, String]) extends Builder[Handler[List[JsObject]]] {
-    private def param(key: String)(value: Any) = new SearchBuilder(params + (key -> value), headers)
+  class SearchBuilder(params: Map[String, String], headers: Map[String, String]) extends Builder[Handler[List[JsObject]]] {
+    private def param(key: String)(value: Any) = new SearchBuilder(params + (key -> value.toString), headers)
     private def header(key: String)(value: String) = new SearchBuilder(params, headers + (key -> value))
     val q = param("q")_
     val lang = param("lang")_
@@ -44,14 +45,14 @@ object Search extends Js {
 object Status extends Request(Twitter.host / "statuses") {
   private def public_timeline = this / "public_timeline.json" ># (list ! obj)
 
-  def friends_timeline(consumer: Consumer, token: Token, params: (String, Any)*) =
+  def friends_timeline(consumer: Consumer, token: Token, params: (String, String)*) =
     new FriendsTimelineBuilder(consumer, token, Map(params: _*))
 
-  class FriendsTimelineBuilder(consumer: Consumer, token: Token, params: Map[String, Any])
+  class FriendsTimelineBuilder(consumer: Consumer, token: Token, params: Map[String, String])
       extends Builder[Handler[List[JsObject]]] {
 
     private def param(key: String)(value: Any) =
-      new FriendsTimelineBuilder(consumer, token, params + (key -> value))
+      new FriendsTimelineBuilder(consumer, token, params + (key -> value.toString))
     val since_id = param("since_id")_
     val max_id = param("max_id")_
     val count = param("count")_
