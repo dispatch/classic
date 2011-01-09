@@ -48,16 +48,16 @@ object Mime {
     private def mime_ent: Mime.Entity = {
       r.body.map {
         case ent: Mime.Entity => ent
-        case ent =>
-          val ent = new MultipartEntity with Mime.Entity
-          for ((n,v) <- r.form_dec) ent.add(n,v)
-          ent
+        case orig: FormEntity =>
+          (new MultipartEntity with Mime.Entity).add(orig.oauth_params)
+        case ent => error("trying to add multipart content to entity: " + ent)
+
       } getOrElse new MultipartEntity with Mime.Entity
     }
     def add(name: String, content: => ContentBody) = {
       val ent = mime_ent
       ent.addPart(name, content)
-      r.copy(method="POST", body=Some(ent))
+      r.POST.copy(body=Some(ent))
     }
     /** Add a listener function to be called as bytes are uploaded */
     def >?> (listener_f: ListenerF) = r.copy(
@@ -67,9 +67,13 @@ object Mime {
   /** Post listener function. Called once with the total bytes; the function returned is
     called with the bytes uploaded at each kilobyte boundary, and when complete. */
   type ListenerF = Long => Long => Unit
-  trait Entity extends HttpEntity { 
+  trait Entity extends HttpEntity with FormEntity { 
     def addPart(name: String, body: ContentBody)
-    def add(name: String, value: String) = addPart(name, new StringBody(value))
+    def add(values: Iterable[(String, String)]) = {
+      for ((name,value) <- values) addPart(name, new StringBody(value))
+      this
+    }
+    def oauth_params = Nil
   }
   
   def mime_stream_parser[T](multipart_block: MultipartBlock[T])(content_type: String)(stm: InputStream) = {

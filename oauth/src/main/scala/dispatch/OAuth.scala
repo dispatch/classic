@@ -96,9 +96,10 @@ object OAuth {
       val oauth_url = r.to_uri.toString.split('?')(0)
       val query_params = split_decode(r.to_uri.getRawQuery)
       val oauth_params = OAuth.sign(r.method, oauth_url, query_params ++ (
-        r.body.filter { _ => r.method == "POST" }.map { entity =>
-          split_decode(org.apache.http.util.EntityUtils.toString(entity))
-        }.getOrElse(IMap())
+        r.body.toList.flatMap { 
+          case ent: FormEntity => ent.oauth_params
+          case _ => Nil
+        }
       ), consumer, token, verifier, callback)
       r <:< IMap("Authorization" -> ("OAuth " + oauth_params.map { 
         case (k, v) => (encode(k)) + "=\"%s\"".format(encode(v))

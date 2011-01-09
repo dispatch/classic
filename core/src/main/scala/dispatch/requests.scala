@@ -3,6 +3,7 @@ package dispatch
 import org.apache.http.message.BasicHttpRequest
 import org.apache.http.{HttpEntity,HttpHost,HttpRequest}
 import org.apache.http.util.EntityUtils
+import org.apache.http.entity.StringEntity
 import java.net.URI
 
 object Request extends ImplicitRequestTerms with ImplicitHandlers {
@@ -62,16 +63,6 @@ case class Request(
   }
   def form_elem(value: (String, String)) = %(value._1) + "=" + %(value._2)
   def form_join(values: Iterable[String]) = values.mkString("&")
-  def form_dec: Iterable[(String, String)] = {
-    body.toList.flatMap { ent =>
-      EntityUtils.toString(ent).split("&").map {
-        _.split("=").map(this.-%) match {
-          case Array(name) => name -> ""
-          case Array(name, value, _*) => name -> value
-        }
-      }
-    }
-  }
 }
 
 trait ImplicitRequestTerms {
@@ -133,24 +124,39 @@ class RequestTerms(subject: Request) {
 
   /** Put the given string. */
   def <<< (stringbody: String): Request = PUT.copy(
-    body=Some(new org.apache.http.entity.StringEntity(stringbody, subject.defaultCharset))
+    body=Some(new StringEntity(stringbody, subject.defaultCharset))
   )
   /** Put the given file. (new request, mimics) */
   def <<< (file: java.io.File, content_type: String) = PUT.copy(
     body=Some(new org.apache.http.entity.FileEntity(file, content_type))
   )
 
-  /** Post the given key value sequence. (new request, mimics) */
-  def << (values: Iterable[(String, String)]): Request = this << (
+  private class UrlEncodedFormEntity(
+    val oauth_params: Iterable[(String, String)]
+  ) extends StringEntity(
     subject.form_join(
       (subject.body.map(EntityUtils.toString).filterNot { _.isEmpty }.toSeq ++
-        values.map(subject.form_elem)
+        oauth_params.map(subject.form_elem)
       )
-    ), "application/x-www-form-urlencoded"
-  )
+    ),
+    "application/x-www-form-urlencoded",
+    subject.defaultCharset
+  ) {
+    def add(values: Iterable[(String, String)]) = 
+      new UrlEncodedFormEntity(oauth_params ++ values)
+  }
+
+  /** Post the given key value sequence. (new request, mimics) */
+  def << (values: Iterable[(String, String)]): Request = {
+    val ent = subject.body.map {
+      case ent: FormEntity => ent.add(values)
+      case ent => error("trying to add post parameters << to entity: " + ent)
+    }.getOrElse(new UrlEncodedFormEntity(values))
+    this.POST.copy(body=Some(ent))
+  }
   /** Post the given string value. (new request, mimics) */
   def << (stringbody: String, contenttype: String): Request = POST.copy(
-    body=Some(new org.apache.http.entity.StringEntity(
+    body=Some(new StringEntity(
       stringbody, contenttype, subject.defaultCharset))
   )
   
@@ -178,6 +184,14 @@ class RequestTerms(subject: Request) {
 
   /** @return URI based on this request, e.g. if needed outside Disptach. */
   def to_uri = URI.create(subject.host.toURI).resolve(subject.path)
+}
+
+/** Used within dispatch for entites that have "form" name value pairs,
+ *  whether form-urlencoded or multipart mime. */
+trait FormEntity {
+  /** Should only return values that belong in an oauth signature */
+  def oauth_params: Iterable[(String, String)]
+  def add(values: Iterable[(String, String)]): this.type
 }
 
 object `package` {
