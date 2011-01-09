@@ -32,32 +32,45 @@ object Mime {
 
     /** Add file to multipart post, will convert other post methods to multipart */
     def << (name: String, file: File) = 
-      r next add(name, new FileBody(file))
+      (name, new FileBody(file))
     /** Add file with content-type to multipart post, will convert other post methods to multipart */
     def << (name: String, file: File, content_type: String) = 
-      r next add(name, new FileBody(file, content_type))
+      add(name, new FileBody(file, content_type))
 
     /** Add stream generator with content-type to multipart post, will convert other post methods to multipart */
     def << (name: String, file_name: String, stream: () => InputStream, content_type: String) = 
-      r next add(name, new InputStreamBody(stream(), content_type, file_name))
+      add(name, new InputStreamBody(stream(), content_type, file_name))
 
     /** Add stream generator to multipart post, will convert other post methods to multipart. */
     def << (name: String, file_name: String, stream: () => InputStream) = 
-      r next add(name, new InputStreamBody(stream(), file_name))
+      add(name, new InputStreamBody(stream(), file_name))
     
-    private def with_mpp(block: MultipartPost => MultipartPost): Request.Xf = {
-      case post: MultipartPost => block(post)
-      case p: Post[_] => block(Request.mimic(new MultipartPost)(p).add(p.oauth_values))
-      case req => block(Request.mimic(new MultipartPost)(req))
+    private def mime_ent: Mime.Entity = {
+      r.body.map {
+        case ent: Mime.Entity => ent
+        case ent =>
+          val ent = new MultipartEntity with Mime.Entity
+          for ((n,v) <- r.form_dec) ent.add(n,v)
+          ent
+      } getOrElse new MultipartEntity with Mime.Entity
     }
-    def add(name: String, content: => ContentBody) = with_mpp { _.add(name, content) }
+    def add(name: String, content: => ContentBody) = {
+      val ent = mime_ent
+      ent.addPart(name, content)
+      r.copy(method="POST", body=Some(ent))
+    }
     /** Add a listener function to be called as bytes are uploaded */
-    def >?> (listener_f: ListenerF) = r next with_mpp { _.listen(listener_f) }
+    def >?> (listener_f: ListenerF) = r.copy(
+      body=Some(new CountingMultipartEntity(mime_ent, listener_f))
+    )
   }
   /** Post listener function. Called once with the total bytes; the function returned is
     called with the bytes uploaded at each kilobyte boundary, and when complete. */
   type ListenerF = Long => Long => Unit
-  trait Entity extends HttpEntity { def addPart(name: String, body: ContentBody)  }
+  trait Entity extends HttpEntity { 
+    def addPart(name: String, body: ContentBody)
+    def add(name: String, value: String) = addPart(name, new StringBody(value))
+  }
   
   def mime_stream_parser[T](multipart_block: MultipartBlock[T])(content_type: String)(stm: InputStream) = {
     import org.apache.james.mime4j.parser.{MimeTokenStream, EntityStates}
@@ -80,26 +93,6 @@ object Mime {
       }
     }
     walk(m.getState, empty_headers, Nil).reverse
-  }
-}
-
-class MultipartPost(entity: Mime.Entity) extends Post[MultipartPost] {
-  setEntity(entity)
-  /** No values in a multi-part post are included in the OAuth base string */
-  override def oauth_values = Map.empty
-  def this() = this(new MultipartEntity with Mime.Entity)
-  def add(name: String, content: ContentBody) = {
-    entity.addPart(name, content)
-    this
-  }
-  def listen(listener_f: Mime.ListenerF) = Request.mimic(
-    new MultipartPost(new CountingMultipartEntity(entity, listener_f))
-  )(this)
-  def add(more: collection.Map[String, Any]) = {
-    more.elements foreach { case (key, value) =>
-      entity.addPart(key, new StringBody(value.toString))
-    }
-    this
   }
 }
 

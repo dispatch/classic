@@ -40,7 +40,7 @@ case class Request(
 
   /** Construct as a clone, e.g. in class extends clause. */
   @deprecated("""Instead of extending Request, use implicit conversions. For top-level
-              named requests "objects", use a val in a package object""")
+              named request `object`s, use a val in a package object""")
   def this(req: Request) =
     this(req.host, req.creds, req.method, req.path, req.headers, req.body, req.defaultCharset)
 
@@ -62,6 +62,16 @@ case class Request(
   }
   def form_elem(value: (String, String)) = %(value._1) + "=" + %(value._2)
   def form_join(values: Iterable[String]) = values.mkString("&")
+  def form_dec: Iterable[(String, String)] = {
+    body.toList.flatMap { ent =>
+      EntityUtils.toString(ent).split("&").map {
+        _.split("=").map(this.-%) match {
+          case Array(name) => name -> ""
+          case Array(name, value, _*) => name -> value
+        }
+      }
+    }
+  }
 }
 
 trait ImplicitRequestTerms {
