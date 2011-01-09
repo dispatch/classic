@@ -59,7 +59,10 @@ object OAuth {
   def callback(url: String) = IMap("oauth_callback" -> url)
   
   //normalize to OAuth percent encoding
-  private def %% (str: String): String = (Request % str) replace ("+", "%20") replace ("%7E", "~") replace ("*", "%2A")
+  private def %% (str: String): String = {
+    val remaps = ("+", "%20") :: ("%7E", "~") :: ("*", "%2A") :: Nil
+    (encode(str) /: remaps) { case (str, (a, b)) => str.replace(a,b) }
+  }
   private def %% (s: Seq[String]): String = s map %% mkString "&"
   private def %% (t: (String, Any)): (String, String) = (%%(t._1), %%(t._2.toString))
   
@@ -69,11 +72,12 @@ object OAuth {
   implicit def Request2RequestSigner(r: Request) = new RequestSigner(r)
   /** Add String conversion since Http#str2req implicit will not chain. */
   implicit def Request2RequestSigner(r: String) = new RequestSigner(new Request(r))
+
+  def encode(str: String) = java.net.URLEncoder.encode(str, UTF_8)
+  def decode(str: String) = java.net.URLDecoder.decode(str, UTF_8)
   
   class RequestSigner(r: Request) {
-    
-    /** @deprecated use <@ (consumer, callback) to pass the callback in the header for a request-token request */
-    @deprecated
+    @deprecated("use <@ (consumer, callback) to pass the callback in the header for a request-token request")
     def <@ (consumer: Consumer): Request = sign(consumer, None, None, None)
     /** sign a request with a callback, e.g. a request-token request */
     def <@ (consumer: Consumer, callback: String): Request = sign(consumer, None, None, Some(callback))
@@ -84,20 +88,21 @@ object OAuth {
     def <@ (consumer: Consumer, token: Token): Request = sign(consumer, Some(token), None, None)
     
     /** add token value as a query string parameter, for user authorization redirects */
-    def <<? (token: Token) = r <<? IMap("oauth_token" -> token.value)
+    def <<? (token: Token) =  // implicit use of <<? here causes compiler error
+      (new RequestTerms(r)).<<?(("oauth_token" -> token.value) :: Nil)
 
     /** Sign request by reading Post (<<) and query string parameters */
-    private def sign(consumer: Consumer, token: Option[Token], verifier: Option[String], callback: Option[String]) = r next { req =>
-      val oauth_url = Request.to_uri(r.host, req).toString.split('?')(0)
-      val query_params = split_decode(req.getURI.getRawQuery)
-      val oauth_params = OAuth.sign(req.getMethod, oauth_url, query_params ++ (req match {
-        case before: Post[_] => before.oauth_values
-        case _ => IMap()
-      }), consumer, token, verifier, callback)
-      req.addHeader("Authorization", "OAuth " + oauth_params.map { 
-        case (k, v) => (Request % k) + "=\"%s\"".format(Request % v)
-      }.mkString(",") )
-      req
+    private def sign(consumer: Consumer, token: Option[Token], verifier: Option[String], callback: Option[String]) = {
+      val oauth_url = r.to_uri.toString.split('?')(0)
+      val query_params = split_decode(r.to_uri.getRawQuery)
+      val oauth_params = OAuth.sign(r.method, oauth_url, query_params ++ (
+        r.body.filter { _ => r.method == "POST" }.map { entity =>
+          split_decode(org.apache.http.util.EntityUtils.toString(entity))
+        }.getOrElse(IMap())
+      ), consumer, token, verifier, callback)
+      r <:< IMap("Authorization" -> ("OAuth " + oauth_params.map { 
+        case (k, v) => (encode(k)) + "=\"%s\"".format(encode(v))
+      }.mkString(",") ))
     }
 
     def >% [T] (block: IMap[String, String] => T) = r >- ( split_decode andThen block )
@@ -106,7 +111,7 @@ object OAuth {
     val split_decode: (String => IMap[String, String]) = {
       case null => IMap.empty
       case query => IMap.empty ++ query.trim.split('&').map { nvp =>
-        ( nvp split "=" map Request.-% ) match { 
+        nvp.split("=").map(decode) match {
           case Array(name) => name -> ""
           case Array(name, value) => name -> value
         }

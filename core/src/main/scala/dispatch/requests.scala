@@ -5,7 +5,7 @@ import org.apache.http.{HttpEntity,HttpHost,HttpRequest}
 import org.apache.http.util.EntityUtils
 import java.net.URI
 
-object Request {
+object Request extends ImplicitRequestTerms with ImplicitHandlers {
   /** Dispatch's factory-default charset, utf-8 */
   val factoryCharset = org.apache.http.protocol.HTTP.UTF_8
   /** Headers lists in reverse order */
@@ -65,8 +65,6 @@ case class Request(
 trait ImplicitRequestTerms {
   implicit def toRequestTerms (req: Request) = new RequestTerms(req)
 }
-
-object RequestTerms extends ImplicitRequestTerms
 
 class RequestTerms(subject: Request) {
   // The below functions create new request descriptors based off of the current one.

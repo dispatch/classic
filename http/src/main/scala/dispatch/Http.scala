@@ -115,14 +115,9 @@ trait HttpExecutor {
 /** Used by client APIs to build Handler or other objects via chaining, completed implicitly.
   * @see Http#builder2product */
 trait Builder[T] { def product:T }
-
-/** May be used directly from any thread. */
-object Http extends Http 
-  with Threads 
-  with ImplicitBuilder 
-  with ImplicitRequestTerms
-  with ImplicitHandlers
-
-trait ImplicitBuilder {
+object Builder {
   implicit def builderToProduct[T](builder: Builder[T]) = builder.product
 }
+
+/** May be used directly from any thread. */
+object Http extends Http with Threads 

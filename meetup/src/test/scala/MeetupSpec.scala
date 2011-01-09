@@ -5,7 +5,6 @@ object MeetupSpec extends Specification {
   import meetup._
   import dispatch.liftjson.Js._
   import oauth._
-  import Http._
   
   val conf = new java.io.File("meetup.test.properties")
   if (conf.exists) {

@@ -3,6 +3,7 @@ import org.specs._
 object OAuthSpec extends Specification {
   import dispatch._
   import oauth._
+  import Request._
   import OAuth._
   
   val svc = :/("term.ie") / "oauth" / "example"

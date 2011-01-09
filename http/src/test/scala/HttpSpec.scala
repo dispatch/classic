@@ -2,7 +2,6 @@ import org.specs._
 
 object HttpSpec extends Specification {
   import dispatch._
-  import Http._
   
   import org.apache.http.protocol.HTTP.CONTENT_ENCODING
 
