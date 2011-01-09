@@ -41,7 +41,7 @@ import java.net.URLEncoder.encode
 
 /** Requests on a particular document in a particular database. */
 @deprecated("dispatch-couch is deprecated. See scouchdb for a more complete interface")
-class Doc(db: Db, id: String) extends Request(db.request / encode(id, UTF_8)) with Js {
+class Doc(val db: Db, val id: String) extends Request(db.request / encode(id, UTF_8)) with Js {
   import Request._
   def update(js: JsValue) = this <<< js.toString ># { 
     case Updated.rev(rev) => (Id._rev << rev)(js)

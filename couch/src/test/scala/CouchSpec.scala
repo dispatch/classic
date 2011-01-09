@@ -8,8 +8,8 @@ object CouchSpec extends Specification {
 
   val http = new Http
   val test = Db(Couch(), "test") // these tests expect CouchDB to be running at 127.0.0.1 on port 5984
-  val empty_doc = Doc(test, "empty_doc")
-  val full = Doc(test, "full")
+  val empty_doc = new Doc(test, "empty_doc")
+  val full = new Doc(test, "full")
   
   object Test extends Id {
     val content = 'content ? str
@@ -19,7 +19,7 @@ object CouchSpec extends Specification {
   "Database and document create" should {
     "create a database" in {
       http(test.create)
-      http(test as_str) must startWith("""{"db_name":"test","doc_count":0""")
+      http(test.request as_str) must startWith("""{"db_name":"test","doc_count":0""")
     }
     "create an empty_doc document" in {
       http(empty_doc <<< Js().toString >|)
@@ -57,7 +57,7 @@ object CouchSpec extends Specification {
     "delete a database" in {
       http(test.delete)
       // just another way of checking that it returns 404
-      (http x test) { (status, _, _) => status } must_== 404
+      (http x test.request) { (status, _, _) => status } must_== 404
     }
   }
 }

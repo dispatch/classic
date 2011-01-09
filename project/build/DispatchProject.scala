@@ -58,6 +58,12 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
     override def packageSrcJar = defaultJarPath("-sources.jar")
     lazy val sourceArtifact = Artifact.sources(artifactID)
     override def packageToPublishActions = super.packageToPublishActions ++ Seq(packageSrc)
+    def testDeps = http :: Nil
+    override def testClasspath = (super.testClasspath /: testDeps) {
+      _ +++ _.projectClasspath(Configurations.Compile)
+    }
+    override def testCompileAction = super.testCompileAction dependsOn
+      (testDeps map { _.compile } : _*)
   }
     
   class HttpProject(info: ProjectInfo) extends DispatchModule(info) {
