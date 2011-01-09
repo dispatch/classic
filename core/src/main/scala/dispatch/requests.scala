@@ -39,6 +39,8 @@ case class Request(
   def this(host: HttpHost) = this(host, None, "GET", "", Nil, None, Request.factoryCharset)
 
   /** Construct as a clone, e.g. in class extends clause. */
+  @deprecated("""Instead of extending Request, use implicit conversions. For top-level
+              named requests "objects", use a val in a package object""")
   def this(req: Request) =
     this(req.host, req.creds, req.method, req.path, req.headers, req.body, req.defaultCharset)
 
@@ -168,8 +170,10 @@ class RequestTerms(subject: Request) {
   def to_uri = URI.create(subject.host.toURI).resolve(subject.path)
 }
 
-/** Nil request, useful to kick off a descriptors that don't have a factory. */
-object /\ extends Request(new HttpHost(""))
+object `package` {
+  /** Nil request, useful to kick off a descriptors that don't have a factory. */
+  val /\ = new Request(new HttpHost(""))
+}
 
 /* Factory for requests from a host */
 object :/ {

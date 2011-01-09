@@ -6,7 +6,7 @@ trait ImplicitJsHandlers {
   implicit def requestToJsHandlers(r: Request) = new JsHandlers(r)
   implicit def stringToJsHandlers(r: String) = new JsHandlers(new Request(r))
 }
-object JsHttp extends ImplicitJsHandlers
+object JsHttp extends ImplicitJsHandlers with Js
 
 class JsHandlers(subject: Request) {
   import Handlers._
