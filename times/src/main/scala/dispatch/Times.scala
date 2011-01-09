@@ -4,6 +4,7 @@ import dispatch._
 import json._
 import Js._
 
+@deprecated("This module will be discontinued. Take the source if you want it!")
 trait Times extends JsHttp {
   import Http._
   lazy val host = :/("api.nytimes.com")
@@ -11,14 +12,15 @@ trait Times extends JsHttp {
   val service: String
   val version: Int
   
-  def apply(action: String, params: Map[String, Any]) =
+  def apply(action: String, params: Map[String, String]) =
     /("svc") / service / ("v" + version) / action <<? (params + ("api-key" -> api_key))
 
-  def apply(action: String): Request = this(action, Map[String, Any]())
+  def apply(action: String): Request = this(action, Map.empty)
 
   val results = ('results ! (list ! obj))
 }
 
+@deprecated("This module will be discontinued. Take the source if you want it!")
 case class People(api_key: String) extends Times {
   val service = "timespeople/api";
   val version = 1
@@ -26,6 +28,7 @@ case class People(api_key: String) extends Times {
   def profile(user_id: Int) = this("/user/" + user_id + "/profile.js")
 }
 
+@deprecated("This module will be discontinued. Take the source if you want it!")
 case class Search(api_key: String) extends Times {
   val service = "search"
   val version = 1
@@ -33,6 +36,7 @@ case class Search(api_key: String) extends Times {
   def search(query: String) = this("article", Map("query" -> query))
 }
 
+@deprecated("This module will be discontinued. Take the source if you want it!")
 case class Community(api_key: String) extends Times {
   val service = "community"
   val version = 2
@@ -43,6 +47,7 @@ case class Community(api_key: String) extends Times {
 }
 
 
+@deprecated("This module will be discontinued. Take the source if you want it!")
 case class News(api_key: String) extends Times {
   val service = "news"
   val version = 2
