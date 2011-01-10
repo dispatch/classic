@@ -8,7 +8,7 @@ import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
 import java.net.InetSocketAddress
 
-class NHttp extends dispatch.HttpExecutor {
+class Http extends dispatch.HttpExecutor {
   val http_params = make_params
   def make_params =
     (new org.apache.http.params.SyncBasicHttpParams)
