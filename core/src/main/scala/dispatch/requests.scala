@@ -37,7 +37,7 @@ case class Request(
   }
   
   /** Construct with host only. */
-  def this(host: HttpHost) = this(host, None, "GET", "", Nil, None, Request.factoryCharset)
+  def this(host: HttpHost) = this(host, None, "GET", "/", Nil, None, Request.factoryCharset)
 
   /** Construct as a clone, e.g. in class extends clause. */
   @deprecated("""Instead of extending Request, use implicit conversions. For top-level
@@ -112,7 +112,9 @@ class RequestTerms(subject: Request) {
   def >& [T] (other: Handler[T]) = new Handler(this <& other.request, other.block)
   
   /** Append an element to this request's path, joins with '/'. (mutates request) */
-  def / (path: String) = subject.copy(path=subject.path + "/" + path)
+  def / (path: String) = subject.copy(
+    path=(subject.path :: path :: Nil).filter { _ != "/" }.mkString("/")
+  )
   
   /** Add headers to this request. (mutates request) */
   def <:< (values: Map[String, String]) = subject.copy(
