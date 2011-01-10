@@ -54,7 +54,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   Credentials(Path.userHome / ".ivy2" / ".credentials", log)
 
   class DispatchModule(info: ProjectInfo) extends DefaultProject(info) with sxr.Publish {
-    val specs = "org.scala-tools.testing" % "specs_2.8.1" % "1.6.6" % "test->default"
+    val specs = "org.scala-tools.testing" % "specs_2.8.1" % "1.6.7" % "test->default"
     override def packageSrcJar = defaultJarPath("-sources.jar")
     lazy val sourceArtifact = Artifact.sources(artifactID)
     override def packageToPublishActions = super.packageToPublishActions ++ Seq(packageSrc)
