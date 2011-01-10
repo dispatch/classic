@@ -126,7 +126,7 @@ class RequestTerms(subject: Request) {
 
   /** Put the given string. */
   def <<< (stringbody: String): Request = PUT.copy(
-    body=Some(new StringEntity(stringbody, subject.defaultCharset))
+    body=Some(new RefStringEntity(stringbody, "text/plain", subject.defaultCharset))
   )
   /** Put the given file. (new request, mimics) */
   def <<< (file: java.io.File, content_type: String) = PUT.copy(
@@ -135,7 +135,7 @@ class RequestTerms(subject: Request) {
 
   private class UrlEncodedFormEntity(
     val oauth_params: Iterable[(String, String)]
-  ) extends StringEntity(
+  ) extends RefStringEntity(
     subject.form_join(
       (subject.body.map(EntityUtils.toString).filterNot { _.isEmpty }.toSeq ++
         oauth_params.map(subject.form_elem)
@@ -158,7 +158,7 @@ class RequestTerms(subject: Request) {
   }
   /** Post the given string value. (new request, mimics) */
   def << (stringbody: String, contenttype: String): Request = POST.copy(
-    body=Some(new StringEntity(
+    body=Some(new RefStringEntity(
       stringbody, contenttype, subject.defaultCharset))
   )
   
@@ -222,3 +222,9 @@ trait Builder[T] { def product:T }
 object Builder {
   implicit def builderToProduct[T](builder: Builder[T]) = builder.product
 }
+
+/** Extension of StringEntity that keeps a reference to the string */
+class RefStringEntity(val string: String, 
+                      contentType: String, 
+                      val charset: String) extends 
+  StringEntity(string, contentType, charset)

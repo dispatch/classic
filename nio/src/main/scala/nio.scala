@@ -1,11 +1,13 @@
 package dispatch.nio
 
 import org.apache.http.{HttpHost,HttpRequest,HttpResponse,HttpEntity}
+import org.apache.http.message.BasicHttpEntityEnclosingRequest
 import org.apache.http.protocol._
 import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor
 import org.apache.http.impl.nio.DefaultClientIOEventDispatch;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.nio.entity.NStringEntity
 import java.net.InetSocketAddress
 
 class Http extends dispatch.HttpExecutor {
@@ -72,6 +74,7 @@ class Http extends dispatch.HttpExecutor {
   
   def execute[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 
                  req: HttpRequest, block: HttpResponse => T): HttpPackage[T] = {
+    nioize(req)
     val future = IOFuture(req, block)
     credsopt.map { creds =>
       error("todo")
@@ -88,6 +91,20 @@ class Http extends dispatch.HttpExecutor {
     }
   }
   type HttpPackage[T] = dispatch.futures.Futures.Future[T]
+  /** If the request contains a string body we can convert, do it */
+  private def nioize(req: HttpRequest) {
+    req match {
+      case req: BasicHttpEntityEnclosingRequest =>
+        req.getEntity match {
+          case ref: dispatch.RefStringEntity =>
+            val ent = new NStringEntity(ref.string, ref.charset)
+            ent.setContentType(ref.getContentType)
+            req.setEntity(ent)
+          case ent => ()
+        }
+      case req => ()
+    }
+  }
   def shutdown() {
     io_reactor.shutdown()
   }
