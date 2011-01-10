@@ -3,8 +3,7 @@ package dispatch.s3
 import dispatch._
 
 object S3 {
-  import org.apache.http.client.methods.HttpPut
-  import org.apache.commons.codec.binary.Base64.encodeBase64
+  import javax.xml.bind.DatatypeConverter.{printBase64Binary=>encodeBase64}
   import javax.crypto
 
   import java.util.{Date,Locale,SimpleTimeZone}
@@ -41,7 +40,7 @@ object S3 {
     import org.apache.http.util.EntityUtils
     import org.apache.http.entity.BufferedHttpEntity
 
-    type EntityHolder <: org.apache.http.client.methods.HttpEntityEnclosingRequestBase
+    type EntityHolder <: org.apache.http.message.BasicHttpEntityEnclosingRequest
 
     private def md5(bytes: Array[Byte]) = {
       import java.security.MessageDigest

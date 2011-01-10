@@ -11,12 +11,12 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
     val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.1-beta1"
   }, core, futures)
   lazy val nio = project("nio", "Dispatch NIO", new HttpProject(_) {
-    val mime = "org.apache.httpcomponents" % "httpcore-nio" % "4.1-beta1"
+    val nio_comp = "org.apache.httpcomponents" % "httpcore-nio" % "4.1-beta1"
   }, http)
   lazy val mime = project("mime", "Dispatch Mime", new DispatchModule(_) {
     val mime = "org.apache.httpcomponents" % "httpmime" % "4.1-beta1"
     val mime4j = "org.apache.james" % "apache-mime4j" % "0.6"
-  }, http)
+  }, core)
   lazy val json = project("json", "Dispatch JSON", new DispatchModule(_))
   lazy val http_json = project("http+json", "Dispatch HTTP JSON", new HttpProject(_), core, json)
   lazy val http_gae = project("http-gae", "Dispatch HTTP GAE", new HttpProject(_) {
@@ -27,19 +27,19 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   lazy val lift_json = project("lift-json", "Dispatch lift-json", new DispatchModule(_) {
     val lift_json = "net.liftweb" % "lift-json_2.8.0" % "2.2-M1"
   }, core)
-  lazy val oauth = project("oauth", "Dispatch OAuth", new DispatchModule(_), http)
+  lazy val oauth = project("oauth", "Dispatch OAuth", new DispatchModule(_), core)
   lazy val times = project("times", "Dispatch Times", new DispatchModule(_), http, json, http_json)
   lazy val couch = project("couch", "Dispatch Couch", new DispatchModule(_), http, json, http_json)
-  lazy val twitter = project("twitter", "Dispatch Twitter", new DispatchModule(_), http, json, http_json, oauth, lift_json, nio)
-  lazy val meetup = project("meetup", "Dispatch Meetup", new DispatchModule(_), http, lift_json, oauth, mime)
+  lazy val twitter = project("twitter", "Dispatch Twitter", new DispatchModule(_), core, json, http_json, oauth, lift_json, nio)
+  lazy val meetup = project("meetup", "Dispatch Meetup", new DispatchModule(_), core, lift_json, oauth, mime)
 
-  lazy val aws_s3 = project("aws-s3", "Dispatch S3", new DispatchModule(_), http)
+  lazy val aws_s3 = project("aws-s3", "Dispatch S3", new DispatchModule(_), core)
 
   lazy val agg = project("agg", "Databinder Dispatch", new AggregateProject(_) {
     override def disableCrossPaths = true
     def projects = dispatch_modules
   })
-  lazy val google = project("google", "Dispatch Google", new DispatchModule(_), http)
+  lazy val google = project("google", "Dispatch Google", new DispatchModule(_), core)
   
   def dispatch_modules = subProjects.values.toList.flatMap {
     case dm: DispatchModule => List(dm)

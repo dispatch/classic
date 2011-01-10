@@ -213,3 +213,10 @@ object / extends ImplicitRequestTerms {
 }
 
 case class Credentials(username: String, password: String)
+
+/** Used by client APIs to build Handler or other objects via chaining, completed implicitly.
+  * @see Http#builder2product */
+trait Builder[T] { def product:T }
+object Builder {
+  implicit def builderToProduct[T](builder: Builder[T]) = builder.product
+}

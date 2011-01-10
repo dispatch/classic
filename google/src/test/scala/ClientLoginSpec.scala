@@ -2,7 +2,6 @@ package dispatch.google.cl
 
 import org.specs._
 import dispatch._
-import dispatch.Http._
 import ClientLogin._
 
 object ClientLoginSpec extends Specification {

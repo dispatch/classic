@@ -24,8 +24,9 @@ import MeetupTypeMaps.mudatestr
 abstract class Client extends ((Request => Request) => Request) {
   val hostname = "api.meetup.com"
   val host: Request
-  def call[T](method: Method[T])(implicit http: Http): T =
-    http(method.default_handler(apply(method)))
+  def call[T](method: Method[T])(implicit http: HttpExecutor) =
+    // todo: fix casting, will fail on nio
+    http(method.default_handler(apply(method))).asInstanceOf[T]
 }
 
 trait MethodBuilder extends Builder[Request => Request] {

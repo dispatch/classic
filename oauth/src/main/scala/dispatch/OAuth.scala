@@ -8,8 +8,7 @@ import javax.crypto
 import java.net.URI
 
 import org.apache.http.protocol.HTTP.UTF_8
-import org.apache.commons.codec.binary.Base64.encodeBase64
-import org.apache.http.client.methods.HttpRequestBase
+import javax.xml.bind.DatatypeConverter.{printBase64Binary=>encodeBase64}
 
 case class Consumer(key: String, secret: String)
 case class Token(value: String, secret: String)

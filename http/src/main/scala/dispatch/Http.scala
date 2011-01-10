@@ -4,7 +4,6 @@ import collection.Map
 import collection.immutable.{Map => IMap}
 import java.net.URI
 
-import org.apache.http.message.BasicHttpEntityEnclosingRequest
 import org.apache.http.{HttpHost,HttpRequest,HttpResponse,HttpEntity}
 import org.apache.http.client.methods._
 import org.apache.http.client.entity.UrlEncodedFormEntity
@@ -14,14 +13,10 @@ import org.apache.http.params.HttpProtocolParams
 
 import org.apache.http.entity.{StringEntity,FileEntity}
 import org.apache.http.message.BasicNameValuePair
-import org.apache.http.util.EntityUtils
 import org.apache.http.conn.params.ConnRouteParams
 import org.apache.http.conn.ClientConnectionManager
 
 import org.apache.commons.codec.binary.Base64.encodeBase64
-
-case class StatusCode(code: Int, contents:String)
-  extends Exception("Exceptional response code: " + code + "\n" + contents)
 
 /** Simple info logger */
 trait Logger { def info(msg: String, items: Any*) }
@@ -72,51 +67,6 @@ class Http extends HttpExecutor {
   type HttpPackage[T] = T
   /** Synchronously access and return plain result value  */
   def pack[T](result: => T) = result
-}
-
-/** Defines request execution and response status code behaviors. Implemented methods are finalized
-    as any overrides would be lost when instantiating delegate executors, is in Threads#future. 
-    Delegates should chain to parent `pack` and `execute` implementations. */
-trait HttpExecutor {
-  /** Type of value returned from request execution */
-  type HttpPackage[T]
-  /** Execute the request against an HttpClient */
-  def execute[T](host: HttpHost, creds: Option[Credentials], 
-                 req: HttpRequest, block: HttpResponse => T): HttpPackage[T]
-  /** Execute full request-response handler, response in package. */
-  final def x[T](hand: Handler[T]): HttpPackage[T] = x(hand.request)(hand.block)
-  /** Execute request with handler, response in package. */
-  final def x[T](req: Request)(block: Handler.F[T]) = {
-    val request = new BasicHttpEntityEnclosingRequest(req.method, req.path)
-    req.headers.reverse.foreach {
-      case (key, value) => request.addHeader(key, value)
-    }
-    req.body.foreach(request.setEntity)
-    execute(req.host, req.creds, request, { res =>
-      val ent = res.getEntity match {
-        case null => None
-        case ent => Some(ent)
-      }
-      try { block(res.getStatusLine.getStatusCode, res, ent) }
-      finally { ent foreach (_.consumeContent) }
-    })
-  }
-  /** Apply Response Handler if reponse code returns true from chk. */
-  final def when[T](chk: Int => Boolean)(hand: Handler[T]) = x(hand.request) {
-    case (code, res, ent) if chk(code) => hand.block(code, res, ent)
-    case (code, _, Some(ent)) => throw StatusCode(code, EntityUtils.toString(ent, Request.factoryCharset))
-    case (code, _, _)         => throw StatusCode(code, "[no entity]")
-  }
-  
-  /** Apply handler block when response code is 200 - 204 */
-  final def apply[T](hand: Handler[T]) = (this when {code => (200 to 204) contains code})(hand)
-}
-
-/** Used by client APIs to build Handler or other objects via chaining, completed implicitly.
-  * @see Http#builder2product */
-trait Builder[T] { def product:T }
-object Builder {
-  implicit def builderToProduct[T](builder: Builder[T]) = builder.product
 }
 
 /** May be used directly from any thread. */
