@@ -11,7 +11,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
     val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.1-beta1"
   }, core, futures)
   lazy val nio = project("nio", "Dispatch NIO", new HttpProject(_) {
-    val nio_comp = "org.apache.httpcomponents" % "httpcore-nio" % "4.1-beta1"
+    val nio_comp = "org.apache.httpcomponents" % "httpcore-nio" % "4.1-beta2"
   }, core, futures)
   lazy val mime = project("mime", "Dispatch Mime", new DispatchModule(_) {
     val mime = "org.apache.httpcomponents" % "httpmime" % "4.1-beta1"
@@ -67,7 +67,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   }
     
   class HttpProject(info: ProjectInfo) extends DispatchModule(info) {
-    val httpcore = "org.apache.httpcomponents" % "httpcore" % "4.1-beta1"
+    val httpcore = "org.apache.httpcomponents" % "httpcore" % "4.1-beta2"
     val jcip = "net.jcip" % "jcip-annotations" % "1.0" % "provided->default"
   }
   
