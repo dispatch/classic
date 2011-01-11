@@ -11,7 +11,7 @@ object RsvpsStream {
   val svc = host / "rsvps" <:< Map("User-Agent" -> "dispatch-meetup")
   def open(since_mtime: Option[Long])
           (listener: JValue => Unit) =
-    svc <<? (Map.empty ++ since_mtime.map { t => "since_mtime" -> t }) >> {
+    svc <<? (Map.empty ++ since_mtime.map { t => "since_mtime" -> t.toString }) >> {
       (stm, charset) =>
         Source.fromInputStream(stm, charset).getLines.filter {
           ! _.isEmpty
