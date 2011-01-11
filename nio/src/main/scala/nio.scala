@@ -8,6 +8,7 @@ import org.apache.http.impl.nio.DefaultClientIOEventDispatch;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.nio.entity.NStringEntity
+import org.apache.http.nio.{ContentDecoder,IOControl}
 import java.net.InetSocketAddress
 
 class Http extends dispatch.HttpExecutor {
@@ -37,15 +38,23 @@ class Http extends dispatch.HttpExecutor {
       def handleResponse(response: HttpResponse, ctx: HttpContext) {
         ctx.getAttribute(request_response) match {
           case fut: IOFuture[_] => fut.response_ready(response)
-          case _ => error("request_response of wrong type")
+          case _ => ()
         }
       }
       def initalizeContext(ctx: HttpContext, attachment: Any) {
         ctx.setAttribute(request_response, attachment)
       }
       def responseEntity(res: HttpResponse, ctx: HttpContext) =
-        new org.apache.http.nio.entity.BufferingNHttpEntity(
-          res.getEntity, new org.apache.http.nio.util.HeapByteBufferAllocator)
+        ctx.getAttribute(request_response) match {
+          case callback: IOCallback => new CallbackEntity {
+            def consumeContent(decoder: ContentDecoder, ioc: IOControl) {
+              callback.block(decoder)
+            }
+            def finish() { }
+          }
+          case _ => new org.apache.http.nio.entity.BufferingNHttpEntity(
+            res.getEntity, new org.apache.http.nio.util.HeapByteBufferAllocator)
+        }
     }
 
   def http_handler =
@@ -125,4 +134,20 @@ case class IOFuture[T](request: HttpRequest, block: HttpResponse => T) extends F
       }
     }
   }
+}
+
+case class IOCallback(request: HttpRequest, block: (ContentDecoder => Unit))
+
+trait CallbackEntity extends org.apache.http.nio.entity.ConsumingNHttpEntity {
+  import org.apache.http.nio._
+
+  def consumeContent() { }
+  def getContent = { error("io stream not supported") }
+  def getContentEncoding = null
+  def getContentLength = -1
+  def getContentType = null
+  def isRepeatable = false
+  def isStreaming = true
+  def isChunked = true
+  def writeTo(str: java.io.OutputStream) { error("io stream not supported") }
 }
