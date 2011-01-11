@@ -36,7 +36,7 @@ trait MethodBuilder extends Builder[Request => Request] {
 }
 
 trait Method[T] extends MethodBuilder {
-  /** default handler used by Client#call. You can also apply the client 
+  /** default handler used by Client#call. You can also apply the client
       to a Method and define your own request handler. */
   def default_handler: Request => Handler[T]
 }
@@ -69,13 +69,15 @@ object Auth {
   /** Get a request token with no callback URL, out-of-band authorization assumed */
   def request_token(consumer: Consumer): Handler[Token] = request_token(consumer, OAuth.oob)
 
-  def request_token(consumer: Consumer, callback_url: String) = 
+  def request_token(consumer: Consumer, callback_url: String) =
     svc.POST / "request" <@ (consumer, callback_url) as_token
 
   def authorize_url(token: Token) = :/("www.meetup.com") / "authorize" <<? token
   def m_authorize_url(token: Token) = authorize_url(token) <<? Map("set_mobile" -> "on")
-  
-  def access_token(consumer: Consumer, token: Token, verifier: String) = 
+
+  def authenticate_url(token: Token) = :/("www.meetup.com") / "authenticate" <<? token
+
+  def access_token(consumer: Consumer, token: Token, verifier: String) =
     svc.POST / "access" <@ (consumer, token, verifier) as_token
 }
 
@@ -150,7 +152,7 @@ object Group extends Location {
   val rating = 'rating ? str
   val members = 'members ? str
   val daysleft = 'daysleft ? str
-  
+
   object Topic {
     val id = 'id ? str
     val urlkey = 'urlkey ? str
@@ -230,7 +232,7 @@ object Event extends Location {
   val feedesc = 'feedesc ? str
   val ismeetup = 'ismeetup ? str
   val updated = 'updated ? mudatestr
-  val questions = 'questions ? ary >>~> str 
+  val questions = 'questions ? ary >>~> str
 }
 
 object OpenEvents extends OpenEventsBuilder(Map())
