@@ -113,7 +113,7 @@ class RequestTerms(subject: Request) {
   
   /** Append an element to this request's path, joins with '/'. (mutates request) */
   def / (path: String) = subject.copy(
-    path=(subject.path :: path :: Nil).filter { _ != "/" }.mkString("/")
+    path=(if (subject.path.endsWith("/")) subject.path else subject.path + "/") + path
   )
   
   /** Add headers to this request. (mutates request) */
