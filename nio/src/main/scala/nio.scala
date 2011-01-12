@@ -164,7 +164,7 @@ case class IOFuture[T](request: HttpRequest, block: HttpResponse => T)
 
 case class IOCallback(request: HttpRequest, with_bytes: (Array[Byte], Int) => Unit)
      extends RequestAttachment {
-  val buffer = java.nio.ByteBuffer.allocateDirect(2048)
+  val buffer = java.nio.ByteBuffer.allocate(2048)
   def with_decoder(decoder: ContentDecoder) {
     val length = decoder.read(buffer)
     if (length > 0)
