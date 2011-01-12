@@ -11,13 +11,17 @@ import org.apache.http.nio.entity.NStringEntity
 import org.apache.http.nio.{ContentDecoder,IOControl}
 import java.net.InetSocketAddress
 
+object Http {
+  val socket_buffer_size = 8 * 1024
+}
+
 class Http extends dispatch.HttpExecutor {
   val http_params = make_params
   def make_params =
     (new org.apache.http.params.SyncBasicHttpParams)
-      .setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 5000)
+      .setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 10000)
       .setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 10000)
-      .setIntParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE, 8 * 1024)
+      .setIntParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE, Http.socket_buffer_size)
       .setBooleanParameter(CoreConnectionPNames.STALE_CONNECTION_CHECK, false)
       .setBooleanParameter(CoreConnectionPNames.TCP_NODELAY, true)
 
@@ -164,8 +168,8 @@ case class IOFuture[T](request: HttpRequest, block: HttpResponse => T)
 
 case class IOCallback(request: HttpRequest, with_bytes: (Array[Byte], Int) => Unit)
      extends RequestAttachment {
-  val buffer = java.nio.ByteBuffer.allocate(2048)
   def with_decoder(decoder: ContentDecoder) {
+    val buffer = java.nio.ByteBuffer.allocate(Http.socket_buffer_size)
     val length = decoder.read(buffer)
     if (length > 0)
       with_bytes(buffer.array(), length)
