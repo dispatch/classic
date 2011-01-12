@@ -11,6 +11,7 @@ object Request extends ImplicitRequestTerms with ImplicitHandlers {
   val factoryCharset = org.apache.http.protocol.HTTP.UTF_8
   /** Headers lists in reverse order */
   type Headers = List[(String, String)]
+  implicit def strToRequest(str: String) = new Request(str)
   def to_host(uristr: String) = {
     val uri = URI.create(uristr)
     new HttpHost(uri.getHost, uri.getPort, uri.getScheme)
@@ -67,6 +68,7 @@ case class Request(
 
 trait ImplicitRequestTerms {
   implicit def toRequestTerms (req: Request) = new RequestTerms(req)
+  implicit def stringToRequestTerms (str: String) = new RequestTerms(new Request(str))
 }
 
 class RequestTerms(subject: Request) {

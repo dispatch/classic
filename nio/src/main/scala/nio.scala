@@ -29,7 +29,7 @@ class Http extends dispatch.HttpExecutor {
         if (ctx.getAttribute(flag) == null) {
           ctx.setAttribute(flag, true)
           ctx.getAttribute(request_response) match {
-            case IOFuture(req: HttpRequest, _) => req
+            case att: RequestAttachment => att.request
             case _ => error("request_response of wrong type")
           }
         } else null
@@ -48,7 +48,7 @@ class Http extends dispatch.HttpExecutor {
         ctx.getAttribute(request_response) match {
           case callback: IOCallback => new CallbackEntity {
             def consumeContent(decoder: ContentDecoder, ioc: IOControl) {
-              callback.block(decoder)
+              callback.with_decoder(decoder)
             }
             def finish() { }
           }
@@ -83,8 +83,27 @@ class Http extends dispatch.HttpExecutor {
   
   def execute[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 
                  req: HttpRequest, block: HttpResponse => T): HttpPackage[T] = {
-    nioize(req)
     val future = IOFuture(req, block)
+    connect(host, credsopt, future)
+    future
+  }
+  
+  final def nx[T](req: dispatch.Request)(block: (Array[Byte], Int) => Unit) = {
+    val request = new BasicHttpEntityEnclosingRequest(req.method, req.path)
+    req.headers.reverse.foreach {
+      case (key, value) => request.addHeader(key, value)
+    }
+    req.body.foreach(request.setEntity)
+    executeCallback(req.host, req.creds, request, block)
+  }
+
+  def executeCallback[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 
+                         req: HttpRequest, block:  (Array[Byte], Int) => Unit) {
+    connect(host, credsopt, IOCallback(req, block))
+  }
+
+  private def connect[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 
+                         attachment: RequestAttachment) {
     credsopt.map { creds =>
       error("todo")
     } getOrElse {
@@ -93,15 +112,21 @@ class Http extends dispatch.HttpExecutor {
           host.getHostName, 
           if (host.getPort == -1) 80 else host.getPort),
         null,
-        future,
+        attachment,
         null
       )
-      future
     }
   }
+
   type HttpPackage[T] = dispatch.futures.Futures.Future[T]
+
+  def shutdown() {
+    io_reactor.shutdown()
+  }
+}
+trait RequestAttachment {
   /** If the request contains a string body we can convert, do it */
-  private def nioize(req: HttpRequest) {
+  private def nioize(req: HttpRequest) = {
     req match {
       case req: BasicHttpEntityEnclosingRequest =>
         req.getEntity match {
@@ -114,11 +139,12 @@ class Http extends dispatch.HttpExecutor {
       case req => ()
     }
   }
-  def shutdown() {
-    io_reactor.shutdown()
-  }
+  def request: HttpRequest
+  nioize(request)
 }
-case class IOFuture[T](request: HttpRequest, block: HttpResponse => T) extends Function0[T] {
+
+case class IOFuture[T](request: HttpRequest, block: HttpResponse => T) 
+    extends Function0[T] with RequestAttachment {
   private val result_q = new java.util.concurrent.ArrayBlockingQueue[T](1)
   private var result: Option[T] = None
   def isSet = result.isDefined
@@ -136,9 +162,18 @@ case class IOFuture[T](request: HttpRequest, block: HttpResponse => T) extends F
   }
 }
 
-case class IOCallback(request: HttpRequest, block: (ContentDecoder => Unit))
+case class IOCallback(request: HttpRequest, with_bytes: (Array[Byte], Int) => Unit)
+     extends RequestAttachment {
+  val buffer = java.nio.ByteBuffer.allocateDirect(2048)
+  def with_decoder(decoder: ContentDecoder) {
+    val length = decoder.read(buffer)
+    if (length > 0)
+      with_bytes(buffer.array(), length)
+  }
+    
+}
 
-trait CallbackEntity extends org.apache.http.nio.entity.ConsumingNHttpEntity {
+trait CallbackEntity extends org.apache.http.nio.entity.ConsumingNHttpEntity  {
   import org.apache.http.nio._
 
   def consumeContent() { }
