@@ -1,5 +1,6 @@
 package dispatch.nio
 
+import dispatch.Callback
 import org.apache.http.{HttpHost,HttpRequest,HttpResponse,HttpEntity}
 import org.apache.http.message.BasicHttpEntityEnclosingRequest
 import org.apache.http.protocol._
@@ -7,7 +8,6 @@ import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor
 import org.apache.http.impl.nio.DefaultClientIOEventDispatch;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.nio.entity.NStringEntity
 import org.apache.http.nio.{ContentDecoder,IOControl}
 import java.net.InetSocketAddress
 
@@ -27,32 +27,32 @@ class Http extends dispatch.HttpExecutor {
 
   def execution_handler =
     new org.apache.http.nio.protocol.NHttpRequestExecutionHandler {
-      val request_response = "request_response"
+      val request_attachment = "request_attachment"
       def submitRequest(ctx: HttpContext) = {
         val flag = "request_submitted"
         if (ctx.getAttribute(flag) == null) {
           ctx.setAttribute(flag, true)
-          ctx.getAttribute(request_response) match {
+          ctx.getAttribute(request_attachment) match {
             case att: RequestAttachment => att.request
-            case _ => error("request_response of wrong type")
+            case _ => error("request_attachment of wrong type")
           }
         } else null
       }
       def finalizeContext(ctx: HttpContext) { }
       def handleResponse(response: HttpResponse, ctx: HttpContext) {
-        ctx.getAttribute(request_response) match {
+        ctx.getAttribute(request_attachment) match {
           case fut: IOFuture[_] => fut.response_ready(response)
           case _ => ()
         }
       }
       def initalizeContext(ctx: HttpContext, attachment: Any) {
-        ctx.setAttribute(request_response, attachment)
+        ctx.setAttribute(request_attachment, attachment)
       }
       def responseEntity(res: HttpResponse, ctx: HttpContext) =
-        ctx.getAttribute(request_response) match {
+        ctx.getAttribute(request_attachment) match {
           case callback: IOCallback => new CallbackEntity {
             def consumeContent(decoder: ContentDecoder, ioc: IOControl) {
-              callback.with_decoder(decoder)
+              callback.with_decoder(res, decoder)
             }
             def finish() { }
           }
@@ -92,17 +92,17 @@ class Http extends dispatch.HttpExecutor {
     future
   }
   
-  final def nx[T](req: dispatch.Request)(block: (Array[Byte], Int) => Unit) = {
+  final def nx[T](req: dispatch.Request)(block: Callback.Function) = {
     val request = new BasicHttpEntityEnclosingRequest(req.method, req.path)
     req.headers.reverse.foreach {
       case (key, value) => request.addHeader(key, value)
     }
     req.body.foreach(request.setEntity)
-    executeCallback(req.host, req.creds, request, block)
+    executeWithCallback(req.host, req.creds, request, block)
   }
 
-  def executeCallback[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 
-                         req: HttpRequest, block:  (Array[Byte], Int) => Unit) {
+  def executeWithCallback[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 
+                             req: HttpRequest, block:  Callback.Function) {
     connect(host, credsopt, IOCallback(req, block))
   }
 
@@ -127,54 +127,6 @@ class Http extends dispatch.HttpExecutor {
   def shutdown() {
     io_reactor.shutdown()
   }
-}
-trait RequestAttachment {
-  /** If the request contains a string body we can convert, do it */
-  private def nioize(req: HttpRequest) = {
-    req match {
-      case req: BasicHttpEntityEnclosingRequest =>
-        req.getEntity match {
-          case ref: dispatch.RefStringEntity =>
-            val ent = new NStringEntity(ref.string, ref.charset)
-            ent.setContentType(ref.getContentType)
-            req.setEntity(ent)
-          case ent => ()
-        }
-      case req => ()
-    }
-  }
-  def request: HttpRequest
-  nioize(request)
-}
-
-case class IOFuture[T](request: HttpRequest, block: HttpResponse => T) 
-    extends Function0[T] with RequestAttachment {
-  private val result_q = new java.util.concurrent.ArrayBlockingQueue[T](1)
-  private var result: Option[T] = None
-  def isSet = result.isDefined
-  private [nio] def response_ready(res: HttpResponse) {
-    result_q.put(block(res))
-  }
-  def apply(): T = {
-    this.synchronized {
-      result.getOrElse {
-        val r = result_q.take()
-        result = Some(r)
-        r
-      }
-    }
-  }
-}
-
-case class IOCallback(request: HttpRequest, with_bytes: (Array[Byte], Int) => Unit)
-     extends RequestAttachment {
-  def with_decoder(decoder: ContentDecoder) {
-    val buffer = java.nio.ByteBuffer.allocate(Http.socket_buffer_size)
-    val length = decoder.read(buffer)
-    if (length > 0)
-      with_bytes(buffer.array(), length)
-  }
-    
 }
 
 trait CallbackEntity extends org.apache.http.nio.entity.ConsumingNHttpEntity  {
