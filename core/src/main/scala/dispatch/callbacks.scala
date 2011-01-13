@@ -23,6 +23,8 @@ object Callback {
         val out = buffer + string.substring(0, idx)
         buffer = string.substring(idx + len)
         andThen(out)
+      } else {
+        buffer = buffer + string
       }
     }
   }
