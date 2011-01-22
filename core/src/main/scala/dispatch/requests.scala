@@ -60,20 +60,16 @@ trait Encoders {
   def defaultCharset: String
 
   /** @return %-encoded string for use in URLs */
-  def % (s: String) = java.net.URLEncoder.encode(s, defaultCharset)
+  def encode_% (s: String) = java.net.URLEncoder.encode(s, defaultCharset)
 
   /** @return %-decoded string e.g. from query string or form body */
-  def -% (s: String) = java.net.URLDecoder.decode(s, defaultCharset)
-
-  /** @return formatted query string prepended by ? unless values map is empty  */
-  def ? (values: Iterable[(String, String)]) =
-    if (values.isEmpty) "" else "?" + form_enc(values)
+  def decode_% (s: String) = java.net.URLDecoder.decode(s, defaultCharset)
 
   /** @return formatted and %-encoded query string, e.g. name=value&name2=value2 */
   def form_enc (values: Iterable[(String, String)]) = {
     form_join(values.map(form_elem))
   }
-  def form_elem(value: (String, String)) = %(value._1) + "=" + %(value._2)
+  def form_elem(value: (String, String)) = encode_%(value._1) + "=" + encode_%(value._2)
   def form_join(values: Iterable[String]) = values.mkString("&")
 }
 
@@ -181,7 +177,9 @@ class RequestTerms(subject: Request) {
     else subject.copy(
       path =
         if (subject.path contains '?') subject.path + '&' + subject.form_enc(values)
-        else subject.path + (subject ? values)
+        else subject.path + (
+          if (values.isEmpty) "" else "?" + subject.form_enc(values)
+        )
     )
   
   /** HTTP post request. (new request, mimics) */

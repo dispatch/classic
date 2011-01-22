@@ -1,5 +1,6 @@
 package dispatch.oauth
 import dispatch._
+import Request.{encode_%, decode_%}
 
 import collection.Map
 import collection.immutable.{TreeMap, Map=>IMap}
@@ -60,7 +61,7 @@ object OAuth {
   //normalize to OAuth percent encoding
   private def %% (str: String): String = {
     val remaps = ("+", "%20") :: ("%7E", "~") :: ("*", "%2A") :: Nil
-    (encode(str) /: remaps) { case (str, (a, b)) => str.replace(a,b) }
+    (encode_%(str) /: remaps) { case (str, (a, b)) => str.replace(a,b) }
   }
   private def %% (s: Seq[String]): String = s map %% mkString "&"
   private def %% (t: (String, Any)): (String, String) = (%%(t._1), %%(t._2.toString))
@@ -72,9 +73,6 @@ object OAuth {
   /** Add String conversion since Http#str2req implicit will not chain. */
   implicit def Request2RequestSigner(r: String) = new RequestSigner(new Request(r))
 
-  def encode(str: String) = java.net.URLEncoder.encode(str, UTF_8)
-  def decode(str: String) = java.net.URLDecoder.decode(str, UTF_8)
-  
   class RequestSigner(r: Request) {
     @deprecated("use <@ (consumer, callback) to pass the callback in the header for a request-token request")
     def <@ (consumer: Consumer): Request = sign(consumer, None, None, None)
@@ -101,7 +99,7 @@ object OAuth {
         }
       ), consumer, token, verifier, callback)
       r <:< IMap("Authorization" -> ("OAuth " + oauth_params.map { 
-        case (k, v) => (encode(k)) + "=\"%s\"".format(encode(v))
+        case (k, v) => (encode_%(k)) + "=\"%s\"".format(encode_%(v))
       }.mkString(",") ))
     }
 
@@ -111,7 +109,7 @@ object OAuth {
     val split_decode: (String => IMap[String, String]) = {
       case null => IMap.empty
       case query => IMap.empty ++ query.trim.split('&').map { nvp =>
-        nvp.split("=").map(decode) match {
+        nvp.split("=").map(decode_%) match {
           case Array(name) => name -> ""
           case Array(name, value) => name -> value
         }
