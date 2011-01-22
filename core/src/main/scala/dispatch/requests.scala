@@ -206,10 +206,8 @@ trait FormEntity {
   def add(values: Iterable[(String, String)]): this.type
 }
 
-object `package` {
-  /** Nil request, useful to kick off a descriptors that don't have a factory. */
-  val /\ = new Request(new HttpHost(""))
-}
+/** Nil request, useful to kick off a descriptors that don't have a factory. */
+object /\ extends Request(new HttpHost(""))
 
 /* Factory for requests from a host */
 object :/ {

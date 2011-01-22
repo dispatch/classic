@@ -79,8 +79,6 @@ object S3 {
 }
 
 class Bucket(val name: String) extends Request(:/("s3.amazonaws.com") / name) {
-  // extending request is deprecated, should try another way to structure this
-  // or, rethink the deprecation
   val create = this <<< ""
 }
 object Bucket {
