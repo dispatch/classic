@@ -62,7 +62,10 @@ class Http extends HttpExecutor {
         ))(execute(host, req))
       } getOrElse { execute(host, req) }
     )
-
+  def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
+                             req: HttpRequest, block:  Callback.Function) {
+    error("not implmented")
+  }
   /** Unadorned handler return type */
   type HttpPackage[T] = T
   /** Synchronously access and return plain result value  */

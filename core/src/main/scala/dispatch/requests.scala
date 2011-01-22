@@ -6,7 +6,10 @@ import org.apache.http.util.EntityUtils
 import org.apache.http.entity.StringEntity
 import java.net.URI
 
-object Request extends ImplicitRequestTerms with ImplicitHandlers with Encoders {
+object Request extends Encoders
+    with ImplicitRequestTerms
+    with ImplicitHandlers 
+    with ImplicitCallbackVerbs {
   /** Dispatch's factory-default charset, utf-8 */
   val factoryCharset = org.apache.http.protocol.HTTP.UTF_8
   /** Headers lists in reverse order */

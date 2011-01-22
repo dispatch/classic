@@ -13,6 +13,9 @@ trait HttpExecutor {
   /** Execute the request against an HttpClient */
   def execute[T](host: HttpHost, creds: Option[Credentials], 
                  req: HttpRequest, block: HttpResponse => T): HttpPackage[T]
+
+  def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
+                             req: HttpRequest, block:  Callback.Function)
   /** Execute full request-response handler, response in package. */
   final def x[T](hand: Handler[T]): HttpPackage[T] = x(hand.request)(hand.block)
   /** Execute request with handler, response in package. */
@@ -40,6 +43,17 @@ trait HttpExecutor {
   
   /** Apply handler block when response code is 200 - 204 */
   final def apply[T](hand: Handler[T]) = (this when {code => (200 to 204) contains code})(hand)
+
+  /** Apply handler block when response code is 200 - 204 */
+  final def apply[T](callback: Callback) = {
+    val req = callback.request
+    val request = new BasicHttpEntityEnclosingRequest(req.method, req.path)
+    req.headers.reverse.foreach {
+      case (key, value) => request.addHeader(key, value)
+    }
+    req.body.foreach(request.setEntity)
+    executeWithCallback(req.host, req.creds, request, callback.function)
+  }
 }
 
 case class StatusCode(code: Int, contents:String)

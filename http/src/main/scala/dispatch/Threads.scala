@@ -25,6 +25,10 @@ trait FuturableExecutor extends HttpExecutor {
       } catch {
         case e if error.isDefinedAt(e) => error(e); throw e
       }
+    def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
+                               req: HttpRequest, block:  Callback.Function) {
+      Predef.error("not implmented")
+    }
     type HttpPackage[T] = FuturableExecutor.this.HttpPackage[T]
     override def http_future = FuturableExecutor.this.http_future
   }
@@ -33,6 +37,10 @@ trait FuturableExecutor extends HttpExecutor {
     def execute[T](host: HttpHost, creds: Option[Credentials], 
                    req: HttpRequest, block: HttpResponse => T) =
        http_future.future(FuturableExecutor.this.execute(host, creds, req, block))
+    def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
+                               req: HttpRequest, block:  Callback.Function) {
+    error("not implmented")
+  }
     type HttpPackage[T] = Futures.Future[FuturableExecutor.this.HttpPackage[T]]
   }
   /** Override to use any Futures implementation */

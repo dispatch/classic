@@ -31,3 +31,18 @@ object Callback {
   /** callback transformer for strings split on the newline character, newline removed */
   val lines = stringsBy("\n")_
 }
+
+case class Callback(request: Request, function: Callback.Function)
+
+trait ImplicitCallbackVerbs {
+  implicit def toCallbackVerbs(req: Request) = new CallbackVerbs(req)
+}
+object CallbackVerbs extends ImplicitCallbackVerbs 
+
+class CallbackVerbs(subject: Request) {
+  import Callback._
+  def ^(callback: Function) = Callback(subject, callback)
+  def ^-(callback: (String => Unit)) = this ^ strings(callback)
+  /** strings split on the newline character, newline removed */
+  def ^--(callback: (String => Unit)) = this ^ lines(callback)
+}
