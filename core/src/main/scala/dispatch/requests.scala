@@ -23,7 +23,7 @@ object Request extends ImplicitRequestTerms with ImplicitHandlers {
 }
 
 /** Request descriptor, possibly contains a host, credentials, and a list of transformation functions. */
-case class Request(
+class Request(
   val host: HttpHost, 
   val creds: Option[Credentials], 
   val method: String,
@@ -41,10 +41,18 @@ case class Request(
   def this(host: HttpHost) = this(host, None, "GET", "/", Nil, None, Request.factoryCharset)
 
   /** Construct as a clone, e.g. in class extends clause. */
-  @deprecated("""Instead of extending Request, use implicit conversions. For top-level
-              named request `object`s, use a val in a package object""")
   def this(req: Request) =
     this(req.host, req.creds, req.method, req.path, req.headers, req.body, req.defaultCharset)
+
+  def copy(
+    host: HttpHost = host, 
+    creds: Option[Credentials] = creds, 
+    method: String = method,
+    path: String = path,
+    headers: Request.Headers = headers,
+    body: Option[HttpEntity] = body,
+    defaultCharset: String = defaultCharset
+  ) = new Request(host, creds, method, path, headers, body, defaultCharset)
 
   // string encoding functions that depend on defaultCharset
 
@@ -96,7 +104,7 @@ class RequestTerms(subject: Request) {
   )
   
   /** Combine this request with another. */
-  def <& (req: Request) = Request(
+  def <& (req: Request) = new Request(
     if (req.host.getHostName.isEmpty) subject.host else req.host, 
     req.creds orElse subject.creds,
     req.method,
