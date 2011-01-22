@@ -7,7 +7,7 @@ import org.apache.http.entity.StringEntity
 import java.net.URI
 
 object Request extends Encoders
-    with ImplicitRequestTerms
+    with ImplicitRequestVerbs
     with ImplicitHandlers 
     with ImplicitCallbackVerbs {
   /** Dispatch's factory-default charset, utf-8 */
@@ -76,12 +76,12 @@ trait Encoders {
   def form_join(values: Iterable[String]) = values.mkString("&")
 }
 
-trait ImplicitRequestTerms {
-  implicit def toRequestTerms (req: Request) = new RequestTerms(req)
-  implicit def stringToRequestTerms (str: String) = new RequestTerms(new Request(str))
+trait ImplicitRequestVerbs {
+  implicit def toRequestVerbs (req: Request) = new RequestVerbs(req)
+  implicit def stringToRequestVerbs (str: String) = new RequestVerbs(new Request(str))
 }
 
-class RequestTerms(subject: Request) {
+class RequestVerbs(subject: Request) {
   // The below functions create new request descriptors based off of the current one.
   // Most are intended to be used as infix operators; those that don't take a parameter
   // have character names to be used with dot notation, e.g. :/("example.com").HEAD.secure >>> {...}
@@ -222,7 +222,7 @@ object :/ {
 }
 
 /** Factory for requests from a directory, prepends '/'. */
-object / extends ImplicitRequestTerms {
+object / extends ImplicitRequestVerbs {
   def apply(path: String) = /\ / path
 }
 
