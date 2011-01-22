@@ -8,7 +8,7 @@ import java.net.URI
 
 object Request extends Encoders
     with ImplicitRequestVerbs
-    with ImplicitHandlers 
+    with ImplicitHandlerVerbs 
     with ImplicitCallbackVerbs {
   /** Dispatch's factory-default charset, utf-8 */
   val factoryCharset = org.apache.http.protocol.HTTP.UTF_8

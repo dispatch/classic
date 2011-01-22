@@ -28,16 +28,16 @@ object Handler {
       case None => error("""
         | Response has no HttpEntity: %s
         | If no response body is expected, use a handler such as 
-        | Handlers#>| that does not require one.""".stripMargin.format(res))
+        | HandlerVerbs#>| that does not require one.""".stripMargin.format(res))
     } } )
 }
 
-trait ImplicitHandlers {
-  implicit def toHandlers(req: Request) = new Handlers(req)
+trait ImplicitHandlerVerbs {
+  implicit def toHandlerVerbs(req: Request) = new HandlerVerbs(req)
 }
-object Handlers extends ImplicitHandlers
+object HandlerVerbs extends ImplicitHandlerVerbs
 
-class Handlers(request: Request) {
+class HandlerVerbs(request: Request) {
   /** Handle InputStream in block, handle gzip if so encoded. Passes on any charset
       header value from response, otherwise the default charset. (See Request#>\) */
   def >> [T] (block: (InputStream, String) => T) = Handler(request, { ent =>
@@ -83,17 +83,17 @@ class Handlers(request: Request) {
   def >| = Handler(request, (code, res, ent) => ())
 
   /** Split into two request handlers, return results of each in tuple. */
-  def >+ [A, B] (block: Handlers => (Handler[A], Handler[B])) = {
+  def >+ [A, B] (block: HandlerVerbs => (Handler[A], Handler[B])) = {
     new Handler[(A,B)] ( request, { (code, res, opt_ent) =>
-      val (a, b) = block(new Handlers( /\ ))
+      val (a, b) = block(new HandlerVerbs( /\ ))
       (a.block(code, res, opt_ent), b.block(code,res,opt_ent))
     } )
   }
   /** Chain two request handlers. First handler returns a second, which may use
       values obtained by the first. Both are run on the same request. */
-  def >+> [T] (block: Handlers => Handler[Handler[T]]) = {
+  def >+> [T] (block: HandlerVerbs => Handler[Handler[T]]) = {
     new Handler[T] ( request, { (code, res, opt_ent) =>
-      (block(new Handlers( /\ ))).block(code, res, opt_ent).block(code, res, opt_ent)
+      (block(new HandlerVerbs( /\ ))).block(code, res, opt_ent).block(code, res, opt_ent)
     } )
   }
 }

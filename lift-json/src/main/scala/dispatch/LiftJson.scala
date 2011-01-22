@@ -14,7 +14,6 @@ trait ImplicitJsonHandlers {
   implicit def stringToJsonHandlers(r: String) = new JsonHandlers(new Request(r))
 }
 class JsonHandlers(subject: Request) {
-  import Handlers._
   /** Process response as JsValue in block */
   def ># [T](block: JValue => T) = subject >- { s => block(JsonParser.parse(s)) }
   def as_pretty = this ># { js => pretty(render(js))}

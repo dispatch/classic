@@ -12,7 +12,6 @@ trait JsHttp extends ImplicitJsHandlers with Js
 object JsHttp extends JsHttp
 
 class JsHandlers(subject: Request) {
-  import Handlers._
   /** Process response as JsValue in block */
   def ># [T](block: json.Js.JsF[T]) = subject >> { stm => block(json.Js(stm)) }
 }
