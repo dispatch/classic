@@ -6,7 +6,7 @@ import org.apache.http.util.EntityUtils
 import org.apache.http.entity.StringEntity
 import java.net.URI
 
-object Request extends ImplicitRequestTerms with ImplicitHandlers {
+object Request extends ImplicitRequestTerms with ImplicitHandlers with Encoders {
   /** Dispatch's factory-default charset, utf-8 */
   val factoryCharset = org.apache.http.protocol.HTTP.UTF_8
   /** Headers lists in reverse order */
@@ -20,6 +20,7 @@ object Request extends ImplicitRequestTerms with ImplicitHandlers {
     val uri = URI.create(uristr)
     (new URI(null, null, uri.getPath, uri.getQuery, null)).toString
   }
+  def defaultCharset = factoryCharset
 }
 
 /** Request descriptor, possibly contains a host, credentials, and a list of transformation functions. */
@@ -31,7 +32,7 @@ class Request(
   val headers: Request.Headers,
   val body: Option[HttpEntity],
   val defaultCharset: String
-) {
+) extends Encoders {
   /** Construct with path or full URI. */
   def this(str: String) = {
     this(Request.to_host(str), None, "GET", Request.to_path(str), Nil, None, Request.factoryCharset)
@@ -53,8 +54,10 @@ class Request(
     body: Option[HttpEntity] = body,
     defaultCharset: String = defaultCharset
   ) = new Request(host, creds, method, path, headers, body, defaultCharset)
+}
 
-  // string encoding functions that depend on defaultCharset
+trait Encoders {
+  def defaultCharset: String
 
   /** @return %-encoded string for use in URLs */
   def % (s: String) = java.net.URLEncoder.encode(s, defaultCharset)
