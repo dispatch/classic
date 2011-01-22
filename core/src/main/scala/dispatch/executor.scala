@@ -28,7 +28,7 @@ trait HttpExecutor {
         case ent => Some(ent)
       }
       try { block(res.getStatusLine.getStatusCode, res, ent) }
-      finally { ent foreach (_.consumeContent) }
+      finally { ent foreach EntityUtils.consume }
     })
   }
   /** Apply Response Handler if reponse code returns true from chk. */
