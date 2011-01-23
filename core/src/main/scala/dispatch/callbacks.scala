@@ -24,7 +24,6 @@ object Callback {
   def stringsBy(divider: String)
                (req: Request, block: (String => Unit), finish: Finish) = {
     var buffer = ""
-    val len = divider.length
     strings(
       req,
       { string =>
