@@ -56,5 +56,23 @@ trait HttpExecutor {
   }
 }
 
+trait BlockingCallback { self: HttpExecutor =>
+  def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
+                             req: HttpRequest, callback:  Callback.Function) {
+    execute(host, credsopt, req, { res =>
+      res.getEntity match {
+        case null => callback(res, Array.empty, 0)
+        case entity =>
+          val stm = entity.getContent
+          val buf = new Array[Byte](8 * 1024)
+          var count = 0
+          while ({count = stm.read(buf); count} > -1)
+            callback(res, buf, count)
+      }
+    })
+  }
+}
+
+
 case class StatusCode(code: Int, contents:String)
   extends Exception("Exceptional response code: " + code + "\n" + contents)

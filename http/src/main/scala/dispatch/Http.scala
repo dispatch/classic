@@ -22,7 +22,7 @@ import org.apache.commons.codec.binary.Base64.encodeBase64
 trait Logger { def info(msg: String, items: Any*) }
 
 /** Http access point. Standard instances to be used by a single thread. */
-class Http extends HttpExecutor {
+class Http extends HttpExecutor with BlockingCallback {
   val client = make_client
   /** Defaults to dispatch.ConfiguredHttpClient, override to customize. */
   def make_client = new ConfiguredHttpClient
@@ -62,10 +62,6 @@ class Http extends HttpExecutor {
         ))(execute(host, req))
       } getOrElse { execute(host, req) }
     )
-  def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
-                             req: HttpRequest, block:  Callback.Function) {
-    error("not implmented")
-  }
   /** Unadorned handler return type */
   type HttpPackage[T] = T
   /** Synchronously access and return plain result value  */
