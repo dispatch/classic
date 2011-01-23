@@ -39,9 +39,10 @@ class Http extends dispatch.HttpExecutor {
         } else null
       }
       def finalizeContext(ctx: HttpContext) { }
-      def handleResponse(response: HttpResponse, ctx: HttpContext) {
+      def handleResponse(res: HttpResponse, ctx: HttpContext) {
         ctx.getAttribute(request_attachment) match {
-          case fut: IOFuture[_] => fut.response_ready(response)
+          case fut: IOFuture[_] => fut.response_ready(res)
+          case ioc: IOCallback => ioc.callback.finish(res)
           case _ => ()
         }
       }
@@ -93,8 +94,8 @@ class Http extends dispatch.HttpExecutor {
   }
   
   def executeWithCallback[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 
-                             req: HttpRequest, block:  Callback.Function) {
-    connect(host, credsopt, IOCallback(req, block))
+                             req: HttpRequest, callback: Callback) {
+    connect(host, credsopt, IOCallback(req, callback))
   }
 
   private def connect[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 

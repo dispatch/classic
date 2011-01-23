@@ -15,7 +15,7 @@ trait HttpExecutor {
                  req: HttpRequest, block: HttpResponse => T): HttpPackage[T]
 
   def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
-                             req: HttpRequest, block:  Callback.Function)
+                             req: HttpRequest, block:  Callback)
   /** Execute full request-response handler, response in package. */
   final def x[T](hand: Handler[T]): HttpPackage[T] = x(hand.request)(hand.block)
   /** Execute request with handler, response in package. */
@@ -52,22 +52,24 @@ trait HttpExecutor {
       case (key, value) => request.addHeader(key, value)
     }
     req.body.foreach(request.setEntity)
-    executeWithCallback(req.host, req.creds, request, callback.function)
+    executeWithCallback(req.host, req.creds, request, callback)
   }
 }
 
 trait BlockingCallback { self: HttpExecutor =>
   def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
-                             req: HttpRequest, callback:  Callback.Function) {
+                             req: HttpRequest, callback:  Callback) {
     execute(host, credsopt, req, { res =>
       res.getEntity match {
-        case null => callback(res, Array.empty, 0)
+        case null => callback.finish(res)
         case entity =>
           val stm = entity.getContent
           val buf = new Array[Byte](8 * 1024)
           var count = 0
           while ({count = stm.read(buf); count} > -1)
-            callback(res, buf, count)
+            callback.function(res, buf, count)
+          stm.close()
+          callback.finish(res)
       }
     })
   }

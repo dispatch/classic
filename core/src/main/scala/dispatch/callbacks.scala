@@ -4,45 +4,61 @@ import org.apache.http.HttpResponse
 
 object Callback {
   type Function = (HttpResponse, Array[Byte], Int) => Unit
+  type Finish = HttpResponse => Unit
 
-  def strings(andThen: (String => Unit)): Function = (res, bytes, len) => {
-    val charset = for {
-      ct <- res.getHeaders("Content-Type").headOption
-      elem <- ct.getElements.headOption
-      param <- Option(elem.getParameterByName("charset"))
-    } yield param.getValue()
-    andThen(new String(bytes, 0, len, charset.getOrElse(Request.factoryCharset)))
-  }
+  def strings(req: Request, block: (String => Unit), finish: Finish) = Callback(
+    req,
+    (res, bytes, len) => {
+      val charset = for {
+        ct <- res.getHeaders("Content-Type").headOption
+        elem <- ct.getElements.headOption
+        param <- Option(elem.getParameterByName("charset"))
+      } yield param.getValue()
+      block(new String(bytes, 0, len, charset.getOrElse(Request.factoryCharset)))
+    },
+    finish
+  )
 
-  def stringsBy(divider: String)(andThen: (String => Unit)): Function = {
+  /** Divide input up by given regex. Buffers across inputs so strings are
+   * only split on the divider, and handles any leftovers in finish. */
+  def stringsBy(divider: String)
+               (req: Request, block: (String => Unit), finish: Finish) = {
     var buffer = ""
     val len = divider.length
-    strings { string =>
-      val idx = string.indexOf(divider)
-      if (idx > 0) {
-        val out = buffer + string.substring(0, idx)
-        buffer = string.substring(idx + len)
-        andThen(out)
-      } else {
-        buffer = buffer + string
+    strings(
+      req,
+      { string =>
+        val strings = (buffer + string).split(divider, -1)
+        strings.take(strings.length - 1).foreach(block)
+        buffer = strings.last
+      }, 
+      { res =>
+        if (!buffer.isEmpty) block(buffer)
+        finish(res)
       }
-    }
+    )
   }
   /** callback transformer for strings split on the newline character, newline removed */
   val lines = stringsBy("\n")_
 }
 
-case class Callback(request: Request, function: Callback.Function)
+case class Callback(request: Request, 
+                    function: Callback.Function, 
+                    finish: Callback.Finish)
 
 trait ImplicitCallbackVerbs {
   implicit def toCallbackVerbs(req: Request) = new CallbackVerbs(req)
 }
-object CallbackVerbs extends ImplicitCallbackVerbs 
+object CallbackVerbs extends ImplicitCallbackVerbs
 
 class CallbackVerbs(subject: Request) {
   import Callback._
-  def ^(callback: Function) = Callback(subject, callback)
-  def ^-(callback: (String => Unit)) = this ^ strings(callback)
+  val nf: Callback.Finish = _ => ()
+  def ^(callback: Function, finish: Finish = nf) =
+    Callback(subject, callback, finish)
+  def ^-(callback: (String => Unit), finish: Finish = nf) =
+    strings(subject, callback, finish)
   /** strings split on the newline character, newline removed */
-  def ^--(callback: (String => Unit)) = this ^ lines(callback)
+  def ^--(callback: (String => Unit), finish: Finish = nf) =
+    lines(subject, callback, finish)
 }

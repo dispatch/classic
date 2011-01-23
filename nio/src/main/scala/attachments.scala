@@ -44,12 +44,12 @@ case class IOFuture[T](request: HttpRequest, block: HttpResponse => T)
   }
 }
 
-case class IOCallback(request: HttpRequest, callback: dispatch.Callback.Function)
+case class IOCallback(request: HttpRequest, callback: dispatch.Callback)
      extends RequestAttachment {
   def with_decoder(response: HttpResponse, decoder: ContentDecoder) {
     val buffer = java.nio.ByteBuffer.allocate(Http.socket_buffer_size)
     val length = decoder.read(buffer)
     if (length > 0)
-      callback(response, buffer.array(), length)
+      callback.function(response, buffer.array(), length)
   }
 }
