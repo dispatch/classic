@@ -7,19 +7,21 @@ import JsonDSL._
 
 import java.util.Date
 
-trait ImplicitJsonHandlers {
+trait ImplicitJsonVerbs {
   /** Add JSON-processing method ># to dispatch.Request */
-  implicit def requestToJsonHandlers(r: dispatch.Request) = new JsonHandlers(r)
+  implicit def requestToJsonVerbs(r: dispatch.Request) = new JsonVerbs(r)
   /** Add String conversion since Http#str2req implicit will not chain. */
-  implicit def stringToJsonHandlers(r: String) = new JsonHandlers(new Request(r))
+  implicit def stringToJsonVerbs(r: String) = new JsonVerbs(new Request(r))
 }
-class JsonHandlers(subject: Request) {
+class JsonVerbs(subject: Request) {
   /** Process response as JsValue in block */
   def ># [T](block: JValue => T) = subject >- { s => block(JsonParser.parse(s)) }
-  def as_pretty = this ># { js => pretty(render(js))}
+  def as_pretty = this ># { js => Js.prettyrender(js) }
+  /** Process streaming json messages, separated by newlines, in callbacks */
+  def ^# [T](block: JValue => T) = subject ^-- { s => block(JsonParser.parse(s)) }
 }
 
-object Js extends TypeMappers with ImplicitJsonHandlers {
+object Js extends TypeMappers with ImplicitJsonVerbs {
   implicit def jvlistcomb[LT](block: JValue => List[LT]) = new JvListComb(block)
   class JvListComb[LT](block: JValue => List[LT]) {
     /** Synonym for Function1#andThen */
@@ -47,6 +49,7 @@ object Js extends TypeMappers with ImplicitJsonHandlers {
       case _ => Nil
     }
   }
+  def prettyrender(js: JValue) = pretty(render(js))
 }
 trait TypeMappers {
   import Js._

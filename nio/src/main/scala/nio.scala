@@ -92,15 +92,6 @@ class Http extends dispatch.HttpExecutor {
     future
   }
   
-  final def nx[T](req: dispatch.Request)(block: Callback.Function) = {
-    val request = new BasicHttpEntityEnclosingRequest(req.method, req.path)
-    req.headers.reverse.foreach {
-      case (key, value) => request.addHeader(key, value)
-    }
-    req.body.foreach(request.setEntity)
-    executeWithCallback(req.host, req.creds, request, block)
-  }
-
   def executeWithCallback[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 
                              req: HttpRequest, block:  Callback.Function) {
     connect(host, credsopt, IOCallback(req, block))

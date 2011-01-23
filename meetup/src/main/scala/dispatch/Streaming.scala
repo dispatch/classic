@@ -1,20 +1,15 @@
 package dispatch.meetup
 
 import dispatch._
-import net.liftweb.json.JsonParser.parse
 import net.liftweb.json.JsonAST.JValue
-import scala.io.Source
-import java.io.{InputStreamReader,BufferedReader}
+import dispatch.liftjson.Js._
 
 object RsvpsStream {
   val host = :/("stream.meetup.com")
-  val svc = host / "rsvps" <:< Map("User-Agent" -> "dispatch-meetup")
+  val svc = host / "2" / "rsvps" <:< Map("User-Agent" -> "dispatch-meetup")
   def open(since_mtime: Option[Long])
           (listener: JValue => Unit) =
-    svc <<? (Map.empty ++ since_mtime.map { t => "since_mtime" -> t.toString }) >> {
-      (stm, charset) =>
-        Source.fromInputStream(stm, charset).getLines.filter {
-          ! _.isEmpty
-        }.map(parse).foreach(listener)
-    }
+    svc <<? (Map.empty ++ since_mtime.map {
+      t => "since_mtime" -> t.toString
+    }) ^# listener
 }
