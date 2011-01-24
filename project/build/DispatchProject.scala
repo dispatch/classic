@@ -8,13 +8,16 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   lazy val futures = project("futures", "Dispatch Futures", new DispatchModule(_))
   lazy val core = project("core", "Dispatch Core", new HttpProject(_))
   lazy val http = project("http", "Dispatch HTTP", new HttpProject(_) {
-    val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.1-beta1"
+    val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.1-beta1" intransitive()
+    val codec = "commons-codec" % "commons-codec" % "1.4"
+    val logging = "commons-logging" % "commons-logging" % "1.1.1"
   }, core, futures)
   lazy val nio = project("nio", "Dispatch NIO", new HttpProject(_) {
     val nio_comp = "org.apache.httpcomponents" % "httpcore-nio" % "4.1-beta2"
   }, core, futures)
   lazy val mime = project("mime", "Dispatch Mime", new DispatchModule(_) {
-    val mime = "org.apache.httpcomponents" % "httpmime" % "4.1-beta1"
+    val mime = "org.apache.httpcomponents" % "httpmime" % "4.1-beta1" intransitive()
+    val logging = "commons-logging" % "commons-logging" % "1.1.1"
     val mime4j = "org.apache.james" % "apache-mime4j" % "0.6"
   }, core)
   lazy val json = project("json", "Dispatch JSON", new DispatchModule(_))
