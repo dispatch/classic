@@ -9,7 +9,6 @@ import javax.crypto
 import java.net.URI
 
 import org.apache.http.protocol.HTTP.UTF_8
-import javax.xml.bind.DatatypeConverter.{printBase64Binary=>encodeBase64}
 
 case class Consumer(key: String, secret: String)
 case class Token(value: String, secret: String)
@@ -47,7 +46,7 @@ object OAuth {
     val sig = {
       val mac = crypto.Mac.getInstance(SHA1)
       mac.init(key)
-      new String(encodeBase64(mac.doFinal(bytes(message))))
+      new String(Request.encode_base64(mac.doFinal(bytes(message))))
     }
     oauth_params + ("oauth_signature" -> sig)
   }

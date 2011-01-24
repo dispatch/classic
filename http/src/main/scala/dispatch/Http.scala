@@ -16,8 +16,6 @@ import org.apache.http.message.BasicNameValuePair
 import org.apache.http.conn.params.ConnRouteParams
 import org.apache.http.conn.ClientConnectionManager
 
-import org.apache.commons.codec.binary.Base64.encodeBase64
-
 /** Simple info logger */
 trait Logger { def info(msg: String, items: Any*) }
 

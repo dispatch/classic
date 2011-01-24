@@ -9,7 +9,6 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   lazy val core = project("core", "Dispatch Core", new HttpProject(_))
   lazy val http = project("http", "Dispatch HTTP", new HttpProject(_) {
     val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.1-beta1" intransitive()
-    val codec = "commons-codec" % "commons-codec" % "1.4"
     val logging = "commons-logging" % "commons-logging" % "1.1.1"
   }, core, futures)
   lazy val nio = project("nio", "Dispatch NIO", new HttpProject(_) {
@@ -70,6 +69,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   }
     
   class HttpProject(info: ProjectInfo) extends DispatchModule(info) {
+    val codec = "commons-codec" % "commons-codec" % "1.4"
     val httpcore = "org.apache.httpcomponents" % "httpcore" % "4.1-beta2"
     val jcip = "net.jcip" % "jcip-annotations" % "1.0" % "provided->default"
   }

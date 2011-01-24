@@ -3,7 +3,6 @@ package dispatch.s3
 import dispatch._
 
 object S3 {
-  import javax.xml.bind.DatatypeConverter.{printBase64Binary=>encodeBase64}
   import javax.crypto
 
   import java.util.{Date,Locale,SimpleTimeZone}
@@ -26,7 +25,7 @@ object S3 {
       val mac = crypto.Mac.getInstance(SHA1)
       val key = new crypto.spec.SecretKeySpec(bytes(secretKey), SHA1)
       mac.init(key)
-      new String(encodeBase64(mac.doFinal(bytes(message))))
+      new String(Request.encode_base64(mac.doFinal(bytes(message))))
     }
     sig
   }
@@ -48,7 +47,7 @@ object S3 {
       val r = MessageDigest.getInstance("MD5")
       r.reset
       r.update(bytes)
-      new String(encodeBase64(r.digest))
+      new String(Request.encode_base64(r.digest))
     }
 
     def <@ (accessKey: String, secretKey: String) = {

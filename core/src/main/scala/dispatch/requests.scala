@@ -68,6 +68,9 @@ trait Encoders {
   /** @return %-decoded string e.g. from query string or form body */
   def decode_% (s: String) = java.net.URLDecoder.decode(s, defaultCharset)
 
+  def encode_base64(b: Array[Byte]) = 
+    org.apache.commons.codec.binary.Base64.encodeBase64(b)
+
   /** @return formatted and %-encoded query string, e.g. name=value&name2=value2 */
   def form_enc (values: Iterable[(String, String)]) = {
     form_join(values.map(form_elem))
@@ -91,9 +94,8 @@ class RequestVerbs(subject: Request) {
 
   /** Add basic auth header unconditionally to this request. Does not wait for a 401 response. */
   def as_! (name: String, pass: String) = {
-    import javax.xml.bind.DatatypeConverter.{printBase64Binary=>base64}
     this <:< Map("Authorization" -> (
-      "Basic " + new String(base64(
+      "Basic " + new String(Request.encode_base64(
         "%s:%s".format(name, pass).getBytes
       ))
     ))
