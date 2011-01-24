@@ -47,6 +47,7 @@ case class Callback(request: Request,
 
 trait ImplicitCallbackVerbs {
   implicit def toCallbackVerbs(req: Request) = new CallbackVerbs(req)
+  implicit def stringToCallbackVerbs(str: String) = new CallbackVerbs(new Request(str))
 }
 object CallbackVerbs extends ImplicitCallbackVerbs
 

@@ -34,6 +34,7 @@ object Handler {
 
 trait ImplicitHandlerVerbs {
   implicit def toHandlerVerbs(req: Request) = new HandlerVerbs(req)
+  implicit def stringToHandlerVerbs(str: String) = new HandlerVerbs(new Request(str))
 }
 object HandlerVerbs extends ImplicitHandlerVerbs
 
