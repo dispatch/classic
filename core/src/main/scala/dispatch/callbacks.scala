@@ -20,7 +20,8 @@ object Callback {
   )
 
   /** Divide input up by given regex. Buffers across inputs so strings are
-   * only split on the divider, and handles any leftovers in finish. */
+   * only split on the divider, and handles any leftovers in finish. Skips
+   * empty strings. */
   def stringsBy(divider: String)
                (req: Request, block: (String => Unit), finish: Finish) = {
     var buffer = ""
@@ -28,7 +29,7 @@ object Callback {
       req,
       { string =>
         val strings = (buffer + string).split(divider, -1)
-        strings.take(strings.length - 1).foreach(block)
+        strings.take(strings.length - 1).filter { !_.isEmpty }.foreach(block)
         buffer = strings.last
       }, 
       { res =>
@@ -38,7 +39,7 @@ object Callback {
     )
   }
   /** callback transformer for strings split on the newline character, newline removed */
-  val lines = stringsBy("\n")_
+  val lines = stringsBy("[\n|\r]+")_
 }
 
 case class Callback(request: Request, 

@@ -2,10 +2,11 @@ package dispatch.twitter
 
 import dispatch._
 import dispatch.oauth._
-import OAuth._
 import Request._
-import net.liftweb.json.JsonParser.parse
+import OAuth._
 import net.liftweb.json.JsonAST.JValue
+import dispatch.liftjson.Js._
+
 import scala.io.Source
 import java.io.{InputStreamReader,BufferedReader}
 
@@ -15,10 +16,6 @@ object UserStream {
   def open(cons: Consumer, tok: Token, since_id: Option[String])
           (listener: JValue => Unit) = {
     val req = svc <<? (Map.empty ++ since_id.map { id => "since_id" -> id })
-    req <@ (cons, tok) >> { (stm, charset) =>
-      Source.fromInputStream(stm, charset).getLines.filter {
-        ! _.isEmpty
-      }.map(parse).foreach(listener)
-    }
+    req <@ (cons, tok) ^# listener
   }
 }
