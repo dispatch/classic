@@ -14,7 +14,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   lazy val http_json = project("http+json", "Dispatch HTTP JSON", new HttpProject(_), http, json)
   def clunkcompile[T](for27: T, for28: T) = if (buildScalaVersion.startsWith("2.7")) for27 else for28
   lazy val lift_json = project("lift-json", "Dispatch lift-json", new DispatchModule(_) {
-    val lift_json = "net.liftweb" % ("lift-json_" + clunkcompile("2.7.7", "2.8.0")) % "2.2-M1"
+    val lift_json = "net.liftweb" % ("lift-json_" + clunkcompile("2.7.7", "2.8.1")) % "2.2"
   }, http)
   lazy val oauth = project("oauth", "Dispatch OAuth", new DispatchModule(_), http)
   lazy val times = project("times", "Dispatch Times", new DispatchModule(_), http, json, http_json)
