@@ -39,7 +39,7 @@ object Callback {
     )
   }
   /** callback transformer for strings split on the newline character, newline removed */
-  val lines = stringsBy("[\n|\r]+")_
+  val lines = stringsBy("[\n\r]+")_
 }
 
 case class Callback(request: Request, 
