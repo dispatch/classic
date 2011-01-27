@@ -1,15 +1,16 @@
 package dispatch.nio
 
 import dispatch.Callback
-import org.apache.http.{HttpHost,HttpRequest,HttpResponse,HttpEntity}
+import org.apache.http.{HttpHost,HttpRequest,HttpResponse,HttpEntity,HttpException}
 import org.apache.http.message.BasicHttpEntityEnclosingRequest
 import org.apache.http.protocol._
 import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor
 import org.apache.http.impl.nio.DefaultClientIOEventDispatch;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.nio.{ContentDecoder,IOControl}
+import org.apache.http.nio.{ContentDecoder,IOControl,NHttpConnection}
 import java.net.InetSocketAddress
+import java.io.IOException
 
 object Http {
   val socket_buffer_size = 8 * 1024
@@ -74,7 +75,20 @@ class Http extends dispatch.HttpExecutor {
       execution_handler,
       new org.apache.http.impl.DefaultConnectionReuseStrategy,
       http_params
-    )
+    ) {
+      setEventListener(new org.apache.http.nio.protocol.EventListener {
+        def connectionClosed(conn: NHttpConnection) { }
+        def connectionOpen(conn: NHttpConnection) { }
+        def connectionTimeout(conn: NHttpConnection) { }
+        def fatalIOException(e: IOException, conn: NHttpConnection) {
+          e.printStackTrace()
+        }
+        def fatalProtocolException(e: HttpException, conn: NHttpConnection) {
+          e.printStackTrace()
+        }
+      })
+    }
+
 
   def worker_count = 4
   val io_reactor = new DefaultConnectingIOReactor(worker_count, http_params)
