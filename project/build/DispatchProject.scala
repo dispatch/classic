@@ -12,7 +12,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
     val logging = "commons-logging" % "commons-logging" % "1.1.1"
   }, core, futures)
   lazy val nio = project("nio", "Dispatch NIO", new HttpProject(_) {
-    val nio_comp = "org.apache.httpcomponents" % "httpcore-nio" % "4.1-beta2"
+    val nio_comp = "org.apache.httpcomponents" % "httpasyncclient" % "4.0-alpha1"
   }, core, futures)
   lazy val mime = project("mime", "Dispatch Mime", new DispatchModule(_) {
     val mime = "org.apache.httpcomponents" % "httpmime" % "4.1-beta1" intransitive()
@@ -70,7 +70,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
     
   class HttpProject(info: ProjectInfo) extends DispatchModule(info) {
     val codec = "commons-codec" % "commons-codec" % "1.4"
-    val httpcore = "org.apache.httpcomponents" % "httpcore" % "4.1-beta2"
+    val httpcore = "org.apache.httpcomponents" % "httpcore" % "4.1"
     val jcip = "net.jcip" % "jcip-annotations" % "1.0" % "provided->default"
   }
   
