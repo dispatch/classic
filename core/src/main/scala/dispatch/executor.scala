@@ -1,7 +1,7 @@
 package dispatch
 
 import org.apache.http.{HttpHost,HttpRequest,HttpResponse,HttpEntity}
-import org.apache.http.message.BasicHttpEntityEnclosingRequest
+import org.apache.http.message.{BasicHttpEntityEnclosingRequest,BasicHttpRequest}
 import org.apache.http.util.EntityUtils
 
 /** Defines request execution and response status code behaviors. Implemented methods are finalized
@@ -20,18 +20,22 @@ trait HttpExecutor {
   final def x[T](hand: Handler[T]): HttpPackage[T] = x(hand.request)(hand.block)
   /** Execute request with handler, response in package. */
   final def x[T](req: Request)(block: Handler.F[T]) = {
-    val request = new BasicHttpEntityEnclosingRequest(req.method, req.path)
+    val request = {
+      req.body.map { body =>
+        val r = new BasicHttpEntityEnclosingRequest(req.method, req.path)
+        r.setEntity(body)
+        r
+      }.getOrElse { new BasicHttpRequest(req.method, req.path) }
+    }
     req.headers.reverse.foreach {
       case (key, value) => request.addHeader(key, value)
     }
-    req.body.foreach(request.setEntity)
     execute(req.host, req.creds, request, { res =>
       val ent = res.getEntity match {
         case null => None
         case ent => Some(ent)
       }
       try { block(res.getStatusLine.getStatusCode, res, ent) }
-      finally { ent foreach EntityUtils.consume }
     })
   }
   /** Apply Response Handler if reponse code returns true from chk. */
@@ -47,11 +51,16 @@ trait HttpExecutor {
   /** Apply handler block when response code is 200 - 204 */
   final def apply[T](callback: Callback) = {
     val req = callback.request
-    val request = new BasicHttpEntityEnclosingRequest(req.method, req.path)
+    val request = {
+      req.body.map { body =>
+        val r = new BasicHttpEntityEnclosingRequest(req.method, req.path)
+        r.setEntity(body)
+        r
+      }.getOrElse { new BasicHttpRequest(req.method, req.path) }
+    }
     req.headers.reverse.foreach {
       case (key, value) => request.addHeader(key, value)
     }
-    req.body.foreach(request.setEntity)
     executeWithCallback(req.host, req.creds, request, callback)
   }
 }
