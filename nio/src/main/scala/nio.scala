@@ -1,10 +1,11 @@
 package dispatch.nio
 
-import dispatch.Callback
+import dispatch.{Callback,Request}
 import org.apache.http.{HttpHost,HttpRequest,HttpResponse,HttpEntity,HttpException}
 import org.apache.http.message.BasicHttpEntityEnclosingRequest
 import org.apache.http.protocol._
 import org.apache.http.impl.nio.client.{DefaultHttpAsyncClient,BasicHttpAsyncRequestProducer=>Producer}
+import org.apache.http.client.methods._
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.nio.{ContentDecoder,IOControl,NHttpConnection}
@@ -39,6 +40,20 @@ class Http extends dispatch.HttpExecutor {
     }                     
   }
   
+  def make_message(req: Request) = {
+    req.method.toUpperCase match {
+      case HttpGet.METHOD_NAME => new HttpGet(req.path)
+      case HttpHead.METHOD_NAME => new HttpHead(req.path)
+      case HttpDelete.METHOD_NAME => new HttpDelete(req.path)
+      case method => 
+        val message = method match {
+          case HttpPost.METHOD_NAME => new HttpPost(req.path)
+          case HttpPut.METHOD_NAME => new HttpPut(req.path)
+        }
+        req.body.foreach(message.setEntity)
+        message
+    }
+  }
   def executeWithCallback[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 
                              req: HttpRequest, callback: Callback) {
     credsopt.map { creds =>

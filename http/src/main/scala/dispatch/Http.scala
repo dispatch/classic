@@ -60,6 +60,20 @@ class Http extends HttpExecutor with BlockingCallback {
         ))(execute(host, req))
       } getOrElse { execute(host, req) }
     )
+  def make_message(req: Request) = {
+    req.method.toUpperCase match {
+      case HttpGet.METHOD_NAME => new HttpGet(req.path)
+      case HttpHead.METHOD_NAME => new HttpHead(req.path)
+      case HttpDelete.METHOD_NAME => new HttpDelete(req.path)
+      case method => 
+        val message = method match {
+          case HttpPost.METHOD_NAME => new HttpPost(req.path)
+          case HttpPut.METHOD_NAME => new HttpPut(req.path)
+        }
+        req.body.foreach(message.setEntity)
+        message
+    }
+  }
   /** Unadorned handler return type */
   type HttpPackage[T] = T
   /** Synchronously access and return plain result value  */

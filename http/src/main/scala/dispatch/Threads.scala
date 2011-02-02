@@ -3,7 +3,7 @@ package dispatch
 import org.apache.http.{HttpHost,HttpRequest,HttpResponse}
 
 /** Http with a thread-safe client and non-blocking interfaces */
-trait Threads extends Http with FuturableExecutor {
+trait Threads extends Http {
   /** Maximum number of connections in pool, default is 50 */
   def maxConnections = 50
   /** Maximum number of connections one one route, default is maxConnections */
@@ -13,30 +13,6 @@ trait Threads extends Http with FuturableExecutor {
   override def make_client = new ThreadSafeHttpClient(maxConnections, maxConnectionsPerRoute)
   /** Shutdown connection manager, threads. (Needed to close console cleanly.) */
   def shutdown() = client.getConnectionManager.shutdown()
-}
-trait FuturableExecutor extends HttpExecutor with BlockingCallback {
-  import dispatch.futures.Futures
-  /** @return an executor that will call `error` on any exception */
-  def on_error (error: PartialFunction[Throwable, Unit]) = new FuturableExecutor {
-    def execute[T](host: HttpHost, creds: Option[Credentials], 
-                   req: HttpRequest, block: HttpResponse => T) =
-      try { 
-        FuturableExecutor.this.execute(host, creds, req, block)
-      } catch {
-        case e if error.isDefinedAt(e) => error(e); throw e
-      }
-    type HttpPackage[T] = FuturableExecutor.this.HttpPackage[T]
-    override def http_future = FuturableExecutor.this.http_future
-  }
-  /** @return an asynchronous Http interface that packs responses through a Threads#Future */
-  lazy val future = new HttpExecutor with BlockingCallback {
-    def execute[T](host: HttpHost, creds: Option[Credentials], 
-                   req: HttpRequest, block: HttpResponse => T) =
-       http_future.future(FuturableExecutor.this.execute(host, creds, req, block))
-    type HttpPackage[T] = Futures.Future[FuturableExecutor.this.HttpPackage[T]]
-  }
-  /** Override to use any Futures implementation */
-  def http_future: Futures = dispatch.futures.DefaultFuture
 }
 
 /** Client with a ThreadSafeClientConnManager */

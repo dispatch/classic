@@ -1,7 +1,7 @@
 package dispatch
 
 import org.apache.http.{HttpHost,HttpRequest,HttpResponse,HttpEntity}
-import org.apache.http.message.{BasicHttpEntityEnclosingRequest,BasicHttpRequest}
+import org.apache.http.message.AbstractHttpMessage
 import org.apache.http.util.EntityUtils
 
 /** Defines request execution and response status code behaviors. Implemented methods are finalized
@@ -20,13 +20,7 @@ trait HttpExecutor {
   final def x[T](hand: Handler[T]): HttpPackage[T] = x(hand.request)(hand.block)
   /** Execute request with handler, response in package. */
   final def x[T](req: Request)(block: Handler.F[T]) = {
-    val request = {
-      req.body.map { body =>
-        val r = new BasicHttpEntityEnclosingRequest(req.method, req.path)
-        r.setEntity(body)
-        r
-      }.getOrElse { new BasicHttpRequest(req.method, req.path) }
-    }
+    val request = make_message(req)
     req.headers.reverse.foreach {
       case (key, value) => request.addHeader(key, value)
     }
@@ -48,16 +42,12 @@ trait HttpExecutor {
   /** Apply handler block when response code is 200 - 204 */
   final def apply[T](hand: Handler[T]) = (this when {code => (200 to 204) contains code})(hand)
 
+  def make_message(requst: Request): HttpRequest
+
   /** Apply handler block when response code is 200 - 204 */
   final def apply[T](callback: Callback) = {
     val req = callback.request
-    val request = {
-      req.body.map { body =>
-        val r = new BasicHttpEntityEnclosingRequest(req.method, req.path)
-        r.setEntity(body)
-        r
-      }.getOrElse { new BasicHttpRequest(req.method, req.path) }
-    }
+    val request = make_message(req)
     req.headers.reverse.foreach {
       case (key, value) => request.addHeader(key, value)
     }
