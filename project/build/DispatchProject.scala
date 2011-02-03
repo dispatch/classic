@@ -7,10 +7,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
 
   lazy val futures = project("futures", "Dispatch Futures", new DispatchModule(_))
   lazy val core = project("core", "Dispatch Core", new HttpProject(_))
-  lazy val http = project("http", "Dispatch HTTP", new HttpProject(_) {
-    val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.1-beta1" intransitive()
-    val logging = "commons-logging" % "commons-logging" % "1.1.1"
-  }, core, futures)
+  lazy val http = project("http", "Dispatch HTTP", new HttpProject(_), core, futures)
   lazy val nio = project("nio", "Dispatch NIO", new HttpProject(_) {
     val nio_comp = "org.apache.httpcomponents" % "httpasyncclient" % "4.0-alpha1"
   }, core, futures)
@@ -69,9 +66,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   }
     
   class HttpProject(info: ProjectInfo) extends DispatchModule(info) {
-    val codec = "commons-codec" % "commons-codec" % "1.4"
-    val httpcore = "org.apache.httpcomponents" % "httpcore" % "4.1"
-    val jcip = "net.jcip" % "jcip-annotations" % "1.0" % "provided->default"
+    val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.1-beta1"
   }
   
   lazy val publishJavadocs = task { None } dependsOn agg.doc

@@ -22,8 +22,10 @@ class Http extends dispatch.HttpExecutor {
   val client = new DefaultHttpAsyncClient()
   client.start()
 
+  type HttpPackage[T] = dispatch.futures.AbortableFuture[T]
+
   def execute[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 
-                 req: HttpRequest, block: HttpResponse => T): HttpPackage[T] = {
+                 req: HttpRequestBase, block: HttpResponse => T) = {
     credsopt.map { creds =>
       error("todo")
     } getOrElse {
@@ -33,29 +35,16 @@ class Http extends dispatch.HttpExecutor {
         def completed(res: HttpResponse) { result = Some(block(res)) }
         def failed(ex: Exception) { ex.printStackTrace() }
       })
-      new (() => T) {
+      new dispatch.futures.AbortableFuture[T] {
         def apply() = { fut.get(); result.get }
         def isSet = fut.isDone
+        def abort() = req.abort()
       }
     }                     
   }
   
-  def make_message(req: Request) = {
-    req.method.toUpperCase match {
-      case HttpGet.METHOD_NAME => new HttpGet(req.path)
-      case HttpHead.METHOD_NAME => new HttpHead(req.path)
-      case HttpDelete.METHOD_NAME => new HttpDelete(req.path)
-      case method => 
-        val message = method match {
-          case HttpPost.METHOD_NAME => new HttpPost(req.path)
-          case HttpPut.METHOD_NAME => new HttpPut(req.path)
-        }
-        req.body.foreach(message.setEntity)
-        message
-    }
-  }
   def executeWithCallback[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 
-                             req: HttpRequest, callback: Callback) {
+                             req: HttpRequestBase, callback: Callback) {
     credsopt.map { creds =>
       error("todo")
     } getOrElse {
@@ -82,8 +71,6 @@ class Http extends dispatch.HttpExecutor {
       })
     }
   }
-
-  type HttpPackage[T] = dispatch.futures.Futures.Future[T]
 
   def shutdown() {
     client.shutdown()

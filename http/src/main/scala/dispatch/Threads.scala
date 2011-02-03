@@ -1,9 +1,11 @@
 package dispatch
 
 import org.apache.http.{HttpHost,HttpRequest,HttpResponse}
+import org.apache.http.client.methods.HttpRequestBase
+import dispatch.futures._
 
 /** Http with a thread-safe client and non-blocking interfaces */
-trait Threads extends Http {
+trait ThreadSafety { self: BlockingHttp =>
   /** Maximum number of connections in pool, default is 50 */
   def maxConnections = 50
   /** Maximum number of connections one one route, default is maxConnections */
@@ -11,9 +13,21 @@ trait Threads extends Http {
   /** Shutdown connection manager if no longer in use. */
 
   override def make_client = new ThreadSafeHttpClient(maxConnections, maxConnectionsPerRoute)
-  /** Shutdown connection manager, threads. (Needed to close console cleanly.) */
+  /** Shutdown connection manager, threads. */
   def shutdown() = client.getConnectionManager.shutdown()
 }
+
+trait ThreadFuture extends ThreadSafety { self: BlockingHttp =>
+  type HttpPackage[T] = dispatch.futures.AbortableFuture[T]
+  def pack[T](request: HttpRequestBase, result: => T) = new AbortableFuture[T] {
+    val delegate = DefaultFuture.future(result)
+    def apply() = delegate.apply()
+    def isSet = delegate.isSet
+    def abort() = request.abort()
+  }
+}
+
+class FutureHttp extends BlockingHttp with ThreadFuture
 
 /** Client with a ThreadSafeClientConnManager */
 class ThreadSafeHttpClient(maxConnections: Int, maxConnectionsPerRoute: Int) 

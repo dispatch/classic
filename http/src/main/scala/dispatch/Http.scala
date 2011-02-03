@@ -5,8 +5,8 @@ import collection.immutable.{Map => IMap}
 import java.net.URI
 
 import org.apache.http.{HttpHost,HttpRequest,HttpResponse,HttpEntity}
-import org.apache.http.client.methods._
 import org.apache.http.client.entity.UrlEncodedFormEntity
+import org.apache.http.client.methods.HttpRequestBase
 import org.apache.http.client.utils.URLEncodedUtils
 import org.apache.http.auth.AuthScope
 import org.apache.http.params.HttpProtocolParams
@@ -20,7 +20,17 @@ import org.apache.http.conn.ClientConnectionManager
 trait Logger { def info(msg: String, items: Any*) }
 
 /** Http access point. Standard instances to be used by a single thread. */
-class Http extends HttpExecutor with BlockingCallback {
+class Http extends BlockingHttp {
+  /** Unadorned handler return type */
+  type HttpPackage[T] = T
+  /** Synchronously access and return plain result value  */
+  def pack[T](req: HttpRequestBase, result: => T) = result
+}
+
+/** May be used directly from any thread. */
+object Http extends Http with ThreadSafety 
+
+trait BlockingHttp extends HttpExecutor with BlockingCallback {
   val client = make_client
   /** Defaults to dispatch.ConfiguredHttpClient, override to customize. */
   def make_client = new ConfiguredHttpClient
@@ -46,39 +56,19 @@ class Http extends HttpExecutor with BlockingCallback {
   }
   
   /** Execute method for the given host, with logging. */
-  private def execute(host: HttpHost, req: HttpRequest): HttpResponse = {
+  private def execute(host: HttpHost, req: HttpRequestBase): HttpResponse = {
     log.info("%s %s", host.getHostName, req.getRequestLine)
     client.execute(host, req)
   }
   /** Execute for given optional parametrs, with logging. Creates local scope for credentials. */
   def execute[T](host: HttpHost, credsopt: Option[Credentials], 
-                 req: HttpRequest, block: HttpResponse => T): HttpPackage[T] =
-    block(
+                 req: HttpRequestBase, block: HttpResponse => T) =
+    pack(req, block(
       credsopt.map { creds =>
         client.credentials.withValue(Some((
           new AuthScope(host.getHostName, host.getPort), creds)
         ))(execute(host, req))
       } getOrElse { execute(host, req) }
-    )
-  def make_message(req: Request) = {
-    req.method.toUpperCase match {
-      case HttpGet.METHOD_NAME => new HttpGet(req.path)
-      case HttpHead.METHOD_NAME => new HttpHead(req.path)
-      case HttpDelete.METHOD_NAME => new HttpDelete(req.path)
-      case method => 
-        val message = method match {
-          case HttpPost.METHOD_NAME => new HttpPost(req.path)
-          case HttpPut.METHOD_NAME => new HttpPut(req.path)
-        }
-        req.body.foreach(message.setEntity)
-        message
-    }
-  }
-  /** Unadorned handler return type */
-  type HttpPackage[T] = T
-  /** Synchronously access and return plain result value  */
-  def pack[T](result: => T) = result
+    ))
+  def pack[T](req: HttpRequestBase, result: => T): HttpPackage[T]
 }
-
-/** May be used directly from any thread. */
-object Http extends Http with Threads 
