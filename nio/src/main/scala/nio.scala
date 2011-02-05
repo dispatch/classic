@@ -44,13 +44,14 @@ class Http extends dispatch.HttpExecutor {
   }
   
   def executeWithCallback[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 
-                             req: HttpRequestBase, callback: Callback) {
+                             req: HttpRequestBase, callback: Callback[T]) = {
     credsopt.map { creds =>
       error("todo")
     } getOrElse {
       val ioc = DecodingCallback(callback)
       var response: Option[HttpResponse] = None
-      client.execute(new Producer(host, req), 
+      var result: Option[T] = None
+      val fut = client.execute(new Producer(host, req), 
                      new HttpAsyncResponseConsumer[HttpResponse] {
         def cancel() { }
         def responseReceived(res: HttpResponse) {
@@ -61,7 +62,7 @@ class Http extends dispatch.HttpExecutor {
         }
         def failed(ex: Exception) { ex.printStackTrace() }
         def responseCompleted() {
-          ioc.callback.finish(response.get)
+          result = Some(ioc.callback.finish(response.get))
         }
         def getResult() = response.get
       }, new FutureCallback[HttpResponse] {
@@ -69,6 +70,11 @@ class Http extends dispatch.HttpExecutor {
         def completed(res: HttpResponse) { }
         def failed(ex: Exception) { ex.printStackTrace() }
       })
+      new dispatch.futures.AbortableFuture[T] {
+        def apply() = { fut.get(); result.get }
+        def isSet = fut.isDone
+        def abort() = req.abort()
+      }
     }
   }
 
@@ -77,7 +83,7 @@ class Http extends dispatch.HttpExecutor {
   }
 }
 
-case class DecodingCallback(callback: dispatch.Callback) {
+case class DecodingCallback[T](callback: dispatch.Callback[T]) {
   def with_decoder(response: HttpResponse, decoder: ContentDecoder) {
     val buffer = java.nio.ByteBuffer.allocate(Http.socket_buffer_size)
     val length = decoder.read(buffer)

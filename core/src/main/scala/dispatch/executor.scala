@@ -16,7 +16,7 @@ trait HttpExecutor {
                  req: HttpRequestBase, block: HttpResponse => T): HttpPackage[T]
 
   def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
-                             req: HttpRequestBase, block:  Callback)
+                             req: HttpRequestBase, block: Callback[T]): HttpPackage[T]
   /** Execute full request-response handler, response in package. */
   final def x[T](hand: Handler[T]): HttpPackage[T] = x(hand.request)(hand.block)
   /** Execute request with handler, response in package. */
@@ -59,7 +59,7 @@ trait HttpExecutor {
   }
 
   /** Apply handler block when response code is 200 - 204 */
-  final def apply[T](callback: Callback) = {
+  final def apply[T](callback: Callback[T]) = {
     val req = callback.request
     val request = make_message(req)
     req.headers.reverse.foreach {
@@ -71,7 +71,7 @@ trait HttpExecutor {
 
 trait BlockingCallback { self: HttpExecutor =>
   def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
-                             req: HttpRequestBase, callback:  Callback) {
+                             req: HttpRequestBase, callback:  Callback[T]) = {
     execute(host, credsopt, req, { res =>
       res.getEntity match {
         case null => callback.finish(res)
