@@ -40,7 +40,7 @@ object ActorsFuture extends Futures {
   def future[T](result: => T) = scala.actors.Futures.future(result)
 }
 
-trait AbortableFuture[T] extends (() => T) {
+trait StoppableFuture[T] extends (() => T) {
   def isSet: Boolean
-  def abort()
+  def stop()
 }

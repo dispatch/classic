@@ -18,12 +18,12 @@ trait ThreadSafety { self: BlockingHttp =>
 }
 
 trait ThreadFuture extends ThreadSafety { self: BlockingHttp =>
-  type HttpPackage[T] = dispatch.futures.AbortableFuture[T]
-  def pack[T](request: HttpRequestBase, result: => T) = new AbortableFuture[T] {
+  type HttpPackage[T] = dispatch.futures.StoppableFuture[T]
+  def pack[T](request: HttpRequestBase, result: => T) = new StoppableFuture[T] {
     val delegate = DefaultFuture.future(result)
     def apply() = delegate.apply()
     def isSet = delegate.isSet
-    def abort() = request.abort()
+    def stop() = request.abort()
   }
 }
 
