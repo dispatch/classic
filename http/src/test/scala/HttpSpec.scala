@@ -68,7 +68,7 @@ object HttpSpec extends Specification {
     "equal expected string with gzip encoding, using future" in {
       httpfuture(test.gzip >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) } )() must_== (jane, Set("gzip"))
     }
-    val h = new Http// single httpfutureed Http instance
+    val h = new Http// single threaded Http instance
     "equal expected string with a gzip defaulter" in {
       val my_defualts = /\.gzip
       h(my_defualts <& test >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) } ) must_== (jane, Set("gzip"))
