@@ -19,7 +19,7 @@ object CouchSpec extends Specification {
   "Database and document create" should {
     "create a database" in {
       http(test.create)
-      http(test.request as_str) must startWith("""{"db_name":"test","doc_count":0""")
+      http(test as_str) must startWith("""{"db_name":"test","doc_count":0""")
     }
     "create an empty_doc document" in {
       http(empty_doc <<< Js().toString >|)
@@ -57,7 +57,7 @@ object CouchSpec extends Specification {
     "delete a database" in {
       http(test.delete)
       // just another way of checking that it returns 404
-      (http x test.request) { (status, _, _) => status } must_== 404
+      (http x test) { (status, _, _) => status } must_== 404
     }
   }
 }

@@ -51,7 +51,8 @@ class HandlerVerbs(request: Request) {
       case null => request.defaultCharset
       case charset => charset
     }
-    block(stm, charset)
+    try { block(stm, charset) }
+    finally { stm.close() }
   } )
   /** Handle InputStream in block, handle gzip if so encoded. */
   def >> [T] (block: InputStream => T): Handler[T] = >> { (stm, charset) => block(stm) }

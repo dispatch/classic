@@ -30,7 +30,7 @@ trait HttpExecutor {
         case null => None
         case ent => Some(ent)
       }
-      try { block(res.getStatusLine.getStatusCode, res, ent) }
+      block(res.getStatusLine.getStatusCode, res, ent)
     })
   }
   /** Apply Response Handler if reponse code returns true from chk. */
