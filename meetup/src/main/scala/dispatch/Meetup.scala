@@ -24,9 +24,11 @@ import MeetupTypeMaps.mudatestr
 abstract class Client extends ((Request => Request) => Request) {
   def hostname = "api.meetup.com"
   def host: Request
+  @deprecated("Use Client#handle(method) and pass it to an HttpExecutor instead")
   def call[T](method: Method[T])(implicit http: HttpExecutor) =
-    // todo: fix casting, will fail on nio
     http(method.default_handler(apply(method))).asInstanceOf[T]
+  def handle[T](method: Method[T]) = 
+    method.default_handler(apply(method))
 }
 
 trait MethodBuilder extends Builder[Request => Request] {
