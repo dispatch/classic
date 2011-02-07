@@ -22,8 +22,8 @@ import MeetupTypeMaps.mudatestr
 /** Client is a function to wrap API operations */
 abstract class Client extends ((Request => Request) => Request) {
   import Http.builder2product
-  val hostname = "api.meetup.com"
-  val host: Request
+  def hostname = "api.meetup.com"
+  def host: Request
   def call[T](method: Method[T])(implicit http: Http): T =
     http(method.default_handler(apply(method)))
 }
@@ -280,6 +280,16 @@ object OpenEvent {
     val address_3 = this >>~> 'address_3 ? str
     val phone = this >>~> 'phone ? str
   }
+}
+
+object Events2 extends Events2Builder(Map())
+private[meetup] class Events2Builder(params: Map[String, Any]) extends QueryMethod {
+  private def param(key: String)(value: Any) = new Events2Builder(params + (key -> value))
+  private def date_param(key: String)(value: Date) = param(key)(value.getTime)
+
+  def group_id(ids: Int*) = param("group_id")(ids.mkString(","))
+
+  def complete = _ / "2" / "events" <<? params
 }
 
 object Members extends MembersBuilder(Map())
