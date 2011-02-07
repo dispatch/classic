@@ -28,7 +28,7 @@ class Http extends BlockingHttp {
 }
 
 /** May be used directly from any thread. */
-object Http extends Http with ThreadSafety 
+object Http extends Http with thread.Safety 
 
 trait BlockingHttp extends HttpExecutor with BlockingCallback {
   val client = make_client
