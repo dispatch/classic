@@ -112,7 +112,11 @@ class RequestVerbs(subject: Request) {
     if (req.host.getHostName.isEmpty) subject.host else req.host, 
     req.creds orElse subject.creds,
     req.method,
-    subject.path + req.path,
+    (subject.path, req.path) match {
+      case (a, "/") => a
+      case (a, b) if a.endsWith("/") => a + b
+      case (a, b) => a + b
+    },
     req.headers ::: subject.headers,
     req.body orElse subject.body,
     if (Request.factoryCharset == req.defaultCharset) subject.defaultCharset else req.defaultCharset
@@ -127,7 +131,10 @@ class RequestVerbs(subject: Request) {
   
   /** Append an element to this request's path, joins with '/'. (mutates request) */
   def / (path: String) = subject.copy(
-    path=(if (subject.path.endsWith("/")) subject.path else subject.path + "/") + path
+    path= (subject.path, path) match {
+      case (a, b) if a.endsWith("/") => a + b
+      case (a, b) => a + "/" + b
+    }
   )
   
   /** Add headers to this request. (mutates request) */
