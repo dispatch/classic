@@ -1,8 +1,8 @@
 package dispatch.meetup
 import dispatch._
-import dispatch.Request._
 
 import dispatch.oauth._
+import dispatch.Request._
 import dispatch.oauth.OAuth._
 
 import dispatch.liftjson.Js._
@@ -22,8 +22,8 @@ import MeetupTypeMaps.mudatestr
 
 /** Client is a function to wrap API operations */
 abstract class Client extends ((Request => Request) => Request) {
-  val hostname = "api.meetup.com"
-  val host: Request
+  def hostname = "api.meetup.com"
+  def host: Request
   def call[T](method: Method[T])(implicit http: HttpExecutor) =
     // todo: fix casting, will fail on nio
     http(method.default_handler(apply(method))).asInstanceOf[T]
@@ -238,7 +238,7 @@ object Event extends Location {
 object OpenEvents extends OpenEventsBuilder(Map())
 private[meetup] class OpenEventsBuilder(params: Map[String, String]) extends QueryMethod {
   private def param(key: String)(value: Any) = new OpenEventsBuilder(params + (key -> value.toString))
-  private def date_param(key: String)(value: Date) = param(key)(value.getTime)
+  private def date_param(key: String)(value: Date) = param(key)(value.getTime.toString)
 
   val zip = param("zip")_
   def geo(lat: Any, lon: Any) = param("lat")(lat).param("lon")(lon)
@@ -281,6 +281,16 @@ object OpenEvent {
     val address_3 = this >>~> 'address_3 ? str
     val phone = this >>~> 'phone ? str
   }
+}
+
+object Events2 extends Events2Builder(Map())
+private[meetup] class Events2Builder(params: Map[String, String]) extends QueryMethod {
+  private def param(key: String)(value: String) = new Events2Builder(params + (key -> value))
+  private def date_param(key: String)(value: Date) = param(key)(value.getTime.toString)
+
+  def group_id(ids: Int*) = param("group_id")(ids.mkString(","))
+
+  def complete = _ / "2" / "events" <<? params
 }
 
 object Members extends MembersBuilder(Map())

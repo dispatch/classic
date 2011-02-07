@@ -61,7 +61,7 @@ trait TypeMappers {
     case JInt(i) => i :: Nil
     case _ => Nil
   }
-  val date = int >~> { millis => new Date(millis.intValue) }
+  val date = int >~> { millis => new Date(millis.longValue) }
   def datestr(format: String) = {
     val df = new java.text.SimpleDateFormat(format)
     str >>~> { ds => try { df.parse(ds) :: Nil } catch {
