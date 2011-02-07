@@ -21,8 +21,12 @@ object Http {
 }
 
 class Http extends dispatch.HttpExecutor {
-  val client = new DefaultHttpAsyncClient
-  client.start()
+  lazy val client = {
+    val cl = make_client
+    cl.start()
+    cl
+  }
+  def make_client = new DefaultHttpAsyncClient
 
   type HttpPackage[T] = dispatch.futures.StoppableFuture[T]
 
@@ -96,9 +100,10 @@ class Http extends dispatch.HttpExecutor {
           entity.map { _.finish() }
         }
       }
-      val context = new BasicHttpContext
-      val fut = client.execute(new Producer(host, req), consumer, new EmptyCallback[T])
-      new ConsumerFuture(fut, consumer)
+      new ConsumerFuture(
+        client.execute(new Producer(host, req), consumer, new EmptyCallback[T]),
+        consumer
+      )
     }
   }
   
@@ -119,8 +124,10 @@ class Http extends dispatch.HttpExecutor {
           response.map(callback.finish)
         def cancel() { }
       }
-      val fut = client.execute(new Producer(host, req), consumer, new EmptyCallback[T])
-      new ConsumerFuture(fut, consumer)
+      new ConsumerFuture(
+        client.execute(new Producer(host, req), consumer, new EmptyCallback[T]),
+        consumer
+      )
     }
   }
 
