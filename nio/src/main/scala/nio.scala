@@ -47,11 +47,14 @@ class Http extends dispatch.HttpExecutor {
     def stop() { stopping = true }
     @volatile var result: Option[T] = None
     def responseCompleted() {
-      result = completeResult(response)
+      result = Some(completeResult(response.getOrElse {
+        error("responseCompleted called but response unset")
+      }))
     }
-    def completeResult(response: Option[HttpResponse]): Option[T]
-    def getResult: T = result.get
-
+    def completeResult(response: HttpResponse): T
+    def getResult: T = result.getOrElse {
+      error("getResult called but result is unset")
+    }
     def failed(ex: Exception) {
       println(ex)
     }
@@ -89,12 +92,12 @@ class Http extends dispatch.HttpExecutor {
           }
           entity.map { _.consumeContent(decoder, ioctrl) }
         } }
-        def completeResult(response: Option[HttpResponse]) = {
-          for (res <- response; ent <- entity) {
+        def completeResult(res: HttpResponse) = {
+          for (ent <- entity) {
             res.setEntity(ent)
             ent.finish()
           }
-          response.map(block)
+          block(res)
         }
         def cancel() {
           entity.map { _.finish() }
@@ -120,8 +123,8 @@ class Http extends dispatch.HttpExecutor {
         override def consume(decoder: ContentDecoder, ioctrl: IOControl) {
           ioc.with_decoder(response.get, decoder)
         }
-        def completeResult(response: Option[HttpResponse]) = 
-          response.map(callback.finish)
+        def completeResult(response: HttpResponse) = 
+          callback.finish(response)
         def cancel() { }
       }
       new ConsumerFuture(
