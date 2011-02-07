@@ -12,7 +12,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
     val nio_comp = "org.apache.httpcomponents" % "httpasyncclient" % "4.0-alpha1"
   }, core, futures)
   lazy val mime = project("mime", "Dispatch Mime", new DispatchModule(_) {
-    val mime = "org.apache.httpcomponents" % "httpmime" % "4.1-beta1" intransitive()
+    val mime = "org.apache.httpcomponents" % "httpmime" % "4.1" intransitive()
     val logging = "commons-logging" % "commons-logging" % "1.1.1"
     val mime4j = "org.apache.james" % "apache-mime4j" % "0.6"
   }, core)
@@ -66,7 +66,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   }
     
   class HttpProject(info: ProjectInfo) extends DispatchModule(info) {
-    val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.1-beta1"
+    val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.1"
   }
   
   lazy val publishJavadocs = task { None } dependsOn agg.doc
