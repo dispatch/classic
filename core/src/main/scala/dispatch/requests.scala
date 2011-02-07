@@ -168,7 +168,7 @@ class RequestVerbs(subject: Request) {
       case ent: FormEntity => ent.add(values)
       case ent => error("trying to add post parameters << to entity: " + ent)
     }.getOrElse(new UrlEncodedFormEntity(values))
-    this.POST.copy(body=Some(ent))
+    subject.copy(body=Some(ent),method="POST")
   }
   /** Post the given string value. (new request, mimics) */
   def << (stringbody: String, contenttype: String): Request = POST.copy(
@@ -188,7 +188,7 @@ class RequestVerbs(subject: Request) {
     )
   
   /** HTTP post request. (new request, mimics) */
-  def POST = subject.copy(method="POST")
+  def POST = this << Map.empty
 
   /** HTTP post request. (new request, mimics) */
   def PUT = subject.copy(method="PUT")
