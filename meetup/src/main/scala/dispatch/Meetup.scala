@@ -292,6 +292,11 @@ private[meetup] class Events2Builder(params: Map[String, String]) extends QueryM
 
   def group_id(ids: Int*) = param("group_id")(ids.mkString(","))
   def member_id(id: Int) = param("member_id")(id.toString)
+  def event_id(id: String) = param("event_id")_
+  def status(s: Event.Status*) = param("status")(s map { _.values } mkString ",")
+  def time(from: Option[Date], to: Option[Date]) = param("time")(
+    (from :: to :: Nil) map { _.map { _.getTime.toString } getOrElse "" } mkString ","
+  )
 
   def complete = _ / "2" / "events" <<? params
 }
