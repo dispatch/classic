@@ -1,13 +1,16 @@
 import sbt._
 import archetect.ArchetectProject
 
-class DispatchProject(info: ProjectInfo) extends ParentProject(info) with posterous.Publish
+class DispatchProject(info: ProjectInfo) 
+  extends ParentProject(info) 
+  with posterous.Publish
+  with gh.Issues
 {
   override def parallelExecution = true
 
   lazy val futures = project("futures", "Dispatch Futures", new DispatchModule(_))
   lazy val core = project("core", "Dispatch Core", new HttpProject(_))
-  lazy val http = project("http", "Dispatch HTTP", new HttpProject(_), core, futures)
+  lazy val d_http = project("http", "Dispatch HTTP", new HttpProject(_), core, futures)
   lazy val nio = project("nio", "Dispatch NIO", new HttpProject(_) {
     val nio_comp = "org.apache.httpcomponents" % "httpasyncclient" % "4.0-alpha1"
   }, core, futures)
@@ -21,14 +24,14 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
   lazy val http_gae = project("http-gae", "Dispatch HTTP GAE", new HttpProject(_) {
     val bum_gae = "bumnetworks GAE artifacts" at "http://www.bumnetworks.com/gae"
     val gae_api = "com.google.appengine" % "appengine-api-1.0-sdk" % "1.3.4"
-  }, http)
+  }, d_http)
 
   lazy val lift_json = project("lift-json", "Dispatch lift-json", new DispatchModule(_) {
     val lift_json = "net.liftweb" %% "lift-json" % "2.2"
   }, core)
   lazy val oauth = project("oauth", "Dispatch OAuth", new DispatchModule(_), core)
-  lazy val times = project("times", "Dispatch Times", new DispatchModule(_), http, json, http_json)
-  lazy val couch = project("couch", "Dispatch Couch", new DispatchModule(_), http, json, http_json)
+  lazy val times = project("times", "Dispatch Times", new DispatchModule(_), d_http, json, http_json)
+  lazy val couch = project("couch", "Dispatch Couch", new DispatchModule(_), d_http, json, http_json)
   lazy val twitter = project("twitter", "Dispatch Twitter", new DispatchModule(_), core, json, http_json, oauth, lift_json, nio)
   lazy val meetup = project("meetup", "Dispatch Meetup", new DispatchModule(_), core, lift_json, oauth, mime)
 
@@ -57,7 +60,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
     override def packageSrcJar = defaultJarPath("-sources.jar")
     lazy val sourceArtifact = Artifact.sources(artifactID)
     override def packageToPublishActions = super.packageToPublishActions ++ Seq(packageSrc)
-    def testDeps = http :: Nil
+    def testDeps = d_http :: Nil
     override def testClasspath = (super.testClasspath /: testDeps) {
       _ +++ _.projectClasspath(Configurations.Compile)
     }
@@ -85,4 +88,7 @@ class DispatchProject(info: ProjectInfo) extends ParentProject(info) with poster
     override def compileClasspath = concatenatePaths(_.compileClasspath)
     override def docClasspath = concatenatePaths(_.docClasspath)
   }
+
+  def ghCredentials = gh.LocalGhCreds(log)
+  def ghRepository = ("n8han", "Databinder-Dispatch")
 }
