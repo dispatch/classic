@@ -8,7 +8,7 @@ import org.apache.http.client.methods._
 /** Defines request execution and response status code behaviors. Implemented methods are finalized
     as any overrides would be lost when instantiating delegate executors, is in Threads#future. 
     Delegates should chain to parent `pack` and `execute` implementations. */
-trait HttpExecutor {
+trait HttpExecutor extends RequestLogging {
   /** Type of value returned from request execution */
   type HttpPackage[T]
   /** Execute the request against an HttpClient */
@@ -22,6 +22,7 @@ trait HttpExecutor {
   /** Execute request with handler, response in package. */
   final def x[T](req: Request)(block: Handler.F[T]) = {
     val request = make_message(req)
+    log.info("%s %s", req.host.getHostName, request.getRequestLine)
     req.headers.reverse.foreach {
       case (key, value) => request.addHeader(key, value)
     }
@@ -62,6 +63,7 @@ trait HttpExecutor {
   final def apply[T](callback: Callback[T]) = {
     val req = callback.request
     val request = make_message(req)
+    log.info("%s %s", req.host.getHostName, request.getRequestLine)
     req.headers.reverse.foreach {
       case (key, value) => request.addHeader(key, value)
     }
@@ -88,6 +90,30 @@ trait BlockingCallback { self: HttpExecutor =>
   }
 }
 
-
 case class StatusCode(code: Int, contents:String)
   extends Exception("Exceptional response code: " + code + "\n" + contents)
+
+/** Simple info logger */
+trait Logger { def info(msg: String, items: Any*) }
+
+trait RequestLogging {
+  lazy val log: Logger = make_logger
+
+  /** Info Logger for this instance, default returns Connfiggy if on classpath else console logger. */
+  def make_logger = try {
+    new Logger {
+      def getObject(name: String) = Class.forName(name + "$").getField("MODULE$").get(null)
+      // using delegate, repeating parameters aren't working with structural typing in 2.7.x
+      val delegate = getObject("net.lag.logging.Logger")
+        .asInstanceOf[{ def get(n: String): { def ifInfo(o: => Object) } }]
+        .get(getClass.getCanonicalName)
+      def info(msg: String, items: Any*) { delegate.ifInfo(msg.format(items: _*)) }
+    }
+  } catch {
+    case _: ClassNotFoundException | _: NoClassDefFoundError => new Logger {
+      def info(msg: String, items: Any*) { 
+        println("INF: [console logger] dispatch: " + msg.format(items: _*)) 
+      }
+    }
+  }
+}
