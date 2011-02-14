@@ -84,10 +84,11 @@ trait ImplicitRequestVerbs {
   implicit def stringToRequestVerbs (str: String) = new RequestVerbs(new Request(str))
 }
 
+/** These functions create new request descriptors based off of the current one.
+    Most are intended to be used as infix operators; those that don't take a parameter
+    have character names to be used with dot notation, e.g. 
+    :/("example.com").HEAD.secure >>> {...} */
 class RequestVerbs(subject: Request) {
-  // The below functions create new request descriptors based off of the current one.
-  // Most are intended to be used as infix operators; those that don't take a parameter
-  // have character names to be used with dot notation, e.g. :/("example.com").HEAD.secure >>> {...}
   
   /** Set credentials that may be used for basic or digest auth; requires a host value :/(...) upon execution. */
   def as (name: String, pass: String) = subject.copy(creds=Some(Credentials(name, pass)))
