@@ -45,7 +45,7 @@ trait HttpExecutor extends RequestLogging {
   final def when[T](chk: Int => Boolean)(hand: Handler[T]) = x(hand.request) {
     case (code, res, ent) if chk(code) => hand.block(code, res, ent)
     case (code, _, Some(ent)) => 
-      throw StatusCode(code, EntityUtils.toString(ent, req.defaultCharset))
+      throw StatusCode(code, EntityUtils.toString(ent, hand.request.defaultCharset))
     case (code, _, _)         => 
       throw StatusCode(code, "[no entity]")
   }
