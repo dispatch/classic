@@ -41,7 +41,9 @@ class Http extends dispatch.HttpExecutor {
         }
         else consume(decoder, ioctrl)
       } catch {
-        case e: Exception => exception = Some(e)
+        case e: Exception =>
+          stopping = true
+          exception = Some(e)
       }
     }
     @volatile var response: Option[HttpResponse] = None
