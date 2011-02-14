@@ -1,5 +1,6 @@
 This beta release updates Dispatch's HttpClient dependency to 4.1
-final, and adds support for the NIO [HttpAsyncClient][async].
+final, and adds support for the NIO [HttpAsyncClient][async]. Support
+for Scala 2.7.x is dropped in this line.
 
 [async]: http://hc.apache.org/httpcomponents-asyncclient-dev/index.html
 
@@ -33,7 +34,7 @@ get compilation errors. The more permissive typing, which made use of
 `Any#toString`, was the source of common errors in application code
 where non-trivial objects (often, functions) were unknowingly added.
 
-###Callbacks and futures
+### Callbacks and futures
 
 The `thread` and `nio` executors return stoppable futures from their
 `apply` and other request executions, allowing persistent connections
