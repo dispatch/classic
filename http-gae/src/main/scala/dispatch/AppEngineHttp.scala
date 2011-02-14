@@ -1,18 +1,17 @@
-package dispatch
+package dispatch.gae
 
-import dispatch.gae.GAEConnectionManager
 import org.apache.http.params.HttpParams
 import org.apache.http.conn.ClientConnectionManager
 
-class AppEngineConfiguredClient extends ConfiguredHttpClient {
+class AppEngineConfiguredClient extends dispatch.ConfiguredHttpClient {
   /** @return GAEConnectionManager for non-socket based connections */
   override def createClientConnectionManager = GAEConnectionManager
   /** No need for proxy support on app engine. */
   override protected def configureProxy(params: HttpParams) = params
 }
 
-object AppEngineHttp extends AppEngineHttp
+object Http extends Http
 
-class AppEngineHttp extends Http {
+class Http extends dispatch.Http {
   override val client = new AppEngineConfiguredClient
 }
