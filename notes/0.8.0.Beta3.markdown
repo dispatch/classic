@@ -39,9 +39,11 @@ where non-trivial objects (often, functions) were unknowingly added.
 The `thread` and `nio` executors return stoppable futures from their
 `apply` and other request executions, allowing persistent connections
 to be easily closed. A new alternative to request handlers is
-`dispatch.Callback`, which defines a callback function to receive
+[dispatch.Callback][callback], which defines a callback function to receive
 request data as it arrives. For example, the fundamental response
 callback accepting bytes:
+
+[callback]: http://sourced.implicit.ly/net.databinder/dispatch-core/0.8.0.Beta3/dispatch/callbacks.scala.html
 
     h(:/("example.com") ^ (response, bytes, length) => { ... } )
 

@@ -84,8 +84,8 @@ object OAuth {
     def <@ (consumer: Consumer, token: Token): Request = sign(consumer, Some(token), None, None)
     
     /** add token value as a query string parameter, for user authorization redirects */
-    def <<? (token: Token) =  // implicit use of <<? here causes compiler error
-      (new RequestVerbs(r)).<<?(("oauth_token" -> token.value) :: Nil)
+    def with_token (token: Token) =  // implicit use of <<? here causes compiler error
+      r <<? (("oauth_token" -> token.value) :: Nil)
 
     /** Sign request by reading Post (<<) and query string parameters */
     private def sign(consumer: Consumer, token: Option[Token], verifier: Option[String], callback: Option[String]) = {

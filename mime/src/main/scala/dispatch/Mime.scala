@@ -30,18 +30,18 @@ object Mime {
     }
 
     /** Add file to multipart post, will convert other post methods to multipart */
-    def << (name: String, file: File) = 
+    def <<* (name: String, file: File) = 
       add(name, new FileBody(file))
     /** Add file with content-type to multipart post, will convert other post methods to multipart */
-    def << (name: String, file: File, content_type: String) = 
+    def <<* (name: String, file: File, content_type: String) = 
       add(name, new FileBody(file, content_type))
 
     /** Add stream generator with content-type to multipart post, will convert other post methods to multipart */
-    def << (name: String, file_name: String, stream: () => InputStream, content_type: String) = 
+    def <<* (name: String, file_name: String, stream: () => InputStream, content_type: String) = 
       add(name, new InputStreamBody(stream(), content_type, file_name))
 
     /** Add stream generator to multipart post, will convert other post methods to multipart. */
-    def << (name: String, file_name: String, stream: () => InputStream) = 
+    def <<* (name: String, file_name: String, stream: () => InputStream) = 
       add(name, new InputStreamBody(stream(), file_name))
     
     private def mime_ent: Mime.Entity = {

@@ -74,10 +74,11 @@ object Auth {
   def request_token(consumer: Consumer, callback_url: String) =
     svc.POST / "request" <@ (consumer, callback_url) as_token
 
-  def authorize_url(token: Token) = :/("www.meetup.com") / "authorize" <<? token
+  def authorize_url(token: Token) = :/("www.meetup.com") / "authorize" with_token token
   def m_authorize_url(token: Token) = authorize_url(token) <<? Map("set_mobile" -> "on")
 
-  def authenticate_url(token: Token) = :/("www.meetup.com") / "authenticate" <<? token
+  def authenticate_url(token: Token) =
+    :/("www.meetup.com") / "authenticate" with_token token
 
   def access_token(consumer: Consumer, token: Token, verifier: String) =
     svc.POST / "access" <@ (consumer, token, verifier) as_token
@@ -353,5 +354,5 @@ private[meetup] class PhotoUploadBuilder(photo: Option[File], params: Map[String
   def photo(photo: File) = new PhotoUploadBuilder(Some(photo), params)
   val caption = param("caption")_
 
-  def complete = _ / "photo" <<? params << ("photo", photo.getOrElse { error("photo not specified for PhotoUpload") } )
+  def complete = _ / "photo" <<? params <<* ("photo", photo.getOrElse { error("photo not specified for PhotoUpload") } )
 }
