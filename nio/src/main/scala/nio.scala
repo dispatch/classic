@@ -95,7 +95,7 @@ class Http extends dispatch.HttpExecutor {
   def execute[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 
                  req: HttpRequestBase, block: HttpResponse => T) = {
     credsopt.map { creds =>
-      error("todo")
+      error("Not yet implemented, but you can force basic auth with as_!")
     } getOrElse {
       val consumer = new StoppableConsumer[T] {
         @volatile var entity: Option[ConsumingNHttpEntity] = None
