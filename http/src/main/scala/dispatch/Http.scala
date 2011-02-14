@@ -31,6 +31,8 @@ trait BlockingHttp extends HttpExecutor with BlockingCallback {
   val client = make_client
   /** Defaults to dispatch.ConfiguredHttpClient, override to customize. */
   def make_client = new ConfiguredHttpClient
+
+  def exception[T](e: Exception) = throw(e)
   
   /** Execute method for the given host, with logging. */
   private def execute(host: HttpHost, req: HttpRequestBase): HttpResponse = {

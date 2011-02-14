@@ -17,6 +17,13 @@ trait HttpExecutor extends RequestLogging {
 
   def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
                              req: HttpRequestBase, block: Callback[T]): HttpPackage[T]
+
+  def exception[T](e: Exception): HttpPackage[T]
+  def excepting[T](block: => HttpPackage[T]): HttpPackage[T] = {
+    try { block }
+    catch { case e: Exception => exception(e) }
+  }
+
   /** Execute full request-response handler, response in package. */
   final def x[T](hand: Handler[T]): HttpPackage[T] = x(hand.request)(hand.block)
   /** Execute request with handler, response in package. */
@@ -37,12 +44,18 @@ trait HttpExecutor extends RequestLogging {
   /** Apply Response Handler if reponse code returns true from chk. */
   final def when[T](chk: Int => Boolean)(hand: Handler[T]) = x(hand.request) {
     case (code, res, ent) if chk(code) => hand.block(code, res, ent)
-    case (code, _, Some(ent)) => throw StatusCode(code, EntityUtils.toString(ent, Request.factoryCharset))
-    case (code, _, _)         => throw StatusCode(code, "[no entity]")
+    case (code, _, Some(ent)) => 
+      throw StatusCode(code, EntityUtils.toString(ent, Request.factoryCharset))
+    case (code, _, _)         => 
+      throw StatusCode(code, "[no entity]")
   }
+
   
   /** Apply handler block when response code is 200 - 204 */
-  final def apply[T](hand: Handler[T]) = (this when {code => (200 to 204) contains code})(hand)
+  final def apply[T](hand: Handler[T]) = excepting[T] { 
+    (this when {code => (200 to 204) contains code})(hand)
+  }
+
 
   def make_message(req: Request) = {
     req.method.toUpperCase match {
@@ -74,7 +87,7 @@ trait HttpExecutor extends RequestLogging {
 trait BlockingCallback { self: HttpExecutor =>
   def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
                              req: HttpRequestBase, callback:  Callback[T]) = {
-    execute(host, credsopt, req, { res =>
+    excepting { execute(host, credsopt, req, { res =>
       res.getEntity match {
         case null => callback.finish(res)
         case entity =>
@@ -86,12 +99,12 @@ trait BlockingCallback { self: HttpExecutor =>
           stm.close()
           callback.finish(res)
       }
-    })
+    })}
   }
 }
 
 case class StatusCode(code: Int, contents:String)
-  extends Exception("Exceptional response code: " + code + "\n" + contents)
+  extends Exception("Unexpected response code: " + code + "\n" + contents)
 
 /** Simple info logger */
 trait Logger { def info(msg: String, items: Any*) }
