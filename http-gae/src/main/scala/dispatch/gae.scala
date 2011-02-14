@@ -12,15 +12,15 @@ object GAEConnectionManager extends GAEConnectionManager
 // adapted from this Java impl: http://esxx.blogspot.com/2009/06/using-apaches-httpclient-on-google-app.html
 
 class GAEConnectionManager extends ClientConnectionManager {
-  val no_socket_factory = new SocketFactory {
-    def connectSocket(sock: Socket, host: String, port: Int, localAddress: InetAddress, localPort: Int, params: HttpParams): Socket = null
-    def createSocket: Socket = null
+  val no_socket_factory = new SchemeSocketFactory {
+    def connectSocket(sock: Socket, remote:InetSocketAddress, local: InetSocketAddress, params: HttpParams): Socket = null
+    def createSocket(params: HttpParams): Socket = null
     def isSecure(s: Socket): Boolean = false
   }
 
   protected val schemeRegistry = new SchemeRegistry
-  schemeRegistry.register(new Scheme("http",  no_socket_factory, 80))
-  schemeRegistry.register(new Scheme("https", no_socket_factory, 443))
+  schemeRegistry.register(new Scheme("http",  80, no_socket_factory))
+  schemeRegistry.register(new Scheme("https", 443, no_socket_factory))
 
   override def getSchemeRegistry: SchemeRegistry = schemeRegistry
 
@@ -90,7 +90,7 @@ class GAEClientConnection(var cm: ClientConnectionManager, var route: HttpRoute,
   override def sendRequestHeader(request: HttpRequest) = {
     try {
       val host = route.getTargetHost
-      val port = if (host.getPort() == -1) "" else "" + host.getPort()
+      val port = if (host.getPort() == -1) "" else ":" + host.getPort()
       val uri = new URI(host.getSchemeName
                         + "://"
                         + host.getHostName
