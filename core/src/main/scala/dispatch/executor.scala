@@ -8,7 +8,7 @@ import org.apache.http.client.methods._
 /** Defines request execution and response status code behaviors. Implemented methods are finalized
     as any overrides would be lost when instantiating delegate executors, is in Threads#future. 
     Delegates should chain to parent `pack` and `execute` implementations. */
-trait HttpExecutor {
+trait HttpExecutor extends RequestLogging {
   /** Type of value returned from request execution */
   type HttpPackage[T]
   /** Execute the request against an HttpClient */
@@ -17,11 +17,19 @@ trait HttpExecutor {
 
   def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
                              req: HttpRequestBase, block: Callback[T]): HttpPackage[T]
+
+  def exception[T](e: Exception): HttpPackage[T]
+  def excepting[T](block: => HttpPackage[T]): HttpPackage[T] = {
+    try { block }
+    catch { case e: Exception => exception(e) }
+  }
+
   /** Execute full request-response handler, response in package. */
   final def x[T](hand: Handler[T]): HttpPackage[T] = x(hand.request)(hand.block)
   /** Execute request with handler, response in package. */
   final def x[T](req: Request)(block: Handler.F[T]) = {
     val request = make_message(req)
+    log.info("%s %s", req.host.getHostName, request.getRequestLine)
     req.headers.reverse.foreach {
       case (key, value) => request.addHeader(key, value)
     }
@@ -36,12 +44,18 @@ trait HttpExecutor {
   /** Apply Response Handler if reponse code returns true from chk. */
   final def when[T](chk: Int => Boolean)(hand: Handler[T]) = x(hand.request) {
     case (code, res, ent) if chk(code) => hand.block(code, res, ent)
-    case (code, _, Some(ent)) => throw StatusCode(code, EntityUtils.toString(ent, Request.factoryCharset))
-    case (code, _, _)         => throw StatusCode(code, "[no entity]")
+    case (code, _, Some(ent)) => 
+      throw StatusCode(code, EntityUtils.toString(ent, req.defaultCharset))
+    case (code, _, _)         => 
+      throw StatusCode(code, "[no entity]")
   }
+
   
   /** Apply handler block when response code is 200 - 204 */
-  final def apply[T](hand: Handler[T]) = (this when {code => (200 to 204) contains code})(hand)
+  final def apply[T](hand: Handler[T]) = excepting[T] { 
+    (this when {code => (200 to 204) contains code})(hand)
+  }
+
 
   def make_message(req: Request) = {
     req.method.toUpperCase match {
@@ -62,6 +76,7 @@ trait HttpExecutor {
   final def apply[T](callback: Callback[T]) = {
     val req = callback.request
     val request = make_message(req)
+    log.info("%s %s", req.host.getHostName, request.getRequestLine)
     req.headers.reverse.foreach {
       case (key, value) => request.addHeader(key, value)
     }
@@ -72,7 +87,7 @@ trait HttpExecutor {
 trait BlockingCallback { self: HttpExecutor =>
   def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
                              req: HttpRequestBase, callback:  Callback[T]) = {
-    execute(host, credsopt, req, { res =>
+    excepting { execute(host, credsopt, req, { res =>
       res.getEntity match {
         case null => callback.finish(res)
         case entity =>
@@ -84,10 +99,34 @@ trait BlockingCallback { self: HttpExecutor =>
           stm.close()
           callback.finish(res)
       }
-    })
+    })}
   }
 }
 
-
 case class StatusCode(code: Int, contents:String)
-  extends Exception("Exceptional response code: " + code + "\n" + contents)
+  extends Exception("Unexpected response code: " + code + "\n" + contents)
+
+/** Simple info logger */
+trait Logger { def info(msg: String, items: Any*) }
+
+trait RequestLogging {
+  lazy val log: Logger = make_logger
+
+  /** Info Logger for this instance, default returns Connfiggy if on classpath else console logger. */
+  def make_logger = try {
+    new Logger {
+      def getObject(name: String) = Class.forName(name + "$").getField("MODULE$").get(null)
+      // using delegate, repeating parameters aren't working with structural typing in 2.7.x
+      val delegate = getObject("net.lag.logging.Logger")
+        .asInstanceOf[{ def get(n: String): { def ifInfo(o: => Object) } }]
+        .get(getClass.getCanonicalName)
+      def info(msg: String, items: Any*) { delegate.ifInfo(msg.format(items: _*)) }
+    }
+  } catch {
+    case _: ClassNotFoundException | _: NoClassDefFoundError => new Logger {
+      def info(msg: String, items: Any*) { 
+        println("INF: [console logger] dispatch: " + msg.format(items: _*)) 
+      }
+    }
+  }
+}

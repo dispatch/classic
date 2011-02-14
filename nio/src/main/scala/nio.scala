@@ -32,12 +32,19 @@ class Http extends dispatch.HttpExecutor {
 
   trait StoppableConsumer[T] extends HttpAsyncResponseConsumer[T] {
     @volatile var stopping = false
+    @volatile var exception: Option[Exception] = None
     final override def consumeContent(decoder: ContentDecoder, ioctrl: IOControl) {
-      if (stopping) {
-        ioctrl.shutdown()
-        cancel()
+      try {
+        if (stopping || exception.isDefined) {
+          ioctrl.shutdown()
+          cancel()
+        }
+        else consume(decoder, ioctrl)
+      } catch {
+        case e: Exception =>
+          stopping = true
+          exception = Some(e)
       }
-      else consume(decoder, ioctrl)
     }
     @volatile var response: Option[HttpResponse] = None
     def responseReceived(res: HttpResponse) {
@@ -47,16 +54,19 @@ class Http extends dispatch.HttpExecutor {
     def stop() { stopping = true }
     @volatile var result: Option[T] = None
     def responseCompleted() {
-      result = Some(completeResult(response.getOrElse {
-        error("responseCompleted called but response unset")
-      }))
+      try {
+        result = Some(completeResult(response.getOrElse {
+          error("responseCompleted called but response unset")
+        }))
+      } catch {
+        case e: Exception => exception = Some(e)
+      }
     }
     def completeResult(response: HttpResponse): T
-    def getResult: T = result.getOrElse {
-      error("getResult called but result is unset")
-    }
+    // asynchttpclient would a lot rather we return null here than throw an exception
+    def getResult: T = result.getOrElse(null.asInstanceOf[T])
     def failed(ex: Exception) {
-      println(ex)
+      exception = Some(ex)
     }
   }
   class EmptyCallback[T] extends FutureCallback[T] {
@@ -68,18 +78,26 @@ class Http extends dispatch.HttpExecutor {
     underlying: Future[T], 
     consumer: StoppableConsumer[T]
   ) extends dispatch.futures.StoppableFuture[T] {
-    def apply() = underlying.get()
-    def isSet = underlying.isDone
-    def stop() = { 
+    def apply() = {
+      consumer.exception.foreach { throw _ }
+      underlying.get()
+    }
+    def isSet = consumer.exception.isDefined || underlying.isDone
+    def stop() { 
       consumer.stop()
       underlying.cancel(true)
     }
+  }
+  class ExceptionFuture[T](e: Exception) extends dispatch.futures.StoppableFuture[T] {
+    def apply() = throw e
+    def isSet = true
+    def stop() {  }
   }
 
   def execute[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 
                  req: HttpRequestBase, block: HttpResponse => T) = {
     credsopt.map { creds =>
-      error("todo")
+      error("Not yet implemented, but you can force basic auth with as_!")
     } getOrElse {
       val consumer = new StoppableConsumer[T] {
         @volatile var entity: Option[ConsumingNHttpEntity] = None
@@ -120,7 +138,7 @@ class Http extends dispatch.HttpExecutor {
         override def responseReceived(res: HttpResponse) {
           response = Some(res)
         }
-        override def consume(decoder: ContentDecoder, ioctrl: IOControl) {
+        def consume(decoder: ContentDecoder, ioctrl: IOControl) {
           ioc.with_decoder(response.get, decoder)
         }
         def completeResult(response: HttpResponse) = 
@@ -133,6 +151,8 @@ class Http extends dispatch.HttpExecutor {
       )
     }
   }
+
+  def exception[T](e: Exception) = new ExceptionFuture(e)
 
   def shutdown() {
     client.shutdown()

@@ -16,9 +16,6 @@ import org.apache.http.message.BasicNameValuePair
 import org.apache.http.conn.params.ConnRouteParams
 import org.apache.http.conn.ClientConnectionManager
 
-/** Simple info logger */
-trait Logger { def info(msg: String, items: Any*) }
-
 /** Http access point. Standard instances to be used by a single thread. */
 class Http extends BlockingHttp {
   /** Unadorned handler return type */
@@ -34,26 +31,8 @@ trait BlockingHttp extends HttpExecutor with BlockingCallback {
   val client = make_client
   /** Defaults to dispatch.ConfiguredHttpClient, override to customize. */
   def make_client = new ConfiguredHttpClient
-  
-  lazy val log: Logger = make_logger
 
-  /** Info Logger for this instance, default returns Connfiggy if on classpath else console logger. */
-  def make_logger = try {
-    new Logger {
-      def getObject(name: String) = Class.forName(name + "$").getField("MODULE$").get(null)
-      // using delegate, repeating parameters aren't working with structural typing in 2.7.x
-      val delegate = getObject("net.lag.logging.Logger")
-        .asInstanceOf[{ def get(n: String): { def ifInfo(o: => Object) } }]
-        .get(classOf[Http].getCanonicalName)
-      def info(msg: String, items: Any*) { delegate.ifInfo(msg.format(items: _*)) }
-    }
-  } catch {
-    case _: ClassNotFoundException | _: NoClassDefFoundError => new Logger {
-      def info(msg: String, items: Any*) { 
-        println("INF: [console logger] dispatch: " + msg.format(items: _*)) 
-      }
-    }
-  }
+  def exception[T](e: Exception) = throw(e)
   
   /** Execute method for the given host, with logging. */
   private def execute(host: HttpHost, req: HttpRequestBase): HttpResponse = {
