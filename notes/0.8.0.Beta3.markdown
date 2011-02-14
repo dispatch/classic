@@ -28,13 +28,14 @@ extension modules.
 
 ### Callbacks and futures
 
-The `thread` and `nio` executors return stoppable futures from their
-`apply` and other request executions, allowing persistent connections
-to be easily closed. A new alternative to request handlers is
-[dispatch.Callback][callback], which defines a callback function to receive
-request data as it arrives. For example, the fundamental response
-callback accepting bytes:
+The `thread` and `nio` executors return [stoppable futures][stoppable]
+from their `apply` and other request executions, allowing persistent
+connections to be easily closed. A new alternative to request handlers
+is [dispatch.Callback][callback], which defines a callback function to
+receive request data as it arrives. For example, the fundamental
+response callback accepting bytes:
 
+[stoppable]: http://sourced.implicit.ly/net.databinder/dispatch-futures/0.8.0.Beta3/Futures.scala.html#9092
 [callback]: http://sourced.implicit.ly/net.databinder/dispatch-core/0.8.0.Beta3/dispatch/callbacks.scala.html
 
     h(:/("example.com") ^ (response, bytes, length) => { ... } )
@@ -63,8 +64,8 @@ handler function is called with the completed request object (in this
 case a JValue) as soon as it is available.
 
 The [080 branch][twine] of the twine example application uses the new
-stoppable callback interface with an NIO executor to connect to
-Twitter [User Streams](http://dev.twitter.com/pages/user_streams).
+stoppable future / callback interface with an NIO executor to connect
+to Twitter [User Streams](http://dev.twitter.com/pages/user_streams).
 
 [twine]: https://github.com/n8han/dispatch-twine/blob/080/src/main/scala/twine/Twine.scala#L68
 
