@@ -11,5 +11,5 @@ class Plugins(info: ProjectInfo) extends PluginDefinition(info) {
   val sxr_publish = "net.databinder" % "sxr-publish" % "0.2.0"
 
   val lessis = "less is repo" at "http://repo.lessis.me"
-  val ghIssues = "me.lessis" % "sbt-gh-issues" % "0.0.1"
+  val ghIssues = "me.lessis" % "sbt-gh-issues" % "0.1.0"
 }
