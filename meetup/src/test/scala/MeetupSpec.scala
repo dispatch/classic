@@ -5,7 +5,7 @@ object MeetupSpec extends Specification {
   import meetup._
   import dispatch.liftjson.Js._
   import oauth._
-  
+
   val conf = new java.io.File("meetup.test.properties")
   if (conf.exists) {
     val config = {
@@ -15,7 +15,6 @@ object MeetupSpec extends Specification {
       stm.close()
       props
     }
-    
     val consumer = Consumer(config.getProperty("oauth_consumer_key"), config.getProperty("oauth_consumer_secret"))
     val token = Token(config.getProperty("oauth_token"), config.getProperty("oauth_token_secret"))
     val client = OAuthClient(consumer, token)
@@ -37,15 +36,15 @@ object MeetupSpec extends Specification {
         import java.util.Calendar
         val cal = Calendar.getInstance
         cal.add(Calendar.YEAR, -1)
-        val (res, meta) = client.call(Events.group_id(1377720)
+        val (res, meta) = Http(client.handle(Events.group_id(1377720)
           .after(cal.getTime)
           .before(new java.util.Date)
-        )
+        ))
         res.size must be > (5)
         (meta >>= Meta.count) must_== List(res.size)
       }
       "find upcoming events" in {
-        val (res, meta) = client.call(Events.topic("technology"))
+        val (res, meta) = Http(client.handle(Events.topic("technology")))
         val statuses = res flatMap Event.status
         statuses must notBeEmpty
         statuses must notExist { _ != Event.Upcoming }
@@ -54,10 +53,26 @@ object MeetupSpec extends Specification {
     "Member and Group query" should {
       implicit val http = new Http
       "find NYSE members" in {
-        val NYSE = "New-York-Scala-Enthusiasts"
-        val (res, meta) = client.call(Members.group_urlname(NYSE))
+        val NYSE = "ny-scala"
+        val (res, meta) = Http(client.handle(Members.group_urlname(NYSE)))
         val ids = for (r <- res; id <- Member.id(r)) yield id
         ids.size must be > (5)
+      }
+    }
+    "Photos query" should {
+      implicit val http = new Http
+      "Find North East Scala Symposium photos" in {
+        val (res, _) = Http(client.handle(Photos.event_id(15526582)))
+        val photos = for {
+          r <- res
+          id <- Photo.photo_id(r)
+          created <- Photo.created(r)
+          updated <- Photo.updated(r)
+          hr_link <- Photo.highres_link(r)
+          photo_link <- Photo.photo_link(r)
+          thumb_link <- Photo.thumb_link(r)
+        } yield (id, created, updated, hr_link, photo_link, thumb_link)
+        photos.size must be > 5
       }
     }
   }

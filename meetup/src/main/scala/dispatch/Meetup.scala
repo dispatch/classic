@@ -27,7 +27,7 @@ abstract class Client extends ((Request => Request) => Request) {
   @deprecated("Use Client#handle(method) and pass it to an HttpExecutor instead")
   def call[T](method: Method[T])(implicit http: HttpExecutor) =
     http(method.default_handler(apply(method))).asInstanceOf[T]
-  def handle[T](method: Method[T]) = 
+  def handle[T](method: Method[T]) =
     method.default_handler(apply(method))
 }
 
@@ -356,4 +356,33 @@ private[meetup] class PhotoUploadBuilder(photo: Option[File], params: Map[String
   val caption = param("caption")_
 
   def complete = _ / "photo" <<? params <<* ("photo", photo.getOrElse { error("photo not specified for PhotoUpload") } )
+}
+
+/** /2/photos API */
+object Photos extends PhotosBuilder(Map.empty[String, String])
+private[meetup] class PhotosBuilder(params: Map[String, String]) extends QueryMethod {
+  private def param(key: String)(value: Any) = new PhotosBuilder(params + (key -> value.toString))
+
+  val event_id = param("event_id")_
+  val group_id = param("group_id")_
+  val member_id = param("member_id")_
+  val photo_album_id = param("photo_album_id")_
+  val photo_id = param("photo_id")_
+
+  def complete = _ / "2" / "photos" <<? params
+}
+
+object Photo {
+  val caption = 'caption ? str
+  val created = 'created ? int
+  val updated = 'updated ? int
+  val highres_link = 'highres_link ? str
+  object photo_album extends Obj('photo_album) {
+    val photo_album_id = this >>~> 'photo_album_id ? int
+    val group_id = this >>~> 'group_id ? int
+    val event_id = this >>~> 'event_id ? int
+  }
+  val photo_id = 'photo_id ? int
+  val photo_link = 'photo_link ? str
+  val thumb_link = 'thumb_link ? str
 }
