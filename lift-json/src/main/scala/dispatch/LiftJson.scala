@@ -15,7 +15,9 @@ trait ImplicitJsonVerbs {
 }
 class JsonVerbs(subject: Request) {
   /** Process response as JsValue in block */
-  def ># [T](block: JValue => T) = subject >- { s => block(JsonParser.parse(s)) }
+  def ># [T](block: JValue => T) = subject >> { (stm, charset) => 
+    block(JsonParser.parse(new java.io.InputStreamReader(stm, charset)))
+  }
   def as_pretty = this ># { js => Js.prettyrender(js) }
   /** Process streaming json messages, separated by newlines, in callbacks */
   def ^# [T](block: JValue => T) = subject ^-- { s => block(JsonParser.parse(s)) }
