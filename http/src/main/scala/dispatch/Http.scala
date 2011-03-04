@@ -34,9 +34,8 @@ trait BlockingHttp extends HttpExecutor with BlockingCallback {
 
   def exception[T](e: Exception) = throw(e)
   
-  /** Execute method for the given host, with logging. */
+  /** Execute method for the given host. */
   private def execute(host: HttpHost, req: HttpRequestBase): HttpResponse = {
-    log.info("%s %s", host.getHostName, req.getRequestLine)
     client.execute(host, req)
   }
   /** Execute for given optional parametrs, with logging. Creates local scope for credentials. */
