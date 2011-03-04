@@ -131,7 +131,7 @@ class Http extends dispatch.HttpExecutor {
   def executeWithCallback[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 
                              req: HttpRequestBase, callback: Callback[T]) = {
     credsopt.map { creds =>
-      error("todo")
+      error("Not yet implemented, but you can force basic auth with as_!")
     } getOrElse {
       val ioc = DecodingCallback(callback)
       val consumer = new StoppableConsumer[T] {
