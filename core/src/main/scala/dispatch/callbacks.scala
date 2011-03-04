@@ -9,17 +9,22 @@ object Callback {
   def apply(request: Request, function: Callback.Function): Callback[Unit] = 
     Callback(request, function, { _ => () })
 
-  def strings[T](req: Request, block: (String => Unit)) = Callback(
-    req,
-    (res, bytes, len) => {
-      val charset = for {
-        ct <- res.getHeaders("Content-Type").headOption
-        elem <- ct.getElements.headOption
-        param <- Option(elem.getParameterByName("charset"))
-      } yield param.getValue()
-      block(new String(bytes, 0, len, charset.getOrElse(Request.factoryCharset)))
-    }
-  )
+  def strings[T](req: Request, block: (String => Unit)) = {
+    @volatile var charset: Option[String] = None
+    Callback(
+      req,
+      (res, bytes, len) => {
+        charset orElse {
+          charset = (for {
+            ct <- res.getHeaders("Content-Type").headOption
+            elem <- ct.getElements.headOption
+            param <- Option(elem.getParameterByName("charset"))
+          } yield param.getValue()) orElse Some(Request.factoryCharset)
+          charset
+        } map { cs => block(new String(bytes, 0, len, cs)) }
+      }
+    )
+  }
 
   /** Divide input up by given regex. Buffers across inputs so strings are
    * only split on the divider, and handles any leftovers in finish. Skips
