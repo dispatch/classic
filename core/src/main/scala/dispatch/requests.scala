@@ -178,7 +178,9 @@ class RequestVerbs(subject: Request) {
     }.getOrElse(new UrlEncodedFormEntity(values))
     subject.copy(body=Some(ent),method="POST")
   }
-  /** Post the given string value. (new request, mimics) */
+  /** Post the given string value, with text/plain content-type. */
+  def << (stringbody: String): Request =  this << (stringbody, "text/plain")
+  /** Post the given string value. */
   def << (stringbody: String, contenttype: String): Request = POST.copy(
     body=Some(new RefStringEntity(
       stringbody, contenttype, subject.defaultCharset))
