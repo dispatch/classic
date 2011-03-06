@@ -146,13 +146,17 @@ class RequestVerbs(subject: Request) {
   /* Add a gzip acceptance header */
   def gzip = this <:< Map("Accept-Encoding" -> "gzip")
 
-  /** Put the given string. */
+  /** PUT the given string. */
   def <<< (stringbody: String): Request = PUT.copy(
     body=Some(new RefStringEntity(stringbody, "text/plain", subject.defaultCharset))
   )
-  /** Put the given file. (new request, mimics) */
+  /** PUT the given file. */
   def <<< (file: java.io.File, content_type: String) = PUT.copy(
     body=Some(new org.apache.http.entity.FileEntity(file, content_type))
+  )
+  /** PUT the given values as a urlencoded form */
+  def <<< (values: Traversable[(String, String)]): Request = PUT.copy(
+    body=Some(form_ent(values))
   )
 
   private class UrlEncodedFormEntity(
@@ -170,13 +174,15 @@ class RequestVerbs(subject: Request) {
       new UrlEncodedFormEntity(oauth_params ++ values)
   }
 
+  private def form_ent(values: Traversable[(String, String)]) = subject.body.map {
+    case ent: FormEntity => ent.add(values)
+    case ent => error("trying to add post parameters << to entity: " + ent)
+  }.getOrElse(new UrlEncodedFormEntity(values))
+
+
   /** Post the given key value sequence. (new request, mimics) */
-  def << (values: Traversable[(String, String)]): Request = {
-    val ent = subject.body.map {
-      case ent: FormEntity => ent.add(values)
-      case ent => error("trying to add post parameters << to entity: " + ent)
-    }.getOrElse(new UrlEncodedFormEntity(values))
-    subject.copy(body=Some(ent),method="POST")
+  def << (values: Traversable[(String, String)]) = {
+    subject.copy(body=Some(form_ent(values)),method="POST")
   }
   /** Post the given string value, with text/plain content-type. */
   def << (stringbody: String): Request =  this << (stringbody, "text/plain")
