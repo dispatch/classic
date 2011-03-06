@@ -72,11 +72,11 @@ trait Encoders {
     org.apache.commons.codec.binary.Base64.encodeBase64(b)
 
   /** @return formatted and %-encoded query string, e.g. name=value&name2=value2 */
-  def form_enc (values: Iterable[(String, String)]) = {
+  def form_enc (values: Traversable[(String, String)]) = {
     form_join(values.map(form_elem))
   }
   def form_elem(value: (String, String)) = encode_%(value._1) + "=" + encode_%(value._2)
-  def form_join(values: Iterable[String]) = values.mkString("&")
+  def form_join(values: Traversable[String]) = values.mkString("&")
 }
 
 trait ImplicitRequestVerbs {
@@ -156,7 +156,7 @@ class RequestVerbs(subject: Request) {
   )
 
   private class UrlEncodedFormEntity(
-    val oauth_params: Iterable[(String, String)]
+    val oauth_params: Traversable[(String, String)]
   ) extends RefStringEntity(
     subject.form_join(
       (subject.body.map(EntityUtils.toString).filterNot { _.isEmpty }.toSeq ++
@@ -166,12 +166,12 @@ class RequestVerbs(subject: Request) {
     "application/x-www-form-urlencoded",
     subject.defaultCharset
   ) {
-    def add(values: Iterable[(String, String)]) = 
+    def add(values: Traversable[(String, String)]) = 
       new UrlEncodedFormEntity(oauth_params ++ values)
   }
 
   /** Post the given key value sequence. (new request, mimics) */
-  def << (values: Iterable[(String, String)]): Request = {
+  def << (values: Traversable[(String, String)]): Request = {
     val ent = subject.body.map {
       case ent: FormEntity => ent.add(values)
       case ent => error("trying to add post parameters << to entity: " + ent)
@@ -187,7 +187,7 @@ class RequestVerbs(subject: Request) {
   )
   
   /** Add query parameters. (mutates request) */
-  def <<? (values: Iterable[(String, String)]) =
+  def <<? (values: Traversable[(String, String)]) =
     if (values.isEmpty) subject
     else subject.copy(
       path =
@@ -218,8 +218,8 @@ class RequestVerbs(subject: Request) {
  *  whether form-urlencoded or multipart mime. */
 trait FormEntity {
   /** Should only return values that belong in an oauth signature */
-  def oauth_params: Iterable[(String, String)]
-  def add(values: Iterable[(String, String)]): this.type
+  def oauth_params: Traversable[(String, String)]
+  def add(values: Traversable[(String, String)]): this.type
 }
 
 /** Nil request, useful to kick off a descriptors that don't have a factory. */

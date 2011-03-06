@@ -68,7 +68,7 @@ object Mime {
   type ListenerF = Long => Long => Unit
   trait Entity extends HttpEntity with FormEntity { 
     def addPart(name: String, body: ContentBody)
-    def add(values: Iterable[(String, String)]) = {
+    def add(values: Traversable[(String, String)]) = {
       for ((name,value) <- values) addPart(name, new StringBody(value))
       this
     }
