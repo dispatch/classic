@@ -180,7 +180,7 @@ class RequestVerbs(subject: Request) {
   }.getOrElse(new UrlEncodedFormEntity(values))
 
 
-  /** Post the given key value sequence. (new request, mimics) */
+  /** Post the given key value sequence. */
   def << (values: Traversable[(String, String)]) = {
     subject.copy(body=Some(form_ent(values)),method="POST")
   }
@@ -203,16 +203,16 @@ class RequestVerbs(subject: Request) {
         )
     )
   
-  /** HTTP post request. (new request, mimics) */
+  /** HTTP post request. */
   def POST = this << Map.empty
 
-  /** HTTP post request. (new request, mimics) */
+  /** HTTP post request. */
   def PUT = subject.copy(method="PUT")
     
-  /** HTTP delete request. (new request, mimics) */
+  /** HTTP delete request. */
   def DELETE = subject.copy(method="DELETE")
   
-  /** HTTP head request. (new request, mimics). See >:> to access headers. */
+  /** HTTP head request. See >:> to access headers. */
   def HEAD = subject.copy(method="HEAD")
 
 
