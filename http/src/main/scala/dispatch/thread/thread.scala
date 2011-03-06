@@ -13,7 +13,8 @@ trait Safety { self: BlockingHttp =>
   def maxConnectionsPerRoute = maxConnections
   /** Shutdown connection manager if no longer in use. */
 
-  override def make_client = new ThreadSafeHttpClient(maxConnections, maxConnectionsPerRoute)
+  override def make_client = new ThreadSafeHttpClient(
+    credentials, maxConnections, maxConnectionsPerRoute)
   /** Shutdown connection manager, threads. */
   def shutdown() = client.getConnectionManager.shutdown()
 }
@@ -31,8 +32,11 @@ trait Future extends Safety { self: BlockingHttp =>
 class Http extends BlockingHttp with Future
 
 /** Client with a ThreadSafeClientConnManager */
-class ThreadSafeHttpClient(maxConnections: Int, maxConnectionsPerRoute: Int) 
-    extends ConfiguredHttpClient {
+class ThreadSafeHttpClient(
+  credentials: Http.CurrentCredentials,
+  maxConnections: Int, 
+  maxConnectionsPerRoute: Int
+) extends ConfiguredHttpClient(credentials) {
   import org.apache.http.conn.scheme.{Scheme,SchemeRegistry,PlainSocketFactory}
   import org.apache.http.conn.ssl.SSLSocketFactory
   import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager

@@ -5,6 +5,7 @@ import collection.immutable.{Map => IMap}
 import java.net.URI
 
 import org.apache.http.{HttpHost,HttpRequest,HttpResponse,HttpEntity}
+import org.apache.http.client.HttpClient
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.HttpRequestBase
 import org.apache.http.client.utils.URLEncodedUtils
@@ -25,12 +26,18 @@ class Http extends BlockingHttp {
 }
 
 /** May be used directly from any thread. */
-object Http extends Http with thread.Safety 
+object Http extends Http with thread.Safety  {
+  type CurrentCredentials = util.DynamicVariable[Option[(AuthScope, Credentials)]]
+}
 
 trait BlockingHttp extends HttpExecutor with BlockingCallback {
-  val client = make_client
-  /** Defaults to dispatch.ConfiguredHttpClient, override to customize. */
-  def make_client = new ConfiguredHttpClient
+  /** This reference's underlying value is updated for the current thread when a
+   *  request specifies credentials. Typically passed to ConfiguredHttpClient. */
+  val credentials = new Http.CurrentCredentials(None)
+  /** Reference to the underlying client. Override make_client define your own. */
+  final val client = make_client
+  /** Defaults to dispatch.ConfiguredHttpClient(credentials), override to customize. */
+  def make_client: HttpClient = new ConfiguredHttpClient(credentials)
 
   def exception[T](e: Exception) = throw(e)
   
@@ -38,12 +45,12 @@ trait BlockingHttp extends HttpExecutor with BlockingCallback {
   private def execute(host: HttpHost, req: HttpRequestBase): HttpResponse = {
     client.execute(host, req)
   }
-  /** Execute for given optional parametrs, with logging. Creates local scope for credentials. */
+  /** Execute for given optional parameters, with logging. Creates local scope for credentials. */
   def execute[T](host: HttpHost, credsopt: Option[Credentials], 
                  req: HttpRequestBase, block: HttpResponse => T) =
     pack(req, block(
       credsopt.map { creds =>
-        client.credentials.withValue(Some((
+        credentials.withValue(Some((
           new AuthScope(host.getHostName, host.getPort), creds)
         ))(execute(host, req))
       } getOrElse { execute(host, req) }
