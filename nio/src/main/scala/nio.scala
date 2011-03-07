@@ -15,6 +15,7 @@ import org.apache.http.nio.concurrent.FutureCallback
 import org.apache.http.nio.util.HeapByteBufferAllocator
 import java.util.concurrent.Future
 import java.io.IOException
+import util.control.{Exception=>Exc}
 
 object Http {
   val socket_buffer_size = 8 * 1024
@@ -93,6 +94,11 @@ class Http extends dispatch.HttpExecutor {
     def isSet = true
     def stop() {  }
   }
+  class FinishedFuture[T](item: T) extends dispatch.futures.StoppableFuture[T] {
+    def apply() = item
+    def isSet = true
+    def stop() {  }
+  }
 
   def execute[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 
                  req: HttpRequestBase, block: HttpResponse => T) = {
@@ -152,7 +158,8 @@ class Http extends dispatch.HttpExecutor {
     }
   }
 
-  def exception[T](e: Exception) = new ExceptionFuture(e)
+  def catching[T](catcher: Exc.Catcher[T], block: => HttpPackage[T]) =
+    Exc.catching(catcher.andThen { new FinishedFuture(_) })(block)
 
   def shutdown() {
     client.shutdown()

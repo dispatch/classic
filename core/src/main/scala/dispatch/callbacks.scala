@@ -1,10 +1,17 @@
 package dispatch
 
 import org.apache.http.HttpResponse
+import util.control.Exception._
 
 object Callback {
   type Function = (HttpResponse, Array[Byte], Int) => Unit
   type Finish[T] = HttpResponse => T
+
+  def apply[T](request: Request, 
+               function: Callback.Function, 
+               finish: Callback.Finish[T]): Callback[T] =
+    Callback(request, function, finish, nothingCatcher)
+                  
 
   def apply(request: Request, function: Callback.Function): Callback[Unit] = 
     Callback(request, function, { _ => () })
@@ -49,7 +56,8 @@ object Callback {
 
 case class Callback[T](request: Request, 
                   function: Callback.Function, 
-                  finish: Callback.Finish[T]) {
+                  finish: Callback.Finish[T],
+                  catcher: Catcher[T]) {
   def ^> [T](finish: Callback.Finish[T]) = Callback(request, function, { res =>
     this.finish(res)
     finish(res)

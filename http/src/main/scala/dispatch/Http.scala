@@ -22,7 +22,7 @@ class Http extends BlockingHttp {
   /** Unadorned handler return type */
   type HttpPackage[T] = T
   /** Synchronously access and return plain result value  */
-  def pack[T](req: HttpRequestBase, result: => T) = result
+  def pack[T](req: { def abort() }, result: => T) = result
 }
 
 /** May be used directly from any thread. */
@@ -31,6 +31,7 @@ object Http extends Http with thread.Safety  {
 }
 
 trait BlockingHttp extends HttpExecutor with BlockingCallback {
+  import util.control.{Exception => Exc}
   /** This reference's underlying value is updated for the current thread when a
    *  request specifies credentials. Typically passed to ConfiguredHttpClient. */
   val credentials = new Http.CurrentCredentials(None)
@@ -39,8 +40,11 @@ trait BlockingHttp extends HttpExecutor with BlockingCallback {
   /** Defaults to dispatch.ConfiguredHttpClient(credentials), override to customize. */
   def make_client: HttpClient = new ConfiguredHttpClient(credentials)
 
-  def exception[T](e: Exception) = throw(e)
-  
+  def catching[T](catcher: Exc.Catcher[T], block: => HttpPackage[T]) =
+    Exc.catching(catcher.andThen { result =>
+      pack(new { def abort() {} }, result)
+    })(block)
+
   /** Execute method for the given host. */
   private def execute(host: HttpHost, req: HttpRequestBase): HttpResponse = {
     client.execute(host, req)
@@ -55,5 +59,5 @@ trait BlockingHttp extends HttpExecutor with BlockingCallback {
         ))(execute(host, req))
       } getOrElse { execute(host, req) }
     ))
-  def pack[T](req: HttpRequestBase, result: => T): HttpPackage[T]
+  def pack[T](req: { def abort() }, result: => T): HttpPackage[T]
 }

@@ -21,7 +21,7 @@ trait Safety { self: BlockingHttp =>
 
 trait Future extends Safety { self: BlockingHttp =>
   type HttpPackage[T] = StoppableFuture[T]
-  def pack[T](request: HttpRequestBase, result: => T) = new StoppableFuture[T] {
+  def pack[T](request: { def abort() }, result: => T) = new StoppableFuture[T] {
     val delegate = DefaultFuture.future(result)
     def apply() = delegate.apply()
     def isSet = delegate.isSet
