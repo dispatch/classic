@@ -34,6 +34,13 @@ class Http extends dispatch.HttpExecutor {
   trait StoppableConsumer[T] extends HttpAsyncResponseConsumer[T] {
     @volatile var stopping = false
     @volatile var exception: Option[Exception] = None
+    private def setException(e: Exception) {
+      exception = Some(e)
+      catcher.lift(e).map { t =>
+        result = Some(t)
+      }
+    }
+    val catcher: Exc.Catcher[T]
     final override def consumeContent(decoder: ContentDecoder, ioctrl: IOControl) {
       try {
         if (stopping || exception.isDefined) {
@@ -44,7 +51,7 @@ class Http extends dispatch.HttpExecutor {
       } catch {
         case e: Exception =>
           stopping = true
-          exception = Some(e)
+          setException(e)
       }
     }
     @volatile var response: Option[HttpResponse] = None
@@ -89,15 +96,16 @@ class Http extends dispatch.HttpExecutor {
       underlying.cancel(true)
     }
   }
-  class ExceptionFuture[T](e: Exception) extends dispatch.futures.StoppableFuture[T] {
-    def apply() = throw e
+  /* substitute future used for blocking consumers */
+  trait SubstituteFuture[T] extends dispatch.futures.StoppableFuture[T] {
     def isSet = true
     def stop() {  }
   }
-  class FinishedFuture[T](item: T) extends dispatch.futures.StoppableFuture[T] {
+  class ExceptionFuture[T](e: Exception) extends SubstituteFuture[T] {
+    def apply() = throw e
+  }
+  class FinishedFuture[T](item: T) extends SubstituteFuture[T] {
     def apply() = item
-    def isSet = true
-    def stop() {  }
   }
 
   def execute[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 
@@ -126,6 +134,7 @@ class Http extends dispatch.HttpExecutor {
         def cancel() {
           entity.map { _.finish() }
         }
+        val catcher = Exc.nothingCatcher
       }
       new ConsumerFuture(
         client.execute(new Producer(host, req), consumer, new EmptyCallback[T]),
@@ -150,6 +159,7 @@ class Http extends dispatch.HttpExecutor {
         def completeResult(response: HttpResponse) = 
           callback.finish(response)
         def cancel() { }
+        val catcher = callback.catcher
       }
       new ConsumerFuture(
         client.execute(new Producer(host, req), consumer, new EmptyCallback[T]),
@@ -159,7 +169,11 @@ class Http extends dispatch.HttpExecutor {
   }
 
   def catching[T](catcher: Exc.Catcher[T], block: => HttpPackage[T]) =
-    Exc.catching(catcher.andThen { new FinishedFuture(_) })(block)
+    Exc.catching(catcher.andThen {
+      new FinishedFuture(_)
+    }).either(block).fold({
+        case e: Exception => new ExceptionFuture(e)
+    }, identity)
 
   def shutdown() {
     client.shutdown()
