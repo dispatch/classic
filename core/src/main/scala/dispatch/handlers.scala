@@ -6,15 +6,20 @@ import java.util.zip.GZIPInputStream
 import java.io.{InputStream,OutputStream}
 import scala.io.Source
 import collection.immutable.{Map => IMap}
+import util.control.Exception._
 
 /** Request handler, contains request descriptor and a function to transform the result. */
-case class Handler[T](request: Request, block: Handler.F[T]) {
+case class Handler[T](
+  request: Request, 
+  block: Handler.F[T], 
+  catcher: Catcher[T]
+) {
   /** @return new Handler composing after with this Handler's block */
-  def ~> [R](after: T => R) = Handler(request, (code, res, ent) => after(block(code,res,ent)))
+  def ~> [R](after: T => R) = copy(block=(code, res, ent) => after(block(code,res,ent)))
   /** Create a new handler with block that receives all response parameters and
       this handler's block converted to parameterless function. */
   def apply[R](next: (Int, HttpResponse, Option[HttpEntity], () => T) => R) =
-    new Handler(request, {(code, res, ent) =>
+    copy(block={(code, res, ent) =>
       next(code, res, ent, () => block(code, res, ent))
     })
 }
@@ -22,6 +27,8 @@ case class Handler[T](request: Request, block: Handler.F[T]) {
 object Handler { 
   type F[T] = (Int, HttpResponse, Option[HttpEntity]) => T
   /** Turns a simple entity handler in into a full response handler that fails if no entity */
+  def apply[T](req: Request, block: F[T]): Handler[T] = Handler(
+    req, block, nothingCatcher)
   def apply[T](req: Request, block: HttpEntity => T): Handler[T] = 
     Handler(req, { (code, res, ent) => ent match {
       case Some(ent) => block(ent) 
@@ -86,7 +93,7 @@ class HandlerVerbs(request: Request) {
 
   /** Split into two request handlers, return results of each in tuple. */
   def >+ [A, B] (block: HandlerVerbs => (Handler[A], Handler[B])) = {
-    new Handler[(A,B)] ( request, { (code, res, opt_ent) =>
+    Handler(request, { (code, res, opt_ent) =>
       val (a, b) = block(new HandlerVerbs( /\ ))
       (a.block(code, res, opt_ent), b.block(code,res,opt_ent))
     } )
@@ -94,7 +101,7 @@ class HandlerVerbs(request: Request) {
   /** Chain two request handlers. First handler returns a second, which may use
       values obtained by the first. Both are run on the same request. */
   def >+> [T] (block: HandlerVerbs => Handler[Handler[T]]) = {
-    new Handler[T] ( request, { (code, res, opt_ent) =>
+    Handler( request, { (code, res, opt_ent) =>
       (block(new HandlerVerbs( /\ ))).block(code, res, opt_ent).block(code, res, opt_ent)
     } )
   }

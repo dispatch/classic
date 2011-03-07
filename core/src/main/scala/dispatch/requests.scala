@@ -128,7 +128,7 @@ class RequestVerbs(subject: Request) {
   def >\ (charset: String) = subject.copy(defaultCharset=charset)
   
   /** Combine this request with another handler. */
-  def >& [T] (other: Handler[T]) = new Handler(this <& other.request, other.block)
+  def >& [T] (other: Handler[T]) = Handler(this <& other.request, other.block)
   
   /** Append an element to this request's path, joins with '/'. (mutates request) */
   def / (path: String) = subject.copy(
