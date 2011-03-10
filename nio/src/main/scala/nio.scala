@@ -36,11 +36,9 @@ class Http extends dispatch.HttpExecutor {
     @volatile var exception: Option[Exception] = None
     private def setException(e: Exception) {
       exception = Some(e)
-      catcher.lift(e).map { t =>
-        result = Some(t)
-      }
+      catcher.lift(e)
     }
-    val catcher: Exc.Catcher[T]
+    val catcher: dispatch.Handler.Exception
     final override def consumeContent(decoder: ContentDecoder, ioctrl: IOControl) {
       try {
         if (stopping || exception.isDefined) {
@@ -67,14 +65,14 @@ class Http extends dispatch.HttpExecutor {
           error("responseCompleted called but response unset")
         }))
       } catch {
-        case e: Exception => exception = Some(e)
+        case e: Exception => setException(e)
       }
     }
     def completeResult(response: HttpResponse): T
     // asynchttpclient would a lot rather we return null here than throw an exception
     def getResult: T = result.getOrElse(null.asInstanceOf[T])
     def failed(ex: Exception) {
-      exception = Some(ex)
+      setException(ex)
     }
   }
   class EmptyCallback[T] extends FutureCallback[T] {
@@ -168,12 +166,12 @@ class Http extends dispatch.HttpExecutor {
     }
   }
 
-  def catching[T](catcher: Exc.Catcher[T], block: => HttpPackage[T]) =
-    Exc.catching(catcher.andThen {
-      new FinishedFuture(_)
-    }).either(block).fold({
-        case e: Exception => new ExceptionFuture(e)
-    }, identity)
+  def catching[T](catcher: dispatch.Handler.Exception, block: => HttpPackage[T]) =
+    try {
+      block
+    } catch {
+        case e: Exception => catcher.lift(e); new ExceptionFuture(e)
+    }
 
   def shutdown() {
     client.shutdown()

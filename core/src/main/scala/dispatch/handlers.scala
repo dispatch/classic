@@ -12,7 +12,7 @@ import util.control.Exception._
 case class Handler[T](
   request: Request, 
   block: Handler.F[T], 
-  catcher: Catcher[T]
+  catcher: Handler.Exception
 ) {
   /** @return new Handler composing after with this Handler's block */
   def ~> [R](after: T => R) = copy(block=(code, res, ent) => after(block(code,res,ent)))
@@ -22,6 +22,7 @@ case class Handler[T](
     copy(block={(code, res, ent) =>
       next(code, res, ent, () => block(code, res, ent))
     })
+  def >! (catcher: Handler.Exception) = copy(catcher=catcher)
 }
 
 object Handler { 
@@ -37,6 +38,7 @@ object Handler {
         | If no response body is expected, use a handler such as 
         | HandlerVerbs#>| that does not require one.""".stripMargin.format(res))
     } } )
+  type Exception = PartialFunction[Throwable,Unit]
 }
 
 trait ImplicitHandlerVerbs {

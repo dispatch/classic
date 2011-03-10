@@ -19,7 +19,7 @@ trait HttpExecutor extends RequestLogging {
   def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
                              req: HttpRequestBase, block: Callback[T]): HttpPackage[T]
 
-  def catching[T](catcher: Exc.Catcher[T], block: => HttpPackage[T]): HttpPackage[T]
+  def catching[T](catcher: Handler.Exception, block: => HttpPackage[T]): HttpPackage[T]
 
   /** Execute full request-response handler, response in package. */
   final def x[T](hand: Handler[T]): HttpPackage[T] = x(hand.request)(hand.block)

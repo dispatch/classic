@@ -57,7 +57,7 @@ object Callback {
 case class Callback[T](request: Request, 
                   function: Callback.Function, 
                   finish: Callback.Finish[T],
-                  catcher: Catcher[T]) {
+                  catcher: Handler.Exception) {
   def ^> [T](finish: Callback.Finish[T]) = Callback(request, function, { res =>
     this.finish(res)
     finish(res)

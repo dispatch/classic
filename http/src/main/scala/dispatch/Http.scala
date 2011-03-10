@@ -40,10 +40,12 @@ trait BlockingHttp extends HttpExecutor with BlockingCallback {
   /** Defaults to dispatch.ConfiguredHttpClient(credentials), override to customize. */
   def make_client: HttpClient = new ConfiguredHttpClient(credentials)
 
-  def catching[T](catcher: Exc.Catcher[T], block: => HttpPackage[T]) =
-    Exc.catching(catcher.andThen { result =>
-      pack(new { def abort() {} }, result)
-    })(block)
+  def catching[T](catcher: Handler.Exception, block: => HttpPackage[T]) =
+    try {
+      block
+    } catch {
+      case e => catcher.lift(e); throw e
+    }
 
   /** Execute method for the given host. */
   private def execute(host: HttpHost, req: HttpRequestBase): HttpResponse = {
