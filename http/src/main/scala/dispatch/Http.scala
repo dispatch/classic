@@ -40,21 +40,24 @@ trait BlockingHttp extends HttpExecutor with BlockingCallback {
   /** Defaults to dispatch.ConfiguredHttpClient(credentials), override to customize. */
   def make_client: HttpClient = new ConfiguredHttpClient(credentials)
 
-  def catching[T](block: => HttpPackage[T]) = block
-
   /** Execute method for the given host. */
   private def execute(host: HttpHost, req: HttpRequestBase): HttpResponse = {
     client.execute(host, req)
   }
   /** Execute for given optional parameters, with logging. Creates local scope for credentials. */
-  def execute[T](host: HttpHost, credsopt: Option[Credentials], 
-                 req: HttpRequestBase, block: HttpResponse => T) =
-    pack(req, block(
-      credsopt.map { creds =>
+  def execute[T](host: HttpHost,
+                 credsopt: Option[Credentials], 
+                 req: HttpRequestBase,
+                 block: HttpResponse => T,
+                 catcher: Exc.Catcher[Unit]) =
+    pack(req, try {
+      block(credsopt.map { creds =>
         credentials.withValue(Some((
           new AuthScope(host.getHostName, host.getPort), creds)
         ))(execute(host, req))
-      } getOrElse { execute(host, req) }
-    ))
+      } getOrElse { execute(host, req) })
+    } catch {
+      case e => catcher.lift(e); throw e
+    })
   def pack[T](req: { def abort() }, result: => T): HttpPackage[T]
 }

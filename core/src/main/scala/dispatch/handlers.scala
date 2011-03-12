@@ -16,7 +16,7 @@ case class Handler[T](
 ) {
   /** @return new Handler composing after with this Handler's block */
   def ~> [R](after: T => R) = copy(block=(code, res, ent) => after(block(code,res,ent)))
-  def >!(catcher: Catcher[Unit]) = this.copy(catcher = catcher)
+  def >!(c: Catcher[Unit]) = this.copy(catcher = c)
   /** Create a new handler with block that receives all response parameters and
       this handler's block converted to parameterless function. */
   def apply[R](next: (Int, HttpResponse, Option[HttpEntity], () => T) => R) =

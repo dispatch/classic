@@ -13,20 +13,23 @@ trait HttpExecutor extends RequestLogging {
   /** Type of value returned from request execution */
   type HttpPackage[T]
   /** Execute the request against an HttpClient */
-  def execute[T](host: HttpHost, creds: Option[Credentials], 
-                 req: HttpRequestBase, block: HttpResponse => T): HttpPackage[T]
+  def execute[T](host: HttpHost, 
+                 creds: Option[Credentials], 
+                 req: HttpRequestBase, 
+                 block: HttpResponse => T,
+                 catcher: Exc.Catcher[Unit]): HttpPackage[T]
 
   def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
                              req: HttpRequestBase, block: Callback[T]): HttpPackage[T]
 
-  def catching[T](block: => HttpPackage[T]): HttpPackage[T]
-
-  /** Execute full request-response handler, response in package. */
-  final def x[T](hand: Handler[T]): HttpPackage[T] =
-    x(hand.request)(hand.block)
-  /** Execute request with handler, response in package. */
+  /** Execute request with handler function, response in package. */
   final def x[T](req: Request)(block: Handler.F[T]): HttpPackage[T] = {
-    val request = make_message(req)
+    x(Handler(req, block))
+  }
+  /** Execute full request-response handler, response in package. */
+  final def x[T](hand: Handler[T]): HttpPackage[T] = {
+    val req = hand.request
+    val request = make_message(hand.request)
     log.info("%s %s", req.host.getHostName, request.getRequestLine)
     req.headers.reverse.foreach {
       case (key, value) => request.addHeader(key, value)
@@ -36,24 +39,22 @@ trait HttpExecutor extends RequestLogging {
         case null => None
         case ent => Some(ent)
       }
-      block(res.getStatusLine.getStatusCode, res, ent)
-    })
+      hand.block(res.getStatusLine.getStatusCode, res, ent)
+    }, hand.catcher)
   }
   /** Apply Response Handler if reponse code returns true from chk. */
-  final def when[T](chk: Int => Boolean)(hand: Handler[T]) = x(hand.request) {
-    case (code, res, ent) if chk(code) => hand.block(code, res, ent)
-    case (code, _, Some(ent)) => 
-      throw StatusCode(code, EntityUtils.toString(ent, hand.request.defaultCharset))
-    case (code, _, _)         => 
-      throw StatusCode(code, "[no entity]")
-  }
-
+  final def when[T](chk: Int => Boolean)(hand: Handler[T]) = 
+    x(hand.copy(block= {
+      case (code, res, ent) if chk(code) => hand.block(code, res, ent)
+      case (code, _, Some(ent)) => 
+        throw StatusCode(code, EntityUtils.toString(ent, hand.request.defaultCharset))
+      case (code, _, _)         => 
+        throw StatusCode(code, "[no entity]")
+    }))
   
   /** Apply handler block when response code is 200 - 204 */
-  final def apply[T](hand: Handler[T]): HttpPackage[T] = catching { 
+  final def apply[T](hand: Handler[T]): HttpPackage[T] = 
     (this when {code => (200 to 204) contains code})(hand)
-  }
-
 
   def make_message(req: Request) = {
     req.method.toUpperCase match {
@@ -87,7 +88,7 @@ trait BlockingCallback { self: HttpExecutor =>
                              credsopt: Option[Credentials], 
                              req: HttpRequestBase, 
                              callback:  Callback[T]): HttpPackage[T] =
-    catching { execute(host, credsopt, req, { res =>
+    execute(host, credsopt, req, { res =>
       res.getEntity match {
         case null => callback.finish(res)
         case entity =>
@@ -99,7 +100,7 @@ trait BlockingCallback { self: HttpExecutor =>
           stm.close()
           callback.finish(res)
       }
-    }) }
+    }, callback.catcher)
 }
 
 case class StatusCode(code: Int, contents:String)

@@ -31,14 +31,15 @@ class Http extends dispatch.HttpExecutor {
 
   type HttpPackage[T] = dispatch.futures.StoppableFuture[T]
 
-  trait StoppableConsumer[T] extends HttpAsyncResponseConsumer[T] {
+  abstract class StoppableConsumer[T](
+    catcher: Exc.Catcher[Unit]
+  ) extends HttpAsyncResponseConsumer[T] {
     @volatile var stopping = false
     @volatile var exception: Option[Exception] = None
     private def setException(e: Exception) {
       exception = Some(e)
       catcher.lift(e)
     }
-    val catcher: Exc.Catcher[Unit]
     final override def consumeContent(decoder: ContentDecoder, ioctrl: IOControl) {
       try {
         if (stopping || exception.isDefined) {
@@ -65,14 +66,14 @@ class Http extends dispatch.HttpExecutor {
           error("responseCompleted called but response unset")
         }))
       } catch {
-        case e: Exception => exception = Some(e)
+        case e: Exception => setException(e)
       }
     }
     def completeResult(response: HttpResponse): T
     // asynchttpclient would a lot rather we return null here than throw an exception
     def getResult: T = result.getOrElse(null.asInstanceOf[T])
     def failed(ex: Exception) {
-      exception = Some(ex)
+      setException(ex)
     }
   }
   class EmptyCallback[T] extends FutureCallback[T] {
@@ -99,45 +100,53 @@ class Http extends dispatch.HttpExecutor {
     def isSet = true
     def stop() {  }
   }
-  class ExceptionFuture[T](e: Exception) extends SubstituteFuture[T] {
+  class ExceptionFuture[T](e: Throwable) extends SubstituteFuture[T] {
     def apply() = throw e
   }
   class FinishedFuture[T](item: T) extends SubstituteFuture[T] {
     def apply() = item
   }
 
-  def execute[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 
-                 req: HttpRequestBase, block: HttpResponse => T) = {
+  def execute[T](host: HttpHost, 
+                 credsopt: Option[dispatch.Credentials], 
+                 req: HttpRequestBase, 
+                 block: HttpResponse => T,
+                 catcher: Exc.Catcher[Unit]) = {
     credsopt.map { creds =>
       error("Not yet implemented, but you can force basic auth with as_!")
     } getOrElse {
-      val consumer = new StoppableConsumer[T] {
-        @volatile var entity: Option[ConsumingNHttpEntity] = None
-        def consume(decoder: ContentDecoder, ioctrl: IOControl) { synchronized {
-          entity = entity.orElse {
-            for {
-              res <- response
-              ent <- Option(res.getEntity)
-            } yield (new BufferingNHttpEntity(ent, new HeapByteBufferAllocator))
+      try {
+        val consumer = new StoppableConsumer[T](catcher) {
+          @volatile var entity: Option[ConsumingNHttpEntity] = None
+          def consume(decoder: ContentDecoder, ioctrl: IOControl) { synchronized {
+            entity = entity.orElse {
+              for {
+                res <- response
+                ent <- Option(res.getEntity)
+              } yield (new BufferingNHttpEntity(ent, new HeapByteBufferAllocator))
+            }
+            entity.map { _.consumeContent(decoder, ioctrl) }
+          } }
+          def completeResult(res: HttpResponse) = {
+            for (ent <- entity) {
+              res.setEntity(ent)
+              ent.finish()
+            }
+            block(res)
           }
-          entity.map { _.consumeContent(decoder, ioctrl) }
-        } }
-        def completeResult(res: HttpResponse) = {
-          for (ent <- entity) {
-            res.setEntity(ent)
-            ent.finish()
+          def cancel() {
+            entity.map { _.finish() }
           }
-          block(res)
         }
-        def cancel() {
-          entity.map { _.finish() }
-        }
-        val catcher = Exc.nothingCatcher
+        new ConsumerFuture(
+          client.execute(new Producer(host, req), consumer, new EmptyCallback[T]),
+          consumer
+        )
+      } catch {
+        case e => 
+          catcher.lift(e)
+          new ExceptionFuture(e)
       }
-      new ConsumerFuture(
-        client.execute(new Producer(host, req), consumer, new EmptyCallback[T]),
-        consumer
-      )
     }
   }
   
@@ -147,7 +156,7 @@ class Http extends dispatch.HttpExecutor {
       error("Not yet implemented, but you can force basic auth with as_!")
     } getOrElse {
       val ioc = DecodingCallback(callback)
-      val consumer = new StoppableConsumer[T] {
+      val consumer = new StoppableConsumer[T](callback.catcher) {
         override def responseReceived(res: HttpResponse) {
           response = Some(res)
         }
@@ -157,7 +166,6 @@ class Http extends dispatch.HttpExecutor {
         def completeResult(response: HttpResponse) = 
           callback.finish(response)
         def cancel() { }
-        val catcher = callback.catcher
       }
       new ConsumerFuture(
         client.execute(new Producer(host, req), consumer, new EmptyCallback[T]),
@@ -165,13 +173,6 @@ class Http extends dispatch.HttpExecutor {
       )
     }
   }
-
-  def catching[T](block: => HttpPackage[T]) =
-    try {
-      block
-    } catch {
-        case e: Exception => new ExceptionFuture(e)
-    }
 
   def shutdown() {
     client.shutdown()
