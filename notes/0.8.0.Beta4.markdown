@@ -1,0 +1,5 @@
+* restored `<<(s: String)` method
+* give lift-json a Reader instead of String
+* fix double logging in Http
+* support PUT for encoded form values
+* Exception listeners `>!` for handlers and `^!` callbacks
