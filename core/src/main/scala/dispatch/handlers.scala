@@ -12,11 +12,11 @@ import util.control.Exception._
 case class Handler[T](
   request: Request, 
   block: Handler.F[T], 
-  listener: Catcher[Unit]
+  listener: ExceptionListener
 ) {
   /** @return new Handler composing after with this Handler's block */
   def ~> [R](after: T => R) = copy(block=(code, res, ent) => after(block(code,res,ent)))
-  def >!(listener: Catcher[Unit]) = this.copy(listener = listener)
+  def >!(listener: ExceptionListener) = this.copy(listener = listener)
   /** Create a new handler with block that receives all response parameters and
       this handler's block converted to parameterless function. */
   def apply[R](next: (Int, HttpResponse, Option[HttpEntity], () => T) => R) =

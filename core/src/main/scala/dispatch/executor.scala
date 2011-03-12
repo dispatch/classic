@@ -4,7 +4,6 @@ import org.apache.http.{HttpHost,HttpRequest,HttpResponse,HttpEntity}
 import org.apache.http.message.AbstractHttpMessage
 import org.apache.http.util.EntityUtils
 import org.apache.http.client.methods._
-import util.control.{Exception => Exc}
 
 /** Defines request execution and response status code behaviors. Implemented methods are finalized
     as any overrides would be lost when instantiating delegate executors, is in Threads#future. 
@@ -17,7 +16,7 @@ trait HttpExecutor extends RequestLogging {
                  creds: Option[Credentials], 
                  req: HttpRequestBase, 
                  block: HttpResponse => T,
-                 listener: Exc.Catcher[Unit]): HttpPackage[T]
+                 listener: ExceptionListener): HttpPackage[T]
 
   def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
                              req: HttpRequestBase, block: Callback[T]): HttpPackage[T]

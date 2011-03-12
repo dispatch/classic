@@ -1,6 +1,6 @@
 package dispatch.nio
 
-import dispatch.{Callback,Request}
+import dispatch.{Callback,Request,ExceptionListener}
 import org.apache.http.{HttpHost,HttpRequest,HttpResponse,HttpEntity,HttpException}
 import org.apache.http.message.BasicHttpEntityEnclosingRequest
 import org.apache.http.protocol._
@@ -15,7 +15,6 @@ import org.apache.http.nio.concurrent.FutureCallback
 import org.apache.http.nio.util.HeapByteBufferAllocator
 import java.util.concurrent.Future
 import java.io.IOException
-import util.control.{Exception=>Exc}
 
 object Http {
   val socket_buffer_size = 8 * 1024
@@ -32,7 +31,7 @@ class Http extends dispatch.HttpExecutor {
   type HttpPackage[T] = dispatch.futures.StoppableFuture[T]
 
   abstract class StoppableConsumer[T](
-    listener: Exc.Catcher[Unit]
+    listener: ExceptionListener
   ) extends HttpAsyncResponseConsumer[T] {
     @volatile var stopping = false
     @volatile var exception: Option[Exception] = None
@@ -111,7 +110,7 @@ class Http extends dispatch.HttpExecutor {
                  credsopt: Option[dispatch.Credentials], 
                  req: HttpRequestBase, 
                  block: HttpResponse => T,
-                 listener: Exc.Catcher[Unit]) = {
+                 listener: ExceptionListener) = {
     credsopt.map { creds =>
       error("Not yet implemented, but you can force basic auth with as_!")
     } getOrElse {

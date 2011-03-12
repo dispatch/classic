@@ -49,7 +49,7 @@ trait BlockingHttp extends HttpExecutor with BlockingCallback {
                  credsopt: Option[Credentials], 
                  req: HttpRequestBase,
                  block: HttpResponse => T,
-                 catcher: Exc.Catcher[Unit]) =
+                 listener: ExceptionListener) =
     pack(req, try {
       block(credsopt.map { creds =>
         credentials.withValue(Some((
@@ -57,7 +57,7 @@ trait BlockingHttp extends HttpExecutor with BlockingCallback {
         ))(execute(host, req))
       } getOrElse { execute(host, req) })
     } catch {
-      case e => catcher.lift(e); throw e
+      case e => listener.lift(e); throw e
     })
   def pack[T](req: { def abort() }, result: => T): HttpPackage[T]
 }
