@@ -57,12 +57,12 @@ object Callback {
 case class Callback[T](request: Request,
                        function: Callback.Function, 
                        finish: Callback.Finish[T],
-                       catcher: Catcher[Unit]) {
+                       listener: Catcher[Unit]) {
   def ^> [T](finish: Callback.Finish[T]) = copy(finish={ res =>
     this.finish(res)
     finish(res)
   })
-  def ^!(catcher: Catcher[Unit]) = this.copy(catcher = catcher)
+  def ^!(listener: Catcher[Unit]) = this.copy(listener = listener)
 }
 
 trait ImplicitCallbackVerbs {

@@ -17,7 +17,7 @@ trait HttpExecutor extends RequestLogging {
                  creds: Option[Credentials], 
                  req: HttpRequestBase, 
                  block: HttpResponse => T,
-                 catcher: Exc.Catcher[Unit]): HttpPackage[T]
+                 listener: Exc.Catcher[Unit]): HttpPackage[T]
 
   def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
                              req: HttpRequestBase, block: Callback[T]): HttpPackage[T]
@@ -40,7 +40,7 @@ trait HttpExecutor extends RequestLogging {
         case ent => Some(ent)
       }
       hand.block(res.getStatusLine.getStatusCode, res, ent)
-    }, hand.catcher)
+    }, hand.listener)
   }
   /** Apply Response Handler if reponse code returns true from chk. */
   final def when[T](chk: Int => Boolean)(hand: Handler[T]) = 
@@ -100,7 +100,7 @@ trait BlockingCallback { self: HttpExecutor =>
           stm.close()
           callback.finish(res)
       }
-    }, callback.catcher)
+    }, callback.listener)
 }
 
 case class StatusCode(code: Int, contents:String)

@@ -32,13 +32,13 @@ class Http extends dispatch.HttpExecutor {
   type HttpPackage[T] = dispatch.futures.StoppableFuture[T]
 
   abstract class StoppableConsumer[T](
-    catcher: Exc.Catcher[Unit]
+    listener: Exc.Catcher[Unit]
   ) extends HttpAsyncResponseConsumer[T] {
     @volatile var stopping = false
     @volatile var exception: Option[Exception] = None
     private def setException(e: Exception) {
       exception = Some(e)
-      catcher.lift(e)
+      listener.lift(e)
     }
     final override def consumeContent(decoder: ContentDecoder, ioctrl: IOControl) {
       try {
@@ -111,12 +111,12 @@ class Http extends dispatch.HttpExecutor {
                  credsopt: Option[dispatch.Credentials], 
                  req: HttpRequestBase, 
                  block: HttpResponse => T,
-                 catcher: Exc.Catcher[Unit]) = {
+                 listener: Exc.Catcher[Unit]) = {
     credsopt.map { creds =>
       error("Not yet implemented, but you can force basic auth with as_!")
     } getOrElse {
       try {
-        val consumer = new StoppableConsumer[T](catcher) {
+        val consumer = new StoppableConsumer[T](listener) {
           @volatile var entity: Option[ConsumingNHttpEntity] = None
           def consume(decoder: ContentDecoder, ioctrl: IOControl) { synchronized {
             entity = entity.orElse {
@@ -144,7 +144,7 @@ class Http extends dispatch.HttpExecutor {
         )
       } catch {
         case e => 
-          catcher.lift(e)
+          listener.lift(e)
           new ExceptionFuture(e)
       }
     }
@@ -156,7 +156,7 @@ class Http extends dispatch.HttpExecutor {
       error("Not yet implemented, but you can force basic auth with as_!")
     } getOrElse {
       val ioc = DecodingCallback(callback)
-      val consumer = new StoppableConsumer[T](callback.catcher) {
+      val consumer = new StoppableConsumer[T](callback.listener) {
         override def responseReceived(res: HttpResponse) {
           response = Some(res)
         }
