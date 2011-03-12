@@ -54,14 +54,15 @@ object Callback {
   def lines[T] = stringsBy[T]("[\n\r]+")_
 }
 
-case class Callback[T](request: Request, 
-                  function: Callback.Function, 
-                  finish: Callback.Finish[T],
-                  catcher: Catcher[T]) {
-  def ^> [T](finish: Callback.Finish[T]) = Callback(request, function, { res =>
+case class Callback[T](request: Request,
+                       function: Callback.Function, 
+                       finish: Callback.Finish[T],
+                       catcher: Catcher[Unit]) {
+  def ^> [T](finish: Callback.Finish[T]) = copy(finish={ res =>
     this.finish(res)
     finish(res)
   })
+  def ^!(catcher: Catcher[Unit]) = this.copy(catcher = catcher)
 }
 
 trait ImplicitCallbackVerbs {

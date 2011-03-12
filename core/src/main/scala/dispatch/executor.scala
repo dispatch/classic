@@ -19,12 +19,13 @@ trait HttpExecutor extends RequestLogging {
   def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
                              req: HttpRequestBase, block: Callback[T]): HttpPackage[T]
 
-  def catching[T](catcher: Exc.Catcher[T], block: => HttpPackage[T]): HttpPackage[T]
+  def catching[T](block: => HttpPackage[T]): HttpPackage[T]
 
   /** Execute full request-response handler, response in package. */
-  final def x[T](hand: Handler[T]): HttpPackage[T] = x(hand.request)(hand.block)
+  final def x[T](hand: Handler[T]): HttpPackage[T] =
+    x(hand.request)(hand.block)
   /** Execute request with handler, response in package. */
-  final def x[T](req: Request)(block: Handler.F[T]) = {
+  final def x[T](req: Request)(block: Handler.F[T]): HttpPackage[T] = {
     val request = make_message(req)
     log.info("%s %s", req.host.getHostName, request.getRequestLine)
     req.headers.reverse.foreach {
@@ -49,9 +50,9 @@ trait HttpExecutor extends RequestLogging {
 
   
   /** Apply handler block when response code is 200 - 204 */
-  final def apply[T](hand: Handler[T]): HttpPackage[T] = catching(hand.catcher, { 
+  final def apply[T](hand: Handler[T]): HttpPackage[T] = catching { 
     (this when {code => (200 to 204) contains code})(hand)
-  })
+  }
 
 
   def make_message(req: Request) = {
@@ -82,9 +83,11 @@ trait HttpExecutor extends RequestLogging {
 }
 
 trait BlockingCallback { self: HttpExecutor =>
-  def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
-                             req: HttpRequestBase, callback:  Callback[T]): HttpPackage[T] =
-    catching(callback.catcher, execute(host, credsopt, req, { res =>
+  def executeWithCallback[T](host: HttpHost, 
+                             credsopt: Option[Credentials], 
+                             req: HttpRequestBase, 
+                             callback:  Callback[T]): HttpPackage[T] =
+    catching { execute(host, credsopt, req, { res =>
       res.getEntity match {
         case null => callback.finish(res)
         case entity =>
@@ -96,7 +99,7 @@ trait BlockingCallback { self: HttpExecutor =>
           stm.close()
           callback.finish(res)
       }
-    }))
+    }) }
 }
 
 case class StatusCode(code: Int, contents:String)

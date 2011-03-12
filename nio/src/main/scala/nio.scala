@@ -36,11 +36,9 @@ class Http extends dispatch.HttpExecutor {
     @volatile var exception: Option[Exception] = None
     private def setException(e: Exception) {
       exception = Some(e)
-      catcher.lift(e).map { t =>
-        result = Some(t)
-      }
+      catcher.lift(e)
     }
-    val catcher: Exc.Catcher[T]
+    val catcher: Exc.Catcher[Unit]
     final override def consumeContent(decoder: ContentDecoder, ioctrl: IOControl) {
       try {
         if (stopping || exception.isDefined) {
@@ -168,12 +166,12 @@ class Http extends dispatch.HttpExecutor {
     }
   }
 
-  def catching[T](catcher: Exc.Catcher[T], block: => HttpPackage[T]) =
-    Exc.catching(catcher.andThen {
-      new FinishedFuture(_)
-    }).either(block).fold({
+  def catching[T](block: => HttpPackage[T]) =
+    try {
+      block
+    } catch {
         case e: Exception => new ExceptionFuture(e)
-    }, identity)
+    }
 
   def shutdown() {
     client.shutdown()

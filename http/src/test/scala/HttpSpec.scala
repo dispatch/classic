@@ -46,10 +46,10 @@ object HttpSpec extends Specification {
       http (test / "do_not_want" as_str) must throwA[StatusCode]
     }
     "allow any status code with x" in {
-      http x (test / "do_not_want" as_str) {
+      (http x (test / "do_not_want" as_str) {
         case (404, _, _, out) => out()
         case _ => "success is failure"
-      } must include ("404 Not Found")
+      }) must include ("404 Not Found")
     }
     "serve a gzip header" in {
       http(test.gzip >:> { _(CONTENT_ENCODING) }) must_== (Set("gzip"))
