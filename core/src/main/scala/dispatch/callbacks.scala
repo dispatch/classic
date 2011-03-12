@@ -62,6 +62,7 @@ case class Callback[T](request: Request,
     this.finish(res)
     finish(res)
   })
+  /** Set an exception listener */
   def ^!(listener: ExceptionListener) = this.copy(listener = listener)
 }
 

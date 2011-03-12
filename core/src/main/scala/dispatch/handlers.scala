@@ -16,6 +16,7 @@ case class Handler[T](
 ) {
   /** @return new Handler composing after with this Handler's block */
   def ~> [R](after: T => R) = copy(block=(code, res, ent) => after(block(code,res,ent)))
+  /** Set an exception listener */
   def >!(listener: ExceptionListener) = this.copy(listener = listener)
   /** Create a new handler with block that receives all response parameters and
       this handler's block converted to parameterless function. */
