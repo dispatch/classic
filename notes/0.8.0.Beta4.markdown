@@ -2,4 +2,4 @@
 * give lift-json a Reader instead of String
 * fix double logging in Http
 * support PUT for encoded form values
-* Exception listeners `>!` for handlers and `^!` callbacks
+* Exception listeners `>!` for handlers and `^!` for callbacks
