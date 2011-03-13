@@ -1,6 +1,9 @@
-* restored `<<(s: String)` method
-* give lift-json a Reader instead of String
-* fix double logging in Http
-* support PUT for encoded form values
+* Restored the [<<(s: String)][post] term
+* Provide lift-json's parser a Reader instead of String
+* Fix double logging in Http
+* Support PUT for encoded form values
 * Exception listeners `>!` for handlers and `^!` for callbacks
-* `HttpsLeniency` trait to trust all SSL certs (men-in-the-middle rejoice)
+* [HttpsLeniency][hl] trait to trust all SSL certs (men-in-the-middle rejoice)
+
+[post]: http://sourced.implicit.ly/net.databinder/dispatch-core/0.8.0.Beta4/dispatch/requests.scala.html#26247
+[hl]: http://sourced.implicit.ly/net.databinder/dispatch-http/0.8.0.Beta4/dispatch/https.scala.html#9369
