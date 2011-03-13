@@ -3,3 +3,4 @@
 * fix double logging in Http
 * support PUT for encoded form values
 * Exception listeners `>!` for handlers and `^!` for callbacks
+* `HttpsLeniency` trait to trust all SSL certs (men-in-the-middle rejoice)
