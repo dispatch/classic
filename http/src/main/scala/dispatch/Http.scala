@@ -59,5 +59,6 @@ trait BlockingHttp extends HttpExecutor with BlockingCallback {
     } catch {
       case e => listener.lift(e); throw e
     })
+  /** Potentially wraps payload, e.g. in a Future */
   def pack[T](req: { def abort() }, result: => T): HttpPackage[T]
 }

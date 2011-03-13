@@ -41,10 +41,7 @@ class ThreadSafeHttpClient(
   import org.apache.http.conn.ssl.SSLSocketFactory
   import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
   override def createClientConnectionManager = {
-    val registry = new SchemeRegistry()
-    registry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()))
-    registry.register(new Scheme("https", 443, SSLSocketFactory.getSocketFactory()))
-    val cm = new ThreadSafeClientConnManager(registry)
+    val cm = new ThreadSafeClientConnManager()
     cm.setMaxTotal(maxConnections)
     cm.setDefaultMaxPerRoute(maxConnectionsPerRoute)
     cm
