@@ -42,7 +42,7 @@ object Search extends Js {
   val from_user = 'from_user ? str
 }
 
-object Status extends Request(Twitter.host / "statuses") {
+object Status extends Request(Twitter.host / "1" / "statuses") {
   private def public_timeline = this / "public_timeline.json" ># (list ! obj)
 
   def friends_timeline(consumer: Consumer, token: Token, params: (String, String)*) =
