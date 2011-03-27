@@ -38,7 +38,8 @@ object OAuth {
       new TreeMap[String, String] ++ (user_params ++ oauth_params map %%)
     ) map { case (k, v) => k + "=" + v } mkString "&"
     
-    val message = %%(method :: url :: encoded_ordered_params :: Nil)
+    val message = 
+      %%(method.toUpperCase :: url :: encoded_ordered_params :: Nil)
     
     val SHA1 = "HmacSHA1"
     val key_str = %%(consumer.secret :: (token map { _.secret } getOrElse "") :: Nil)
