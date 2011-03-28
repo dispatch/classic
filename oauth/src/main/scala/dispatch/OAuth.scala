@@ -40,7 +40,7 @@ object OAuth {
     
     val message = 
       %%(method.toUpperCase :: url :: encoded_ordered_params :: Nil)
-    
+
     val SHA1 = "HmacSHA1"
     val key_str = %%(consumer.secret :: (token map { _.secret } getOrElse "") :: Nil)
     val key = new crypto.spec.SecretKeySpec(bytes(key_str), SHA1)
@@ -92,12 +92,13 @@ object OAuth {
     private def sign(consumer: Consumer, token: Option[Token], verifier: Option[String], callback: Option[String]) = {
       val oauth_url = r.to_uri.toString.split('?')(0)
       val query_params = split_decode(r.to_uri.getRawQuery)
-      val oauth_params = OAuth.sign(r.method, oauth_url, query_params ++ (
-        r.body.toList.flatMap { 
-          case ent: FormEntity => ent.oauth_params
-          case _ => Nil
-        }
-      ), consumer, token, verifier, callback)
+      val form_params = r.body.toList.flatMap { 
+        case ent: FormEntity => ent.oauth_params
+        case _ => Nil
+      }
+      val oauth_params = OAuth.sign(r.method, oauth_url, 
+                                    query_params ++ form_params,
+                                    consumer, token, verifier, callback)
       r <:< IMap("Authorization" -> ("OAuth " + oauth_params.map { 
         case (k, v) => (encode_%(k)) + "=\"%s\"".format(encode_%(v))
       }.mkString(",") ))

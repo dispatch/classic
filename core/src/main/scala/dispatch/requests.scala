@@ -169,7 +169,7 @@ class RequestVerbs(subject: Request) {
     ),
     "application/x-www-form-urlencoded",
     subject.defaultCharset
-  ) {
+  ) with FormEntity {
     def add(values: Traversable[(String, String)]) = 
       new UrlEncodedFormEntity(oauth_params ++ values)
   }
@@ -222,10 +222,10 @@ class RequestVerbs(subject: Request) {
 
 /** Used within dispatch for entites that have "form" name value pairs,
  *  whether form-urlencoded or multipart mime. */
-trait FormEntity {
+trait FormEntity extends HttpEntity {
   /** Should only return values that belong in an oauth signature */
   def oauth_params: Traversable[(String, String)]
-  def add(values: Traversable[(String, String)]): this.type
+  def add(values: Traversable[(String, String)]): FormEntity
 }
 
 /** Nil request, useful to kick off a descriptors that don't have a factory. */
