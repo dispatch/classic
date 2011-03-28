@@ -361,7 +361,7 @@ private[meetup] class PhotoUploadBuilder(photo: Option[File], params: Map[String
 /** /2/photos API */
 object Photos extends PhotosBuilder(Map.empty[String, String])
 private[meetup] class PhotosBuilder(params: Map[String, String]) extends QueryMethod {
-  private def param(key: String)(value: Any) = new PhotosBuilder(params + (key -> value.toString))
+  private def param(key: String)(value: String) = new PhotosBuilder(params + (key -> value))
 
   val event_id = param("event_id")_
   val group_id = param("group_id")_

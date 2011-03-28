@@ -54,7 +54,7 @@ object MeetupSpec extends Specification {
       implicit val http = new Http
       "find NYSE members" in {
         val NYSE = "ny-scala"
-        val (res, meta) = Http(client.handle(Members.group_urlname(NYSE)))
+        val (res, meta) = client.call(Members.group_urlname(NYSE))
         val ids = for (r <- res; id <- Member.id(r)) yield id
         ids.size must be > (5)
       }
@@ -62,7 +62,7 @@ object MeetupSpec extends Specification {
     "Photos query" should {
       implicit val http = new Http
       "Find North East Scala Symposium photos" in {
-        val (res, _) = Http(client.handle(Photos.event_id(15526582)))
+        val (res, _) = client.call(Photos.event_id(15526582))
         val photos = for {
           r <- res
           id <- Photo.photo_id(r)
