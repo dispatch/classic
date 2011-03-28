@@ -27,7 +27,7 @@ class DispatchProject(info: ProjectInfo)
   }, d_http)
 
   lazy val lift_json = project("lift-json", "Dispatch lift-json", new DispatchModule(_) {
-    val lift_json = "net.liftweb" %% "lift-json" % "2.2"
+    val lift_json = "net.liftweb" % "lift-json_2.8.1" % "2.2"
   }, core)
   lazy val oauth = project("oauth", "Dispatch OAuth", new DispatchModule(_), core)
   lazy val times = project("times", "Dispatch Times", new DispatchModule(_), d_http, json, http_json)
