@@ -364,10 +364,10 @@ private[meetup] class PhotosBuilder(params: Map[String, String]) extends QueryMe
   private def param(key: String)(value: String) = new PhotosBuilder(params + (key -> value))
 
   val event_id = param("event_id")_
-  val group_id = param("group_id")_
-  val member_id = param("member_id")_
-  val photo_album_id = param("photo_album_id")_
-  val photo_id = param("photo_id")_
+  def group_id(id: Int) = param("group_id")(id.toString)
+  def member_id(id: Int) = param("member_id")(id.toString)
+  def photo_album_id(id: Int) = param("photo_album_id")(id.toString)
+  def photo_id(id: Int) = param("photo_id")(id.toString)
 
   def complete = _ / "2" / "photos" <<? params
 }

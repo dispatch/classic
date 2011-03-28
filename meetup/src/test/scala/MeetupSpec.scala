@@ -62,7 +62,7 @@ object MeetupSpec extends Specification {
     "Photos query" should {
       implicit val http = new Http
       "Find North East Scala Symposium photos" in {
-        val (res, _) = client.call(Photos.event_id(15526582))
+        val (res, _) = client.call(Photos.event_id("15526582"))
         val photos = for {
           r <- res
           id <- Photo.photo_id(r)
