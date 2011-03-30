@@ -228,18 +228,28 @@ trait FormEntity extends HttpEntity {
   def add(values: Traversable[(String, String)]): FormEntity
 }
 
-/** Nil request, useful to kick off a descriptors that don't have a factory. */
+/** Empty request, useful for request a descriptors that do not
+ *  define a host or base path. */
 object /\ extends Request(new HttpHost(""))
 
-/* Factory for requests from a host */
+/** An explicit function to create Requests from URL strings, the same
+ * as Request.strToRequest does implicitly when imported. */
+object url extends Function1[String, Request] {
+  def apply(str: String) = new Request(str)
+}
+
+/* Creates requests for a host. The string provided must be a
+ * hostname. See the `url` function for requests based on a URL. */
 object :/ {
+  /* Creates requests for a hostname and port */
   def apply(hostname: String, port: Int): Request = 
     new Request(new HttpHost(hostname, port))
 
+  /* Creates requests for a hostname and default port */
   def apply(hostname: String): Request = new Request(new HttpHost(hostname))
 }
 
-/** Factory for requests from a directory, prepends '/'. */
+/** Creates requests from a directory, prepends '/'. */
 object / extends ImplicitRequestVerbs {
   def apply(path: String) = /\ / path
 }
