@@ -234,7 +234,7 @@ object /\ extends Request(new HttpHost(""))
 
 /** An explicit function to create Requests from URL strings, the same
  * as Request.strToRequest does implicitly when imported. */
-object url extends Function1[String, Request] {
+object url extends (String => Request) {
   def apply(str: String) = new Request(str)
 }
 
