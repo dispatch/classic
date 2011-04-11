@@ -115,7 +115,7 @@ class RequestVerbs(subject: Request) {
     req.method,
     (subject.path, req.path) match {
       case (a, "/") => a
-      case (a, b) if a.endsWith("/") => a + b
+      case ("/", b) => b
       case (a, b) => a + b
     },
     req.headers ::: subject.headers,
