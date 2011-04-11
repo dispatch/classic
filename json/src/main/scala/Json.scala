@@ -118,7 +118,8 @@ object JsValue {
   }
 
   def fromString(s: String) = JsonParser(new CharArrayReader(s.toCharArray()))
-  def fromStream(s: InputStream) = JsonParser(StreamReader(new InputStreamReader(s)))
+  def fromStream(s: InputStream, charset: String = "utf-8") =
+    JsonParser(StreamReader(new InputStreamReader(s, charset)))
 
   def toJson(x: JsValue): String = x match {
     case JsNull => "null"

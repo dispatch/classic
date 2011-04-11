@@ -140,5 +140,7 @@ trait Js {
 object Js extends Js {
   def apply(): JsValue = JsObject()
   def apply(stream: java.io.InputStream): JsValue = JsValue.fromStream(stream)
+  def apply(stream: java.io.InputStream, charset: String) =
+    JsValue.fromStream(stream, charset)
   def apply(string: String): JsValue = JsValue.fromString(string)
 }
