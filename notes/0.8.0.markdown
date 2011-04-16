@@ -3,14 +3,13 @@ Overview
 
 This is a significant upgrade to Dispatch, adding preliminary support
 for the NIO HttpAsyncClient as a backend. Dispatch's internals have
-been refactored to provide the needed flexibility. Some of these are
-breaking changes. Lastly, Scala 2.7.x will not be supported in
-Dispatch 0.8.x.
+been refactored to provide the needed flexibility, with some breaking
+changes. And lastly, Scala 2.7.x is not supported in Dispatch 0.8.x.
 
 For these reasons, the Dispatch 0.7 line will continue as long as
-needed to support client applications. Bug fixes will be released in
-new 0.7 versions (by request) and 0.7 binaries will be back-published
-for use with new versions of Scala.
+needed by client applications. Bug fixes will be released in new 0.7
+versions (by request) and 0.7 binaries will be back-published for use
+with new versions of Scala.
 
 Core Module and NIO Support
 ---------------------------
@@ -18,8 +17,10 @@ Core Module and NIO Support
 In previous versions of Dispatch the lowest level HTTP module was
 `dispatch-http`, which depends on HttpComponents's HttpClient
 library. Since 0.8.0 adds support for the HttpComponents's nio-based
-HttpAsyncClient, there is a new core module that further abstracts
+[HttpAsyncClient][async], there is a new core module that further abstracts
 request definitions and handlers/callbacks from request executors.
+
+[async]: http://hc.apache.org/httpcomponents-asyncclient-dev/index.html
 
 * dispatch-core - requests, handlers, callbacks, and abstract
   executors
@@ -46,23 +47,23 @@ to `Request._`.
 
 This will enable all the useful implicit conversions that used to be
 in dispatch.Http (which is not in the core module). Because these are
-in the Request module, implicit conversions from Request objects will
-happen even if you don't import them. Usually. (It's complicated.) For
-migrations the simplest thing is to change your import; there are no
-implicits on Http so there is no reason to leave that import in code.
+in the Request module, most implicit conversions will happen even if
+you don't import them. But for migrations the simplest thing is to
+change your import; there are no implicits on Http so there is no
+reason to leave that import in code.
 
 ### Parameters are Traversable[(String, String)]
 
 Sorry, this one's going to sting a little. Parameters used to be
 Map[String, Any]. Traversable is more general, no problem there, but
-anywhere that your code is passing in a parameter (most commonly, to
+anywhere that your code is passing in a parameter value (e.g. to
 `<<` or `<<?`) whose is type `Any` you'll get a compiler error. If the
 value not actually a String just call toString on it, like Dispatch
 was doing before.
 
-The convenience of the old type was not worth the bugs it invited into
-compiled code. Specifically, discovering via a trace that you are
-posting something awful like
+The convenience of the old `Any` conversion was not worth the bugs it
+invited into compiled code. Specifically, discovering via a trace that
+you are POSTing something awful like
 
     [Ljava.lang.Object;@3c9076d
     
@@ -86,20 +87,27 @@ for API continuity.)
 Callbacks
 ---------
 
-A new callback interface serves as an alternative to handlers, for 
-applications that process responses as they arrive, line by line or
-by some custom division. Callbacks abstract across the implementation
-differences between the underlying `InputStream` and NIO interfaces,
-and are useful for using either with a streaming API.
+A new [Callback][callback] interface serves as an alternative to
+handlers, for applications that process responses as they arrive, line
+by line or by some custom division. Callbacks abstract across the
+implementation differences between the underlying `InputStream` and
+NIO interfaces and simply access to streaming APIs.
 
-The `dispatch-meetup` and `dispatch-twitter` modules both use callbacks 
-to handle streaming API responses. The example application [Twine][twine]
-has been adapted to demonstrate their use.
+[callback]: http://sourced.implicit.ly/net.databinder/dispatch-core/0.8.0/callbacks.scala.html#17814
 
+The [dispatch-meetup][meetup] and [dispatch-twitter][twitter] modules
+both use callbacks to handle streaming API responses. The example
+application [Twine][twine] has been adapted to demonstrate callbacks
+with Twitter's user stream.
+
+[meetup]: http://sourced.implicit.ly/net.databinder/dispatch-meetup/0.8.0/Streaming.scala.html
+[twitter]: http://sourced.implicit.ly/net.databinder/dispatch-twitter/0.8.0/Streaming.scala.html
 [twine]: http://github.com/n8han/dispatch-twine 
 
 Google App Engine
 -----------------
 
 Dispatch can be used under GAE with the new `http-gae` module and
-`dispatch.gae.Http` executor, contributed by Max Abramof.
+`dispatch.gae.Http` executor, contributed by [max4f][max4f].
+
+[max4f]: http://twitter.com/#!/max4f
