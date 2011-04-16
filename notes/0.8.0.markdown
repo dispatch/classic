@@ -77,6 +77,12 @@ extensions in other modules; the only difference is that `Request`
 can not implicitly convert to objects it doesn't know about, so you 
 will still need to import e.g. `OAuth._` to use its `<@` verb.
 
+Speaking of OAuth, its `<<?(token: Token)` method has been renamed 
+`with_token`, and similarly multipart-post methods in `Mime` are 
+all now `<<*` instead of `<<`. (It turns out that implicitly 
+overloaded methods are great for finding compiler bugs and bad 
+for API continuity.)
+
 Callbacks
 ---------
 
