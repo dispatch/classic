@@ -7,7 +7,6 @@ import dispatch.oauth.OAuth._
 
 import dispatch.liftjson.Js._
 import net.liftweb.json._
-import net.liftweb.json.JsonAST._
 
 import dispatch.mime.Mime._
 

@@ -4,7 +4,6 @@ import dispatch._
 
 import dispatch.liftjson.Js._
 import net.liftweb.json._
-import net.liftweb.json.JsonAST._
 
 import dispatch.mime.Mime._
 import dispatch.Request._

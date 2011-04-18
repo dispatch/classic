@@ -2,7 +2,6 @@ package dispatch.liftjson
 import dispatch._
 
 import net.liftweb.json._
-import JsonAST._
 import JsonDSL._
 
 import java.util.Date

@@ -5,6 +5,7 @@ class DispatchProject(info: ProjectInfo)
   extends ParentProject(info) 
   with posterous.Publish
   with gh.Issues
+  with IdeaProject
 {
   override def parallelExecution = true
 
@@ -23,11 +24,11 @@ class DispatchProject(info: ProjectInfo)
   lazy val http_json = project("http+json", "Dispatch HTTP JSON", new HttpProject(_), core, json)
   lazy val http_gae = project("http-gae", "Dispatch HTTP GAE", new HttpProject(_) {
     val bum_gae = "bumnetworks GAE artifacts" at "http://www.bumnetworks.com/gae"
-    val gae_api = "com.google.appengine" % "appengine-api-1.0-sdk" % "1.3.4"
+    val gae_api = "com.google.appengine" % "appengine-api-1.0-sdk" % "1.3.6"
   }, d_http)
 
   lazy val lift_json = project("lift-json", "Dispatch lift-json", new DispatchModule(_) {
-    val lift_json = "net.liftweb" % "lift-json_2.8.1" % "2.2"
+    val lift_json = "net.liftweb" % "lift-json_2.8.1" % "2.3"
   }, core)
   lazy val oauth = project("oauth", "Dispatch OAuth", new DispatchModule(_), core)
   lazy val times = project("times", "Dispatch Times", new DispatchModule(_), d_http, json, http_json)
@@ -52,10 +53,10 @@ class DispatchProject(info: ProjectInfo)
   val sxr_version = "0.2.3"
 
   override def managedStyle = ManagedStyle.Maven
-  val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
+  val publishTo = "Mimesis Nexus" at "http://10.101.0.202:8081/nexus/content/repositories/3rdparty/"
   Credentials(Path.userHome / ".ivy2" / ".credentials", log)
 
-  class DispatchModule(info: ProjectInfo) extends DefaultProject(info) with sxr.Publish {
+  class DispatchModule(info: ProjectInfo) extends DefaultProject(info) with sxr.Publish with IdeaProject {
     val specs = "org.scala-tools.testing" % "specs_2.8.1" % "1.6.7" % "test->default"
     override def packageSrcJar = defaultJarPath("-sources.jar")
     lazy val sourceArtifact = Artifact.sources(artifactID)
