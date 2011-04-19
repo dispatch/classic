@@ -23,8 +23,7 @@ class DispatchProject(info: ProjectInfo)
   lazy val json = project("json", "Dispatch JSON", new DispatchModule(_))
   lazy val http_json = project("http+json", "Dispatch HTTP JSON", new HttpProject(_), core, json)
   lazy val http_gae = project("http-gae", "Dispatch HTTP GAE", new HttpProject(_) {
-    val bum_gae = "bumnetworks GAE artifacts" at "http://www.bumnetworks.com/gae"
-    val gae_api = "com.google.appengine" % "appengine-api-1.0-sdk" % "1.3.6"
+    val gae_api = "com.google.appengine" % "appengine-api-1.0-sdk" % "1.4.3"
   }, d_http)
 
   lazy val lift_json = project("lift-json", "Dispatch lift-json", new DispatchModule(_) {
