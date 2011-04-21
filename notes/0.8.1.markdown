@@ -1,5 +1,8 @@
-
 Dependency Updates
 
 * lift-json 2.3
 * Google App Engine API 1.4.3
+
+Fixes
+
+* Use request default charset for multipart mime posts
