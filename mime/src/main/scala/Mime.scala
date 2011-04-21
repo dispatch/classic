@@ -46,9 +46,8 @@ object Mime {
       add(name, new InputStreamBody(stream(), file_name))
 
     private def mime_ent: Mime.Entity = {
-      val cs = Charset.forName(r.defaultCharset)
-      def newent = new MultipartEntity(null, null, cs) with Mime.Entity {
-        val charset = cs
+      def newent = new MultipartEntity with Mime.Entity {
+        val charset = Charset.forName(r.defaultCharset)
       }
       r.body.map {
         case ent: Mime.Entity => ent
