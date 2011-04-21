@@ -7,6 +7,7 @@ import org.apache.http.entity.mime.{FormBodyPart, MultipartEntity}
 import org.apache.http.entity.mime.content.{FileBody, StringBody, InputStreamBody, ContentBody}
 
 import java.io.{File, InputStream}
+import java.nio.charset.Charset
 
 /** Mime module for multipart form posting. Note that when using an InputStream generator, 
   chuncked encoding will be used with no Content-Length header and the stream will be closed
@@ -43,15 +44,17 @@ object Mime {
     /** Add stream generator to multipart post, will convert other post methods to multipart. */
     def <<* (name: String, file_name: String, stream: () => InputStream) = 
       add(name, new InputStreamBody(stream(), file_name))
-    
+
     private def mime_ent: Mime.Entity = {
+      val cs = Charset.forName(r.defaultCharset)
+      def newent = new MultipartEntity(null, null, cs) with Mime.Entity {
+        val charset = cs
+      }
       r.body.map {
         case ent: Mime.Entity => ent
-        case orig: FormEntity =>
-          (new MultipartEntity with Mime.Entity).add(orig.oauth_params)
+        case orig: FormEntity => newent.add(orig.oauth_params)
         case ent => error("trying to add multipart content to entity: " + ent)
-
-      } getOrElse new MultipartEntity with Mime.Entity
+      } getOrElse newent
     }
     def add(name: String, content: => ContentBody) = {
       val ent = mime_ent
@@ -66,13 +69,15 @@ object Mime {
   /** Post listener function. Called once with the total bytes; the function returned is
     called with the bytes uploaded at each kilobyte boundary, and when complete. */
   type ListenerF = Long => Long => Unit
-  trait Entity extends HttpEntity with FormEntity { 
+  trait Entity extends HttpEntity with FormEntity {
     def addPart(name: String, body: ContentBody)
     def add(values: Traversable[(String, String)]) = {
-      for ((name,value) <- values) addPart(name, new StringBody(value))
+      for ((name,value) <- values)
+        addPart(name, new StringBody(value, charset))
       this
     }
     def oauth_params = Nil
+    def charset: Charset
   }
   
   def mime_stream_parser[T](multipart_block: MultipartBlock[T])(content_type: String)(stm: InputStream) = {
@@ -103,6 +108,7 @@ object Mime {
 class CountingMultipartEntity(delegate: Mime.Entity, 
     listener_f: Mime.ListenerF) extends HttpEntityWrapper(delegate) with Mime.Entity {
   def addPart(name: String, body: ContentBody) { delegate.addPart(name, body) }
+  def charset = delegate.charset
   override def writeTo(out: OutputStream) {
     import scala.actors.Actor._
     super.writeTo(new FilterOutputStream(out) {
