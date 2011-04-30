@@ -8,3 +8,5 @@ project/boot
 project/plugins/project
 src_managed
 *.test.properties
+.idea
+*.iml

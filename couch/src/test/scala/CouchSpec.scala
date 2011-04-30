@@ -8,8 +8,8 @@ object CouchSpec extends Specification {
 
   val http = new Http
   val test = Db(Couch(), "test") // these tests expect CouchDB to be running at 127.0.0.1 on port 5984
-  val empty_doc = Doc(test, "empty_doc")
-  val full = Doc(test, "full")
+  val empty_doc = new Doc(test, "empty_doc")
+  val full = new Doc(test, "full")
   
   object Test extends Id {
     val content = 'content ? str

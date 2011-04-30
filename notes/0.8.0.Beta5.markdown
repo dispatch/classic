@@ -1,0 +1,5 @@
+OAuth signature in prior betas did not account for POST parameters,
+[reported][report] in the forum and fixed with this release. Published
+for Scala 2.8.0, 2.8.1, and 2.9.0.RC1.
+
+[report]: http://databinder.3617998.n2.nabble.com/Can-t-post-a-message-from-Dispatch-Twine-branch-080-td6209559.html

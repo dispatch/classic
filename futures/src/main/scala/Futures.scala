@@ -21,19 +21,26 @@ trait Futures {
 }
 /** A java.util.concurrent Future accessor, executor undefined */
 trait JucFuture extends Futures {
-  def future[T](result: => T) = new JucFuture(result)
+  def future[T](result: => T) = new WrappedJucFuture(
+    futureExecutor.submit(new Callable[T]{
+      def call = result
+    })
+  )
   /** Implement to customize the java.util.concurrent Executor, defaults to Executors.newCachedThreadPool */
   val futureExecutor: ExecutorService
-  /** Wraps java.util.concurrent.Future */
-  class JucFuture[T](f: => T) extends Function0[T] {
-    val delegate = futureExecutor.submit(new Callable[T]{
-      def call = f
-    })
-    def isSet = delegate.isDone
-    def apply() = delegate.get()
-  }
 }
+/** Wraps java.util.concurrent.Future */
+class WrappedJucFuture[T](delegate: java.util.concurrent.Future[T]) extends (() => T) {
+  def isSet = delegate.isDone
+  def apply() = delegate.get()
+}
+
 /** Future accessor using a scala.actors future */
 object ActorsFuture extends Futures {
   def future[T](result: => T) = scala.actors.Futures.future(result)
+}
+
+trait StoppableFuture[T] extends (() => T) {
+  def isSet: Boolean
+  def stop()
 }

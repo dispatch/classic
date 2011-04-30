@@ -3,8 +3,6 @@ package dispatch.s3
 import dispatch._
 
 object S3 {
-  import org.apache.http.client.methods.HttpPut
-  import org.apache.commons.codec.binary.Base64.encodeBase64
   import javax.crypto
 
   import java.util.{Date,Locale,SimpleTimeZone}
@@ -21,13 +19,13 @@ object S3 {
   def sign(method: String, path: String, secretKey: String, date: Date,
            contentType: Option[String], contentMd5: Option[String], amzHeaders: Map[String,Set[String]]) = {
     val SHA1 = "HmacSHA1"
-    val amzString = amzHeaders.elements.toList.sort(_._1.toLowerCase < _._1.toLowerCase).map{ case (k,v) => "%s:%s".format(k.toLowerCase, v.map(trim _).mkString(",")) }
+    val amzString = amzHeaders.toList.sortWith(_._1.toLowerCase < _._1.toLowerCase).map{ case (k,v) => "%s:%s".format(k.toLowerCase, v.map(trim _).mkString(",")) }
     val message = (method :: contentMd5.getOrElse("") :: contentType.getOrElse("") :: rfc822DateParser.format(date) :: Nil) ++ amzString ++ List(path) mkString("\n")
     val sig = {
       val mac = crypto.Mac.getInstance(SHA1)
       val key = new crypto.spec.SecretKeySpec(bytes(secretKey), SHA1)
       mac.init(key)
-      new String(encodeBase64(mac.doFinal(bytes(message))))
+      new String(Request.encode_base64(mac.doFinal(bytes(message))))
     }
     sig
   }
@@ -37,11 +35,11 @@ object S3 {
   implicit def Request2S3RequestSigner(r: Request) = new S3RequestSigner(r)
   implicit def Request2S3RequestSigner(r: String) = new S3RequestSigner(new Request(r))
 
-  class S3RequestSigner(r: Request) extends Request(r) {
+  class S3RequestSigner(r: Request) {
     import org.apache.http.util.EntityUtils
     import org.apache.http.entity.BufferedHttpEntity
 
-    type EntityHolder <: org.apache.http.client.methods.HttpEntityEnclosingRequestBase
+    type EntityHolder <: org.apache.http.message.BasicHttpEntityEnclosingRequest
 
     private def md5(bytes: Array[Byte]) = {
       import java.security.MessageDigest
@@ -49,40 +47,39 @@ object S3 {
       val r = MessageDigest.getInstance("MD5")
       r.reset
       r.update(bytes)
-      new String(encodeBase64(r.digest))
+      new String(Request.encode_base64(r.digest))
     }
 
-    def <@ (accessKey: String, secretKey: String): Request = r next { req =>
-      req match {
-        case m: EntityHolder => req.addHeader("Content-MD5", md5(EntityUtils.toByteArray(new BufferedHttpEntity(m.getEntity))))
-        case m => {}
-      }
+    def <@ (accessKey: String, secretKey: String) = {
+      val req = r.body.map { ent =>
+        r <:< Map("Content-MD5" -> md5(EntityUtils.toByteArray(new BufferedHttpEntity(ent))))
+      }.getOrElse(r)
 
-      val path = Http.to_uri(r.host, req).getPath
+      val path = req.to_uri.getPath
       
-      val contentType = req.getAllHeaders.filter(_.getName.toLowerCase == "content-type").toList match {
-        case Nil => req match {
-          case r: EntityHolder => Some(r.getEntity.getContentType.getValue)
-          case _ => None
-        }
-        case head :: tail => Some(head.getValue)
+      val contentType = req.headers.filter {
+        case (name, _) => name.toLowerCase == "content-type"
+      }.headOption.map { case (_, value) => value }.orElse {
+        req.body.map { _.getContentType.getValue }
       }
-      val contentMd5 = req.getAllHeaders.filter(_.getName.toLowerCase == "content-md5").toList match {
-        case Nil => None
-        case head :: tail => Some(head.getValue)
+      val contentMd5 = req.headers.filter {
+        case (name, _) => name.toLowerCase == "content-md5" 
+      }.headOption.map { case (_, value) => value }
+      val amzHeaders = req.headers.filter {
+        case (name, _) => name.toLowerCase.startsWith("x-amz")
+      }.foldLeft(Map.empty[String, Set[String]]) { case (m, (name, value)) => 
+        m + (name -> (m(name) + value))
       }
-      val amzHeaders = 
-        req.getAllHeaders.filter(_.getName.toLowerCase.startsWith("x-amz")).foldLeft(Map[String,Set[String]]()){
-          (m, h) => m + (h.getName -> (m(h.getName) + h.getValue))
-        }
       val d = new Date
-      req.addHeader("Authorization", "AWS %s:%s".format(accessKey, sign(req.getMethod, path, secretKey, d, contentType, contentMd5, amzHeaders)))
-      req.addHeader("Date",S3.rfc822DateParser.format(d))
-      req
+      req <:< Map("Authorization" -> "AWS %s:%s".format(accessKey, sign(req.method, path, secretKey, d, contentType, contentMd5, amzHeaders)),
+                  "Date" -> S3.rfc822DateParser.format(d))
     }
   }
 }
 
-case class Bucket(name: String) extends Request(:/("s3.amazonaws.com") / name) {
-  val create = new S3.S3RequestSigner(this) <<< ""
+class Bucket(val name: String) extends Request(:/("s3.amazonaws.com") / name) {
+  val create = this <<< ""
+}
+object Bucket {
+  def apply(name: String) = new Bucket(name)
 }

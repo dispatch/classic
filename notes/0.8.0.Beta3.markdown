@@ -1,0 +1,93 @@
+This beta release updates Dispatch's HttpClient dependency to 4.1
+final, and adds support for the NIO [HttpAsyncClient][async]. Support
+for Scala 2.7.x is dropped in this line.
+
+[async]: http://hc.apache.org/httpcomponents-asyncclient-dev/index.html
+
+There are now four standard varieties of http executors available in
+different modules:
+
+    dispatch.Http
+    dispatch.nio.Http
+    dispatch.thread.Http
+    dispatch.gae.Http
+
+Typical usage would be:
+
+    import dispatch._
+    val http = new nio.Http
+
+[Request][Request] itself has been substantially refactored. It is now only a
+class with properties and a copy method. All of the request-building
+operations ("verbs") are [added via implicit conversions][requests],
+putting the core module on the same plane as internal and external
+extension modules.
+
+[Request]: http://sourced.implicit.ly/net.databinder/dispatch-core/0.8.0.Beta3/dispatch/requests.scala.html#9128
+[requests]: http://sourced.implicit.ly/net.databinder/dispatch-core/0.8.0.Beta3/dispatch/requests.scala.html#9131
+
+### Callbacks and futures
+
+The `thread` and `nio` executors return [stoppable futures][stoppable]
+from their `apply` and other request executions, allowing persistent
+connections to be easily closed. A new alternative to request handlers
+is [dispatch.Callback][callback], which defines a callback function to
+receive request data as it arrives. For example, the fundamental
+response callback accepting bytes:
+
+[stoppable]: http://sourced.implicit.ly/net.databinder/dispatch-futures/0.8.0.Beta3/Futures.scala.html#9092
+[callback]: http://sourced.implicit.ly/net.databinder/dispatch-core/0.8.0.Beta3/dispatch/callbacks.scala.html
+
+    h(:/("example.com") ^ (response, bytes, length) => { ... } )
+
+There are more convenient callbacks that convert the bytes to strings,
+and buffer them into single lines:
+
+    h(:/("example.com") ^-- println)
+
+You can also return a value from the stoppable future produced, by
+defining a finishing function:
+
+    h(:/("example.com") ^-- println ^> { res => "all done!" })
+
+But if what you want is a finished response object, it's much easier
+to just use the standard response handlers. These work with the NIO
+interface by buffering the response in memory. So this works with any
+of the executors:
+
+    import dispatch.liftjson.Js._
+    h(:/("example.com") ># { js => ... })
+
+With the `thread` and `nio` executors, the current thread continues
+while the request is performed in a background or IO thread. The
+handler function is called with the completed request object (in this
+case a JValue) as soon as it is available.
+
+The [080 branch][twine] of the twine example application uses the new
+stoppable future / callback interface with an NIO executor to connect
+to Twitter [User Streams](http://dev.twitter.com/pages/user_streams).
+
+[twine]: https://github.com/n8han/dispatch-twine/blob/080/src/main/scala/twine/Twine.scala#L68
+
+### Breaking changes
+
+The `Http` object is no longer accessible from all modules, so the
+implicit conversions that were found there are now in `Request`.
+
+One change that is likely to break some client code (sorry!) is
+the `<<` and `<<?` verbs which previously took a `Map[String, Any]`
+now take an `Iterable[(String, String)]`. So you can still use a Map
+if you like, it just has to be a map of strings to strings or you'll
+get compilation errors. The more permissive typing, which made use of
+`Any#toString`, was the source of common errors in application code
+where non-trivial objects (often, functions) were unknowingly added.
+
+And lastly, it was necessary to rename the method for adding OAuth
+tokens to a query string from `<<?` to [with_token][with_token], and
+all of the [Mime-posting methods][mime] from `<<` to `<<*`. In Scala
+2.8.0 the implicit conversion fails to resolve the overlapping names
+with the refactored Request structure. This is fixed in 2.8.1, but
+we'd like to support 2.8.0.
+
+[with_token]: http://sourced.implicit.ly/net.databinder/dispatch-oauth/0.8.0.Beta3/dispatch/OAuth.scala.html#21179
+[mime]: http://sourced.implicit.ly/net.databinder/dispatch-mime/0.8.0.Beta3/dispatch/Mime.scala.html#9592

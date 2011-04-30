@@ -1,7 +1,6 @@
 package dispatch.google.cl
 
 import dispatch._
-import dispatch.Http._
 
 /**
  * Google ClientLogin is a proprietary authorization mechanism for accessing

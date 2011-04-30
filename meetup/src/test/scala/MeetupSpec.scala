@@ -5,7 +5,6 @@ object MeetupSpec extends Specification {
   import meetup._
   import dispatch.liftjson.Js._
   import oauth._
-  import Http._
 
   val conf = new java.io.File("meetup.test.properties")
   if (conf.exists) {
@@ -37,15 +36,15 @@ object MeetupSpec extends Specification {
         import java.util.Calendar
         val cal = Calendar.getInstance
         cal.add(Calendar.YEAR, -1)
-        val (res, meta) = client.call(Events.group_id(1377720)
+        val (res, meta) = Http(client.handle(Events.group_id(1377720)
           .after(cal.getTime)
           .before(new java.util.Date)
-        )
+        ))
         res.size must be > (5)
         (meta >>= Meta.count) must_== List(res.size)
       }
       "find upcoming events" in {
-        val (res, meta) = client.call(Events.topic("technology"))
+        val (res, meta) = Http(client.handle(Events.topic("technology")))
         val statuses = res flatMap Event.status
         statuses must notBeEmpty
         statuses must notExist { _ != Event.Upcoming }
@@ -63,8 +62,7 @@ object MeetupSpec extends Specification {
     "Photos query" should {
       implicit val http = new Http
       "Find North East Scala Symposium photos" in {
-        val (res, _) = client.call(Photos.event_id(15526582))
-        println(res)
+        val (res, _) = client.call(Photos.event_id("15526582"))
         val photos = for {
           r <- res
           id <- Photo.photo_id(r)
