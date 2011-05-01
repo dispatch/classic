@@ -52,7 +52,7 @@ class DispatchProject(info: ProjectInfo)
   val sxr_version = "0.2.3"
 
   override def managedStyle = ManagedStyle.Maven
-  val publishTo = "Mimesis Nexus" at "http://10.101.0.202:8081/nexus/content/repositories/3rdparty/"
+  val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
   Credentials(Path.userHome / ".ivy2" / ".credentials", log)
 
   class DispatchModule(info: ProjectInfo) extends DefaultProject(info) with sxr.Publish with IdeaProject {
