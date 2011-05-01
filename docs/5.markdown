@@ -1,15 +1,16 @@
 Stdout Walkthrough
 ------------------
 
-*To follow these instructions you'll need a Scala console with dispatch-http or dispatch-nio on the classpath. One option is to clone [Twine][twine].*
+_To follow these instructions you'll need a Scala console with
+dispatch-http or dispatch-nio on the classpath. One option is to
+clone [Twine][twine]._
 
-[twine]:Twine
+[twine]: Twine.html
 
 Do you see a `scala>` prompt? Okay go!
 
     import dispatch._
-    val http = new nio.Http // if using dispatch-nio
-    // val http = new Http // if using dispatch-http 
+    val http = new nio.Http
     http(url(
       "http://databinder.net/dispatch/Stdout_Walkthrough"
     ) >>> System.out)
@@ -26,8 +27,6 @@ Now let's peek behind the scenes:
 Hey, that's this page's JSON source document, direct from CouchDB! Let's extract the object's `body` field:
 
     import dispatch.json.JsHttp._
-    http(db / "couch/dispatch/Stdout%20Walkthrough" ># { 'body ! str })()
+    http(db / "couch/dispatch/Stdout%20Walkthrough" ># { 'body ! str })
 
 It's in Markdown format. The application serving this page translates it to HTML before sending it out to your browser.
-
-[*Back to Reference*](Reference)

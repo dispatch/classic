@@ -16,18 +16,16 @@ data. Its parser works as normal on Android. Considering all that is
 going for Lift-JSON, it would be foolish not to have the
 dispatch-lift-json integration module.
 
-[query]:https://github.com/lift/lift/blob/master/framework/lift-base/lift-json/src/test/scala/net/liftweb/json/QueryExamples.scala
-[extract]:https://github.com/lift/lift/blob/master/framework/lift-base/lift-json/src/test/scala/net/liftweb/json/ExtractionExamples.scala
-[lift]:http://liftweb.net/
+[query]: https://github.com/lift/lift/blob/master/framework/lift-base/lift-json/src/test/scala/net/liftweb/json/QueryExamples.scala
+[extract]: https://github.com/lift/lift/blob/master/framework/lift-base/lift-json/src/test/scala/net/liftweb/json/ExtractionExamples.scala
+[lift]: http://liftweb.net/
 
 Dispatch also includes interfaces to particular web services, some of
 which use dispatch-http-json and some dispatch-lift-json. These are
 not meant to be canonical or exclusive or even complete. They're
 examples of web APIs wrapped in Dispatch that you can use as you see
-fit; e.g., dispatch-twitter drives our [Talk] page. So if you'd like
-to use lift-json with Twitter or dispatch-json with Meetup, you're
-welcome to make your own module and even contribute it back via a
-[Dispatch fork][fork].
+fit. So if you'd like to use lift-json with Twitter or dispatch-json
+with Meetup, you're welcome to make your own module and even
+contribute it back via a [Dispatch fork][fork].
 
-[Talk]:Talk
-[fork]:http://github.com/n8han/Databinder-Dispatch
+[fork]: http://github.com/n8han/Databinder-Dispatch

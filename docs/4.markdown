@@ -1,28 +1,13 @@
 Reference
 ---------
 
-####Walkthroughs
-
-* [Stdout Introduction][walk] 
-* [Common Tasks][tasks]
-
-[walk]:Stdout_Walkthrough
-[tasks]:Common_Tasks
-
-####Usage Notes
-
-[dispatch-lift-json][lift]
-
-[lift]:Lift-JSON
-
-
-####Scaladocs
+### Scaladocs
 
 [See the API documentation][scaladoc].
 
-[scaladoc]:http://databinder.net/dispatch-doc/
+[scaladoc]: http://databinder.net/dispatch-doc/
 
-####Dispatch #{version='0.8.0'} Sources
+### Dispatch $version$ Sources
 
 For a clearer view of Dispatch's internals, browse its sources as formatted by [Scala X-Ray][sxr].
 
@@ -52,9 +37,5 @@ For a clearer view of Dispatch's internals, browse its sources as formatted by [
 * [dispatch-lift-json.test](http://sourced.implicit.ly/net.databinder/dispatch-lift-json.test/#{version}/index.html)
 
 
-[sxr]:http://github.com/harrah/browse/tree/master
-[doc]:/dispatch-doc/
-
-That's it for now! Got any [ideas or questions][talk]?
-
-[talk]:/dispatch/Talk
+[sxr]: http://github.com/harrah/browse/tree/master
+[doc]: /dispatch-doc/

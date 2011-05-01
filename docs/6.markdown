@@ -13,7 +13,7 @@ Add a header:
 
 Parse to Scala [XML Elem][xml]:
 
-[xml]:http://www.scala-lang.org/docu/files/api/scala/xml/Elem.html
+[xml]: http://www.scala-lang.org/docu/files/api/scala/xml/Elem.html
 
     http(req / "somefile.xml" <> { _ \\ "book" }) // find all <book> tags
 
@@ -31,7 +31,7 @@ Post as a form:
 
 Handle response body as a [Source][source]:
 
-[source]:http://www.scala-lang.org/docu/files/api/scala/io/Source.html
+[source]: http://www.scala-lang.org/docu/files/api/scala/io/Source.html
 
     http(req >~ { _.getLines.foreach(println) })
 
@@ -39,4 +39,3 @@ Request with https:
 
     val rsec = req.secure
 
-[*Back to Reference*](Reference)
