@@ -6,6 +6,7 @@ class DispatchProject(info: ProjectInfo)
   with posterous.Publish
   with gh.Issues
   with IdeaProject
+  with pamflet.Actions
 {
   override def parallelExecution = true
 

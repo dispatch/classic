@@ -1,0 +1,53 @@
+Download
+--------
+
+The latest release of Databinder Dispatch is [$version$][notes].
+
+[notes]: http://implicit.ly/dispatch-080
+
+### Modules
+
+The library is divided into separate modules so that client
+applications may depend only on the parts of Dispatch they use. Each
+module is [cross-built][sbt] against several versions of Scala and
+[published to the scala-tools][st] repository with the organization-id
+"net.databinder". The modules have the Scala version they are built
+against appended; for Scala $scala$:
+
+* dispatch-http_$scala$
+* dispatch-core_$scala$
+* dispatch-nio_$scala$
+* dispatch-futures_$scala$
+* dispatch-mime_$scala$
+* dispatch-json_$scala$
+* dispatch-http-json_$scala$
+* dispatch-lift-json_$scala$
+* dispatch-oauth_$scala$
+* dispatch-meetup_$scala$
+* dispatch-couch_$scala$
+* dispatch-twitter_$scala$
+* dispatch-s3_$scala$
+* dispatch-google_$scala$
+* dispatch-gae_$scala$
+
+[dn]: http://databinder.net/repo/
+[st]: http://scala-tools.org/repo-releases/net/databinder/
+[sbt]: http://code.google.com/p/simple-build-tool/wiki/CrossBuild
+
+With simple-build-tool it's best to have the Scala version
+[automatically appended][sbt] so it will always match your
+project's. For Maven or Ivy + Ant, specify a full artifact-id like
+those given above.
+
+Module dependencies are transitive, so you only need to depend on
+dispatch-twitter to have that module as well as -oauth, -json, and
+-http on the classpath.
+
+### Source
+
+Dispatch $version$'s full source is available: { [zip][zip] | [tar.bz2][tar.bz2] | [github][gh] }
+
+[zip]: http://technically.us/git?p=dispatch.git;a=snapshot;h=$version$;sf=zip
+[tar.bz2]: http://technically.us/git?p=dispatch.git;a=snapshot;h=$version$;sf=tbz2
+
+[gh]: https://github.com/n8han/Databinder-Dispatch
