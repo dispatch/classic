@@ -1,9 +1,10 @@
 Dispatch
 ========
 
-*Dispatch* is a Scala library for accessing HTTP services. It works
-through [HttpClient][HttpClient] to succinctly handle HTTP scenarios
-ranging from plain GETs to digest-authenticated PUTs, and has its own
-OAuth consumer implementation.
+*Dispatch* is a Scala library for accessing HTTP services. Beneath the
+surface it uses the battle-tested Apache [HttpClient][hc] library in
+its thread-blocking or NIO variants, your choice.  On the surface
+it's a vocabulary for expressing HTTP requests and how you want to
+handle them, in pure and unconstrained Scala.
 
-[HttpClient]: http://hc.apache.org/httpcomponents-client/
+[hc]: http://hc.apache.org/httpcomponents-client/
