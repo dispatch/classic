@@ -1,8 +1,0 @@
-Twine
------
-
-*Twine* is a little command line streaming client for Twitter. Do you
-think consuming an OAuth streaming API is hard? It's really not!
-[Unroll Twine from github][gh].
-
-[gh]: https://github.com/n8han/dispatch-twine#readme

@@ -1,53 +1,78 @@
-Download
---------
+Try Dispatch
+------------
 
-The latest release of Databinder Dispatch is [$version$][notes].
+### Getting a Console
 
-[notes]: http://implicit.ly/dispatch-080
+The fastest way to try out Dispatch is to clone the Twine example
+application from github.
 
-### Modules
+    git clone https://github.com/n8han/dispatch-twine.git
 
-The library is divided into separate modules so that client
-applications may depend only on the parts of Dispatch they use. Each
-module is [cross-built][sbt] against several versions of Scala and
-[published to the scala-tools][st] repository with the organization-id
-"net.databinder". The modules have the Scala version they are built
-against appended; for Scala $scala$:
+> If you don't have git available, you can download and extract the
+project's current
+[zip archive](https://github.com/n8han/dispatch-twine/zipball/master).
 
-* dispatch-http_$scala$
-* dispatch-core_$scala$
-* dispatch-nio_$scala$
-* dispatch-futures_$scala$
-* dispatch-mime_$scala$
-* dispatch-json_$scala$
-* dispatch-http-json_$scala$
-* dispatch-lift-json_$scala$
-* dispatch-oauth_$scala$
-* dispatch-meetup_$scala$
-* dispatch-couch_$scala$
-* dispatch-twitter_$scala$
-* dispatch-s3_$scala$
-* dispatch-google_$scala$
-* dispatch-gae_$scala$
+[zip]: https://github.com/n8han/dispatch-twine/zipball/master
 
-[dn]: http://databinder.net/repo/
-[st]: http://scala-tools.org/repo-releases/net/databinder/
-[sbt]: http://code.google.com/p/simple-build-tool/wiki/CrossBuild
+Twine is built with Simple Build Tool. If you haven't yet
+[setup sbt][sbt], now is a good time to do that. Once you have sbt on
+your executable search path, you can enter its interactive console for
+the Twine project.
 
-With simple-build-tool it's best to have the Scala version
-[automatically appended][sbt] so it will always match your
-project's. For Maven or Ivy + Ant, specify a full artifact-id like
-those given above.
+[sbt]: http://code.google.com/p/simple-build-tool/wiki/Setup
 
-Module dependencies are transitive, so you only need to depend on
-dispatch-twitter to have that module as well as -oauth, -json, and
--http on the classpath.
+    cd dispatch-twine
+    sbt
 
-### Source
+Once in sbt's console, ask it to fetch the project's dependencies.
 
-Dispatch $version$'s full source is available: { [zip][zip] | [tar.bz2][tar.bz2] | [github][gh] }
+    update
 
-[zip]: http://technically.us/git?p=dispatch.git;a=snapshot;h=$version$;sf=zip
-[tar.bz2]: http://technically.us/git?p=dispatch.git;a=snapshot;h=$version$;sf=tbz2
+Now that we have Dispatch on the project classpath, we can play with
+it in the console.
 
-[gh]: https://github.com/n8han/Databinder-Dispatch
+    console
+
+Before entering the console sbt will compile the Twine project,
+although for the moment we are only interested in the underlying
+library. You should shortly see a message welcoming you to the
+console, and a `scala>` prompt.
+
+### Your First Request
+
+First, we need to import the main Dispatch classes and objects into
+scope.
+
+    import dispatch._
+
+Then, we'll need an HTTP *executor* to carry out our requests.
+
+    val h = new Http
+
+Requests are described with `dispatch.Request` objects, and one way to
+construct them is with a URL.
+
+    val req = url("http://www.scala-lang.org/")
+
+This works because you've imported an object called `url` from the
+`dispatch` package, and the object is itself a function that creates
+request objects.
+
+Now, we have an executor and a request. Dispatch needs to know how to
+handle the request.
+
+    val handler = req >>> System.out
+
+With this complete request-response handler, Dispatch can execute the
+request. Assuming you have a network connection, that is.
+
+    h(handler)
+
+And that was the source of the Scala home page. Of course, we don't
+usually assign all these component parts to values unless we need to
+reuse them. Typically, the handler above would be written in one line.
+
+    h(url("http://www.scala-lang.org/") >>> System.out)
+
+
+[gh]: https://github.com/n8han/dispatch-twine#readme
