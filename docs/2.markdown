@@ -28,8 +28,8 @@ Once in sbt's console, ask it to fetch the project's dependencies.
 
     update
 
-Now that we have Dispatch on the project classpath, we can play with
-it in the console.
+With Dispatch on the project classpath, we can play with it in the
+console.
 
     console
 
@@ -40,8 +40,7 @@ console, and a `scala>` prompt.
 
 ### Your First Request
 
-First, we need to import the main Dispatch classes and objects into
-scope.
+First, import the main Dispatch classes and objects into scope.
 
     import dispatch._
 
