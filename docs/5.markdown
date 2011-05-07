@@ -1,32 +1,41 @@
-Stdout Walkthrough
-------------------
+Reference
+---------
 
-_To follow these instructions you'll need a Scala console with
-dispatch-http or dispatch-nio on the classpath. One option is to
-clone [Twine][twine]._
+### Scaladocs
 
-[twine]: Twine.html
+[See the API documentation][scaladoc].
 
-Do you see a `scala>` prompt? Okay go!
+[scaladoc]: http://databinder.net/dispatch-doc/
 
-    import dispatch._
-    val http = new nio.Http
-    http(url(
-      "http://databinder.net/dispatch/Stdout_Walkthrough"
-    ) >>> System.out)
+### Dispatch $version$ Sources
 
-That dumps this page to standard out, using a single-threaded access point. The `>>>` call triggered on an implicit conversion of `String` imported from `Http._`. You can also create hosts and paths explicitly:
+For a clearer view of Dispatch's internals, browse its sources as formatted by [Scala X-Ray][sxr].
 
-    val db = :/("databinder.net")
-    http(db / "dispatch" / "Stdout_Walkthrough" >>> System.out)
+* [dispatch-oauth](http://sourced.implicit.ly/net.databinder/dispatch-oauth/#{version}/index.html)
+* [dispatch-oauth.test](http://sourced.implicit.ly/net.databinder/dispatch-oauth.test/#{version}/index.html)
+* [dispatch-meetup](http://sourced.implicit.ly/net.databinder/dispatch-meetup/#{version}/index.html)
+* [dispatch-meetup.test](http://sourced.implicit.ly/net.databinder/dispatch-meetup.test/#{version}/index.html)
+* [dispatch-http](http://sourced.implicit.ly/net.databinder/dispatch-http/#{version}/index.html)
+* [dispatch-http.test](http://sourced.implicit.ly/net.databinder/dispatch-http.test/#{version}/index.html)
+* [dispatch-core](http://sourced.implicit.ly/net.databinder/dispatch-core/#{version}/index.html)
+* [dispatch-twitter](http://sourced.implicit.ly/net.databinder/dispatch-twitter/#{version}/index.html)
+* [dispatch-twitter.test](http://sourced.implicit.ly/net.databinder/dispatch-twitter.test/#{version}/index.html)
+* [dispatch-couch](http://sourced.implicit.ly/net.databinder/dispatch-couch/#{version}/index.html)
+* [dispatch-couch.test](http://sourced.implicit.ly/net.databinder/dispatch-couch.test/#{version}/index.html)
+* [dispatch-s3](http://sourced.implicit.ly/net.databinder/dispatch-s3/#{version}/index.html)
+* [dispatch-s3.test](http://sourced.implicit.ly/net.databinder/dispatch-s3.test/#{version}/index.html)
+* [dispatch-http-json](http://sourced.implicit.ly/net.databinder/dispatch-http-json/#{version}/index.html)
+* [dispatch-http-json.test](http://sourced.implicit.ly/net.databinder/dispatch-http-json.test/#{version}/index.html)
+* [dispatch-mime](http://sourced.implicit.ly/net.databinder/dispatch-mime/#{version}/index.html)
+* [dispatch-nio](http://sourced.implicit.ly/net.databinder/dispatch-nio/#{version}/index.html)
+* [dispatch-google](http://sourced.implicit.ly/net.databinder/dispatch-google/#{version}/index.html)
+* [dispatch-google.test](http://sourced.implicit.ly/net.databinder/dispatch-google.test/#{version}/index.html)
+* [dispatch-http-gae](http://sourced.implicit.ly/net.databinder/dispatch-http-gae/#{version}/index.html)
+* [dispatch-json](http://sourced.implicit.ly/net.databinder/dispatch-json/#{version}/index.html)
+* [dispatch-futures](http://sourced.implicit.ly/net.databinder/dispatch-futures/#{version}/index.html)
+* [dispatch-lift-json](http://sourced.implicit.ly/net.databinder/dispatch-lift-json/#{version}/index.html)
+* [dispatch-lift-json.test](http://sourced.implicit.ly/net.databinder/dispatch-lift-json.test/#{version}/index.html)
 
-Now let's peek behind the scenes:
 
-    http(db / "couch/dispatch/Stdout%20Walkthrough" >>> System.out)
-
-Hey, that's this page's JSON source document, direct from CouchDB! Let's extract the object's `body` field:
-
-    import dispatch.json.JsHttp._
-    http(db / "couch/dispatch/Stdout%20Walkthrough" ># { 'body ! str })
-
-It's in Markdown format. The application serving this page translates it to HTML before sending it out to your browser.
+[sxr]: http://github.com/harrah/browse/tree/master
+[doc]: /dispatch-doc/
