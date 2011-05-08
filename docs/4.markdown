@@ -1,5 +1,7 @@
-Using In Your Project
----------------------
+Project Setup
+-------------
+
+### Modules and Artifacts
 
 Dispatch is broken into a number of modules so that client
 applications need only depend on the parts of Dispatch they use. Some
@@ -32,13 +34,15 @@ names are as follows:
 [st]: http://scala-tools.org/repo-releases/net/databinder/
 [sbt]: http://code.google.com/p/simple-build-tool/wiki/CrossBuild
 
+### Build Tools
+
 With simple-build-tool it's best to have the Scala version
 [automatically appended][sbt] so it will always match your
 project's. In a sbt 0.7.4 project:
 
     val dispatch_http = "net.databinder" %% "dispatch-http" % "$version$"
 
-For Maven, specify the full artifact-id:
+For Maven, specify the full artifact name:
 
     <dependency>
       <groupId>net.databinder</groupId>

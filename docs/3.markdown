@@ -1,5 +1,5 @@
-Choosing an Executor
---------------------
+Choose an Executor
+------------------
 
 Dispatch supports arbitrarily many HTTP *executors*—you could make
 your own, and you wouldn't be the first. Executors carry out your
@@ -92,7 +92,7 @@ without tying up *n* threads or waiting for available threads from a
 pool.
 
     import dispatch._
-    val h = nio.Http
+    val h = new nio.Http
     val f = h(url("http://www.scala-lang.org/") as_str)
 
 Like the background thread executor, the NIO executor returns a
@@ -107,11 +107,11 @@ the console may not close when asked.
 ### Google App Engine (dispatch-gae)
 
 This executor operates on the current thread, like `dispatch.Http`,
-but it is specially modified to work with Google App Engine, which
+but it is specially modified to work with Google App Engine which
 does not permit the direct use of sockets.
 
     import dispatch._
-    val h = gae.Http
+    val h = new gae.Http
     val s = h(url("http://www.scala-lang.org/") as_str)
 
 Note that this executor is not on Twine's classpath and should only be

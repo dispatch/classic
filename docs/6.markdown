@@ -1,5 +1,5 @@
-Common Tasks
-------------
+Example Usage
+-------------
 
 Assuming:
 
