@@ -6,7 +6,7 @@ Dispatch
  broker requests.  On the surface, it's a vocabulary for expressing
  HTTP requests and their handlers in pure and uninhibited Scala.
 
-> [Version $version$ Release Notes](http://implicit.ly/dispatch-080)
+> [Version $version$ Release Notes](http://implicit.ly/dispatch-$vrsn$)
 
 
 [hc]: http://hc.apache.org/httpcomponents-client/
