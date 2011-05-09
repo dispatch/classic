@@ -3,7 +3,7 @@ Try Dispatch
 
 ### Getting a Console
 
-The fastest way to try out Dispatch is to clone the Twine example
+The simplest way to try Dispatch is to clone the Twine example
 application from github.
 
     git clone https://github.com/n8han/dispatch-twine.git

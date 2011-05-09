@@ -1,29 +1,30 @@
 Choose an Executor
 ------------------
 
-Dispatch supports arbitrarily many HTTP *executors*—you could make
-your own, and you wouldn't be the first. Executors carry out your
-request *handlers* or *callbacks*.
+Dispatch supports arbitrarily many types of HTTP *executors*—you could
+make your own, and you wouldn't be the first to do so. Executors carry
+out your request *handlers* and *callbacks*.
 
-Because executors are defined separately, you can model request
-handling without demanding a particular implementation. For example,
-the same interface to a web API can be used with an NIO executor and a
-Google App Engine executor.
+Because executors are defined separately from request handling,
+you can model HTTP interaction without demanding a particular
+implementation. For example, the same interface to a web API can be
+used with an NIO executor and a Google App Engine executor.
 
 Dispatch includes several executors, defined in various modules and
-packages. These executors are called "Http", so application code
+packages. These executors are all called "Http", so application code
 typically imports only the base `dispatch` package and refers to
 executors by their subpackage name, as seen below.
 
-> To follow along with the example code, use a console of the Twine
+> To follow along with the examples below, use a console of the Twine
   example app described in the preceding page.
 
 ### Current Thread Blocking (dispatch-http)
 
-The traditional and most common Dispatch executor performs its
-operations in the current program thread, allowing it to return
-whatever value the handler builds. If you request a string response
-body with `as_str`, the executor's return type is `String`.
+The traditional and most common Dispatch executor is located in the
+base `dispatch` package. It performs its operations in the current
+program thread, allowing it to return whatever value the handler
+builds. If you request a string response body with `as_str`, the
+executor's return type is `String`.
 
     import dispatch._
     val h = new Http
@@ -81,7 +82,7 @@ when handling a batch of requests, for example.
 
     < do something else that's slow... >
 
-    val (ready, waiting) = futures.partition { _.isSet }
+    val (ready, working) = futures.partition { _.isSet }
     consume(ready.map { _() }) // mapped to Traversable[String]
 
 ### Native I/O (dispatch-nio)

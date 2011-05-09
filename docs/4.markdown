@@ -36,13 +36,13 @@ names are as follows:
 
 ### Build Tools
 
-With simple-build-tool it's best to have the Scala version
+With **simple-build-tool** it's best to have the Scala version
 [automatically appended][sbt] so it will always match your
 project's. In a sbt 0.7.4 project:
 
     val dispatch_http = "net.databinder" %% "dispatch-http" % "$version$"
 
-For Maven, specify the full artifact name:
+For **Maven**, specify the full artifact name:
 
     <dependency>
       <groupId>net.databinder</groupId>
