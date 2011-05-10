@@ -1,0 +1,9 @@
+Community
+---------
+
+Dispatch is managed [on GitHub][gh], and many of its features and bug
+fixes originate in forks of the project there. We also have [a mailing
+list][nabble].
+
+[gh]: https://github.com/n8han/databinder-dispatch
+[nabble]: http://databinder.3617998.n2.nabble.com/Dispatch-f3618001.html
