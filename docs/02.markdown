@@ -24,7 +24,7 @@ the Twine project.
     cd dispatch-twine
     sbt
 
-Once in sbt's console, ask it to fetch the project's dependencies.
+In sbt's console, ask it to fetch the project's dependencies.
 
     update
 

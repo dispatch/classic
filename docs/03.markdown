@@ -5,7 +5,7 @@ Dispatch supports arbitrarily many types of HTTP *executors*—you could
 make your own, and you wouldn't be the first to do so. Executors carry
 out your request *handlers* and *callbacks*.
 
-Because executors are defined separately from request handling,
+Because executors are defined separately from HTTP interaction,
 you can model HTTP interaction without demanding a particular
 implementation. For example, the same interface to a web API can be
 used with an NIO executor and a Google App Engine executor.
