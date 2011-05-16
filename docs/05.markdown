@@ -1,7 +1,7 @@
 Community
 ---------
 
-Dispatch is managed [on GitHub][gh], and many of its features and bug
+Dispatch lives [on GitHub][gh], and many of its features and bug
 fixes originate in forks of the project there. We also have [a mailing
 list][nabble].
 
