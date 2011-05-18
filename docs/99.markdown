@@ -3,6 +3,21 @@ Who's Using Dispatch?
 
 These are some projects and companies that have used Dispatch.
 
+#### conscript
+
+[conscript](https://github.com/n8han/conscript) uses Dispatch to fetch
+program descriptors from github.
+
+#### giter8
+
+[giter8](https://github.com/n8han/giter8) uses Dispatch to fetch
+templates from github.
+
+#### posterous-sbt
+
+The [posterous-sbt](https://github.com/n8han/posterous-sbt) plugin
+uses Dispatch to publish project release notes.
+
 #### Unfiltered
 
 [Unfiltered](http://unfiltered.databinder.net/) uses Dispatch in its
