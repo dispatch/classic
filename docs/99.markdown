@@ -1,0 +1,9 @@
+Who's Using Dispatch?
+---------------------
+
+These are some projects and companies that have used Dispatch.
+
+#### Unfiltered
+
+[Unfiltered](http://unfiltered.databinder.net/) uses Dispatch in its
+system tests.
