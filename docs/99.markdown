@@ -2,8 +2,8 @@ Who's Using Dispatch?
 ---------------------
 
 These are some projects and companies that have used Dispatch. Are
-*you* using Unfiltered?
-[Fork this page](https://github.com/n8han/Unfiltered/blob/master/docs/99.markdown)
+*you* using Dispatch?
+[Fork this page](https://github.com/n8han/Databinder-Dispatch/blob/master/docs/99.markdown)
 on github.
 
 #### Novus
