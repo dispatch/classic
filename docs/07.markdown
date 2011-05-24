@@ -1,0 +1,63 @@
+Dispatch in Android
+-------------------
+
+Many people are writing Android applications in Scala. It's natural
+that they should want to do their HTTP communications with
+Dispatch. Unfortunately, this is not as easy as it should be.
+
+### Android's HttpClient
+
+The Android platform ships with a version the Apache HttpClient
+library. It is packaged in the same JAR as the standard "Java"
+classes. From an application perspective it is just there, always.
+
+When packaging for Android, you should be sure not to include any
+HttpClient jars; the classloader will always find the stock client's
+classes first. This allows apps that require HTTP communication—nearly
+all apps—to save space.
+
+The downside of shipping libraries in the standard classpath is that
+the environment becomes rigidly coupled to them. If you want to take
+advantage of a new feature in a library, too bad. You'd have to wait
+until all of your users upgrade their operating system to the new
+version—if it's ever made available for their devices.
+
+But wait, it gets worse! Updates to the HttpClient libraries in
+Android stalled. There was a procedural issue with binary
+compatibility; see [this thread][thread] for the gory details. The
+short of it is, we can rule out just waiting for those parties to fix
+the situation.
+
+[thread]: http://old.nabble.com/HttpClient-in-Android-td27915358.html
+
+### Dealing with It
+
+Versions of Dispatch through 0.7.x can work with Android's random old
+version of HttpClient just fine. Version 0.8.x however depends newer
+major versions of the HttpComponents libraries and certain interfaces
+are not compatible with the code shipped with Android.
+
+But it is *possible* to include the newer HttpComponents artifacts in
+the application package and to trick the classloader into finding
+them. How? You can obfuscate the class and package names with
+ProGuard, eliminating the namespace collisions.
+
+But really: isn't programming hard enough without some bytecode
+analyzer changing the names of all your symbols prior to runtime? For
+most of us, yes. That's why it's recommended here that you **use
+Dispatch 0.7.x with Android**. That works without any tricks and it's
+still a lot nicer than having to code to the client directly.
+
+### What's in Store
+
+This unfortunate problem underscores the need for Dispatch to be
+independent of any single backend. The primary advancement of 0.8 was
+to support HttpComponet's async NIO client in addition to its standard
+blocking client, but that (like the rest of 0.8) is unusable on
+Android without some serious hackery.
+
+Dispatch 0.9 will therefore need to support entirely different
+backends such as Netty or one of the higher level async clients built
+on Netty. And main reason to choose a backend like that for Andorid
+apps will be, ironically enough, its absence in the platform
+distribution.

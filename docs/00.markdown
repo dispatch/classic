@@ -1,11 +1,9 @@
 Dispatch
 ========
 
-*Dispatch* is a Scala library for interacting with HTTP
- services. Beneath the surface it uses the battle-tested Apache
- [HttpClient][hc] library to broker requests.  On the surface, it's a
- vocabulary for expressing HTTP requests and their handlers in pure
- and uninhibited Scala.
+*Dispatch* is a library for conducting HTTP interaction. You tell it
+ what to do in pure and uninhibited Scala, and Dispatch carries out your
+ orders using its trusty [HttpClient][hc] backend.
 
 > [Version $version$ Release Notes](http://implicit.ly/dispatch-$vrsn$)
 

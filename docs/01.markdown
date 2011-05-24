@@ -42,17 +42,20 @@ console, and a `scala>` prompt.
 
 First, import the main Dispatch classes and objects into scope.
 
-    import dispatch._
-
+```scala
+import dispatch._
+```
 Then, we'll need an HTTP *executor* to carry out our requests.
 
-    val h = new Http
-
+```scala
+val h = new Http
+```
 Requests are described with `dispatch.Request` objects, and one way to
 construct them is with a URL.
 
-    val req = url("http://www.scala-lang.org/")
-
+```scala
+val req = url("http://www.scala-lang.org/")
+```
 This works because you've imported an object called `url` from the
 `dispatch` package, and the object is itself a function that creates
 request objects.
@@ -60,18 +63,21 @@ request objects.
 Now, we have an executor and a request. Dispatch needs to know how to
 handle the request.
 
-    val handler = req >>> System.out
-
+```scala
+val handler = req >>> System.out
+```
 With this complete request-response handler, Dispatch can execute the
 request. Assuming you have a network connection, that is.
 
-    h(handler)
-
+```scala
+h(handler)
+```
 And that was the source of the Scala home page. Of course, we don't
 usually assign all these component parts to values unless we need to
 reuse them. Typically, the handler above would be written in one line.
 
-    h(url("http://www.scala-lang.org/") >>> System.out)
-
+```scala
+h(url("http://www.scala-lang.org/") >>> System.out)
+```
 
 [gh]: https://github.com/n8han/dispatch-twine#readme
