@@ -14,6 +14,10 @@ Dispatch forms the foundation of an in-house SOAP client at [Novus](https://www.
 
 In a past life, [maxaf](https://github.com/maxaf) wrote an internal baseball stats REST API client that was used to feed data into some very gruelling PDF generation code. Dispatch was used to cleanly produce HTTP requests & parse responses without hurting engineer morale.
 
+#### kiln2rally
+
+[kiln2rally](https://github.com/eed3si9n/kiln2rally) uses Dispatch along with [lift-json](https://github.com/lift/lift/tree/master/framework/lift-base/lift-json/) to hit Rally's awesome [web API](https://rally1.rallydev.com/slm/doc/webservice/index.jsp).
+
 #### conscript
 
 [conscript](https://github.com/n8han/conscript) uses Dispatch to fetch
