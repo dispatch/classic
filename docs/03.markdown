@@ -1,119 +1,51 @@
-Choose an Executor
-------------------
+Project Setup
+-------------
 
-Dispatch supports arbitrarily many types of HTTP *executors*—you could
-make your own, and you wouldn't be the first to do so. Executors carry
-out your request *handlers* and *callbacks*.
+### Modules and Artifacts
 
-Because executors are defined separately from HTTP interaction,
-you can model HTTP interaction without demanding a particular
-implementation. For example, the same interface to a web API can be
-used with an NIO executor and a Google App Engine executor.
+Dispatch is broken into a number of modules so that client
+applications need only depend on the parts of Dispatch they use. Some
+of the modules depend on other modules, and dependencies managers will
+add these transitive dependencies automatically.
 
-Dispatch includes several executors, defined in various modules and
-packages. These executors are all called "Http", so application code
-typically imports only the base `dispatch` package and refers to
-executors by their subpackage name, as seen below.
+Each module is [cross-built][sbt] against several versions of Scala
+and [published to the scala-tools][st] repository with the
+organization-id "net.databinder". The modules have the Scala version
+they are built against appended. For Scala $scala$, the full artifact
+names are as follows:
 
-> To follow along with the examples below, use a console of the Twine
-  example app described in the preceding page.
+* dispatch-http_$scala$
+* dispatch-nio_$scala$
+* dispatch-gae_$scala$
+* dispatch-core_$scala$
+* dispatch-futures_$scala$
+* dispatch-mime_$scala$
+* dispatch-json_$scala$
+* dispatch-http-json_$scala$
+* dispatch-lift-json_$scala$
+* dispatch-oauth_$scala$
+* dispatch-meetup_$scala$
+* dispatch-couch_$scala$
+* dispatch-twitter_$scala$
+* dispatch-s3_$scala$
+* dispatch-google_$scala$
 
-### Current Thread Blocking (dispatch-http)
+[dn]: http://databinder.net/repo/
+[st]: http://scala-tools.org/repo-releases/net/databinder/
+[sbt]: http://code.google.com/p/simple-build-tool/wiki/CrossBuild
 
-The traditional and most common Dispatch executor is located in the
-base `dispatch` package. It performs its operations in the current
-program thread, allowing it to return whatever value the handler
-builds. If you request a string response body with `as_str`, the
-executor's return type is `String`.
+### Build Tools
 
-    import dispatch._
-    val h = new Http
-    h(url("http://www.scala-lang.org/") as_str)
+With **simple-build-tool** it's best to have the Scala version
+[automatically appended][sbt] so it will always match your
+project's. In a sbt 0.7.4 project:
 
-You may notice in the Scala console that the last expression above
-reports a return type of `HttpPackage`. This wrapping type is required
-to generalize the executor model, but in this executor it is defined
-as the wrapped type itself. It can be used any place where the wrapped
-type is expected.
+    val dispatch_http = "net.databinder" %% "dispatch-http" % "$version$"
 
-    val s: String = h(url("http://www.scala-lang.org/") as_str)
+For **Maven**, specify the full artifact name:
 
-An important caveat of the executor defined above is that it is not
-thread-safe. You should not share references to it across
-threads. Instead, Dispatch applications commonly define a function in
-some convenient object that returns a newly constructed executor. This
-also allows you replace it with a customized executor, later.
-
-    def http = new Http
-
-Another option is to use a thread-safe executor, which maintains a
-shared connection pool and may (or may not) provide better
-performance. Dispatch provides a trait for this behavior:
-
-    val http = new Http with thread.Safety
-
-The `Http` singleton object is an executor constructed with this
-trait, so you can use it from any thread.
-
-    Http(url("http://www.scala-lang.org/") as_str)
-
-### Background Thread Blocking (dispatch-http)
-
-Another executor that does not depart from the traditional model is
-the background thread executor.
-
-    import dispatch._
-    val h = new thread.Http
-    val f = h(url("http://www.scala-lang.org/") as_str)
-
-This executor application evaluates to a *future* for the string value
-to be constructed by the handler. A future in Dispatch is a function.
-
-    type Future[T] = Function0[T] {
-      def isSet: Boolean
-    }
-
-When applied, the future waits until its underlying value is
-available, and `isSet` reports this availability. These are useful
-when handling a batch of requests, for example.
-
-    val urls: Traversable[String] = < some urls I need to get >
-    val futures = urls.map { u => h(url(u) as_str) }
-
-    < do something else that's slow... >
-
-    val (ready, working) = futures.partition { _.isSet }
-    consume(ready.map { _() }) // mapped to Traversable[String]
-
-### Native I/O (dispatch-nio)
-
-This executor uses Java NIO and does not block a current or background
-thread while carrying out requests. You can have *n* active requests
-without tying up *n* threads or waiting for available threads from a
-pool.
-
-    import dispatch._
-    val h = new nio.Http
-    val f = h(url("http://www.scala-lang.org/") as_str)
-
-Like the background thread executor, the NIO executor returns a
-Dispatch future; you can operate on collection as in the previous
-example. One caveat of this executor is that it must be shutdown.
-
-    h.shutdown()
-
-If you're using this executor in a console and forget to shut it down,
-the console may not close when asked.
-
-### Google App Engine (dispatch-gae)
-
-This executor operates on the current thread, like `dispatch.Http`,
-but it is specially modified to work with Google App Engine which
-does not permit the direct use of sockets.
-
-    import dispatch._
-    val h = new gae.Http
-    val s = h(url("http://www.scala-lang.org/") as_str)
-
-Note that this executor is not on Twine's classpath and should only be
-used with App Engine.
+    <dependency>
+      <groupId>net.databinder</groupId>
+      <artifactId>dispatch-http_$scala$</artifactId>
+      <version>$version$</version>
+    </dependency>

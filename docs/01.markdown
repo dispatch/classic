@@ -1,15 +1,77 @@
-Dispatch
-========
+Try Dispatch
+------------
 
-*Dispatch* is a Scala library for interacting with HTTP
- services. Beneath the surface it uses the battle-tested Apache
- [HttpClient][hc] library to broker requests.  On the surface, it's a
- vocabulary for expressing HTTP requests and their handlers in pure
- and uninhibited Scala.
+### Getting a Console
 
-> [Version $version$ Release Notes](http://implicit.ly/dispatch-$vrsn$)
+The simplest way to try Dispatch is to clone the Twine example
+application from github.
+
+    git clone https://github.com/n8han/dispatch-twine.git
+
+> If you don't have git available, you can download and extract the
+project's current
+[zip archive](https://github.com/n8han/dispatch-twine/zipball/master).
+
+[zip]: https://github.com/n8han/dispatch-twine/zipball/master
+
+Twine is built with Simple Build Tool. If you haven't yet
+[setup sbt][sbt], now is a good time to do that. Once you have sbt on
+your executable search path, you can enter its interactive console for
+the Twine project.
+
+[sbt]: http://code.google.com/p/simple-build-tool/wiki/Setup
+
+    cd dispatch-twine
+    sbt
+
+In sbt's console, ask it to fetch the project's dependencies.
+
+    update
+
+With Dispatch on the project classpath, we can play with it in the
+console.
+
+    console
+
+Before entering the console sbt will compile the Twine project,
+although for the moment we are only interested in the underlying
+library. You should shortly see a message welcoming you to the
+console, and a `scala>` prompt.
+
+### Your First Request
+
+First, import the main Dispatch classes and objects into scope.
+
+    import dispatch._
+
+Then, we'll need an HTTP *executor* to carry out our requests.
+
+    val h = new Http
+
+Requests are described with `dispatch.Request` objects, and one way to
+construct them is with a URL.
+
+    val req = url("http://www.scala-lang.org/")
+
+This works because you've imported an object called `url` from the
+`dispatch` package, and the object is itself a function that creates
+request objects.
+
+Now, we have an executor and a request. Dispatch needs to know how to
+handle the request.
+
+    val handler = req >>> System.out
+
+With this complete request-response handler, Dispatch can execute the
+request. Assuming you have a network connection, that is.
+
+    h(handler)
+
+And that was the source of the Scala home page. Of course, we don't
+usually assign all these component parts to values unless we need to
+reuse them. Typically, the handler above would be written in one line.
+
+    h(url("http://www.scala-lang.org/") >>> System.out)
 
 
-[hc]: http://hc.apache.org/httpcomponents-client/
-
-
+[gh]: https://github.com/n8han/dispatch-twine#readme

@@ -1,51 +1,9 @@
-Project Setup
--------------
+Community
+---------
 
-### Modules and Artifacts
+Dispatch lives [on GitHub][gh], and many of its features and bug
+fixes originate in forks of the project there. We also have [a mailing
+list][nabble].
 
-Dispatch is broken into a number of modules so that client
-applications need only depend on the parts of Dispatch they use. Some
-of the modules depend on other modules, and dependencies managers will
-add these transitive dependencies automatically.
-
-Each module is [cross-built][sbt] against several versions of Scala
-and [published to the scala-tools][st] repository with the
-organization-id "net.databinder". The modules have the Scala version
-they are built against appended. For Scala $scala$, the full artifact
-names are as follows:
-
-* dispatch-http_$scala$
-* dispatch-nio_$scala$
-* dispatch-gae_$scala$
-* dispatch-core_$scala$
-* dispatch-futures_$scala$
-* dispatch-mime_$scala$
-* dispatch-json_$scala$
-* dispatch-http-json_$scala$
-* dispatch-lift-json_$scala$
-* dispatch-oauth_$scala$
-* dispatch-meetup_$scala$
-* dispatch-couch_$scala$
-* dispatch-twitter_$scala$
-* dispatch-s3_$scala$
-* dispatch-google_$scala$
-
-[dn]: http://databinder.net/repo/
-[st]: http://scala-tools.org/repo-releases/net/databinder/
-[sbt]: http://code.google.com/p/simple-build-tool/wiki/CrossBuild
-
-### Build Tools
-
-With **simple-build-tool** it's best to have the Scala version
-[automatically appended][sbt] so it will always match your
-project's. In a sbt 0.7.4 project:
-
-    val dispatch_http = "net.databinder" %% "dispatch-http" % "$version$"
-
-For **Maven**, specify the full artifact name:
-
-    <dependency>
-      <groupId>net.databinder</groupId>
-      <artifactId>dispatch-http_$scala$</artifactId>
-      <version>$version$</version>
-    </dependency>
+[gh]: https://github.com/n8han/databinder-dispatch
+[nabble]: http://databinder.3617998.n2.nabble.com/Dispatch-f3618001.html
