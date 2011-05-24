@@ -33,11 +33,11 @@ the situation.
 ### Dealing with It
 
 Versions of Dispatch through 0.7.x can work with Android's random old
-version of HttpClient just fine. Version 0.8.x however depends newer
+version of HttpClient just fine. Version 0.8.x however depends on newer
 major versions of the HttpComponents libraries and certain interfaces
-are not compatible with the code shipped with Android.
+that are not compatible with the code shipped with Android.
 
-But it is *possible* to include the newer HttpComponents artifacts in
+It is *possible* to include the newer HttpComponents artifacts in
 the application package and to trick the classloader into finding
 them. How? You can obfuscate the class and package names with
 ProGuard, eliminating the namespace collisions.
