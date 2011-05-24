@@ -1,7 +1,18 @@
 Who's Using Dispatch?
 ---------------------
 
-These are some projects and companies that have used Dispatch.
+These are some projects and companies that have used Dispatch. Are
+*you* using Dispatch?
+[Fork this page](https://github.com/n8han/Databinder-Dispatch/blob/master/docs/99.markdown)
+on github.
+
+#### Novus
+
+Dispatch forms the foundation of an in-house SOAP client at [Novus](https://www.novus.com/) together with [scalaxb](http://scalaxb.org/). Thanks to these tools our standard response to "Can you do SOAP?" is "Bring it on!" instead of "Ew, what's this on my shoe?!"
+
+#### MLB.com
+
+In a past life, [maxaf](https://github.com/maxaf) wrote an internal baseball stats REST API client that was used to feed data into some very gruelling PDF generation code. Dispatch was used to cleanly produce HTTP requests & parse responses without hurting engineer morale.
 
 #### conscript
 
