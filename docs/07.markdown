@@ -8,8 +8,8 @@ easy as it should be.
 ### Android's HttpClient
 
 The Android platform ships with the Apache HttpClient library. It is
-packaged in the same JAR as the standard "Java" classes. From an
-application perspective it is just there, always.
+packaged in the same JAR as the "Java" standard library. From an application
+perspective it is just there, always.
 
 When packaging for Android, you should be sure not to include any
 HttpClient jars; the classloader will always find the stock client's
