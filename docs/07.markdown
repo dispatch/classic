@@ -1,15 +1,15 @@
 Dispatch in Android
 -------------------
 
-Many people are writing Android applications in Scala. It's natural
-that they should want to do their HTTP communications with
-Dispatch. Unfortunately, this is not as easy as it should be.
+Many people are writing Android applications in Scala and want to do
+their HTTP communications with Dispatch. Unfortunately, this is not as
+easy as it should be.
 
 ### Android's HttpClient
 
-The Android platform ships with a version the Apache HttpClient
-library. It is packaged in the same JAR as the standard "Java"
-classes. From an application perspective it is just there, always.
+The Android platform ships with the Apache HttpClient library. It is
+packaged in the same JAR as the standard "Java" classes. From an
+application perspective it is just there, always.
 
 When packaging for Android, you should be sure not to include any
 HttpClient jars; the classloader will always find the stock client's
