@@ -3,7 +3,7 @@ package dispatch
 import org.apache.http.{HttpResponse,HttpEntity}
 import org.apache.http.util.EntityUtils
 import java.util.zip.GZIPInputStream
-import java.io.{InputStream,OutputStream}
+import java.io.{InputStream,OutputStream,InputStreamReader}
 import scala.io.Source
 import collection.immutable.{Map => IMap}
 import util.control.Exception._
@@ -77,11 +77,20 @@ class HandlerVerbs(request: Request) {
   def >- [T] (block: String => T) = >~ { so => block(so.mkString) }
   /** Return some non-huge response as a String. Charset note in >~  applies.*/
   def as_str = >- { s => s }
+  /** Handle response as a java.io.Reader */
+  def >>~ [T] (block: InputStreamReader => T) = >> { (stm, charset) => 
+    block(new InputStreamReader(stm, charset))
+  }
   /** Write to the given OutputStream. */
   def >>> [OS <: OutputStream](out: OS) = Handler(request, { ent => ent.writeTo(out); out })
   /** Process response as XML document in block */
-  def <> [T] (block: xml.Elem => T) = >> { stm => block(xml.XML.load(stm)) }
-  
+  def <> [T] (block: xml.Elem => T) = >>~ { reader => 
+    block(xml.XML.load(reader))
+  }
+  /** Process response as XHTML document in block, more lenient than <> */
+  def </> [T] (block: xml.NodeSeq => T) = >~ { src => 
+    block(xml.parsing.XhtmlParser(src))
+  }
   /** Process header as Map in block. Map returns empty set for header name misses. */
   def >:> [T] (block: IMap[String, Set[String]] => T) = 
     Handler(request, (_, res, _) => 

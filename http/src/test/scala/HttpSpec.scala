@@ -74,6 +74,18 @@ object HttpSpec extends Specification {
       h(my_defualts <& test >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) } ) must_== (jane, Set("gzip"))
     }
 
+    "process html page" in {
+      h(url("http://technically.us/") </> { xml =>
+        (xml \\ "title").text
+      }) must_== "technically.us"
+    }
+
+    "process xml response" in {
+      h(url("http://technically.us/test.xml") <> { xml =>
+        (xml \ "quote").text.trim
+      }) must_== jane.trim
+    }
+
     "equal expected string without gzip encoding, with handler chaining" in {
       h(test >+> { r => r >:> { headers =>
         r >- { (_, headers(CONTENT_ENCODING)) }
