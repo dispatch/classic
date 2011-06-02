@@ -1,0 +1,2 @@
+* New XHTML handler verb `</>` to handle imperfect inputs that the
+  xml handler `<>` would choke on.
