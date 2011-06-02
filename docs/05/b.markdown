@@ -18,7 +18,9 @@ This would be very unusual for a GET request in particular, which
 shouldn't have any side effects. (It's also not speaking well of our
 commitment to learning Scala.)
 
-To use a handler, just pass it to a Dispatch executor.
+To use a handler, you pass it to a Dispatch [executor][executor].
+
+[executor]: Choose+an+Executor.html
 
 ```scala
 Http(ignore)
