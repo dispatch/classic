@@ -111,21 +111,11 @@ trait Logger { def info(msg: String, items: Any*) }
 trait RequestLogging {
   lazy val log: Logger = make_logger
 
-  /** Info Logger for this instance, default returns Connfiggy if on classpath else console logger. */
-  def make_logger = try {
+  /** Info Logger for this instance, logs to console. */
+  def make_logger =
     new Logger {
-      def getObject(name: String) = Class.forName(name + "$").getField("MODULE$").get(null)
-      // using delegate, repeating parameters aren't working with structural typing in 2.7.x
-      val delegate = getObject("net.lag.logging.Logger")
-        .asInstanceOf[{ def get(n: String): { def ifInfo(o: => Object) } }]
-        .get(getClass.getCanonicalName)
-      def info(msg: String, items: Any*) { delegate.ifInfo(msg.format(items: _*)) }
-    }
-  } catch {
-    case _: ClassNotFoundException | _: NoClassDefFoundError => new Logger {
       def info(msg: String, items: Any*) { 
         println("INF: [console logger] dispatch: " + msg.format(items: _*)) 
       }
     }
-  }
 }
