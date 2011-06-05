@@ -27,9 +27,9 @@ object HttpSpec extends Specification {
   "Backwards combined request get" should {
     get_specs(/("test.text") <& :/("technically.us"))
   }
+  val http = new Http
+  val httpfuture = new thread.Http
   def get_specs(test: Request) = {
-    val http = new Http
-    val httpfuture = new thread.Http
     // start some connections as futures
     val stream = httpfuture(test >> { stm => 
       // the nested scenario here contrived fails with actors.Futures
@@ -102,5 +102,9 @@ object HttpSpec extends Specification {
       Http( :/("technically.us") <& /("test") <& /("test.text") as_str ) must_== test2
     }
   }
-  doAfterSpec { Http.shutdown  }
+  doAfterSpec {
+    Http.shutdown()
+    http.shutdown()
+    httpfuture.shutdown()
+  }
 }
