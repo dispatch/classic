@@ -15,8 +15,6 @@ trait Safety { self: BlockingHttp =>
 
   override def make_client = new ThreadSafeHttpClient(
     credentials, maxConnections, maxConnectionsPerRoute)
-  /** Shutdown connection manager, threads. */
-  def shutdown() = client.getConnectionManager.shutdown()
 }
 
 trait Future extends Safety { self: BlockingHttp =>

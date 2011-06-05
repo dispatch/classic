@@ -61,4 +61,7 @@ trait BlockingHttp extends HttpExecutor with BlockingCallback {
     })
   /** Potentially wraps payload, e.g. in a Future */
   def pack[T](req: { def abort() }, result: => T): HttpPackage[T]
+
+  /** Shutdown connection manager, threads. */
+  def shutdownClient() = client.getConnectionManager.shutdown()
 }

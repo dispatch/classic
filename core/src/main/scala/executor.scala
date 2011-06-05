@@ -83,6 +83,24 @@ trait HttpExecutor extends RequestLogging {
     }
     executeWithCallback(req.host, req.creds, request, callback)
   }
+  private var isShutdown = false
+  /** Release resources held by the executor. */
+  def shutdown() {
+    shutdownClient();
+    isShutdown = true
+  }
+  protected def shutdownClient(): Unit
+  /** Call shutdown if not already shutdown, issue warning */
+  override def finalize() {
+    if (!isShutdown) {
+      log.warn(
+        "Shutting down garbage-collected HttpExecutor--" +
+        "Call shutdown() explicitly to avoid resource leaks!"
+      )
+      shutdown()
+    }
+    super.finalize()
+  }
 }
 
 trait BlockingCallback { self: HttpExecutor =>
@@ -108,17 +126,25 @@ trait BlockingCallback { self: HttpExecutor =>
 case class StatusCode(code: Int, contents:String)
   extends Exception("Unexpected response code: " + code + "\n" + contents)
 
-/** Simple info logger */
-trait Logger { def info(msg: String, items: Any*) }
+/** Simple info and warn logger */
+trait Logger {
+  def info(msg: String, items: Any*)
+  def warn(msg: String, items: Any*)
+}
 
 trait RequestLogging {
   lazy val log: Logger = make_logger
 
-  /** Info Logger for this instance, logs to console. */
+  /** Logger for this executor, logs to console. */
   def make_logger =
     new Logger {
       def info(msg: String, items: Any*) { 
-        println("INF: [console logger] dispatch: " + msg.format(items: _*)) 
+        println("INF: [console logger] dispatch: " + 
+                msg.format(items: _*))
+      }
+      def warn(msg: String, items: Any*) { 
+        println("WARN: [console logger] dispatch: " +
+                msg.format(items: _*))
       }
     }
 }

@@ -173,7 +173,7 @@ class Http extends dispatch.HttpExecutor {
     }
   }
 
-  def shutdown() {
+  def shutdownClient() {
     client.shutdown()
   }
 }
