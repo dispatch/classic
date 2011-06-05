@@ -5,7 +5,7 @@ import org.apache.http.client.methods.HttpRequestBase
 import dispatch._
 import dispatch.futures._
 
-/** Http with a thread-safe client and non-blocking interfaces */
+/** Http with a thread-safe client */
 trait Safety { self: BlockingHttp =>
   /** Maximum number of connections in pool, default is 50 */
   def maxConnections = 50
@@ -17,6 +17,7 @@ trait Safety { self: BlockingHttp =>
     credentials, maxConnections, maxConnectionsPerRoute)
 }
 
+/** Wraps each call in a (threaded) future.  */
 trait Future extends Safety { self: BlockingHttp =>
   type HttpPackage[T] = StoppableFuture[T]
   def pack[T](request: { def abort() }, result: => T) = new StoppableFuture[T] {

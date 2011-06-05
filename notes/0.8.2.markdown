@@ -1,2 +1,33 @@
+#### Changes
+
 * New XHTML handler verb `</>` to handle imperfect inputs that the
   xml handler `<>` would choke on.
+* `dispatch.Logger` trait declares a `warn` method. Any custom
+  implementations will need to define it.
+* The base `HttpExecutor` defines a `shutdown()` method which should be
+  called when finished with any instance.
+* `HttpExecutor` defines a `finalize()` method that shuts down the
+  instance if needed, and issues a warning.
+* Removed dynamic call to Configgy logging, which fails on Scala 2.9
+  if its incompatible classes are on the classpath.
+
+#### Shutdown Notes
+
+Although Dispatch 0.7 did not require single-connection client
+instances to be shutdown after use, changes in the underlying Apache
+HttpComponents library introduced in Dispatch 0.8 effectively require
+shutdown for any client instance.
+
+If you create and use many instances (a few hundred) of the
+single-connection client and do not shut them down, resources held by
+the underlying library will be exhausted and calls to the client will
+block indefinitely. As a last resort Dispatch calls `shutdown()` in
+`finalize()`, but you can not depend on the garbage collector to keep
+up with your use of executors.
+
+If you are using a single-connection executor, we recommend that you
+retain it for a thread of execution (instead of creating new instances
+for each call) and shut it down before the thread
+terminates. Alternatively, consider sharing a thread-safe client
+across your application, which can be easily mixed in to blocking
+executors with the `dispatch.thread.Safety` trait.
