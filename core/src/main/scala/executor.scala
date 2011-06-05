@@ -38,7 +38,10 @@ trait HttpExecutor extends RequestLogging {
         case null => None
         case ent => Some(ent)
       }
-      hand.block(res.getStatusLine.getStatusCode, res, ent)
+      val result = hand.block(res.getStatusLine.getStatusCode, res, ent)
+      // only handlers that use the content stream have closed it
+      ent.foreach(EntityUtils.consume)
+      result
     }, hand.listener)
   }
   /** Apply Response Handler if reponse code returns true from chk. */
