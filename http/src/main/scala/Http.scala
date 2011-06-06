@@ -59,6 +59,10 @@ trait BlockingHttp extends HttpExecutor with BlockingCallback {
     } catch {
       case e => listener.lift(e); throw e
     })
+  /** Make sure the entity is consumed. */
+  def consumeContent(entity: Option[HttpEntity]) {
+    entity.foreach(org.apache.http.util.EntityUtils.consume)
+  }
   /** Potentially wraps payload, e.g. in a Future */
   def pack[T](req: { def abort() }, result: => T): HttpPackage[T]
 

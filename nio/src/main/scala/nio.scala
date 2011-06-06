@@ -172,7 +172,8 @@ class Http extends dispatch.HttpExecutor {
       )
     }
   }
-
+  /** Does nothing, NIO executor always consumes entities it creates */
+  def consumeContent(entity: Option[HttpEntity]) { }
   def shutdownClient() {
     client.shutdown()
   }

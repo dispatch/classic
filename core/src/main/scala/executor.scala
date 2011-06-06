@@ -39,11 +39,12 @@ trait HttpExecutor extends RequestLogging {
         case ent => Some(ent)
       }
       val result = hand.block(res.getStatusLine.getStatusCode, res, ent)
-      // only handlers that use the content stream have closed it
-      ent.foreach(EntityUtils.consume)
+      consumeContent(ent)
       result
     }, hand.listener)
   }
+  /** Allow executor to release any resources for an entity */
+  def consumeContent(entity: Option[HttpEntity]): Unit
   /** Apply Response Handler if reponse code returns true from chk. */
   final def when[T](chk: Int => Boolean)(hand: Handler[T]) = 
     x(hand.copy(block= {
