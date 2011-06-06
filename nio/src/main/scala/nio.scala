@@ -85,8 +85,9 @@ class Http extends dispatch.HttpExecutor {
     consumer: StoppableConsumer[T]
   ) extends dispatch.futures.StoppableFuture[T] {
     def apply() = {
+      val res = underlying.get()
       consumer.exception.foreach { throw _ }
-      underlying.get()
+      res
     }
     def isSet = consumer.exception.isDefined || underlying.isDone
     def stop() { 
