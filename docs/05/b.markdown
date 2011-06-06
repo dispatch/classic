@@ -49,6 +49,8 @@ Http(learnScala </> { nodes =>
 })
 ```
 
-The `</>` verb defines a handler that processes the response as XHTML
-and calls its given function with a `scala.xml.NodeSeq`. The \\\\
-method projects over the `<title>` node, and `text` gives its contents.
+The `</>` handler processes the response as XHTML and passes a
+`scala.xml.NodeSeq` to the supplied function. The `\\\\` projection
+function finds the `<title>` node, and `text` gives its contents.
+
+So, that's how you get the title of the "Learning Scala" page.
