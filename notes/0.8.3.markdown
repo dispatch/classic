@@ -1,0 +1,6 @@
+* Fixed regression in NIO handler futures introduced in 0.8.2. An
+  exception was thrown after otherwise successful buffered stream
+  request handling.
+* Fixed bug in NIO handler that would in some cases allow `apply()` to
+  return null after exceptions were recorded. Applying the NIO future
+  will now throw any recorded exceptions, as intended.
