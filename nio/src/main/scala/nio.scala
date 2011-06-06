@@ -102,9 +102,6 @@ class Http extends dispatch.HttpExecutor {
   class ExceptionFuture[T](e: Throwable) extends SubstituteFuture[T] {
     def apply() = throw e
   }
-  class FinishedFuture[T](item: T) extends SubstituteFuture[T] {
-    def apply() = item
-  }
 
   def execute[T](host: HttpHost, 
                  credsopt: Option[dispatch.Credentials], 
