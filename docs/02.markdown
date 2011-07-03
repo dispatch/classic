@@ -1,7 +1,7 @@
 Choose an Executor
 ------------------
 
-Dispatch supports arbitrarily many types of HTTP *executors*—you could
+Dispatch supports arbitrarily many types of HTTP *executors*--you could
 make your own, and you wouldn't be the first to do so. Executors carry
 out your request *handlers* and *callbacks*.
 
