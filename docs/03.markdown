@@ -44,8 +44,10 @@ project's. In a sbt 0.7.4 project:
 
 For **Maven**, specify the full artifact name:
 
-    <dependency>
-      <groupId>net.databinder</groupId>
-      <artifactId>dispatch-http_$scala$</artifactId>
-      <version>$version$</version>
-    </dependency>
+```xml
+<dependency>
+  <groupId>net.databinder</groupId>
+  <artifactId>dispatch-http_$scala$</artifactId>
+  <version>$version$</version>
+</dependency>
+```
