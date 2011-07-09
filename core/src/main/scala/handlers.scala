@@ -4,6 +4,7 @@ import org.apache.http.{HttpResponse,HttpEntity}
 import org.apache.http.util.EntityUtils
 import java.util.zip.GZIPInputStream
 import java.io.{InputStream,OutputStream,InputStreamReader}
+import javax.xml.parsers.SAXParserFactory
 import scala.io.Source
 import collection.immutable.{Map => IMap}
 import util.control.Exception._
@@ -39,6 +40,12 @@ object Handler {
         | If no response body is expected, use a handler such as 
         | HandlerVerbs#>| that does not require one.""".stripMargin.format(res))
     } } )
+  // retain factory to use with XML.load; its newInstance method is not thread-safe
+  lazy val saxParserFactory = {
+    val spf = SAXParserFactory.newInstance()
+    spf.setNamespaceAware(false)
+    spf
+  }
 }
 
 trait ImplicitHandlerVerbs {
@@ -85,7 +92,7 @@ class HandlerVerbs(request: Request) {
   def >>> [OS <: OutputStream](out: OS) = Handler(request, { ent => ent.writeTo(out); out })
   /** Process response as XML document in block */
   def <> [T] (block: xml.Elem => T) = >>~ { reader => 
-    block(xml.XML.load(reader))
+    block(xml.XML.withSAXParser(Handler.saxParserFactory.newSAXParser).load(reader))
   }
   /** Process response as XHTML document in block, more lenient than <> */
   def </> [T] (block: xml.NodeSeq => T) = >~ { src => 
