@@ -1,29 +1,29 @@
 Lift JSON
 ---------
 
-Dispatch has two JSON handlers, one developed internally and one
-developed to work with the [Lift][lift] framework. This reflects two
-major representations of JSON data within Dispatch: dispatch.json and
-net.liftweb.json.JsonAST.
+Lift-JSON is developed and supported by the [Lift][lift]
+framework. These are some basic instructions for using it with
+Dispatch.
 
 [lift]: http://liftweb.net/
 
 ### Example Usage
 
-Lift's JSON usage is very similar to using Dispatch's internal JSON
-representation. As always, start by importing the main dispatch
+Using Lift-JSON is very similar to using Dispatch's internal JSON
+representation. As always, start by importing the main Dispatch
 methods.
 
 ```scala
 import dispatch._
 ```
-Instead of importing the internal JSON values, import Dispatch's
-liftjson:
+But instead of importing the internal JSON methods, import Dispatch's
+interface to lift-json:
 
 ```scala
 import dispatch.liftjson.Js._
 ```
-We will now be able to use the ># operator in our handlers. For
+
+We will now be able to use the `>#` operator in our handlers. For
 example, if we wanted to search for scala podcasts, we might use
 something like
 
@@ -40,6 +40,7 @@ http(u ># { json =>
   })
 })
 ```
+
 This script starts by importing lift's JSON values (for pattern
 matching) and then creates the http executor and the gpodder url. We
 then execute with a handler which accepts a lift JValue and returns a
