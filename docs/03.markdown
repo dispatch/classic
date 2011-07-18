@@ -3,7 +3,7 @@ Project Setup
 
 ### Modules and Artifacts
 
-Dispatch is broken into a number of modules so that client
+Dispatch is divided into a number of modules so that client
 applications need only depend on the parts of Dispatch they use. Some
 of the modules depend on other modules, and dependencies managers will
 add these transitive dependencies automatically.
@@ -16,7 +16,6 @@ names are as follows:
 
 * dispatch-http_$scala$
 * dispatch-nio_$scala$
-* dispatch-gae_$scala$
 * dispatch-core_$scala$
 * dispatch-futures_$scala$
 * dispatch-mime_$scala$
@@ -24,23 +23,61 @@ names are as follows:
 * dispatch-http-json_$scala$
 * dispatch-lift-json_$scala$
 * dispatch-oauth_$scala$
-* dispatch-meetup_$scala$
-* dispatch-couch_$scala$
-* dispatch-twitter_$scala$
-* dispatch-s3_$scala$
-* dispatch-google_$scala$
 
 [dn]: http://databinder.net/repo/
 [st]: http://scala-tools.org/repo-releases/net/databinder/
 [sbt]: http://code.google.com/p/simple-build-tool/wiki/CrossBuild
 
+### API Integration Modules
+
+Because each web API has its own release timeline, API integrations
+are not part of the main Dispatch build and distribution. Instead they
+are projects accessible by git and named "dispatch-twitter",
+"dispatch-meetup", etc.
+
+Since these modules are build from source for use in client
+applications, binary compatibility with Scala and Dispatch versions is
+not an issue. More importantly, they can be trivially created,
+updated, and used by anyone.
+
+If one is lacking an API method that you need right now, you can fork
+it, fix it, and tag it in the next five minutes. Once tagged and
+pushed to a publicly accessible git repo, it's "released". We'd also
+like for you to fork this documentation and add your integration
+module to the list.
+
+* [n8han/dispatch-aws-s3](https://github.com/n8han/dispatch-aws-s3) -- Amazon S3 signing and bucket interaction
+* n8han/dispatch-couch
+* n8han/dispatch-gae -- 
+* n8han/dispatch-google-clientlogin
+* n8han/dispatch-meetup -- Meetup Groups and Everywhere APIs
+* n8han/dispatch-twitter
+
+
 ### Build Tools
 
 With **simple-build-tool** it's best to have the Scala version
 [automatically appended][sbt] so it will always match your
-project's. In a sbt 0.7.4 project:
+project's. In a sbt 0.10.x `build.sbt`:
 
-    val dispatch_http = "net.databinder" %% "dispatch-http" % "$version$"
+```scala
+libraryDependencies ++= Seq(
+  "net.databinder" %% "dispatch-http" % "$version$"
+)
+```
+
+For API integration modules, create a source dependency in the file
+`project/build.scala`. For example, to depend on the 0.1.0 tag of
+n8han/dispatch-meetup on github:
+
+```scala
+import sbt._
+object MyApp extends Build
+{
+  lazy val root = Project("$name$", file(".")) dependsOn(dispatchMeetup)
+  lazy val dispatchMeetup = uri("git://github.com/n8han/dispatch-meetup#0.1.0")
+}
+```
 
 For **Maven**, specify the full artifact name:
 
