@@ -17,6 +17,7 @@ names are as follows:
 * dispatch-http_$scala$
 * dispatch-nio_$scala$
 * dispatch-core_$scala$
+* dispatch-gae_$scala$
 * dispatch-futures_$scala$
 * dispatch-mime_$scala$
 * dispatch-json_$scala$
@@ -37,22 +38,19 @@ are projects accessible by git and named "dispatch-twitter",
 
 Since these modules are build from source for use in client
 applications, binary compatibility with Scala and Dispatch versions is
-not an issue. More importantly, they can be trivially created,
-updated, and used by anyone.
+not an issue. More importantly, they can be trivially initted, forked,
+and used by anyone.
 
-If one is lacking an API method that you need right now, you can fork
-it, fix it, and tag it in the next five minutes. Once tagged and
-pushed to a publicly accessible git repo, it's "released". We'd also
-like for you to fork this documentation and add your integration
-module to the list.
+If a module is lacking an API method that you need right now, you can
+fork it, fix it, tag it, and push it without waiting on anyone
+else. At that point it's "released" under your name. You should also
+fork this documentation to add your integration module to the list:
 
 * [n8han/dispatch-aws-s3](https://github.com/n8han/dispatch-aws-s3) -- Amazon S3 signing and bucket interaction
-* n8han/dispatch-couch
-* n8han/dispatch-gae -- 
-* n8han/dispatch-google-clientlogin
-* n8han/dispatch-meetup -- Meetup Groups and Everywhere APIs
-* n8han/dispatch-twitter
-
+* [n8han/dispatch-couch](https://github.com/n8han/dispatch-couch) -- Basic CouchDB integration module, rather outdated
+* [n8han/dispatch-google-clientlogin](https://github.com/n8han/dispatch-google-clientlogin) -- Google's ClientLogin
+* [n8han/dispatch-meetup](https://github.com/n8han/dispatch-meetup) -- Meetup Groups and Everywhere APIs
+* [n8han/dispatch-twitter](https://github.com/n8han/dispatch-twitter) -- Basic Twitter integration for Dispatch, pls fork!
 
 ### Build Tools
 
@@ -66,20 +64,23 @@ libraryDependencies ++= Seq(
 )
 ```
 
-For API integration modules, create a source dependency in the file
-`project/build.scala`. For example, to depend on the 0.1.0 tag of
-n8han/dispatch-meetup on github:
+To depend on **API integration modules** with sbt, create a source
+dependency in the file `project/build.scala`. For example, this will
+build against the 0.1.0 tag of n8han/dispatch-meetup on github:
 
 ```scala
 import sbt._
 object MyApp extends Build
 {
-  lazy val root = Project("$name$", file(".")) dependsOn(dispatchMeetup)
-  lazy val dispatchMeetup = uri("git://github.com/n8han/dispatch-meetup#0.1.0")
+  lazy val root =
+    Project("$name$", file(".")) dependsOn(dispatchMeetup)
+  lazy val dispatchMeetup =
+    uri("git://github.com/n8han/dispatch-meetup#0.1.0")
 }
 ```
 
-For **Maven**, specify the full artifact name:
+With **Maven**, you can depend on Dispatch's binary modules by
+specifying the full artifact id with Scala version:
 
 ```xml
 <dependency>
