@@ -39,7 +39,7 @@ http(:/("dispatch.databinder.net") >+> { req =>
     _("Content-Type").filter {
       _.contains("text/html")
     }.headOption.map { _ =>
-      req </> { nodes => (nodes \\ "h1").text }
+      req </> { nodes => (nodes \\\\ "h1").text }
     }.getOrElse {
       req >> { _ => "unknown content type" }
     }
