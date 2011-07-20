@@ -25,9 +25,9 @@ val (lastmod, contents) =
 
 ### Conditional Chain
 
-The tuple-split is too limited for some uses. For example, you may
-want to handle a streaming response in a function that also has the
-response headers in scope. Or you may want to apply an entirely
+The handler tuple above is too limited for some uses. For example, you
+may want to handle a streaming response in a function that also has
+the response headers in scope. Or you may want to apply an entirely
 different handler depending on the header values.
 
 The `>+>` handler-chaining verb provides all of this, with only a
