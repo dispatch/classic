@@ -1,8 +1,8 @@
-Basic Request Handling
-----------------------
+A Simple Request
+----------------
 
-This section explores basic request and response handling with
-Dispatch. You'll need a Scala [console with Dispatch][try] on the
+This section explores basic request definition and response handling
+with Dispatch. You'll need a Scala [console with Dispatch][try] on the
 classpath to follow along.
 
 [try]: Try+Dispatch.html

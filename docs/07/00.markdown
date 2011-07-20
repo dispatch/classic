@@ -1,0 +1,5 @@
+Putting It All Together
+-----------------------
+
+Once you've mastered the basic request and response verbs, you can
+compose almost any kind of HTTP interaction.
