@@ -4,7 +4,7 @@ Two Handlers Are Better Than One
 Dispatch has so many handy response handlers--but what if you want to
 use two with the same request? You *can't* do that with a stream of
 the response body, since this can only be consumed once, but for
-**headers** it's a simple and necessary operation.
+**headers** it's essential and straightforward.
 
 ### Split and Tuple
 
