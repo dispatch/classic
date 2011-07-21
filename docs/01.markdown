@@ -14,29 +14,22 @@ project's current
 
 [zip]: https://github.com/n8han/dispatch-twine/zipball/master
 
-Twine is built with Simple Build Tool. If you haven't yet
-[setup sbt][sbt], now is a good time to do that. Once you have sbt on
-your executable search path, you can enter its interactive console for
-the Twine project.
+Twine is built with sbt 0.10. If you haven't yet [setup sbt][sbt], now
+is a good time to do that. Once you have `sbt` on your executable search
+path, you can enter its interactive console for the Twine project.
 
-[sbt]: http://code.google.com/p/simple-build-tool/wiki/Setup
+[sbt]: https://github.com/harrah/xsbt/wiki/Setup
 
     cd dispatch-twine
     sbt
 
-In sbt's console, ask it to fetch the project's dependencies.
-
-    update
-
-With Dispatch on the project classpath, we can play with it in the
-console.
+In sbt's console, call the `console` task.
 
     console
 
-Before entering the console sbt will compile the Twine project,
-although for the moment we are only interested in the underlying
-library. You should shortly see a message welcoming you to the
-console, and a `scala>` prompt.
+On the first run this task will download Dispatch dependencies and
+compile the Twine app. After that, you should see a message welcoming
+you to the console and a friendly `scala>` prompt.
 
 ### Your First Request
 
