@@ -52,7 +52,6 @@ trait ImplicitHandlerVerbs {
   implicit def toHandlerVerbs(req: Request) = new HandlerVerbs(req)
   implicit def stringToHandlerVerbs(str: String) = new HandlerVerbs(new Request(str))
 }
-object HandlerVerbs extends ImplicitHandlerVerbs
 
 class HandlerVerbs(request: Request) {
   /** Handle InputStream in block, handle gzip if so encoded. Passes on any charset

@@ -70,7 +70,6 @@ trait ImplicitCallbackVerbs {
   implicit def toCallbackVerbs(req: Request) = new CallbackVerbs(req)
   implicit def stringToCallbackVerbs(str: String) = new CallbackVerbs(new Request(str))
 }
-object CallbackVerbs extends ImplicitCallbackVerbs
 
 class CallbackVerbs(subject: Request) {
   import Callback._

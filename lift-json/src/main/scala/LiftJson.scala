@@ -7,21 +7,28 @@ import JsonDSL._
 import java.util.Date
 
 trait ImplicitJsonVerbs {
-  /** Add JSON-processing method ># to dispatch.Request */
-  implicit def requestToJsonVerbs(r: dispatch.Request) = new JsonVerbs(r)
-  /** Add String conversion since Http#str2req implicit will not chain. */
-  implicit def stringToJsonVerbs(r: String) = new JsonVerbs(new Request(r))
+  /** Add JSON-processing method ># to dispatch.HandlerVerbs */
+  implicit def handlerToJsonVerbs(r: HandlerVerbs) =
+    new JsonHandlerVerbs(r)
+  implicit def requestToJsonVerbs(r: Request) =
+    new JsonHandlerVerbs(r)
+  implicit def stringToJsonVerbs(str: String) =
+    new JsonHandlerVerbs(new Request(str))
+  implicit def callbackToJsonVerbs(r: CallbackVerbs) =
+    new JsonCallbackVerbs(r)
 }
-class JsonVerbs(subject: Request) {
+class JsonHandlerVerbs(subject: HandlerVerbs) {
   /** Process response as JsValue in block */
   def ># [T](block: JValue => T) = subject >> { (stm, charset) => 
     block(JsonParser.parse(new java.io.InputStreamReader(stm, charset)))
   }
   def as_pretty = this ># { js => Js.prettyrender(js) }
   /** Process streaming json messages, separated by newlines, in callbacks */
-  def ^# [T](block: JValue => T) = subject ^-- { s => block(JsonParser.parse(s)) }
 }
-
+class JsonCallbackVerbs(subject: CallbackVerbs) {
+  def ^# [T](block: JValue => T) =
+    subject ^-- { s => block(JsonParser.parse(s)) }
+}
 object Js extends TypeMappers with ImplicitJsonVerbs {
   implicit def jvlistcomb[LT](block: JValue => List[LT]) = new JvListComb(block)
   class JvListComb[LT](block: JValue => List[LT]) {
