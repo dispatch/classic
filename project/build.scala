@@ -7,7 +7,9 @@ object Dispatch extends Build {
     version := "0.8.4-SNAPSHOT",
     crossScalaVersions := Seq("2.8.0", "2.8.1", "2.9.0", "2.9.0-1"),
     libraryDependencies +=
-      ("org.apache.httpcomponents" % "httpclient" % "4.1")
+      ("org.apache.httpcomponents" % "httpclient" % "4.1"),
+    libraryDependencies +=
+      ("org.scala-tools.testing" %% "specs" % "1.6.8" % "test")
   )
   lazy val dispatch =
     Project("Dispatch", file("."), settings = shared) aggregate(
@@ -43,10 +45,10 @@ object Dispatch extends Build {
       shared ++ Seq(
         libraryDependencies += ("net.liftweb" % "lift-json_2.8.1" % "2.3")
       )
-    ) dependsOn(core)
+    ) dependsOn(core, http)
   lazy val oauth =
     Project("dispatch-oauth", file("oauth"), settings = shared) dependsOn(
-      core)
+      core, http)
 }
               
                              
