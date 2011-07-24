@@ -6,10 +6,15 @@ object Dispatch extends Build {
     organization := "net.databinder",
     version := "0.8.4-SNAPSHOT",
     crossScalaVersions := Seq("2.8.0", "2.8.1", "2.9.0", "2.9.0-1"),
-    libraryDependencies +=
-      ("org.apache.httpcomponents" % "httpclient" % "4.1"),
-    libraryDependencies +=
-      ("org.scala-tools.testing" %% "specs" % "1.6.8" % "test")
+    libraryDependencies <++= (scalaVersion) { sv => Seq(
+      "org.apache.httpcomponents" % "httpclient" % "4.1",
+      sv.substring(0,3) match {
+        case "2.8" =>
+          "org.scala-tools.testing" % "specs_2.8.1" % "1.6.8" % "test"
+        case "2.9" =>
+          "org.scala-tools.testing" %% "specs" % "1.6.8" % "test"
+      }
+    ) }
   )
   lazy val dispatch =
     Project("Dispatch", file("."), settings = shared) aggregate(
@@ -43,7 +48,10 @@ object Dispatch extends Build {
   lazy val lift_json =
     Project("dispatch-lift-json", file("lift-json"), settings =
       shared ++ Seq(
-        libraryDependencies += ("net.liftweb" % "lift-json_2.8.1" % "2.3")
+        libraryDependencies <+= scalaVersion(v =>
+          if (v.startsWith("2.8")) "net.liftweb" %% "lift-json" % "2.3"
+          else "net.liftweb" %% "lift-json" % "2.4-M3"
+        )
       )
     ) dependsOn(core, http)
   lazy val oauth =
