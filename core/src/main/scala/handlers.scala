@@ -91,11 +91,7 @@ class HandlerVerbs(request: Request) {
   def >>> [OS <: OutputStream](out: OS) = Handler(request, { ent => ent.writeTo(out); out })
   /** Process response as XML document in block */
   def <> [T] (block: xml.Elem => T) = >>~ { reader => 
-    block(xml.XML.withSAXParser(
-      Handler.saxParserFactory.synchronized {
-        Handler.saxParserFactory.newSAXParser
-      }
-    ).load(reader))
+    block(xml.XML.withSAXParser(Handler.saxParserFactory.newSAXParser).load(reader))
   }
   /** Process response as XHTML document in block, more lenient than <> */
   def </> [T] (block: xml.NodeSeq => T) = >~ { src => 
