@@ -1,0 +1,11 @@
+* Converted the build to sbt 0.10, [issue 35](https://github.com/n8han/Databinder-Dispatch/issues/35)
+* Extracted API integration modules into external git-dependencies: see updated [project setup documentation](http://dispatch.databinder.net/Project+Setup.html)
+* Fixed typing conflict that prevented JSON extension verbs from working with a split request handler, [issue 40](https://github.com/n8han/Databinder-Dispatch/issues/40)
+
+### API Module Migration
+
+To minimize the disruption of this point release, the popular
+`dispatch.twitter.Auth` object has been kept in the main distribution,
+specifically in the dispatch-oauth module. If you're using only this
+object, you won't need to set up a git-dependency on the external
+Twitter module.

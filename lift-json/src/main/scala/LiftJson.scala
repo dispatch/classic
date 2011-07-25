@@ -14,7 +14,7 @@ trait ImplicitJsonVerbs {
     new JsonHandlerVerbs(r)
   implicit def stringToJsonVerbs(str: String) =
     new JsonHandlerVerbs(new Request(str))
-  implicit def callbackToJsonVerbs(r: CallbackVerbs) =
+  implicit def callbackToJsonVerbs(r: Request) =
     new JsonCallbackVerbs(r)
 }
 class JsonHandlerVerbs(subject: HandlerVerbs) {
