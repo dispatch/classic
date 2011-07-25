@@ -14,7 +14,9 @@ object Dispatch extends Build {
         case "2.9" =>
           "org.scala-tools.testing" %% "specs" % "1.6.8" % "test"
       }
-    ) }
+    ) },
+    publishTo := Some("Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"),
+    credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
   )
   lazy val dispatch =
     Project("Dispatch", file("."), settings = shared) aggregate(
