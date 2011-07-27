@@ -4,8 +4,10 @@ Community
 Dispatch (including this documentation) lives [on GitHub][gh], and
 many of its features and bug fixes originate in forks of the 
 project there. Dispatch's documentation is generated via 
-[Pamflet][pamflet]. We also have [a mailing list][nabble].
+[Pamflet][pamflet]. We also have [a mailing list][gg]. The previous mailing list
+can be found [here][nabble].
  
 [gh]: https://github.com/n8han/databinder-dispatch
 [pamflet]: http://pamflet.databinder.net/Pamflet.html
+[gg]: http://groups.google.com/group/dispatch-scala/topics
 [nabble]: http://databinder.3617998.n2.nabble.com/Dispatch-f3618001.html
