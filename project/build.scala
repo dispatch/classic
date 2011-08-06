@@ -5,16 +5,16 @@ object Dispatch extends Build {
   val shared = Defaults.defaultSettings ++ Seq(
     organization := "net.databinder",
     version := "0.8.5",
-    crossScalaVersions := Seq("2.8.0", "2.8.1", "2.9.0", "2.9.0-1"),
+    crossScalaVersions := Seq("2.8.0", "2.8.1", "2.9.0", "2.9.0-1", "2.9.1.RC1"),
     libraryDependencies <++= (scalaVersion) { sv => Seq(
       "org.apache.httpcomponents" % "httpclient" % "4.1",
-      sv.substring(0,3) match {
-        case "2.8" =>
-          "org.scala-tools.testing" % "specs_2.8.1" % "1.6.8" % "test"
-        case "2.9" =>
-          "org.scala-tools.testing" %% "specs" % "1.6.8" % "test"
-      }
-    ) },
+      sv.split('.').toList match {
+        case "2" :: "8" :: _ => "org.scala-tools.testing" % "specs_2.8.1" % "1.6.8" % "test"
+        case "2" :: "9" :: "1" :: _ => "org.scala-tools.testing" % "specs_2.9.0-1" % "1.6.8" % "test"
+        case "2" :: "9" :: _ => "org.scala-tools.testing" %% "specs" % "1.6.8" % "test"
+        case _ => error("specs not support for scala version %s" format sv)
+      })
+    },
     publishTo := Some("Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"),
     credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
   )
@@ -31,7 +31,7 @@ object Dispatch extends Build {
       core, futures)
   lazy val nio =
     Project("dispatch-nio", file("nio"), settings = shared ++ Seq(
-      libraryDependencies += 
+      libraryDependencies +=
         ("org.apache.httpcomponents" % "httpasyncclient" % "4.0-alpha1")
     )) dependsOn(core, futures)
   lazy val mime =
@@ -51,8 +51,12 @@ object Dispatch extends Build {
     Project("dispatch-lift-json", file("lift-json"), settings =
       shared ++ Seq(
         libraryDependencies <+= scalaVersion(v =>
-          if (v.startsWith("2.8")) "net.liftweb" %% "lift-json" % "2.3"
-          else "net.liftweb" %% "lift-json" % "2.4-M3"
+          v.split('.').toList match {
+            case "2" :: "8" :: _ => "net.liftweb" %% "lift-json" % "2.3"
+            case "2" :: "9" :: "1" :: _ => "net.liftweb" % "lift-json_2.9.0-1" % "2.4-M3"
+            case "2" :: "9" :: _ => "net.liftweb" %% "lift-json" % "2.4-M3"
+            case _ => error("lift-json not supported for scala version %s" format v)
+          }
         )
       )
     ) dependsOn(core, http)
@@ -60,5 +64,3 @@ object Dispatch extends Build {
     Project("dispatch-oauth", file("oauth"), settings = shared) dependsOn(
       core, http)
 }
-              
-                             
