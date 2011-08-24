@@ -14,7 +14,7 @@ object JsHttp extends JsHttp
 
 class JsHandlers(subject: HandlerVerbs) {
   /** Process response as JsValue in block */
-  def ># [T](block: json.Js.JsF[T]) = subject >> { (stm, charset) =>
-    block(json.Js(stm, charset))
+  def ># [T](block: json.Js.JsF[T]) = subject >- { s =>
+    block(json.Js(s))
   }
 }
