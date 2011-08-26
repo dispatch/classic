@@ -23,11 +23,13 @@ object JsonParser extends StdTokenParsers with ImplicitConversions {
   def jsonStr = accept("string", { case lexical.StringLit(n) => JsString(n)})
   def jsonNum = accept("number", { case lexical.NumericLit(n) => JsNumber(n) })
 
-  def apply(input: Reader[Char]): JsValue =
+  def apply(input: Reader[Char]): JsValue = {
+    lexical.lastNoSuccess = null
     phrase(jsonVal)(new lexical.Scanner(input)) match {
       case Success(result, _) => result
       case _ => throw new Exception("Illegal JSON format")
     }
+  }
 }
 
 sealed trait JsValue {
