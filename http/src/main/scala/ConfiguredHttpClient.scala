@@ -7,8 +7,9 @@ import org.apache.http.conn.params.ConnRouteParams
 import org.apache.http.params.{HttpProtocolParams, BasicHttpParams, HttpParams}
 import org.apache.http.client.params.AuthPolicy
 
-/** Basic extension of DefaultHttpClient defaulting to Http 1.1, UTF8, and no Expect-Continue.
-    Scopes authorization credentials to particular requests thorugh a DynamicVariable. */
+/** Basic extension of DefaultHttpClient defaulting to Http 1.1, UTF8,
+ *  and no Expect-Continue. Scopes authorization credentials to particular
+ *  requests thorugh a DynamicVariable. */
 class ConfiguredHttpClient(
   credentials: Http.CurrentCredentials
 ) extends DefaultHttpClient { 
@@ -17,20 +18,28 @@ class ConfiguredHttpClient(
   protected var proxyNTCredentials: Option[NTCredentials] = None
   protected def configureProxy(params: HttpParams) = {
     val sys = System.getProperties()
-    val host = sys.getProperty("https.proxyHost", sys.getProperty("http.proxyHost"))
-    val port = sys.getProperty("https.proxyPort", sys.getProperty("http.proxyPort"))
-    val user = sys.getProperty("https.proxyUser", sys.getProperty("http.proxyUser"))
-    val password = sys.getProperty("https.proxyPassword", sys.getProperty("http.proxyPassword"))
-    val domain = sys.getProperty("https.auth.ntlm.domain", sys.getProperty("http.auth.ntlm.domain"))
+    val host = sys.getProperty("https.proxyHost",
+                               sys.getProperty("http.proxyHost"))
+    val port = sys.getProperty("https.proxyPort",
+                               sys.getProperty("http.proxyPort"))
+    val user = sys.getProperty("https.proxyUser",
+                               sys.getProperty("http.proxyUser"))
+    val password = sys.getProperty("https.proxyPassword",
+                                   sys.getProperty("http.proxyPassword"))
+    val domain = sys.getProperty("https.auth.ntlm.domain",
+                                 sys.getProperty("http.auth.ntlm.domain"))
     if (host != null && port != null) {
-      ConnRouteParams.setDefaultProxy(params, new HttpHost(host, port.toInt))
+      ConnRouteParams.setDefaultProxy(params,
+                                      new HttpHost(host, port.toInt))
       proxyScope = Some(new AuthScope(host, port.toInt))
     }
     if (user != null && password != null) {
-      proxyBasicCredentials = Some(new UsernamePasswordCredentials(user, password))
+      proxyBasicCredentials =
+        Some(new UsernamePasswordCredentials(user, password))
       // We should pass our hostname, actually
       // Also, we ought to support "domain/user" syntax
-      proxyNTCredentials = Some(new NTCredentials(user, password, "", Option(domain) getOrElse ""))
+      proxyNTCredentials = Some(new NTCredentials(
+        user, password, "", Option(domain) getOrElse ""))
     }
     params
   }
