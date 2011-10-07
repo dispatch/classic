@@ -29,6 +29,11 @@ object Dispatch extends Build {
   lazy val http =
     Project("dispatch-http", file("http"), settings = shared) dependsOn(
       core, futures)
+  lazy val gae =
+    Project("dispatch-gae", file("http-gae"), settings = shared ++ Seq(
+      libraryDependencies +=
+        "com.google.appengine" % "appengine-api-1.0-sdk" % "1.4.3"
+    )) dependsOn(http)
   lazy val nio =
     Project("dispatch-nio", file("nio"), settings = shared ++ Seq(
       libraryDependencies +=
