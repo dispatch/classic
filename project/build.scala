@@ -20,8 +20,7 @@ object Dispatch extends Build {
   )
   lazy val dispatch =
     Project("Dispatch", file("."), settings = shared) aggregate(
-      futures, core, http, nio, mime, json, http_json,
-      lift_json, oauth)
+      futures, core, http, nio, mime, json, http_json, oauth)
   lazy val futures =
     Project("dispatch-futures", file("futures"), settings = shared)
   lazy val core =
@@ -52,19 +51,6 @@ object Dispatch extends Build {
   lazy val http_json =
     Project("dispatch-http-json", file("http+json"),
       settings = shared) dependsOn(core, json)
-  lazy val lift_json =
-    Project("dispatch-lift-json", file("lift-json"), settings =
-      shared ++ Seq(
-        libraryDependencies <+= scalaVersion(v =>
-          v.split('.').toList match {
-            case "2" :: "8" :: _ => "net.liftweb" %% "lift-json" % "2.3"
-            case "2" :: "9" :: "1" :: _ => "net.liftweb" % "lift-json_2.9.0-1" % "2.4-M3"
-            case "2" :: "9" :: _ => "net.liftweb" %% "lift-json" % "2.4-M3"
-            case _ => error("lift-json not supported for scala version %s" format v)
-          }
-        )
-      )
-    ) dependsOn(core, http)
   lazy val oauth =
     Project("dispatch-oauth", file("oauth"), settings = shared) dependsOn(
       core, http)
