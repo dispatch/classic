@@ -1,3 +1,7 @@
+import org.apache.http.client.methods.HttpUriRequest
+import org.apache.http.client.{ResponseHandler, HttpClient}
+import org.apache.http.protocol.HttpContext
+import org.apache.http.{HttpRequest, HttpHost}
 import org.specs._
 
 object HttpSpec extends Specification {
@@ -27,6 +31,30 @@ object HttpSpec extends Specification {
   "Backwards combined request get" should {
     get_specs(/("test.text") <& :/("technically.us"))
   }
+
+  "Http" should {
+    class SimpleDelegatingHttpClient(realClient: HttpClient) extends HttpClient {
+      def getParams = realClient.getParams
+      def getConnectionManager = realClient.getConnectionManager
+      def execute(request: HttpUriRequest) = realClient.execute(request)
+      def execute(request: HttpUriRequest, context: HttpContext) = realClient.execute(request, context)
+      def execute(target: HttpHost, request: HttpRequest) = realClient.execute(target, request)
+      def execute(target: HttpHost, request: HttpRequest, context: HttpContext) = realClient.execute(target, request, context)
+      def execute[T](request: HttpUriRequest, responseHandler: ResponseHandler[_ <: T]) = realClient.execute(request, responseHandler)
+      def execute[T](request: HttpUriRequest, responseHandler: ResponseHandler[_ <: T], context: HttpContext) = realClient.execute(request, responseHandler, context)
+      def execute[T](target: HttpHost, request: HttpRequest, responseHandler: ResponseHandler[_ <: T]) = realClient.execute(target, request, responseHandler)
+      def execute[T](target: HttpHost, request: HttpRequest, responseHandler: ResponseHandler[_ <: T], context: HttpContext) = realClient.execute(target, request, responseHandler, context)
+    }
+
+    "allow override" in {
+      val http = new Http with thread.Safety {
+        override def make_client: HttpClient = new SimpleDelegatingHttpClient(super.make_client)
+      }
+      http must notBeNull // i.e. this code should compile
+      http.shutdown()
+    }
+  }
+
   val http = new Http
   val httpfuture = new thread.Http
   def get_specs(test: Request) = {
