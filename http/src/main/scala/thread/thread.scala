@@ -1,9 +1,8 @@
 package dispatch.thread
 
-import org.apache.http.{HttpHost,HttpRequest,HttpResponse}
-import org.apache.http.client.methods.HttpRequestBase
 import dispatch._
 import dispatch.futures._
+import org.apache.http.client.HttpClient
 
 /** Http with a thread-safe client */
 trait Safety { self: BlockingHttp =>
@@ -13,7 +12,7 @@ trait Safety { self: BlockingHttp =>
   def maxConnectionsPerRoute = maxConnections
   /** Shutdown connection manager if no longer in use. */
 
-  override def make_client = new ThreadSafeHttpClient(
+  override def make_client: HttpClient = new ThreadSafeHttpClient(
     credentials, maxConnections, maxConnectionsPerRoute)
 }
 
@@ -36,8 +35,6 @@ class ThreadSafeHttpClient(
   maxConnections: Int, 
   maxConnectionsPerRoute: Int
 ) extends ConfiguredHttpClient(credentials) {
-  import org.apache.http.conn.scheme.{Scheme,SchemeRegistry,PlainSocketFactory}
-  import org.apache.http.conn.ssl.SSLSocketFactory
   import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
   override def createClientConnectionManager = {
     val cm = new ThreadSafeClientConnManager()
