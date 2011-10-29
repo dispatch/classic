@@ -6,7 +6,6 @@ import java.util.zip.GZIPInputStream
 import java.io.{InputStream,OutputStream,InputStreamReader}
 import javax.xml.parsers.SAXParserFactory
 import scala.io.Source
-import collection.immutable.{Map => IMap}
 import util.control.Exception._
 
 /** Request handler, contains request descriptor and a function to transform the result. */
@@ -99,9 +98,9 @@ class HandlerVerbs(request: Request) {
   }
   /** Process header as Map in block. Map returns empty set for header
    *  name misses. */
-  def >:> [T] (block: IMap[String, Set[String]] => T) = {
+  def >:> [T] (block: Map[String, Set[String]] => T) = {
     Handler(request, { (_, res, _) =>
-      val st = IMap.empty[String, Set[String]].withDefaultValue(Set.empty)
+      val st = Map.empty[String, Set[String]].withDefaultValue(Set.empty)
       block((st /: res.getAllHeaders) { (m, h) =>
         m + (h.getName -> (m(h.getName) + h.getValue))
       })
@@ -110,9 +109,9 @@ class HandlerVerbs(request: Request) {
 
   /** Process headers as a Map of strings to sequences of *lowercase*
    *  strings, to facilitate case-insensetive header lookup. */
-  def headers_> [T] (block: IMap[String, Seq[String]] => T) = {
+  def headers_> [T] (block: Map[String, Seq[String]] => T) = {
     Handler(request, { (_, res, _) =>
-      val st = IMap.empty[String, Seq[String]].withDefaultValue(Seq.empty)
+      val st = Map.empty[String, Seq[String]].withDefaultValue(Seq.empty)
       block((st /: res.getAllHeaders) { (m, h) =>
         val key = h.getName.toLowerCase
         m + (key -> (m(key) :+ h.getValue))
@@ -123,7 +122,7 @@ class HandlerVerbs(request: Request) {
   /** Combination header and request chaining verb. Headers are
    *  converted to lowercase for case insensitive access.
    */
-  def >:+ [T] (block: (IMap[String, Seq[String]], Request) =>
+  def >:+ [T] (block: (Map[String, Seq[String]], Request) =>
                 Handler[T]) =
     >+> { req =>
       req headers_>  { hs => block(hs, req) }
