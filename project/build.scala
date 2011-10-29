@@ -8,11 +8,10 @@ object Dispatch extends Build {
     crossScalaVersions := Seq("2.8.0", "2.8.1", "2.8.2", "2.9.0", "2.9.0-1", "2.9.1"),
     libraryDependencies <++= (scalaVersion) { sv => Seq(
       "org.apache.httpcomponents" % "httpclient" % "4.1.2",
-      sv.split('.').toList match {
+      sv.split("[.-]").toList match {
         case "2" :: "8" :: _ => "org.scala-tools.testing" % "specs_2.8.1" % "1.6.8" % "test"
-        case "2" :: "9" :: "1" :: _ => "org.scala-tools.testing" % "specs_2.9.0-1" % "1.6.8" % "test"
-        case "2" :: "9" :: _ => "org.scala-tools.testing" %% "specs" % "1.6.8" % "test"
-        case _ => error("specs not support for scala version %s" format sv)
+        case "2" :: "9" :: "0" :: _ => "org.scala-tools.testing" % "specs_2.9.0-1" % "1.6.8" % "test"
+        case _ => "org.scala-tools.testing" %% "specs" % "1.6.9" % "test"
       })
     },
     publishTo := Some("Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"),
