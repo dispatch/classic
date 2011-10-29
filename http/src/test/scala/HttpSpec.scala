@@ -98,8 +98,8 @@ object HttpSpec extends Specification {
     }
     val h = new Http// single threaded Http instance
     "equal expected string with a gzip defaulter" in {
-      val my_defualts = /\.gzip
-      h(my_defualts <& test >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) } ) must_== (jane, Set("gzip"))
+      val my_defaults = /\.gzip
+      h(my_defaults <& test >+ { r => (r as_str, r >:> { _(CONTENT_ENCODING) }) } ) must_== (jane, Set("gzip"))
     }
 
     "process html page" in {
@@ -118,6 +118,11 @@ object HttpSpec extends Specification {
       h(test >+> { r => r >:> { headers =>
         r >- { (_, headers(CONTENT_ENCODING)) }
       } }) must_== (jane, Set())
+    }
+    "equal expected string with gzip encoding, with >:+" in {
+      h(test.gzip >:+ { (headers, r) =>
+        r >- { (_, headers(CONTENT_ENCODING.toLowerCase)) }
+      }) must_== (jane, Seq("gzip"))
     }
   }
   "Path building responses" should {
