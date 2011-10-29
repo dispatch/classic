@@ -104,22 +104,30 @@ class HandlerVerbs(request: Request) {
         (m, h) => m + (h.getName -> (m(h.getName) + h.getValue))
       } )
     )
-  
+
+  def >:>+ [T] (block: (IMap[String, Set[String]], Request) =>
+                       Handler[T]) =
+    >+> { req =>
+      req >:> { headers =>
+        block(headers, req)
+      }
+    }
+
   /** Ignore response body. */
   def >| = Handler(request, (code, res, ent) => ())
 
   /** Split into two request handlers, return results of each in tuple. */
-  def >+ [A, B] (block: HandlerVerbs => (Handler[A], Handler[B])) = {
+  def >+ [A, B] (block: Request => (Handler[A], Handler[B])) = {
     Handler(request, { (code, res, opt_ent) =>
-      val (a, b) = block(new HandlerVerbs( /\ ))
+      val (a, b) = block(request)
       (a.block(code, res, opt_ent), b.block(code,res,opt_ent))
     } )
   }
   /** Chain two request handlers. First handler returns a second, which may use
       values obtained by the first. Both are run on the same request. */
-  def >+> [T] (block: HandlerVerbs => Handler[Handler[T]]) = {
+  def >+> [T] (block: Request => Handler[Handler[T]]) = {
     Handler( request, { (code, res, opt_ent) =>
-      (block(new HandlerVerbs( /\ ))).block(code, res, opt_ent).block(code, res, opt_ent)
+      (block(request)).block(code, res, opt_ent).block(code, res, opt_ent)
     } )
   }
 }
