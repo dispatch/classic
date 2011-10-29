@@ -5,7 +5,7 @@ object Dispatch extends Build {
   val shared = Defaults.defaultSettings ++ Seq(
     organization := "net.databinder",
     version := "0.8.6-SNAPSHOT",
-    crossScalaVersions := Seq("2.8.0", "2.8.1", "2.9.0", "2.9.0-1", "2.9.1.RC1"),
+    crossScalaVersions := Seq("2.8.0", "2.8.1", "2.8.2", "2.9.0", "2.9.0-1", "2.9.1"),
     libraryDependencies <++= (scalaVersion) { sv => Seq(
       "org.apache.httpcomponents" % "httpclient" % "4.1",
       sv.split('.').toList match {
@@ -31,7 +31,7 @@ object Dispatch extends Build {
   lazy val gae =
     Project("dispatch-gae", file("http-gae"), settings = shared ++ Seq(
       libraryDependencies +=
-        "com.google.appengine" % "appengine-api-1.0-sdk" % "1.5.4"
+        "com.google.appengine" % "appengine-api-1.0-sdk" % "1.5.5"
     )) dependsOn(http)
   lazy val nio =
     Project("dispatch-nio", file("nio"), settings = shared ++ Seq(
@@ -41,9 +41,9 @@ object Dispatch extends Build {
   lazy val mime =
     Project("dispatch-mime", file("mime"), settings = shared ++ Seq(
       libraryDependencies ++= Seq(
-        "org.apache.httpcomponents" % "httpmime" % "4.1" intransitive(),
+        "org.apache.httpcomponents" % "httpmime" % "4.1.2" intransitive(),
         "commons-logging" % "commons-logging" % "1.1.1",
-        "org.apache.james" % "apache-mime4j" % "0.6"
+        "org.apache.james" % "apache-mime4j" % "0.7.1"
       )
     )) dependsOn(core)
   lazy val json =

@@ -80,12 +80,14 @@ object Mime {
   }
   
   def mime_stream_parser[T](multipart_block: MultipartBlock[T])(content_type: String)(stm: InputStream) = {
-    import org.apache.james.mime4j.parser.{MimeTokenStream, EntityStates}
+    import org.apache.james.mime4j.stream.{MimeTokenStream, EntityState}
     val m = new MimeTokenStream()
     m.parseHeadless(stm, content_type)
     val empty_headers = Map.empty[String, List[String]]
-    def walk(state: Int, headers: Headers, outs: List[T]): List[T] = {
-      import EntityStates._
+    def walk(state: EntityState,
+             headers: Headers,
+             outs: List[T]): List[T] = {
+      import EntityState._
       state match {
         case T_END_OF_STREAM => outs
         case T_FIELD =>
