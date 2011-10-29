@@ -4,7 +4,7 @@ import Keys._
 object Dispatch extends Build {
   val shared = Defaults.defaultSettings ++ Seq(
     organization := "net.databinder",
-    version := "0.8.6-SNAPSHOT",
+    version := "0.8.6",
     crossScalaVersions := Seq("2.8.0", "2.8.1", "2.8.2", "2.9.0", "2.9.0-1", "2.9.1"),
     libraryDependencies <++= (scalaVersion) { sv => Seq(
       "org.apache.httpcomponents" % "httpclient" % "4.1.2",
