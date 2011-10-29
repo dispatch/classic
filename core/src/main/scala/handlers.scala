@@ -97,20 +97,36 @@ class HandlerVerbs(request: Request) {
   def </> [T] (block: xml.NodeSeq => T) = >~ { src => 
     block(xml.parsing.XhtmlParser(src))
   }
-  /** Process header as Map in block. Map returns empty set for header name misses. */
-  def >:> [T] (block: IMap[String, Set[String]] => T) = 
-    Handler(request, (_, res, _) => 
-      block((IMap[String, Set[String]]().withDefaultValue(Set()) /: res.getAllHeaders) { 
-        (m, h) => m + (h.getName -> (m(h.getName) + h.getValue))
-      } )
-    )
+  /** Process header as Map in block. Map returns empty set for header
+   *  name misses. */
+  def >:> [T] (block: IMap[String, Set[String]] => T) = {
+    Handler(request, { (_, res, _) =>
+      val st = IMap.empty[String, Set[String]].withDefaultValue(Set.empty)
+      block((st /: res.getAllHeaders) { (m, h) =>
+        m + (h.getName -> (m(h.getName) + h.getValue))
+      })
+    })
+  }
 
-  def >:>+ [T] (block: (IMap[String, Set[String]], Request) =>
-                       Handler[T]) =
+  /** Process headers as a Map of strings to sequences of *lowercase*
+   *  strings, to facilitate case-insensetive header lookup. */
+  def headers_> [T] (block: IMap[String, Seq[String]] => T) = {
+    Handler(request, { (_, res, _) =>
+      val st = IMap.empty[String, Seq[String]].withDefaultValue(Seq.empty)
+      block((st /: res.getAllHeaders) { (m, h) =>
+        val key = h.getName.toLowerCase
+        m + (key -> (m(key) :+ h.getValue))
+      })
+    })
+  }
+
+  /** Combination header and request chaining verb. Headers are
+   *  converted to lowercase for case insensitive access.
+   */
+  def >:+ [T] (block: (IMap[String, Seq[String]], Request) =>
+                Handler[T]) =
     >+> { req =>
-      req >:> { headers =>
-        block(headers, req)
-      }
+      req headers_>  { hs => block(hs, req) }
     }
 
   /** Ignore response body. */
