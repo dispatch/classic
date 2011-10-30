@@ -6,6 +6,6 @@ many of its features and bug fixes originate in forks of the
 project there. Dispatch's documentation is generated via 
 [Pamflet][pamflet]. We also have [a mailing list][list].
  
-[gh]: https://github.com/n8han/databinder-dispatch
+[gh]: https://github.com/dispatch/dispatch
 [pamflet]: http://pamflet.databinder.net/Pamflet.html
 [list]: https://groups.google.com/forum/?hl=en#!forum/dispatch-scala

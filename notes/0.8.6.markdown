@@ -1,0 +1,16 @@
+### Features
+
+* Support for proxy authentication, contributed by [dcsobral](https://github.com/dispatch/dispatch/commit/826c80298067d5a4f93e76dc20d58154cf088ff7)
+* Easier to use [header handler >:+](http://dispatch.databinder.net/Two+Handlers+Are+Better+Than+One.html)
+
+### Fixes
+
+* Explicit return type for `make_client` to fix override problem,
+  contributed by [ostewart](https://github.com/dispatch/dispatch/commit/af44119013455a6bcc4eff293fe42a3b7530f933)
+* Avoid slow stream reader usage in json parsing, contributed by [pomu0325](https://github.com/dispatch/dispatch/pull/49)
+
+### Dependencies
+
+* dispatch-gae updated to 1.5.5 of appengine-api
+* dispatch-http updated to 4.1.2 of Apache httpclient
+* dispatch-lift-json is now an [external source dependency](https://github.com/dispatch/dispatch-lift-json). See the [project setup docs](http://dispatch.databinder.net/Project+Setup.html) for usage information.
