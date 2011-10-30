@@ -14,3 +14,7 @@
 * dispatch-gae updated to 1.5.5 of appengine-api
 * dispatch-http updated to 4.1.2 of Apache httpclient
 * dispatch-lift-json is now an [external source dependency](https://github.com/dispatch/dispatch-lift-json). See the [project setup docs](http://dispatch.databinder.net/Project+Setup.html) for usage information.
+
+### News
+
+The Dispatch repository has moved: [https://github.com/dispatch/dispatch](https://github.com/dispatch/dispatch)

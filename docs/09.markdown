@@ -1,6 +1,13 @@
 API Reference
 -------------
 
+### Dispatch Periodic Table
+
+[This clever and attractive table][table] lists Dispatch's request and
+response verbs all in one place.
+
+[table]: http://www.flotsam.nl/dispatch-periodic-table.html
+
 ### Scaladocs
 
 [Generated documentation][scaladoc] is available for the latest
