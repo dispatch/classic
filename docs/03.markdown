@@ -81,7 +81,7 @@ object MyApp extends Build
 ```
 
 The [Twine example application][twine] uses both source and
-binary Dispatch dependencies in an sbt project.
+binary Dispatch dependencies in its sbt project.
 
 [twine]: /Try+Dispatch.html
 
