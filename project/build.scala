@@ -18,7 +18,10 @@ object Dispatch extends Build {
     credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
   )
   lazy val dispatch =
-    Project("Dispatch", file("."), settings = shared) aggregate(
+    Project("Dispatch", file("."), settings = shared ++ Seq(
+      sources in (Compile, doc) <<= (thisProjectRef, buildStructure) flatMap aggregateTask(sources),
+      dependencyClasspath in (Compile, doc) <<= (thisProjectRef, buildStructure) flatMap aggregateTask(dependencyClasspath)
+    )) aggregate(
       futures, core, http, nio, mime, json, http_json, oauth)
   lazy val futures =
     Project("dispatch-futures", file("futures"), settings = shared)
@@ -53,4 +56,13 @@ object Dispatch extends Build {
   lazy val oauth =
     Project("dispatch-oauth", file("oauth"), settings = shared) dependsOn(
       core, http)
+
+  def aggregateTask[T](key: TaskKey[Seq[T]])(proj: ProjectRef, struct: Load.BuildStructure) = {
+    def collectProjects(op: ResolvedProject => Seq[ProjectRef])(projRef: ProjectRef, struct: Load.BuildStructure): Seq[ProjectRef] = {
+      val delg = Project.getProject(projRef, struct).toSeq.flatMap(op)
+      // Dependencies/aggregates might have their own dependencies/aggregates, so go recursive and do distinct.
+      delg.flatMap(ref => ref +: collectProjects(op)(ref, struct)).distinct
+    }
+    collectProjects(_.aggregate)(proj, struct).flatMap(key in (_, Compile, doc) get struct.data).join.map(_.flatten)
+  }
 }
