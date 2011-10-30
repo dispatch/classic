@@ -73,4 +73,8 @@ reuse them. Typically, the handler above would be written in one line.
 h(url("http://www.scala-lang.org/") >>> System.out)
 ```
 
+If you can't wait to see more Dispatch *verbs* like `>>>`, here's a
+[colorful cheat sheet][table].
+
 [gh]: https://github.com/n8han/dispatch-twine#readme
+[table]: http://www.flotsam.nl/dispatch-periodic-table.html
