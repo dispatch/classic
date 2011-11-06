@@ -128,3 +128,11 @@ val s = h(url("http://www.scala-lang.org/") as_str)
 ```
 Note that this executor is not on Twine's classpath and should only be
 used with App Engine.
+
+### A Note on Usage
+
+The examples above all use `apply` which will execute the handler if
+the resulting HTTP statusCode is in the range 200 to 204.  This range
+allows the standard handlers to fail-fast in situations where the response
+wouldn't be handled.  If you need finer control please review the docs
+for the `when` and `x` methods on `trait HttpExecutor`.
