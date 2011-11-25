@@ -2,7 +2,7 @@ import sbt._
 import Keys._
 
 object Dispatch extends Build {
-  val shared = Defaults.defaultSettings ++ Seq(
+  val shared = Defaults.defaultSettings ++ ls.Plugin.lsSettings ++ Seq(
     organization := "net.databinder",
     version := "0.8.6",
     crossScalaVersions :=
@@ -18,7 +18,9 @@ object Dispatch extends Build {
     },
     publishTo := Some("Scala Tools Nexus" at
       "http://nexus.scala-tools.org/content/repositories/releases/"),
-    credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
+    credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
+    homepage :=
+      Some(new java.net.URL("http://dispatch.databinder.net/"))
   )
   val httpShared = shared ++ Seq(
     libraryDependencies +=
@@ -30,11 +32,14 @@ object Dispatch extends Build {
         (thisProjectRef, buildStructure) flatMap (aggregateTask(sources)),
       dependencyClasspath in (Compile, doc) <<= 
         (thisProjectRef, buildStructure) flatMap
-          aggregateTask(dependencyClasspath)
+          aggregateTask(dependencyClasspath),
+      ls.Plugin.LsKeys.skipWrite := true
     )) aggregate(
       futures, core, http, nio, mime, json, http_json, oauth)
   lazy val futures =
-    Project("dispatch-futures", file("futures"), settings = shared)
+    Project("dispatch-futures", file("futures"), settings = shared ++ Seq(
+      description := "Common interface to Java and Scala futures"
+    ))
   lazy val core =
     Project("dispatch-core", file("core"), settings = httpShared)
   lazy val http =
