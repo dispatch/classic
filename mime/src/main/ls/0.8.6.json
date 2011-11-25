@@ -1,0 +1,31 @@
+
+{
+ "organization":"net.databinder",
+ "name":"dispatch-mime",
+ "version":"0.8.6",
+ "description":"Support for multipart MIME POSTs",
+ "site":"http://dispatch.databinder.net/",
+ "tags":[],
+ "docs":"",
+ "licenses": [],
+ "resolvers": ["http://scala-tools.org/repo-releases"],
+ "dependencies": [{
+   "organization":"org.apache.httpcomponents",
+   "name": "httpclient",
+   "version": "4.1.2"
+  },{
+   "organization":"org.apache.httpcomponents",
+   "name": "httpmime",
+   "version": "4.1.2"
+  },{
+   "organization":"commons-logging",
+   "name": "commons-logging",
+   "version": "1.1.1"
+  },{
+   "organization":"org.apache.james",
+   "name": "apache-mime4j",
+   "version": "0.7.1"
+  }],
+ "scalas": ["2.8.0","2.8.1","2.8.2","2.9.0","2.9.0-1","2.9.1"],
+ "sbt": false
+}

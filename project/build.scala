@@ -41,22 +41,34 @@ object Dispatch extends Build {
       description := "Common interface to Java and Scala futures"
     ))
   lazy val core =
-    Project("dispatch-core", file("core"), settings = httpShared)
+    Project("dispatch-core", file("core"), settings = httpShared ++ Seq(
+      description :=
+        "Core interfaces, applied by dispatch-http and dispatch-nio executors"
+    ))
   lazy val http =
-    Project("dispatch-http", file("http"), settings = httpShared) dependsOn(
+    Project("dispatch-http", file("http"), settings = httpShared ++ Seq(
+      description :=
+        "Standard HTTP executor, uses Apache DefaultHttpClient"
+    )) dependsOn(
       core, futures)
   lazy val gae =
     Project("dispatch-gae", file("http-gae"), settings = httpShared ++ Seq(
+      description :=
+        "Executor with a modified Apache HttpClient for Google App Engine",
       libraryDependencies +=
         "com.google.appengine" % "appengine-api-1.0-sdk" % "1.5.5"
     )) dependsOn(http)
   lazy val nio =
     Project("dispatch-nio", file("nio"), settings = httpShared ++ Seq(
+      description :=
+        "NIO HTTP executor, uses Apache DefaultHttpAsyncClient",
       libraryDependencies +=
         ("org.apache.httpcomponents" % "httpasyncclient" % "4.0-alpha1")
     )) dependsOn(core, futures)
   lazy val mime =
     Project("dispatch-mime", file("mime"), settings = httpShared ++ Seq(
+      description :=
+        "Support for multipart MIME POSTs",
       libraryDependencies ++= Seq(
         "org.apache.httpcomponents" % "httpmime" % "4.1.2" intransitive(),
         "commons-logging" % "commons-logging" % "1.1.1",
@@ -64,12 +76,18 @@ object Dispatch extends Build {
       )
     )) dependsOn(core)
   lazy val json =
-    Project("dispatch-json", file("json"), settings = shared)
+    Project("dispatch-json", file("json"), settings = shared ++ Seq(
+      description := "A JSON parser"
+    ))
   lazy val http_json =
     Project("dispatch-http-json", file("http+json"),
-      settings = httpShared) dependsOn(core, json)
+      settings = httpShared ++ Seq(
+        description := "Adds JSON handler verbs to Dispatch"
+      )) dependsOn(core, json)
   lazy val oauth =
-    Project("dispatch-oauth", file("oauth"), settings = httpShared) dependsOn(
+    Project("dispatch-oauth", file("oauth"), settings = httpShared ++ Seq(
+      description := "OAuth 1.0a signing for Dispatch requests"
+    )) dependsOn(
       core, http)
 
   def aggregateTask[T](key: TaskKey[Seq[T]])
