@@ -35,7 +35,7 @@ object Dispatch extends Build {
           aggregateTask(dependencyClasspath),
       ls.Plugin.LsKeys.skipWrite := true
     )) aggregate(
-      futures, core, http, nio, mime, json, http_json, oauth)
+      futures, core, http, nio, mime, json, http_json, oauth, tagsoup)
   lazy val futures =
     Project("dispatch-futures", file("futures"), settings = shared ++ Seq(
       description := "Common interface to Java and Scala futures"
@@ -89,6 +89,12 @@ object Dispatch extends Build {
       description := "OAuth 1.0a signing for Dispatch requests"
     )) dependsOn(
       core, http)
+  lazy val tagsoup =
+    Project("dispatch-tagsoup", file("tagsoup"), settings = httpShared ++ Seq(
+      description := "Adds TagSoup handler verbs to Dispatch",
+      libraryDependencies +=
+        ("org.ccil.cowan.tagsoup" % "tagsoup" % "1.2.1")
+    )) dependsOn(http)
 
   def aggregateTask[T](key: TaskKey[Seq[T]])
                       (proj: ProjectRef, struct: Load.BuildStructure) = {
