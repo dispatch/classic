@@ -94,7 +94,7 @@ object Dispatch extends Build {
       description := "Adds TagSoup handler verbs to Dispatch",
       libraryDependencies +=
         ("org.ccil.cowan.tagsoup" % "tagsoup" % "1.2.1")
-    )) dependsOn(http)
+    )) dependsOn(core, http)
 
   def aggregateTask[T](key: TaskKey[Seq[T]])
                       (proj: ProjectRef, struct: Load.BuildStructure) = {

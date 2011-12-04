@@ -8,7 +8,7 @@ import org.xml.sax.InputSource
 import org.ccil.cowan.tagsoup.jaxp.SAXFactoryImpl
 
 trait ImplicitTagSoupHandlers {
-  implicit def handlerToJsHandlers(h: HandlerVerbs) = new TagSoupHandlers(h)
+  implicit def handlerToTagSoupHandlers(h: HandlerVerbs) = new TagSoupHandlers(h)
   implicit def requestToTagSoupHandlers(req: Request) = new TagSoupHandlers(req);
   implicit def stringToTagSoupHandlers(str: String) = new TagSoupHandlers(new Request(str));
 }
@@ -24,5 +24,5 @@ class TagSoupHandlers(subject: HandlerVerbs) {
   /** Alias for verb tagsouped */
   def <\\> [T] (block: (xml.NodeSeq) => T) = tagsouped (block)
   /** Conveniences handler for retrieving a NodeSeq */
-  def as_tagsouped = <\\> {ns => ns}
+  def as_tagsouped = tagsouped {ns => ns}
 }
