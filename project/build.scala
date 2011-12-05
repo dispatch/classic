@@ -95,6 +95,12 @@ object Dispatch extends Build {
       libraryDependencies +=
         ("org.ccil.cowan.tagsoup" % "tagsoup" % "1.2.1")
     )) dependsOn(core, http)
+  lazy val jsoup =
+    Project("dispatch-jsoup", file("jsoup"), settings = httpShared ++ Seq(
+      description := "Adds JSoup handler verbs to Dispatch",
+      libraryDependencies +=
+        ("org.jsoup" % "jsoup" % "1.6.1")
+    )) dependsOn(core, http)
 
   def aggregateTask[T](key: TaskKey[Seq[T]])
                       (proj: ProjectRef, struct: Load.BuildStructure) = {
