@@ -16,7 +16,7 @@ trait ImplicitTagSoupHandlers {
 object TagSoupHttp extends ImplicitTagSoupHandlers
 
 class TagSoupHandlers(subject: HandlerVerbs) {
-  val parserFactory = new SAXFactoryImpl
+  lazy val parserFactory = new SAXFactoryImpl
   /** Process response with TagSoup html processor in block */
   def tagsouped [T] (block: (xml.NodeSeq) => T) = subject >> { (stm, charset) =>
       block( new NoBindingFactoryAdapter().loadXML(new InputSource(new InputStreamReader(stm, charset)), parserFactory.newSAXParser()) )

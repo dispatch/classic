@@ -14,8 +14,7 @@ trait ImplicitJSoupHandlers {
 object JSoupHttp extends ImplicitJSoupHandlers
 
 class JSoupHandlers(request: Request) {
-  def jsouped[T](block: (Document) => T) = request >> {
-    (stm, charset) =>
+  def jsouped[T](block: (Document) => T) = request >> { (stm, charset) =>
       block(Jsoup.parse(stm, charset, request.to_uri.toString))
   }
 

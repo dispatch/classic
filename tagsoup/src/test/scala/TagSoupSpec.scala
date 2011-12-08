@@ -7,6 +7,10 @@ object TagSoupSpec extends Specification {
     extends Request(:/("oregonstate.edu") / "instruct" / "phl302" / "texts" / "hobbes" / "leviathan-c.html")
     with ImplicitTagSoupHandlers
 
+  object BadHtml2
+    extends Request(:/("oregonstate.edu") / "instruct" / "phl302" / "texts" / "hobbes")
+    with ImplicitTagSoupHandlers
+
   object BadHtml
     extends Request(:/("oregonstate.edu") / "instruct" / "phl302" / "texts" / "hobbes" / "leviathan-c.html")
 
