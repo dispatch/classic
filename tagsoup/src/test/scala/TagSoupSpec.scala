@@ -8,6 +8,7 @@ import dispatch.tagsoup._
 
 object TagSoupSpec extends Specification with ServedByJetty {
   val port = 9990
+  val resourceBase = "./tagsoup/src/test/resources"
 
   object BadHtml_with_ImplicitTagSoupHandlers
     extends Request(:/("localhost", port) / "Human.html")
@@ -29,7 +30,7 @@ object TagSoupSpec extends Specification with ServedByJetty {
 
   "Using </>" should {
     "fail to parse resource" in {
-      withResourceServer() { _ =>
+      withResourceServer { _ =>
         val request = :/("localhost", port) / "Human.html"
 
         Http(request </> { nodes =>
@@ -39,9 +40,21 @@ object TagSoupSpec extends Specification with ServedByJetty {
     }
   }
 
+  """Using <\\>""" should {
+    import TagSoupHttp._
+    "successfully parse resource" in {
+      withResourceServer { _ =>
+        val request = :/("localhost", port) / "Human.html"
+        Http(request <\\> { nodes =>
+          (nodes \\ "title").text
+        }) mustNot throwA[scala.xml.parsing.FatalError]
+      }
+    }
+  }
+
   "Extending implicit TagSoup" should {
     "make BadHtml parsable" in {
-      withResourceServer() { _ =>
+      withResourceServer { _ =>
         val request = BadHtml_with_ImplicitTagSoupHandlers
         val title = Http(request tagsouped { nodes =>
             (nodes \\ "title").text
@@ -51,7 +64,7 @@ object TagSoupSpec extends Specification with ServedByJetty {
     }
 
     "make BadHtmlClass1 (class extend implicit) parsable, though this is ugly" in {
-      withResourceServer() { _ =>
+      withResourceServer { _ =>
         var request = new BadHtmlClass1()
         val title = Http(request.requestToTagSoupHandlers(request) tagsouped { nodes =>
             (nodes \\ "title").text
@@ -61,7 +74,7 @@ object TagSoupSpec extends Specification with ServedByJetty {
     }
 
     "make BadHtmlClass2 (instance extends implicit) parsable, though this is ugly" in {
-      withResourceServer() { _ =>
+      withResourceServer { _ =>
         var request = new BadHtmlClass2() with ImplicitTagSoupHandlers
         val title = Http(request.requestToTagSoupHandlers(request) tagsouped { nodes =>
           (nodes \\ "title").text
@@ -75,7 +88,7 @@ object TagSoupSpec extends Specification with ServedByJetty {
   "Implicit TagSoupHttp converters in scope" should {
     import TagSoupHttp._
     "make Request parsable" in {
-      withResourceServer() { _ =>
+      withResourceServer { _ =>
         val request = :/("localhost", port) / "Human.html"
         val title = Http(request tagsouped { nodes =>
           (nodes \\ "title").text
@@ -86,7 +99,7 @@ object TagSoupSpec extends Specification with ServedByJetty {
     }
 
     "make BadHtmlClass1 (class extend implicit) parsable" in {
-      withResourceServer() { _ =>
+      withResourceServer { _ =>
         var request = new BadHtmlClass1()
         val title = Http(request tagsouped { nodes =>
           (nodes \\ "title").text
@@ -97,7 +110,7 @@ object TagSoupSpec extends Specification with ServedByJetty {
     }
 
     "make BadHtmlClass2 (instance extends implicit) parsable" in {
-      withResourceServer() { _ =>
+      withResourceServer { _ =>
         var request = new BadHtmlClass2() with ImplicitTagSoupHandlers
         val title = Http(request tagsouped { nodes =>
           (nodes \\ "title").text
@@ -108,7 +121,7 @@ object TagSoupSpec extends Specification with ServedByJetty {
     }
 
     "make BadHtmlClass2 parsable" in {
-      withResourceServer() { _ =>
+      withResourceServer { _ =>
         var request = new BadHtmlClass2()
         val title = Http(request tagsouped { nodes =>
           (nodes \\ "title").text
@@ -119,7 +132,7 @@ object TagSoupSpec extends Specification with ServedByJetty {
     }
 
     "make BadHtml (object) parsable" in {
-      withResourceServer() { _ =>
+      withResourceServer { _ =>
         val request = BadHtml
         val title = Http(request tagsouped { nodes =>
           (nodes \\ "title").text
@@ -132,7 +145,7 @@ object TagSoupSpec extends Specification with ServedByJetty {
 
   """Using the verb <\\>""" should {
     "do the same thing as the verb tagsouped" in {
-      withResourceServer() { _ =>
+      withResourceServer { _ =>
         val request = BadHtml_with_ImplicitTagSoupHandlers
 
         val title1 = Http(request <\\> { nodes =>
@@ -149,7 +162,7 @@ object TagSoupSpec extends Specification with ServedByJetty {
 
   "Using the verb as_tagsouped" should {
     "return the nodes" in {
-      withResourceServer() { _ =>
+      withResourceServer { _ =>
         val request = BadHtml_with_ImplicitTagSoupHandlers
         val ns = Http(request as_tagsouped)
 
@@ -160,7 +173,10 @@ object TagSoupSpec extends Specification with ServedByJetty {
 }
 
 trait ServedByJetty {
-  def withResourceServer(resourceBase: String = "./tagsoup/src/test/resources", port: Int = 9990)(op: Unit => Unit) {
+  val port: Int
+  val resourceBase: String
+
+  def withResourceServer(op: Unit => Unit) {
     // Configure Jetty server
     val connector = new SelectChannelConnector
     connector.setHost("localhost")

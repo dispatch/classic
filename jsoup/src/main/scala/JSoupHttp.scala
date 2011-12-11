@@ -14,14 +14,15 @@ trait ImplicitJSoupHandlers {
 object JSoupHttp extends ImplicitJSoupHandlers
 
 class JSoupHandlers(request: Request) {
-  def jsouped[T](block: (Document) => T) = request >> { (stm, charset) =>
+  /** Process response with JSoup html processor in block */
+  def jsouped [T] (block: (Document) => T) = request >> { (stm, charset) =>
       block(Jsoup.parse(stm, charset, request.to_uri.toString))
   }
-
+  /** Alias for verb jsouped */
   def \\> [T] (block: (Document) => T) = jsouped(block)
-
+  /** Conveniences handler for retrieving a org.jsoup.nodes.Document */
   def as_jsouped: Handler[Document] = jsouped { dom => dom }
-
+  /** Conveniences handler for retrieving a NodeSeq */
   def as_jsoupedNodeSeq: Handler[NodeSeq] = jsouped { dom: Document => {
       xml.parsing.XhtmlParser(Source.fromString(dom.html))
     }
