@@ -1,124 +1,187 @@
+import java.io.File
+import org.eclipse.jetty.server.handler.{DefaultHandler, HandlerList, ResourceHandler}
+import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.server.nio.SelectChannelConnector
 import org.specs._
 import dispatch._
 import dispatch.tagsoup._
 
-object TagSoupSpec extends Specification {
+object TagSoupSpec extends Specification with ServedByJetty {
+  val port = 9990
+
   object BadHtml_with_ImplicitTagSoupHandlers
-    extends Request(:/("oregonstate.edu") / "instruct" / "phl302" / "texts" / "hobbes" / "leviathan-c.html")
+    extends Request(:/("localhost", port) / "Human.html")
     with ImplicitTagSoupHandlers
 
+  class BadHtmlClass1(request: Request = (:/("localhost", port) / "Human.html"))
+    extends Request(request: Request)
+    with ImplicitTagSoupHandlers
+
+  class BadHtmlClass2(request: Request = (:/("localhost", port) / "Human.html"))
+    extends Request(request: Request)
+
   object BadHtml2
-    extends Request(:/("oregonstate.edu") / "instruct" / "phl302" / "texts" / "hobbes")
+    extends Request(:/("localhost", port) / "Human.html")
     with ImplicitTagSoupHandlers
 
   object BadHtml
-    extends Request(:/("oregonstate.edu") / "instruct" / "phl302" / "texts" / "hobbes" / "leviathan-c.html")
+    extends Request(:/("localhost", port) / "Human.html")
 
-  class BadHtmlClass1(request: Request = (:/("oregonstate.edu") / "instruct" / "phl302" / "texts" / "hobbes" / "leviathan-c.html"))
-    extends Request(request: Request)
-    with ImplicitTagSoupHandlers
+  "Using </>" should {
+    "fail to parse resource" in {
+      withResourceServer() { _ =>
+        val request = :/("localhost", port) / "Human.html"
 
-  class BadHtmlClass2(request: Request = (:/("oregonstate.edu") / "instruct" / "phl302" / "texts" / "hobbes" / "leviathan-c.html"))
-    extends Request(request: Request)
+        Http(request </> { nodes =>
+          (nodes \\ "title").text
+        }) must throwA[scala.xml.parsing.FatalError]
+      }
+    }
+  }
 
   "Extending implicit TagSoup" should {
     "make BadHtml parsable" in {
-      val request = BadHtml_with_ImplicitTagSoupHandlers
-      val title = Http(request tagsouped { nodes =>
-        (nodes \\ "title").text
-      })
-
-      title must be_==("The Leviathan by Thomas Hobbes")
+      withResourceServer() { _ =>
+        val request = BadHtml_with_ImplicitTagSoupHandlers
+        val title = Http(request tagsouped { nodes =>
+            (nodes \\ "title").text
+        })
+        title must be_==("Human")
+      }
     }
 
     "make BadHtmlClass1 (class extend implicit) parsable, though this is ugly" in {
-      var request = new BadHtmlClass1()
-      val title = Http(request.requestToTagSoupHandlers(request) tagsouped { nodes =>
-//      val title = Http(request tagsouped { nodes =>
-        (nodes \\ "title").text
-      })
-
-      title must be_==("The Leviathan by Thomas Hobbes")
+      withResourceServer() { _ =>
+        var request = new BadHtmlClass1()
+        val title = Http(request.requestToTagSoupHandlers(request) tagsouped { nodes =>
+            (nodes \\ "title").text
+        })
+        title must be_==("Human")
+      }
     }
 
     "make BadHtmlClass2 (instance extends implicit) parsable, though this is ugly" in {
-      var request = new BadHtmlClass2() with ImplicitTagSoupHandlers
-      val title = Http(request.requestToTagSoupHandlers(request) tagsouped { nodes =>
-        (nodes \\ "title").text
-      })
+      withResourceServer() { _ =>
+        var request = new BadHtmlClass2() with ImplicitTagSoupHandlers
+        val title = Http(request.requestToTagSoupHandlers(request) tagsouped { nodes =>
+          (nodes \\ "title").text
+        })
 
-      title must be_==("The Leviathan by Thomas Hobbes")
+        title must be_==("Human")
+      }
     }
   }
 
   "Implicit TagSoupHttp converters in scope" should {
     import TagSoupHttp._
     "make Request parsable" in {
-      val request = :/("oregonstate.edu") / "instruct" / "phl302" / "texts" / "hobbes" / "leviathan-c.html"
-      val title = Http(request tagsouped { nodes =>
-        (nodes \\ "title").text
-      })
+      withResourceServer() { _ =>
+        val request = :/("localhost", port) / "Human.html"
+        val title = Http(request tagsouped { nodes =>
+          (nodes \\ "title").text
+        })
 
-      title must be_==("The Leviathan by Thomas Hobbes")
+        title must be_==("Human")
+      }
     }
 
     "make BadHtmlClass1 (class extend implicit) parsable" in {
-      var request = new BadHtmlClass1()
-      val title = Http(request tagsouped { nodes =>
-        (nodes \\ "title").text
-      })
+      withResourceServer() { _ =>
+        var request = new BadHtmlClass1()
+        val title = Http(request tagsouped { nodes =>
+          (nodes \\ "title").text
+        })
 
-      title must be_==("The Leviathan by Thomas Hobbes")
+        title must be_==("Human")
+      }
     }
 
     "make BadHtmlClass2 (instance extends implicit) parsable" in {
-      var request = new BadHtmlClass2() with ImplicitTagSoupHandlers
-      val title = Http(request tagsouped { nodes =>
-        (nodes \\ "title").text
-      })
+      withResourceServer() { _ =>
+        var request = new BadHtmlClass2() with ImplicitTagSoupHandlers
+        val title = Http(request tagsouped { nodes =>
+          (nodes \\ "title").text
+        })
 
-      title must be_==("The Leviathan by Thomas Hobbes")
+        title must be_==("Human")
+      }
     }
 
     "make BadHtmlClass2 parsable" in {
-      var request = new BadHtmlClass2()
-      val title = Http(request tagsouped { nodes =>
-        (nodes \\ "title").text
-      })
+      withResourceServer() { _ =>
+        var request = new BadHtmlClass2()
+        val title = Http(request tagsouped { nodes =>
+          (nodes \\ "title").text
+        })
 
-      title must be_==("The Leviathan by Thomas Hobbes")
+        title must be_==("Human")
+      }
     }
 
     "make BadHtml (object) parsable" in {
-      val request = BadHtml
-      val title = Http(request tagsouped { nodes =>
-        (nodes \\ "title").text
-      })
+      withResourceServer() { _ =>
+        val request = BadHtml
+        val title = Http(request tagsouped { nodes =>
+          (nodes \\ "title").text
+        })
 
-      title must be_==("The Leviathan by Thomas Hobbes")
+        title must be_==("Human")
+      }
     }
   }
 
   """Using the verb <\\>""" should {
     "do the same thing as the verb tagsouped" in {
-      val request = BadHtml_with_ImplicitTagSoupHandlers
-      val title1 = Http(request <\\> { nodes =>
-        (nodes \\ "title").text
-      })
-      val title2 = Http(request tagsouped { nodes =>
-        (nodes \\ "title").text
-      })
+      withResourceServer() { _ =>
+        val request = BadHtml_with_ImplicitTagSoupHandlers
 
-      title1 must be_==(title2)
+        val title1 = Http(request <\\> { nodes =>
+          (nodes \\ "title").text
+        })
+        val title2 = Http(request tagsouped { nodes =>
+          (nodes \\ "title").text
+        })
+
+        title1 must be_==(title2)
+      }
     }
   }
 
   "Using the verb as_tagsouped" should {
     "return the nodes" in {
-      val request = BadHtml_with_ImplicitTagSoupHandlers
-      val ns = Http(request as_tagsouped)
+      withResourceServer() { _ =>
+        val request = BadHtml_with_ImplicitTagSoupHandlers
+        val ns = Http(request as_tagsouped)
 
-      (ns \\ "title").text must be_==("The Leviathan by Thomas Hobbes")
+        (ns \\ "title").text must be_==("Human")
+      }
+    }
+  }
+}
+
+trait ServedByJetty {
+  def withResourceServer(resourceBase: String = "./tagsoup/src/test/resources", port: Int = 9990)(op: Unit => Unit) {
+    // Configure Jetty server
+    val connector = new SelectChannelConnector
+    connector.setHost("localhost")
+    connector.setPort(port)
+
+    val handler = new ResourceHandler
+    handler.setDirectoriesListed(true)
+    handler.setResourceBase(resourceBase)
+    val handlers = new HandlerList
+    handlers.setHandlers(Array(handler, new DefaultHandler))
+
+    val server = new Server
+    server.addConnector(connector)
+    server.setHandler(handlers)
+
+    // Run server for test and then stop
+    try {
+      server.start
+      op()
+    } finally {
+      server.stop
     }
   }
 }

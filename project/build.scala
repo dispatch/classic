@@ -92,14 +92,18 @@ object Dispatch extends Build {
   lazy val tagsoup =
     Project("dispatch-tagsoup", file("tagsoup"), settings = httpShared ++ Seq(
       description := "Adds TagSoup handler verbs to Dispatch",
-      libraryDependencies +=
-        ("org.ccil.cowan.tagsoup" % "tagsoup" % "1.2.1")
+      libraryDependencies ++= Seq(
+        "org.ccil.cowan.tagsoup" % "tagsoup" % "1.2.1",
+        "org.eclipse.jetty.aggregate" % "jetty-server" % "7.5.4.v20111024" % "test"
+      )
     )) dependsOn(core, http)
   lazy val jsoup =
     Project("dispatch-jsoup", file("jsoup"), settings = httpShared ++ Seq(
       description := "Adds JSoup handler verbs to Dispatch",
-      libraryDependencies +=
-        ("org.jsoup" % "jsoup" % "1.6.1")
+      libraryDependencies ++= Seq(
+        "org.jsoup" % "jsoup" % "1.6.1",
+        "org.eclipse.jetty.aggregate" % "jetty-server" % "7.5.4.v20111024" % "test"
+      )
     )) dependsOn(core, http)
 
   def aggregateTask[T](key: TaskKey[Seq[T]])
