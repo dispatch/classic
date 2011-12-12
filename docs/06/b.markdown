@@ -22,11 +22,11 @@ something like this.
 ```scala
 import dispatch.tagsoup.TagSoupHttp._
 
-val title = Http(:/("example.com") <\\> { ns =>
+val title = Http(:/("example.org") <\\> { ns =>
               (ns \\ "title").text
             })
 ```
-TagSoup let's you work with the HTML as a scala.xml.NodeSeq and as a
+TagSoup let's you work with the HTML as a `scala.xml.NodeSeq` and as a
 convenience you can use `as_tagsouped` to retrieve it.
 
 ```scala

@@ -58,7 +58,7 @@ object JSoupSpec extends Specification with ServedByJetty {
         import scala.collection.JavaConversions._
         val request = JSoupHtml / "test.html"
         val links = Http(request jsouped { doc =>
-          doc.select("a[href]").iterator.toList;
+          doc.select("a[href]").toList;
         })
 
         links.head.attr("href")  must be_==("/Human.html")
