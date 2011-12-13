@@ -7,7 +7,7 @@ import dispatch._
 import dispatch.tagsoup._
 
 object TagSoupSpec extends Specification with ServedByJetty {
-  val port = 9990
+  val port = 9980
   val resourceBase = "./tagsoup/src/test/resources"
 
   object BadHtml_with_ImplicitTagSoupHandlers

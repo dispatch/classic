@@ -35,7 +35,7 @@ object Dispatch extends Build {
           aggregateTask(dependencyClasspath),
       ls.Plugin.LsKeys.skipWrite := true
     )) aggregate(
-      futures, core, http, nio, mime, json, http_json, oauth, tagsoup)
+      futures, core, http, nio, mime, json, http_json, oauth, gae, tagsoup, jsoup)
   lazy val futures =
     Project("dispatch-futures", file("futures"), settings = shared ++ Seq(
       description := "Common interface to Java and Scala futures"

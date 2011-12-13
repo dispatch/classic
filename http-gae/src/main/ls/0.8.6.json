@@ -1,0 +1,23 @@
+
+{
+ "organization":"net.databinder",
+ "name":"dispatch-gae",
+ "version":"0.8.6",
+ "description":"Executor with a modified Apache HttpClient for Google App Engine",
+ "site":"http://dispatch.databinder.net/",
+ "tags":[],
+ "docs":"",
+ "licenses": [],
+ "resolvers": ["http://scala-tools.org/repo-releases"],
+ "dependencies": [{
+   "organization":"org.apache.httpcomponents",
+   "name": "httpclient",
+   "version": "4.1.2"
+  },{
+   "organization":"com.google.appengine",
+   "name": "appengine-api-1.0-sdk",
+   "version": "1.5.5"
+  }],
+ "scalas": ["2.8.0","2.8.1","2.8.2","2.9.0","2.9.0-1","2.9.1"],
+ "sbt": false
+}
