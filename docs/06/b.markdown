@@ -3,7 +3,7 @@ TagSoup
 
 [TagSoup][tagsoup] is a SAX-compliant parser, that parses HTML instead
 of well formed XML. TagSoup is very resilient, allowing you to load HTML
-as found in the wild, to be processed as a scala NodeSeq's.
+as found in the wild, to be processed as a scala NodeSeq.
 
 [tagsoup]: http://ccil.org/~cowan/XML/tagsoup/
 
