@@ -66,15 +66,14 @@ libraryDependencies ++= Seq(
 ```
 
 To use **source dependencies** with sbt, create a project build such
-as `project/build.scala`. .0 tag of
-dispatch/dispatch-lift-json on github:
+as `project/build.scala`. This is an example using dispatch-lift-json:
 
 ```scala
 import sbt._
 object MyApp extends Build
 {
   lazy val root =
-    Project("$name$", file(".")) dependsOn(dispatchLiftJson)
+    Project("root", file(".")) dependsOn(dispatchLiftJson)
   lazy val dispatchLiftJson =
     uri("git://github.com/dispatch/dispatch-lift-json#0.1.0")
 }
