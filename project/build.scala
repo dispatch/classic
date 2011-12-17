@@ -35,7 +35,9 @@ object Dispatch extends Build {
           aggregateTask(dependencyClasspath),
       ls.Plugin.LsKeys.skipWrite := true
     )) aggregate(
-      futures, core, http, nio, mime, json, http_json, oauth, gae)
+      futures, core, http, nio, mime, json, http_json, oauth, gae, tagsoup, 
+      jsoup
+    )
   lazy val futures =
     Project("dispatch-futures", file("futures"), settings = shared ++ Seq(
       description := "Common interface to Java and Scala futures"
@@ -89,6 +91,22 @@ object Dispatch extends Build {
       description := "OAuth 1.0a signing for Dispatch requests"
     )) dependsOn(
       core, http)
+  lazy val tagsoup =
+    Project("dispatch-tagsoup", file("tagsoup"), settings = httpShared ++ Seq(
+      description := "Adds TagSoup handler verbs to Dispatch",
+      libraryDependencies ++= Seq(
+        "org.ccil.cowan.tagsoup" % "tagsoup" % "1.2.1",
+        "org.eclipse.jetty.aggregate" % "jetty-server" % "7.5.4.v20111024" % "test"
+      )
+    )) dependsOn(core, http)
+  lazy val jsoup =
+    Project("dispatch-jsoup", file("jsoup"), settings = httpShared ++ Seq(
+      description := "Adds JSoup handler verbs to Dispatch",
+      libraryDependencies ++= Seq(
+        "org.jsoup" % "jsoup" % "1.6.1",
+        "org.eclipse.jetty.aggregate" % "jetty-server" % "7.5.4.v20111024" % "test"
+      )
+    )) dependsOn(core, http)
 
   def aggregateTask[T](key: TaskKey[Seq[T]])
                       (proj: ProjectRef, struct: Load.BuildStructure) = {
