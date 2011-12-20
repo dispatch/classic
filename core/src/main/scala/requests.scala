@@ -3,7 +3,7 @@ package dispatch
 import org.apache.http.message.BasicHttpRequest
 import org.apache.http.{HttpEntity,HttpHost,HttpRequest}
 import org.apache.http.util.EntityUtils
-import org.apache.http.entity.StringEntity
+import org.apache.http.entity.{StringEntity, ByteArrayEntity}
 import java.net.URI
 
 object Request extends Encoders
@@ -190,6 +190,10 @@ class RequestVerbs(subject: Request) {
   def << (stringbody: String, contenttype: String): Request = POST.copy(
     body=Some(new RefStringEntity(
       stringbody, contenttype, subject.defaultCharset))
+  )
+  /** Post the given byte array. */
+  def << (contents: Array[Byte]): Request = POST.copy(
+    body=Some(new ByteArrayEntity(contents))
   )
   
   /** Add query parameters. (mutates request) */
