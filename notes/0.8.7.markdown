@@ -1,0 +1,30 @@
+### Breaking Changes
+
+If using the `</>` verb to parse XML, you must now bring it into scope
+explicitly:
+
+    import dispatch.XhtmlParsing._
+
+There's a good reason for this! (See below.)
+
+### JSoup and TagSoup modules
+
+Thanks to [big contribution from daros][soup], Dispatch now integrates
+with parsers that can handle real-world HTML. So that Dispatch doesn't
+become its own soup, the handler verb `</>` is used across all HTML
+parsers. For usage instructions and examples, see the Dispatch
+documentation for [TagSoup][tagsoup] and [JSoup][jsoup].
+
+[soup]: https://github.com/dispatch/dispatch/pull/62
+[tagsoup]: http://dispatch.databinder.net/TagSoup.html
+[jsoup]: http://dispatch.databinder.net/JSoup.html
+
+### Support byte arrays for POST
+
+This [contribution by dyross][ary] (no relation?) adds
+
+    def << (contents: Array[Byte])
+
+to the standard set of request verbs.
+
+[ary]: https://github.com/dispatch/dispatch/pull/63
