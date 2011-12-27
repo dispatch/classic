@@ -16,13 +16,13 @@ by importing them from JSoupHttp.
 ```scala
 import dispatch.jsoup.JSoupHttp._
 ```
-Now we can use the operators `\\>`, `jsouped`, `as_jsouped` and `as_jsoupedNodeSeq`
+Now we can use the operators `</>`, `jsouped`, `as_jsouped` and `as_jsoupedNodeSeq`
 in our handlers. As a start we can extract the title from a HTML page.
 
 ```scala
 import dispatch.jsoup.JSoupHttp._
 
-val title = Http(:/("example.org") \\> { doc =>
+val title = Http(:/("example.org") </> { doc =>
               doc.title
             })
 ```
@@ -39,10 +39,11 @@ import dispatch.jsoup.JSoupHttp._
 import scala.collection.JavaConversions._
 
 val request = :/("example.org") / "test.html"
-val list = Http(request \\> { doc =>
+val list = Http(request </> { doc =>
   doc.search("a[href]").asList.map(_.attr("abs:href"))
 }
-``
+```
+
 JSoup is a great api for processing HTML, and scala makes it even better.
 To learn more of it's capabilities take a look in the [JSoup Cookbook][cookbook].
 

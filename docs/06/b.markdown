@@ -7,7 +7,7 @@ as found in the wild, to be processed as a scala NodeSeq.
 
 [tagsoup]: http://ccil.org/~cowan/XML/tagsoup/
 
-### Examlpe Usage
+### Example Usage
 
 To process the response with TagSoup you first have to make the handler
 verbs available. This can be done in several ways.
@@ -15,14 +15,14 @@ verbs available. This can be done in several ways.
 ```scala
 import dispatch.tagsoup.TagSoupHttp._
 ```
-Now we can use the operators `<\\>`, `tagsouped` and `as_tagsouped` in
+Now we can use the operators `</>`, `tagsouped` and `as_tagsouped` in
 our handlers. If we want to find the title of a HTML page it can look
 something like this.
 
 ```scala
 import dispatch.tagsoup.TagSoupHttp._
 
-val title = Http(:/("example.org") <\\> { ns =>
+val title = Http(:/("example.org") </> { ns =>
               (ns \\ "title").text
             })
 ```
