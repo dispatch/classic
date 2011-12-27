@@ -9,11 +9,11 @@ There's a good reason for this! (See below.)
 
 ### JSoup and TagSoup modules
 
-Thanks to [big contribution from daros][soup], Dispatch now integrates
-with parsers that can handle real-world HTML. So that Dispatch doesn't
-become its own soup, the handler verb `</>` is used across all HTML
-parsers. For usage instructions and examples, see the Dispatch
-documentation for [TagSoup][tagsoup] and [JSoup][jsoup].
+Thanks to a [big contribution from daros][soup], Dispatch now
+integrates with parsers that can handle real-world HTML. The handler
+verb `</>` is used across all HTML parsers, resolved by its imported
+implicit conversions. For usage instructions and examples, see the
+Dispatch documentation for [TagSoup][tagsoup] and [JSoup][jsoup].
 
 [soup]: https://github.com/dispatch/dispatch/pull/62
 [tagsoup]: http://dispatch.databinder.net/TagSoup.html
