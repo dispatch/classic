@@ -16,6 +16,7 @@ object Dispatch extends Build {
         case _ => "org.scala-tools.testing" %% "specs" % "1.6.9" % "test"
       })
     },
+    publishArtifact in packageDoc := false, // doesn't work, don't use
     publishTo := Some("Scala Tools Nexus" at
       "http://nexus.scala-tools.org/content/repositories/releases/"),
     credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
