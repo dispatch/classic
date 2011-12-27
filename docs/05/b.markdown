@@ -44,6 +44,7 @@ How about trying something more interesting with the body, like
 extracting the page's title?
 
 ```scala
+import XhtmlParsing._
 Http(learnScala </> { nodes =>
   (nodes \\\\ "title").text
 })
@@ -53,4 +54,5 @@ The `</>` handler processes the response as XHTML and passes a
 `scala.xml.NodeSeq` to the supplied function. The `\\\\` projection
 function finds the `<title>` node, and `text` gives its contents.
 
-So, that's how you get the title of the "Learning Scala" page.
+> Note: The parser imported here is very brittle. See the next section
+  for alternatives that support real-world HTML.
