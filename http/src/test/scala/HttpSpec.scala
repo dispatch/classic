@@ -103,6 +103,7 @@ object HttpSpec extends Specification {
     }
 
     "process html page" in {
+      import XhtmlParsing._
       h(url("http://technically.us/") </> { xml =>
         (xml \\ "title").text
       }) must_== "technically.us"

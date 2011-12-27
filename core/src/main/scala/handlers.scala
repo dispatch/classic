@@ -92,10 +92,6 @@ class HandlerVerbs(request: Request) {
   def <> [T] (block: xml.Elem => T) = >>~ { reader => 
     block(xml.XML.withSAXParser(Handler.saxParserFactory.newSAXParser).load(reader))
   }
-  /** Process response as XHTML document in block, more lenient than <> */
-  def </> [T] (block: xml.NodeSeq => T) = >~ { src => 
-    block(xml.parsing.XhtmlParser(src))
-  }
   /** Process header as Map in block. Map returns empty set for header
    *  name misses. */
   def >:> [T] (block: Map[String, Set[String]] => T) = {
@@ -146,3 +142,23 @@ class HandlerVerbs(request: Request) {
     } )
   }
 }
+
+
+trait ImplicitXhtmlHandlerVerbs {
+  implicit def toXhtmlHandlerVerbs(req: Request) = new XhtmlHandlerVerbs(req)
+  implicit def stringToXhtmlHandlerVerbs(str: String) = new XhtmlHandlerVerbs(new Request(str))
+}
+
+/** Import this object's methods to get the </> verb, or see the
+ *  jsoup and tagsoup modules. */
+object XhtmlParsing extends ImplicitXhtmlHandlerVerbs
+
+class XhtmlHandlerVerbs(request: Request) {
+  /** Process response as XHTML document in block, more lenient than <>
+   *  but still not great. See the jsoup and tagsoup modules for more
+   *  capable html parsers. */
+  def </> [T] (block: xml.NodeSeq => T) = request >~ { src => 
+    block(xml.parsing.XhtmlParser(src))
+  }
+}
+

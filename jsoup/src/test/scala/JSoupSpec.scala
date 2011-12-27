@@ -67,13 +67,13 @@ object JSoupSpec extends Specification with ServedByJetty {
     }
   }
 
-  """Using the verb \\>""" should {
+  """Using the verb </>""" should {
     import dispatch.jsoup.JSoupHttp._
     "do the same thing as the verb jsouped" in {
       withResourceServer { _ =>
         val request = JSoupHtml / "test.html"
 
-        val title1 = Http(request \\> {doc =>
+        val title1 = Http(request </> {doc =>
           doc.title
         })
         val title2 = Http(request jsouped {doc =>

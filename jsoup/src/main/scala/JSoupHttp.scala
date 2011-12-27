@@ -19,7 +19,7 @@ class JSoupHandlers(request: Request) {
       block(Jsoup.parse(stm, charset, request.to_uri.toString))
   }
   /** Alias for verb jsouped */
-  def \\> [T] (block: (Document) => T) = jsouped(block)
+  def </> [T] (block: (Document) => T) = jsouped(block)
   /** Conveniences handler for retrieving a org.jsoup.nodes.Document */
   def as_jsouped: Handler[Document] = jsouped { dom => dom }
   /** Conveniences handler for retrieving a NodeSeq */

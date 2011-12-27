@@ -22,7 +22,7 @@ class TagSoupHandlers(subject: HandlerVerbs) {
       block( new NoBindingFactoryAdapter().loadXML(new InputSource(new InputStreamReader(stm, charset)), parserFactory.newSAXParser()) )
   }
   /** Alias for verb tagsouped */
-  def <\\> [T] (block: (xml.NodeSeq) => T) = tagsouped (block)
+  def </> [T] (block: (xml.NodeSeq) => T) = tagsouped (block)
   /** Conveniences handler for retrieving a NodeSeq */
   def as_tagsouped = tagsouped {ns => ns}
 }

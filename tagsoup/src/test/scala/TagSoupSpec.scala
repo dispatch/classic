@@ -31,6 +31,7 @@ object TagSoupSpec extends Specification with ServedByJetty {
   "Using </>" should {
     "fail to parse resource" in {
       withResourceServer { _ =>
+        import XhtmlParsing._
         val request = :/("localhost", port) / "Human.html"
 
         Http(request </> { nodes =>
@@ -40,12 +41,12 @@ object TagSoupSpec extends Specification with ServedByJetty {
     }
   }
 
-  """Using <\\>""" should {
+  """Using </>""" should {
     import TagSoupHttp._
     "successfully parse resource" in {
       withResourceServer { _ =>
         val request = :/("localhost", port) / "Human.html"
-        Http(request <\\> { nodes =>
+        Http(request </> { nodes =>
           (nodes \\ "title").text
         }) mustNot throwA[scala.xml.parsing.FatalError]
       }
@@ -143,12 +144,12 @@ object TagSoupSpec extends Specification with ServedByJetty {
     }
   }
 
-  """Using the verb <\\>""" should {
+  """Using the verb </>""" should {
     "do the same thing as the verb tagsouped" in {
       withResourceServer { _ =>
         val request = BadHtml_with_ImplicitTagSoupHandlers
 
-        val title1 = Http(request <\\> { nodes =>
+        val title1 = Http(request </> { nodes =>
           (nodes \\ "title").text
         })
         val title2 = Http(request tagsouped { nodes =>
