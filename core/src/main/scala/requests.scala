@@ -210,7 +210,7 @@ class RequestVerbs(subject: Request) {
   /** HTTP post request. */
   def POST = this << Map.empty
 
-  /** HTTP post request. */
+  /** HTTP put request. */
   def PUT = subject.copy(method="PUT")
     
   /** HTTP delete request. */
