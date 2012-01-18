@@ -6,7 +6,7 @@ import scala.util.parsing.combinator._
 import scala.util.parsing.combinator.syntactical._
 import scala.util.parsing.combinator.lexical._
 import scala.util.parsing.input.{CharSequenceReader,CharArrayReader}
-import java.io.{StringWriter, Writer, InputStream, InputStreamReader}
+import java.io.{InputStream, InputStreamReader}
 
 object JsonParser extends StdTokenParsers with ImplicitConversions {
   type Tokens = scala.util.parsing.json.Lexer
@@ -122,56 +122,56 @@ object JsValue {
     JsonParser(new CharArrayReader(io.Source.fromInputStream(s, charset).mkString.toCharArray))
 
   def toJson(x: JsValue): String = {
-    val w = new StringWriter
+    val w = new java.lang.StringBuilder
     writeJson(x, w)
     w.toString
   }
 
-  def writeJson(x: JsValue, w: Writer) {
+  def writeJson(x: JsValue, w: Appendable) {
     x match {
-      case JsNull => w.write("null")
-      case JsBoolean(b) => w.write(b.toString)
-      case JsNumber(n) => w.write(n.toString)
+      case JsNull => w.append("null")
+      case JsBoolean(b) => w.append(b.toString)
+      case JsNumber(n) => w.append(n.toString)
       case JsString(s) => {
-        w.write("\"")
+        w.append("\"")
         s foreach {
-          case '\\' => w.write("\\\\")
-          case '\n' => w.write("\\n")
-          case '\r' => w.write("\\r")
-          case '\t' => w.write("\\t")
-          case '"' => w.write("\\\"")
-          case c if c <= 0x1F => w.write("\\u%04x".format(c.toInt))
-          case c => w.write(c)
+          case '\\' => w.append("\\\\")
+          case '\n' => w.append("\\n")
+          case '\r' => w.append("\\r")
+          case '\t' => w.append("\\t")
+          case '"' => w.append("\\\"")
+          case c if c <= 0x1F => w.append("\\u%04x".format(c.toInt))
+          case c => w.append(c)
         }
-        w.write("\"")
+        w.append("\"")
       }
       case JsArray(ys) => {
-        w.write("[")
+        w.append("[")
         var first = true
         for (y <- ys) {
           if (first) {
             first = false
           } else {
-            w.write(", ")
+            w.append(", ")
           }
           writeJson(y, w)
         }
-        w.write("]")
+        w.append("]")
       }
       case JsObject(m) => {
-        w.write("{")
+        w.append("{")
         var first = true
         for ((k,v) <- m) {
           if (first) {
             first = false
           } else {
-            w.write(", ")
+            w.append(", ")
           }
           writeJson(k, w)
-          w.write(": ")
+          w.append(": ")
           writeJson(v, w)
         }
-        w.write("}")
+        w.append("}")
       }
     }
   }
