@@ -121,12 +121,58 @@ object JsValue {
   def fromStream(s: InputStream, charset: String = "utf-8") =
     JsonParser(new CharArrayReader(io.Source.fromInputStream(s, charset).mkString.toCharArray))
 
-  def toJson(x: JsValue): String = x match {
-    case JsNull => "null"
-    case JsBoolean(b) => b.toString
-    case JsString(s) => "\"" + s.replaceAll("\\\\", "\\\\\\\\").replaceAll("\\\"", "\\\\\"").replace("\n", "\\n") + "\""
-    case JsNumber(n) => n.toString
-    case JsArray(xs) => xs.map(toJson).mkString("[",", ","]")
-    case JsObject(m) => m.map{case (key, value) => toJson(key) + " : " + toJson(value)}.mkString("{",", ","}")
+  def toJson(x: JsValue): String = {
+    val w = new java.lang.StringBuilder
+    writeJson(x, w)
+    w.toString
+  }
+
+  def writeJson(x: JsValue, w: Appendable) {
+    x match {
+      case JsNull => w.append("null")
+      case JsBoolean(b) => w.append(b.toString)
+      case JsNumber(n) => w.append(n.toString)
+      case JsString(s) => {
+        w.append("\"")
+        s foreach {
+          case '\\' => w.append("\\\\")
+          case '\n' => w.append("\\n")
+          case '\r' => w.append("\\r")
+          case '\t' => w.append("\\t")
+          case '"' => w.append("\\\"")
+          case c if c <= 0x1F => w.append("\\u%04x".format(c.toInt))
+          case c => w.append(c)
+        }
+        w.append("\"")
+      }
+      case JsArray(ys) => {
+        w.append("[")
+        var first = true
+        for (y <- ys) {
+          if (first) {
+            first = false
+          } else {
+            w.append(", ")
+          }
+          writeJson(y, w)
+        }
+        w.append("]")
+      }
+      case JsObject(m) => {
+        w.append("{")
+        var first = true
+        for ((k,v) <- m) {
+          if (first) {
+            first = false
+          } else {
+            w.append(", ")
+          }
+          writeJson(k, w)
+          w.append(": ")
+          writeJson(v, w)
+        }
+        w.append("}")
+      }
+    }
   }
 }
