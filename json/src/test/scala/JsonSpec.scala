@@ -56,6 +56,9 @@ object JsValueSpec extends Specification {
         JsObject(Map(JsString("scrolls") -> JsArray(List(JsString("identify"))),
                      JsString("name") -> JsString("foo"))))
     }
+    "round-trip Unicode string" in {
+      reparse("control \u0008") must be equalTo(JsString("control \u0008"))
+    }
   }
 
   "JsValue.fromString and JsValue.fromStream" should {
