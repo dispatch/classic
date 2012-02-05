@@ -40,8 +40,8 @@ import scala.collection.JavaConversions._
 
 val request = :/("example.org") / "test.html"
 val list = Http(request </> { doc =>
-  doc.search("a[href]").asList.map(_.attr("abs:href"))
-}
+  doc.select("a[href]").map(_.attr("abs:href"))
+})
 ```
 
 JSoup is a great api for processing HTML, and scala makes it even better.
