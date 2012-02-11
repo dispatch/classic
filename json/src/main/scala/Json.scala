@@ -8,7 +8,7 @@ import scala.util.parsing.combinator.lexical._
 import scala.util.parsing.input.{CharSequenceReader,CharArrayReader}
 import java.io.{InputStream, InputStreamReader}
 
-object JsonParser extends StdTokenParsers with ImplicitConversions {
+class JsonParser extends StdTokenParsers with ImplicitConversions {
   type Tokens = scala.util.parsing.json.Lexer
   val lexical = new Tokens
   
@@ -28,6 +28,13 @@ object JsonParser extends StdTokenParsers with ImplicitConversions {
       case Success(result, _) => result
       case _ => throw new Exception("Illegal JSON format")
     }
+}
+
+object JsonParser {
+  def apply(input: CharSequenceReader): JsValue = {
+    val parse = new JsonParser
+    parse(input)
+  }
 }
 
 sealed trait JsValue {
