@@ -28,12 +28,12 @@ class ConfiguredHttpClient(
                                    sys.getProperty("http.proxyPassword"))
     val domain = sys.getProperty("https.auth.ntlm.domain",
                                  sys.getProperty("http.auth.ntlm.domain"))
-    if (host != null && port != null) {
+    if (host != null && !host.trim.isEmpty && port != null && !port.trim.isEmpty) {
       ConnRouteParams.setDefaultProxy(params,
                                       new HttpHost(host, port.toInt))
       proxyScope = Some(new AuthScope(host, port.toInt))
     }
-    if (user != null && password != null) {
+    if (user != null && !user.trim.isEmpty && password != null && !password.trim.isEmpty) {
       proxyBasicCredentials =
         Some(new UsernamePasswordCredentials(user, password))
       // We should pass our hostname, actually
