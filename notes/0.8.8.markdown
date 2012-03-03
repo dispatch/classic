@@ -1,0 +1,14 @@
+* JsonParser improvements (pull requests [66][66],
+  [68][68]) { [elehack][elehack] }
+* Improved system-property handling for proxies (pull request [71][71]) {
+  [iron9light][iron9light] }
+* Correction to mime4j dependency, which was failing to resolve for
+Maven builds; now points directly to the apache-mime4j-core.
+* Updated the httpclient dependency to version 4.1.3.
+
+
+[elehack]: https://github.com/elehack
+[iron9light]: https://github.com/iron9light
+[68]: https://github.com/dispatch/dispatch/pull/68
+[66]: https://github.com/dispatch/dispatch/pull/66
+[71]: https://github.com/dispatch/dispatch/pull/71
