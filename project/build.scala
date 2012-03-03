@@ -16,12 +16,31 @@ object Dispatch extends Build {
         case _ => "org.scala-tools.testing" %% "specs" % "1.6.9" % "test"
       })
     },
-    publishArtifact in packageDoc := false, // doesn't work, don't use
-    publishTo := Some("Scala Tools Nexus" at
-      "http://nexus.scala-tools.org/content/repositories/releases/"),
+    publishMavenStyle := true,
+    publishTo <<= version { (v: String) =>
+      val nexus = "https://oss.sonatype.org/"
+      if (v.trim.endsWith("SNAPSHOT")) 
+        Some("snapshots" at nexus + "content/repositories/snapshots") 
+      else
+        Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+    },
     credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
     homepage :=
-      Some(new java.net.URL("http://dispatch.databinder.net/"))
+      Some(new java.net.URL("http://dispatch.databinder.net/")),
+    publishArtifact in Test := false,
+    licenses := Seq("LGPL v3" -> url("http://www.gnu.org/licenses/lgpl.txt")),
+    pomExtra := (
+      <scm>
+        <url>git@github.com:dispatch/reboot.git</url>
+        <connection>scm:git:git@github.com:dispatch/reboot.git</connection>
+      </scm>
+      <developers>
+        <developer>
+          <id>n8han</id>
+          <name>Nathan Hamblen</name>
+          <url>http://twitter.com/n8han</url>
+        </developer>
+      </developers>)
   )
   val httpShared = shared ++ Seq(
     libraryDependencies +=
@@ -41,7 +60,9 @@ object Dispatch extends Build {
     )
   lazy val futures =
     Project("dispatch-futures", file("futures"), settings = shared ++ Seq(
-      description := "Common interface to Java and Scala futures"
+      description := "Common interface to Java and Scala futures",
+      // https://github.com/harrah/xsbt/issues/85#issuecomment-1687483
+      unmanagedClasspath in Compile += Attributed.blank(new java.io.File("doesnotexist"))
     ))
   lazy val core =
     Project("dispatch-core", file("core"), settings = httpShared ++ Seq(
@@ -80,7 +101,9 @@ object Dispatch extends Build {
     )) dependsOn(core)
   lazy val json =
     Project("dispatch-json", file("json"), settings = shared ++ Seq(
-      description := "A JSON parser"
+      description := "A JSON parser",
+      // https://github.com/harrah/xsbt/issues/85#issuecomment-1687483
+      unmanagedClasspath in Compile += Attributed.blank(new java.io.File("doesnotexist"))
     ))
   lazy val http_json =
     Project("dispatch-http-json", file("http+json"),
