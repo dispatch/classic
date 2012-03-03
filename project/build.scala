@@ -25,7 +25,7 @@ object Dispatch extends Build {
   )
   val httpShared = shared ++ Seq(
     libraryDependencies +=
-      "org.apache.httpcomponents" % "httpclient" % "4.1.2"
+      "org.apache.httpcomponents" % "httpclient" % "4.1.3"
   )
   lazy val dispatch =
     Project("Dispatch", file("."), settings = shared ++ Seq(
@@ -75,7 +75,7 @@ object Dispatch extends Build {
       libraryDependencies ++= Seq(
         "org.apache.httpcomponents" % "httpmime" % "4.1.2" intransitive(),
         "commons-logging" % "commons-logging" % "1.1.1",
-        "org.apache.james" % "apache-mime4j" % "0.7.1"
+        "org.apache.james" % "apache-mime4j-core" % "0.7.2"
       )
     )) dependsOn(core)
   lazy val json =
