@@ -146,9 +146,12 @@ class RequestVerbs(subject: Request) {
   /* Add a gzip acceptance header */
   def gzip = this <:< Map("Accept-Encoding" -> "gzip")
 
+  /** PUT the given string, with text/plain content-type. */
+  def <<< (stringbody: String): Request = this <<< (stringbody, "text/plain")
   /** PUT the given string. */
-  def <<< (stringbody: String): Request = PUT.copy(
-    body=Some(new RefStringEntity(stringbody, "text/plain", subject.defaultCharset))
+  def <<< (stringbody: String, contenttype: String): Request = PUT.copy(
+    body=Some(new RefStringEntity(
+      stringbody, contenttype, subject.defaultCharset))
   )
   /** PUT the given file. */
   def <<< (file: java.io.File, content_type: String) = PUT.copy(
