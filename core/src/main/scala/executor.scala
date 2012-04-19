@@ -64,6 +64,7 @@ trait HttpExecutor extends RequestLogging {
       case HttpGet.METHOD_NAME => new HttpGet(req.path)
       case HttpHead.METHOD_NAME => new HttpHead(req.path)
       case HttpDelete.METHOD_NAME => new HttpDelete(req.path)
+      case HttpOptions.METHOD_NAME => new HttpOptions(req.path)
       case method => 
         val message = method match {
           case HttpPost.METHOD_NAME => new HttpPost(req.path)
