@@ -222,6 +222,8 @@ class RequestVerbs(subject: Request) {
   /** HTTP head request. See >:> to access headers. */
   def HEAD = subject.copy(method="HEAD")
 
+  /** HTTP options request. */
+  def OPTIONS = subject.copy(method="OPTIONS")
 
   /** @return URI based on this request, e.g. if needed outside Disptach. */
   def to_uri = URI.create(subject.host.toURI).resolve(subject.path)
