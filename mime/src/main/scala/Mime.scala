@@ -4,12 +4,12 @@ import java.io.{FilterOutputStream, OutputStream}
 import org.apache.http.HttpEntity
 import org.apache.http.entity.HttpEntityWrapper
 import org.apache.http.entity.mime.{FormBodyPart, MultipartEntity}
-import org.apache.http.entity.mime.content.{FileBody, StringBody, InputStreamBody, ContentBody}
 
 import java.io.{File, InputStream}
 import java.nio.charset.Charset
+import org.apache.http.entity.mime.content._
 
-/** Mime module for multipart form posting. Note that when using an InputStream generator, 
+/** Mime module for multipart form posting. Note that when using an InputStream generator,
   chuncked encoding will be used with no Content-Length header and the stream will be closed
   after posting. It is therefore highly recommended that your generator always return a new 
   stream instance, or a Request descriptor referencing it will fail after its first use. */
@@ -31,19 +31,27 @@ object Mime {
     }
 
     /** Add file to multipart post, will convert other post methods to multipart */
-    def <<* (name: String, file: File) = 
+    def <<* (name: String, file: File) =
       add(name, new FileBody(file))
     /** Add file with content-type to multipart post, will convert other post methods to multipart */
-    def <<* (name: String, file: File, content_type: String) = 
+    def <<* (name: String, file: File, content_type: String) =
       add(name, new FileBody(file, content_type))
 
-    /** Add stream generator with content-type to multipart post, will convert other post methods to multipart */
-    def <<* (name: String, file_name: String, stream: () => InputStream, content_type: String) = 
+    /** Add stream generator to multipart post, will convert other post methods to multipart. */
+    def <<* (name: String, file_name: String, stream: () => InputStream, content_type: String) =
       add(name, new InputStreamBody(stream(), content_type, file_name))
 
-    /** Add stream generator to multipart post, will convert other post methods to multipart. */
-    def <<* (name: String, file_name: String, stream: () => InputStream) = 
+    /** Add stream generator with content-type to multipart post, will convert other post methods to multipart */
+    def <<* (name: String, file_name: String, stream: () => InputStream) =
       add(name, new InputStreamBody(stream(), file_name))
+
+    /** Add byte array to multipart post, will convert other post methods to multipart */
+    def <<* (name: String, file_name: String, bytes: Array[Byte]) =
+      add(name, new ByteArrayBody(bytes, file_name))
+
+    /** Add byte array with content-type to multipart post, will convert other post methods to multipart */
+    def <<* (name: String, file_name: String, bytes: Array[Byte], content_type: String) =
+      add(name, new ByteArrayBody(bytes, content_type, file_name))
 
     private def mime_ent: Mime.Entity = {
       def newent = new MultipartEntity with Mime.Entity {
