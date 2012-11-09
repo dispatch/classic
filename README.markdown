@@ -1,1 +1,1 @@
-Find Dispatch's documentation at http://dispatch.databinder.net/
+Find Dispatch's documentation at http://dispatch-classic.databinder.net/
