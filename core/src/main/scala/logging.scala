@@ -24,3 +24,12 @@ trait NoLogging extends HttpExecutor {
     def warn(msg: String, items: Any*) { }
   }
 }
+
+/** Mix in to Http if you want SLF4J logging */
+trait Slf4jLogging extends HttpExecutor {
+  override def make_logger = new Logger {
+    val logger = org.slf4j.LoggerFactory.getLogger("dispatch")
+    def info(msg: String, items: Any*) { logger.info(msg.format(items: _*)) }
+    def warn(msg: String, items: Any*) { logger.warn(msg.format(items: _*)) }
+  }
+}

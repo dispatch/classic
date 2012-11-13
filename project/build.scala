@@ -45,8 +45,10 @@ object Dispatch extends Build {
       </developers>)
   )
   val httpShared = shared ++ Seq(
-    libraryDependencies +=
-      "org.apache.httpcomponents" % "httpclient" % "4.1.3"
+    libraryDependencies ++= Seq(
+      "org.apache.httpcomponents" % "httpclient" % "4.1.3",
+      "org.slf4j" % "slf4j-api" % "1.7.2"
+    )
   )
   lazy val dispatch =
     Project("Dispatch", file("."), settings = shared ++ Seq(
