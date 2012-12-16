@@ -4,7 +4,7 @@ import Keys._
 object Dispatch extends Build {
   val shared = Defaults.defaultSettings ++ ls.Plugin.lsSettings ++ Seq(
     organization := "net.databinder",
-    version := "0.8.8",
+    version := "0.8.9",
     crossScalaVersions :=
       Seq("2.8.0", "2.8.1", "2.8.2", "2.9.0", "2.9.0-1", "2.9.1", "2.9.1-1", "2.9.2"),
     libraryDependencies <++= (scalaVersion) { sv => Seq(
