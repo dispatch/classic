@@ -1,5 +1,5 @@
-package dispatch.mime
-import dispatch._
+package dispatch.classic.mime
+import dispatch.classic._
 import java.io.{FilterOutputStream, OutputStream}
 import org.apache.http.HttpEntity
 import org.apache.http.entity.HttpEntityWrapper

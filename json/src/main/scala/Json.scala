@@ -1,4 +1,4 @@
-package dispatch.json
+package dispatch.classic.json
 
 // http://paste.pocoo.org/raw/106688/
 

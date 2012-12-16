@@ -1,7 +1,7 @@
-package dispatch.thread
+package dispatch.classic.thread
 
-import dispatch._
-import dispatch.futures._
+import dispatch.classic._
+import dispatch.classic.futures._
 import org.apache.http.client.HttpClient
 
 /** Http with a thread-safe client */

@@ -1,4 +1,4 @@
-package dispatch.futures
+package dispatch.classic.futures
 
 import java.util.concurrent.{Executors,Callable,ExecutorService}
 

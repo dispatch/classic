@@ -2,7 +2,7 @@ import org.eclipse.jetty.server.handler.{DefaultHandler, HandlerList, ResourceHa
 import org.eclipse.jetty.server.nio.SelectChannelConnector
 import org.eclipse.jetty.server.Server
 import org.specs._
-import dispatch._
+import dispatch.classic._
 
 object JSoupSpec extends Specification with ServedByJetty {
   val port = 9990

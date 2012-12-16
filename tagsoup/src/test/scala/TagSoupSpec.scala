@@ -3,7 +3,7 @@ import org.eclipse.jetty.server.handler.{DefaultHandler, HandlerList, ResourceHa
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.nio.SelectChannelConnector
 import org.specs._
-import dispatch._
+import dispatch.classic._
 import dispatch.tagsoup._
 
 object TagSoupSpec extends Specification with ServedByJetty {

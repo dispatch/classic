@@ -1,4 +1,4 @@
-package dispatch
+package dispatch.classic
 
 import org.apache.http.HttpResponse
 import util.control.Exception._

@@ -1,4 +1,4 @@
-package dispatch.json
+package dispatch.classic.json
 
 /** Json Extractor, extracts a value of type T from the given JsValue. */
 trait Extract[T] {

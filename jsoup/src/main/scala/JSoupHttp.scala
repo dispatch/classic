@@ -1,6 +1,6 @@
-package dispatch.jsoup
+package dispatch.classic.jsoup
 
-import dispatch._
+import dispatch.classic._
 import org.jsoup.nodes.Document
 import org.jsoup.Jsoup
 import io.Source

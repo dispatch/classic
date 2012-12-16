@@ -1,5 +1,5 @@
-package dispatch.foursquare
-import dispatch._
+package dispatch.classic.foursquare
+import dispatch.classic._
 
 object Auth {
   private val svc: Request = :/ ("api.foursquare.com") secure

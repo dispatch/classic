@@ -1,6 +1,6 @@
-package dispatch.tagsoup
+package dispatch.classic.tagsoup
 
-import dispatch.{HandlerVerbs, Request}
+import dispatch.classic.{HandlerVerbs, Request}
 import xml.parsing.NoBindingFactoryAdapter
 
 import java.io.InputStreamReader

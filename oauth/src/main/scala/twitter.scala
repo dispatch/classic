@@ -1,5 +1,5 @@
-package dispatch.twitter
-import dispatch._
+package dispatch.classic.twitter
+import dispatch.classic._
 
 import oauth._
 import oauth.OAuth._

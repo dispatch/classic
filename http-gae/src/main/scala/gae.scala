@@ -1,4 +1,4 @@
-package dispatch.gae
+package dispatch.classic.gae
 
 import java.net._
 import java.util.concurrent.TimeUnit

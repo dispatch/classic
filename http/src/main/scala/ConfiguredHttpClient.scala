@@ -1,4 +1,4 @@
-package dispatch
+package dispatch.classic
 
 import org.apache.http.{HttpHost,HttpVersion,HttpRequest,HttpResponse}
 import org.apache.http.auth.{AuthScope, NTCredentials, UsernamePasswordCredentials}

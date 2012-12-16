@@ -1,5 +1,5 @@
-package dispatch.json
-import dispatch._
+package dispatch.classic.json
+import dispatch.classic._
 
 trait ImplicitJsHandlers {
   /** Add JSON-processing method ># to dispatch.Request */

@@ -1,4 +1,4 @@
-package dispatch
+package dispatch.classic
 
 import org.apache.http.message.BasicHttpRequest
 import org.apache.http.{HttpEntity,HttpHost,HttpRequest}

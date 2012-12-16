@@ -1,4 +1,4 @@
-package dispatch
+package dispatch.classic
 
 import org.apache.http.{HttpResponse,HttpEntity}
 import org.apache.http.util.EntityUtils

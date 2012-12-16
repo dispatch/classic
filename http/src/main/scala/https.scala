@@ -1,4 +1,4 @@
-package dispatch
+package dispatch.classic
 
 /** Trust all TLS certs */
 trait HttpsLeniency { self: BlockingHttp =>

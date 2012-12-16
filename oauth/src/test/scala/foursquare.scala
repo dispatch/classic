@@ -1,6 +1,6 @@
-package dispatch.foursquare
+package dispatch.classic.foursquare
 
-import dispatch._
+import dispatch.classic._
 import org.specs._
 
 object FoursquareSpec extends Specification {

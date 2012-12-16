@@ -1,4 +1,4 @@
-package dispatch
+package dispatch.classic
 
 import org.apache.http.{HttpHost,HttpRequest,HttpResponse,HttpEntity}
 import org.apache.http.message.AbstractHttpMessage

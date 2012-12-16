@@ -1,5 +1,5 @@
-package dispatch.oauth
-import dispatch._
+package dispatch.classic.oauth
+import dispatch.classic._
 import Request.{encode_%, decode_%}
 
 import collection.Map

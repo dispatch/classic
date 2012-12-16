@@ -1,4 +1,4 @@
-package dispatch
+package dispatch.classic
 
 import collection.Map
 import collection.immutable.{Map => IMap}

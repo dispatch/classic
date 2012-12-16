@@ -1,6 +1,6 @@
-package dispatch.nio
+package dispatch.classic.nio
 
-import dispatch.{Callback,Request,ExceptionListener}
+import dispatch.classic.{Callback,Request,ExceptionListener}
 import org.apache.http.{HttpHost,HttpRequest,HttpResponse,HttpEntity,HttpException}
 import org.apache.http.message.BasicHttpEntityEnclosingRequest
 import org.apache.http.protocol._
@@ -20,7 +20,7 @@ object Http {
   val socket_buffer_size = 8 * 1024
 }
 
-class Http extends dispatch.HttpExecutor {
+class Http extends dispatch.classic.HttpExecutor {
   lazy val client = {
     val cl = make_client
     cl.start()
@@ -28,7 +28,7 @@ class Http extends dispatch.HttpExecutor {
   }
   def make_client = new DefaultHttpAsyncClient
 
-  type HttpPackage[T] = dispatch.futures.StoppableFuture[T]
+  type HttpPackage[T] = dispatch.classic.futures.StoppableFuture[T]
 
   abstract class StoppableConsumer[T](
     listener: ExceptionListener
@@ -83,7 +83,7 @@ class Http extends dispatch.HttpExecutor {
   class ConsumerFuture[T](
     underlying: Future[T], 
     consumer: StoppableConsumer[T]
-  ) extends dispatch.futures.StoppableFuture[T] {
+  ) extends dispatch.classic.futures.StoppableFuture[T] {
     def apply() = {
       val res = underlying.get()
       consumer.exception.foreach { throw _ }
@@ -96,7 +96,7 @@ class Http extends dispatch.HttpExecutor {
     }
   }
   /* substitute future used for blocking consumers */
-  trait SubstituteFuture[T] extends dispatch.futures.StoppableFuture[T] {
+  trait SubstituteFuture[T] extends dispatch.classic.futures.StoppableFuture[T] {
     def isSet = true
     def stop() {  }
   }
@@ -105,7 +105,7 @@ class Http extends dispatch.HttpExecutor {
   }
 
   def execute[T](host: HttpHost, 
-                 credsopt: Option[dispatch.Credentials], 
+                 credsopt: Option[dispatch.classic.Credentials], 
                  req: HttpRequestBase, 
                  block: HttpResponse => T,
                  listener: ExceptionListener) = {
@@ -147,7 +147,7 @@ class Http extends dispatch.HttpExecutor {
     }
   }
   
-  def executeWithCallback[T](host: HttpHost, credsopt: Option[dispatch.Credentials], 
+  def executeWithCallback[T](host: HttpHost, credsopt: Option[dispatch.classic.Credentials], 
                              req: HttpRequestBase, callback: Callback[T]) = {
     credsopt.map { creds =>
       error("Not yet implemented, but you can force basic auth with as_!")
@@ -177,7 +177,7 @@ class Http extends dispatch.HttpExecutor {
   }
 }
 
-case class DecodingCallback[T](callback: dispatch.Callback[T]) {
+case class DecodingCallback[T](callback: dispatch.classic.Callback[T]) {
   def with_decoder(response: HttpResponse, decoder: ContentDecoder) {
     val buffer = java.nio.ByteBuffer.allocate(Http.socket_buffer_size)
     val length = decoder.read(buffer)
