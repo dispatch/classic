@@ -1,7 +1,7 @@
 import org.specs._
 
 object JsonSpec extends Specification {
-  import dispatch.json._
+  import dispatch.classic.json._
   import JsHttp._
 
   val js = Js(""" { "a": {"a": "a string", "b": {"pi": 3.14159265 } }, "b": [1,2,3] } """)

@@ -4,7 +4,7 @@ import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.nio.SelectChannelConnector
 import org.specs._
 import dispatch.classic._
-import dispatch.tagsoup._
+import dispatch.classic.tagsoup._
 
 object TagSoupSpec extends Specification with ServedByJetty {
   val port = 9980

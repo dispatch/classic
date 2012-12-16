@@ -1,7 +1,7 @@
 import org.specs._
 
 object JsValueSpec extends Specification {
-  import dispatch.json._
+  import dispatch.classic.json._
   import java.io.ByteArrayInputStream
 
   val testFile = getClass.getClassLoader.getResourceAsStream("test.json")

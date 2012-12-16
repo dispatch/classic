@@ -11,7 +11,7 @@ object JSoupSpec extends Specification with ServedByJetty {
   object JSoupHtml extends Request(:/("localhost", port))
 
   "JSoup html parser" should {
-    import dispatch.jsoup.JSoupHttp._
+    import dispatch.classic.jsoup.JSoupHttp._
     "successfully parse good html" in {
       withResourceServer { _ =>
         val request = JSoupHtml / "test.html"
@@ -27,7 +27,7 @@ object JSoupSpec extends Specification with ServedByJetty {
   }
 
   "Using JSoup Document" should {
-    import dispatch.jsoup.JSoupHttp._
+    import dispatch.classic.jsoup.JSoupHttp._
     "find Elements by tag" in {
       withResourceServer { _ =>
         val request = JSoupHtml / "test.html"
@@ -68,7 +68,7 @@ object JSoupSpec extends Specification with ServedByJetty {
   }
 
   """Using the verb </>""" should {
-    import dispatch.jsoup.JSoupHttp._
+    import dispatch.classic.jsoup.JSoupHttp._
     "do the same thing as the verb jsouped" in {
       withResourceServer { _ =>
         val request = JSoupHtml / "test.html"
@@ -86,7 +86,7 @@ object JSoupSpec extends Specification with ServedByJetty {
   }
 
   "Using the verb as_jsoupedNodeSeq" should {
-    import dispatch.jsoup.JSoupHttp._
+    import dispatch.classic.jsoup.JSoupHttp._
     "use JSoup to retrieve a NodeSeq" in {
       withResourceServer { _ =>
         val request = JSoupHtml / "Human.html"
