@@ -1,0 +1,23 @@
+### Forwards-compatibility with Dispatch 0.9+ (reboot)
+
+This release changes the base package of the 0.8 line from `dispatch`
+to `dispatch.classic`, so that Dispatch 0.8.9 and Dispatch 0.9.x may
+be used on the same classpath.
+
+This will require code changes in any project using Dispatch 0.8.
+Typically, it will require changes to imports and any fully qualified
+classname; e.g. `dispatch.Http` becomes `dispatch.classic.Http`.
+
+### Enhancements
+
+* Foursquare API interface [contributed by adamdecaf][fsq]
+* Ability to use a byte-array to define a multipart-post body,
+  [contributed by steppenwells][byte]
+* Support for OPTIONS requests, [contributed by stephenjudkins][opt]
+* Ability to specify content-type with `<<<`,
+  [contributed by telmomenezes][typ]
+
+[fsq]: https://github.com/dispatch/dispatch/pull/75
+[byte]: https://github.com/dispatch/dispatch/pull/74
+[opt]: https://github.com/dispatch/dispatch/pull/73
+[typ]: https://github.com/dispatch/dispatch/pull/72
