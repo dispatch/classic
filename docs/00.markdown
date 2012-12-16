@@ -5,7 +5,7 @@ Dispatch
  what to do in pure and uninhibited Scala, and Dispatch carries out your
  orders using its trusty [HttpClient][hc] backend.
 
-> [Version $version$ Release Notes](http://implicit.ly/dispatch-$vrsn$)
+> [Version $version$ Release Notes]($version_link$)
 
 
 [hc]: http://hc.apache.org/httpcomponents-client/
