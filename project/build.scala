@@ -28,7 +28,7 @@ object Dispatch extends Build {
     },
     credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
     homepage :=
-      Some(new java.net.URL("http://dispatch.databinder.net/")),
+      Some(new java.net.URL("http://dispatch-classic.databinder.net/")),
     publishArtifact in Test := false,
     licenses := Seq("LGPL v3" -> url("http://www.gnu.org/licenses/lgpl.txt")),
     pomExtra := (
