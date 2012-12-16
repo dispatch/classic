@@ -1,0 +1,25 @@
+{
+  "organization" : "net.databinder",
+  "name" : "dispatch-tagsoup",
+  "version" : "0.8.9",
+  "description" : "Adds TagSoup handler verbs to Dispatch",
+  "site" : "http://dispatch.databinder.net/",
+  "tags" : [ ],
+  "docs" : "",
+  "resolvers" : [ "https://oss.sonatype.org/content/repositories/releases" ],
+  "dependencies" : [ {
+    "organization" : "org.apache.httpcomponents",
+    "name" : "httpclient",
+    "version" : "4.1.3"
+  }, {
+    "organization" : "org.ccil.cowan.tagsoup",
+    "name" : "tagsoup",
+    "version" : "1.2.1"
+  } ],
+  "scalas" : [ "2.8.0", "2.8.1", "2.8.2", "2.9.0", "2.9.0-1", "2.9.1", "2.9.1-1", "2.9.2" ],
+  "licenses" : [ {
+    "name" : "LGPL v3",
+    "url" : "http://www.gnu.org/licenses/lgpl.txt"
+  } ],
+  "sbt" : false
+}
