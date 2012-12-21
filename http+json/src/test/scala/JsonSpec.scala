@@ -51,7 +51,7 @@ object JsonSpec extends Specification {
     }
     "match against third level number" in {
       val TestExtractor.a.b.pi(p) = js
-      p must_== 3.14159265
+      p.toString must_== "3.14159265"
     }
     "match against a numeric list" in {
       val TestExtractor.b(b) = js
@@ -75,7 +75,7 @@ object JsonSpec extends Specification {
     }
     "deeply extract a third level number" in {
       val a(b(pi(pi0))) = js
-      pi0 must_== 3.14159265
+      pi0.toString must_== "3.14159265"
     }
     "match against an unextracted list" in {
       val l(l0) = js
@@ -111,7 +111,7 @@ object JsonSpec extends Specification {
       res ># { ('a ! obj) andThen ('a ! str) } must_== "a string"
     }
     "extract a third level number" in {
-      res ># { ('a ! obj) andThen ('b ! obj) andThen ('pi ! num) } must_== 3.14159265
+      (res ># { ('a ! obj) andThen ('b ! obj) andThen ('pi ! num) }).toString must_== "3.14159265"
     }
     "work with map" in {
       List(js, js, js).map ('b ! (list ! num)) must_== (1 to 3).map{ _ => List(1,2,3) }.toList
