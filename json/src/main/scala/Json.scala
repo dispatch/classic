@@ -73,8 +73,8 @@ sealed abstract case class JsBoolean(b: Boolean) extends JsValue {
   val self = b
 }
 
-case object JsTrue extends JsBoolean(true)
-case object JsFalse extends JsBoolean(false)
+object JsTrue extends JsBoolean(true)
+object JsFalse extends JsBoolean(false)
 case object JsNull extends JsValue {
   type T = Null
   val self = null
