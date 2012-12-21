@@ -4,9 +4,10 @@ import Keys._
 object Dispatch extends Build {
   val shared = Defaults.defaultSettings ++ ls.Plugin.lsSettings ++ Seq(
     organization := "net.databinder",
-    version := "0.8.8",
+    version := "0.8.9",
+    scalaVersion := "2.10.0",
     crossScalaVersions :=
-      Seq("2.8.0", "2.8.1", "2.8.2", "2.9.0", "2.9.0-1", "2.9.1", "2.9.1-1", "2.9.2"),
+      Seq("2.8.0", "2.8.1", "2.8.2", "2.9.0", "2.9.0-1", "2.9.1", "2.9.1-1", "2.9.2", "2.10.0"),
     libraryDependencies <++= (scalaVersion) { sv => Seq(
       sv.split("[.-]").toList match {
         case "2" :: "8" :: _ =>
@@ -64,7 +65,8 @@ object Dispatch extends Build {
     Project("dispatch-futures", file("futures"), settings = shared ++ Seq(
       description := "Common interface to Java and Scala futures",
       // https://github.com/harrah/xsbt/issues/85#issuecomment-1687483
-      unmanagedClasspath in Compile += Attributed.blank(new java.io.File("doesnotexist"))
+      unmanagedClasspath in Compile += Attributed.blank(new java.io.File("doesnotexist")),
+      actorsDependency
     ))
   lazy val core =
     Project("dispatch-core", file("core"), settings = httpShared ++ Seq(
@@ -99,7 +101,8 @@ object Dispatch extends Build {
         "org.apache.httpcomponents" % "httpmime" % "4.1.2" intransitive(),
         "commons-logging" % "commons-logging" % "1.1.1",
         "org.apache.james" % "apache-mime4j-core" % "0.7.2"
-      )
+      ),
+      actorsDependency
     )) dependsOn(core)
   lazy val json =
     Project("dispatch-json", file("json"), settings = shared ++ Seq(
@@ -148,4 +151,13 @@ object Dispatch extends Build {
       key in (_, Compile, doc) get struct.data
     ).join.map(_.flatten)
   }
+
+  lazy val actorsDependency = libraryDependencies <<= (libraryDependencies, scalaVersion){
+    (dependencies, scalaVersion) =>
+      if(scalaVersion.startsWith("2.10"))
+        ("org.scala-lang" % "scala-actors" % scalaVersion) +: dependencies
+      else
+        dependencies
+    }
+
 }
