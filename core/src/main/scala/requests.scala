@@ -21,15 +21,15 @@ object Request extends Encoders
   }
   def to_path(uristr: String) = {
     val uri = URI.create(uristr)
-    (new URI(null, null, uri.getPath, uri.getQuery, null)).toString
+    (new URI(null, null, uri.getRawPath, uri.getRawQuery, null)).toString
   }
   def defaultCharset = factoryCharset
 }
 
 /** Request descriptor, possibly contains a host, credentials, and a list of transformation functions. */
 class Request(
-  val host: HttpHost, 
-  val creds: Option[Credentials], 
+  val host: HttpHost,
+  val creds: Option[Credentials],
   val method: String,
   val path: String,
   val headers: Request.Headers,
