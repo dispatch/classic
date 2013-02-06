@@ -1,6 +1,6 @@
 Parsing Responses
 -----------------
 
-While you can easily weild Dispatch's stream and reader handlers to
+While you can easily wield Dispatch's stream and reader handlers to
 bind to any parser you like, several binding modules are available to
 make it even simpler.
