@@ -12,7 +12,7 @@ Dispatch forms the foundation of an in-house SOAP client at [Novus](https://www.
 
 #### MLB.com
 
-In a past life, [maxaf](https://github.com/maxaf) wrote an internal baseball stats REST API client that was used to feed data into some very gruelling PDF generation code. Dispatch was used to cleanly produce HTTP requests & parse responses without hurting engineer morale.
+In a past life, [maxaf](https://github.com/maxaf) wrote an internal baseball stats REST API client that was used to feed data into some very grueling PDF generation code. Dispatch was used to cleanly produce HTTP requests & parse responses without hurting engineer morale.
 
 #### conscript
 
