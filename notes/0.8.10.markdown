@@ -1,0 +1,4 @@
+Some of the versioned binaries (e.g. `dispatch_http_2.9.1-0.8.9`) for
+Dispatch Classic 0.8.9 were incorrectly published and included classes
+in both the `dispatch` and `dispatch.classic` package. This release
+corrects the packaging; there are no other changes.

@@ -4,10 +4,10 @@ import Keys._
 object Dispatch extends Build {
   val shared = Defaults.defaultSettings ++ ls.Plugin.lsSettings ++ Seq(
     organization := "net.databinder",
-    version := "0.8.9",
-    scalaVersion := "2.10.0",
+    version := "0.8.10",
+    scalaVersion := "2.10.2",
     crossScalaVersions :=
-      Seq("2.8.0", "2.8.1", "2.8.2", "2.9.0", "2.9.0-1", "2.9.1", "2.9.1-1", "2.9.2", "2.10.0"),
+      Seq("2.8.0", "2.8.1", "2.8.2", "2.9.0", "2.9.0-1", "2.9.1", "2.9.1-1", "2.9.2", "2.9.3", "2.10.2"),
     libraryDependencies <++= (scalaVersion) { sv => Seq(
       sv.split("[.-]").toList match {
         case "2" :: "8" :: _ =>
