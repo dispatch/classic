@@ -168,14 +168,14 @@ object Dispatch extends Build {
   lazy val xmlDependency = libraryDependencies <<= (libraryDependencies, scalaVersion){
     (dependencies, scalaVersion) =>
       if(scalaVersion.startsWith("2.11"))
-        ("org.scala-lang" % "scala-xml" % scalaVersion) +: dependencies
+        ("org.scala-lang.modules" %% "scala-xml" % "1.0.1") +: dependencies
       else
         dependencies
     }
   lazy val parserDependency = libraryDependencies <<= (libraryDependencies, scalaVersion){
     (dependencies, scalaVersion) =>
       if(scalaVersion.startsWith("2.11"))
-        ("org.scala-lang" % "scala-parser-combinators" % scalaVersion) +: dependencies
+        ("org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.1") +: dependencies
       else
         dependencies
     }
