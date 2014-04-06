@@ -16,6 +16,9 @@ object Dispatch extends Build {
           "org.scala-tools.testing" % "specs_2.9.0-1" % "1.6.8" % "test"
         case "2" :: "9" :: _ =>
           "org.scala-tools.testing" % "specs_2.9.1" % "1.6.9" % "test"
+        case "2" :: "11" :: _ =>
+          // unlikely to work for testing but will allow us to compile, publish
+          "org.scala-tools.testing" % "specs_2.10" % "1.6.9" % "test"
         case _ => "org.scala-tools.testing" %% "specs" % "1.6.9" % "test"
       })
     },
@@ -71,7 +74,8 @@ object Dispatch extends Build {
   lazy val core =
     Project("dispatch-core", file("core"), settings = httpShared ++ Seq(
       description :=
-        "Core interfaces, applied by dispatch-http and dispatch-nio executors"
+        "Core interfaces, applied by dispatch-http and dispatch-nio executors",
+      xmlDependency
     ))
   lazy val http =
     Project("dispatch-http", file("http"), settings = httpShared ++ Seq(
@@ -108,7 +112,8 @@ object Dispatch extends Build {
     Project("dispatch-json", file("json"), settings = shared ++ Seq(
       description := "A JSON parser",
       // https://github.com/harrah/xsbt/issues/85#issuecomment-1687483
-      unmanagedClasspath in Compile += Attributed.blank(new java.io.File("doesnotexist"))
+      unmanagedClasspath in Compile += Attributed.blank(new java.io.File("doesnotexist")),
+      parserDependency
     ))
   lazy val http_json =
     Project("dispatch-http-json", file("http+json"),
@@ -154,10 +159,24 @@ object Dispatch extends Build {
 
   lazy val actorsDependency = libraryDependencies <<= (libraryDependencies, scalaVersion){
     (dependencies, scalaVersion) =>
-      if(scalaVersion.startsWith("2.10"))
+      if(scalaVersion.startsWith("2.10") || scalaVersion.startsWith("2.11"))
         ("org.scala-lang" % "scala-actors" % scalaVersion) +: dependencies
       else
         dependencies
     }
 
+  lazy val xmlDependency = libraryDependencies <<= (libraryDependencies, scalaVersion){
+    (dependencies, scalaVersion) =>
+      if(scalaVersion.startsWith("2.11"))
+        ("org.scala-lang" % "scala-xml" % scalaVersion) +: dependencies
+      else
+        dependencies
+    }
+  lazy val parserDependency = libraryDependencies <<= (libraryDependencies, scalaVersion){
+    (dependencies, scalaVersion) =>
+      if(scalaVersion.startsWith("2.11"))
+        ("org.scala-lang" % "scala-parser-combinators" % scalaVersion) +: dependencies
+      else
+        dependencies
+    }
 }
