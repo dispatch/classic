@@ -62,7 +62,7 @@ class Http extends dispatch.classic.HttpExecutor {
     def responseCompleted() {
       try {
         result = Some(completeResult(response.getOrElse {
-          error("responseCompleted called but response unset")
+          sys.error("responseCompleted called but response unset")
         }))
       } catch {
         case e: Exception => setException(e)
@@ -110,7 +110,7 @@ class Http extends dispatch.classic.HttpExecutor {
                  block: HttpResponse => T,
                  listener: ExceptionListener) = {
     credsopt.map { creds =>
-      error("Not yet implemented, but you can force basic auth with as_!")
+      sys.error("Not yet implemented, but you can force basic auth with as_!")
     } getOrElse {
       try {
         val consumer = new StoppableConsumer[T](listener) {
@@ -150,7 +150,7 @@ class Http extends dispatch.classic.HttpExecutor {
   def executeWithCallback[T](host: HttpHost, credsopt: Option[dispatch.classic.Credentials], 
                              req: HttpRequestBase, callback: Callback[T]) = {
     credsopt.map { creds =>
-      error("Not yet implemented, but you can force basic auth with as_!")
+      sys.error("Not yet implemented, but you can force basic auth with as_!")
     } getOrElse {
       val ioc = DecodingCallback(callback)
       val consumer = new StoppableConsumer[T](callback.listener) {

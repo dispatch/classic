@@ -74,7 +74,7 @@ object OAuth {
   implicit def Request2RequestSigner(r: String) = new RequestSigner(new Request(r))
 
   class RequestSigner(r: Request) {
-    @deprecated("use <@ (consumer, callback) to pass the callback in the header for a request-token request")
+    @deprecated("use <@ (consumer, callback) to pass the callback in the header for a request-token request", "0.7.8")
     def <@ (consumer: Consumer): Request = sign(consumer, None, None, None)
     /** sign a request with a callback, e.g. a request-token request */
     def <@ (consumer: Consumer, callback: String): Request = sign(consumer, None, None, Some(callback))
@@ -105,7 +105,7 @@ object OAuth {
     }
 
     def >% [T] (block: IMap[String, String] => T) = r >- ( split_decode andThen block )
-    def as_token = r >% { Token(_).getOrElse { error("Token parameters not found in given map") } }
+    def as_token = r >% { Token(_).getOrElse { sys.error("Token parameters not found in given map") } }
     
     val split_decode: (String => IMap[String, String]) = {
       case null => IMap.empty

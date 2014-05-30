@@ -1,7 +1,7 @@
 import org.eclipse.jetty.server.handler.{DefaultHandler, HandlerList, ResourceHandler}
 import org.eclipse.jetty.server.nio.SelectChannelConnector
 import org.eclipse.jetty.server.Server
-import org.specs._
+import org.specs2.mutable.Specification
 import dispatch.classic._
 
 object JSoupSpec extends Specification with ServedByJetty {
@@ -15,13 +15,13 @@ object JSoupSpec extends Specification with ServedByJetty {
     "successfully parse good html" in {
       withResourceServer { _ =>
         val request = JSoupHtml / "test.html"
-        Http(request as_jsouped) mustNot throwA[Exception]
+        Http(request as_jsouped) must not (throwA[Exception])
       }
     }
     "successfully parse bad html" in {
       withResourceServer { _ =>
         val request = JSoupHtml / "Human.html"
-        Http(request as_jsouped) mustNot throwA[Exception]
+        Http(request as_jsouped) must not (throwA[Exception])
       }
     }
   }
@@ -103,7 +103,7 @@ trait ServedByJetty {
   val port: Int
   val resourceBase: String
 
-  def withResourceServer(op: Unit => Unit) {
+  def withResourceServer[A](op: Unit => A): A = {
     // Configure Jetty server
     val connector = new SelectChannelConnector
     connector.setHost("localhost")
@@ -122,7 +122,7 @@ trait ServedByJetty {
     // Run server for test and then stop
     try {
       server.start
-      op()
+      op(())
     } finally {
       server.stop
     }

@@ -2,7 +2,7 @@ import java.io.File
 import org.eclipse.jetty.server.handler.{DefaultHandler, HandlerList, ResourceHandler}
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.nio.SelectChannelConnector
-import org.specs._
+import org.specs2.mutable.Specification
 import dispatch.classic._
 import dispatch.classic.tagsoup._
 
@@ -48,7 +48,7 @@ object TagSoupSpec extends Specification with ServedByJetty {
         val request = :/("localhost", port) / "Human.html"
         Http(request </> { nodes =>
           (nodes \\ "title").text
-        }) mustNot throwA[scala.xml.parsing.FatalError]
+        }) must not (throwA[scala.xml.parsing.FatalError])
       }
     }
   }
@@ -177,7 +177,7 @@ trait ServedByJetty {
   val port: Int
   val resourceBase: String
 
-  def withResourceServer(op: Unit => Unit) {
+  def withResourceServer[A](op: Unit => A): A = {
     // Configure Jetty server
     val connector = new SelectChannelConnector
     connector.setHost("localhost")
@@ -196,7 +196,7 @@ trait ServedByJetty {
     // Run server for test and then stop
     try {
       server.start
-      op()
+      op(())
     } finally {
       server.stop
     }

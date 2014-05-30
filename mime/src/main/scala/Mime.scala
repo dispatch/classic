@@ -60,7 +60,7 @@ object Mime {
       r.body.map {
         case ent: Mime.Entity => ent
         case orig: FormEntity => newent.add(orig.oauth_params)
-        case ent => error("trying to add multipart content to entity: " + ent)
+        case ent => sys.error("trying to add multipart content to entity: " + ent)
       } getOrElse newent
     }
     def add(name: String, content: => ContentBody) = {

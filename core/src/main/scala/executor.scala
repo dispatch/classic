@@ -21,7 +21,7 @@ trait HttpExecutor extends RequestLogging {
   def executeWithCallback[T](host: HttpHost, credsopt: Option[Credentials], 
                              req: HttpRequestBase, block: Callback[T]): HttpPackage[T]
 
-  @deprecated("Use x[T](hand: Handler[T]) instead. Construct a Handler if needed.")
+  @deprecated("Use x[T](hand: Handler[T]) instead. Construct a Handler if needed.", "0.8.0")
   final def x[T](req: Request)(block: Handler.F[T]): HttpPackage[T] = {
     x(Handler(req, block))
   }

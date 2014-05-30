@@ -1,4 +1,4 @@
-import org.specs._
+import org.specs2.mutable.Specification
 
 object JsonSpec extends Specification {
   import dispatch.classic.json._

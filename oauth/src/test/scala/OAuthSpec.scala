@@ -1,4 +1,4 @@
-import org.specs._
+import org.specs2.mutable.Specification
 
 object OAuthSpec extends Specification {
   import dispatch.classic._
@@ -11,6 +11,7 @@ object OAuthSpec extends Specification {
   
   "OAuth test host" should {
     "echo parameters from protected service" in {
+      pending
       val h = new Http
       val request_token = h(svc / "request_token.php" <@ consumer as_token)
       val access_token = h(svc / "access_token" <@ (consumer, request_token) as_token)
@@ -21,6 +22,7 @@ object OAuthSpec extends Specification {
           _ must_== (payload)
         }
       )
+      success
     }
   }
 }
