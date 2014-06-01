@@ -1,4 +1,4 @@
-import org.specs._
+import org.specs2.mutable.Specification
 
 object JsValueSpec extends Specification {
   import dispatch.classic.json._
@@ -75,14 +75,14 @@ object JsValueSpec extends Specification {
       val numOfThreads = 20
       val executor = Executors.newFixedThreadPool(numOfThreads)
       (1 to numOfThreads).map{i => 
-        val f = new FutureTask(new Callable[Pair[JsValue, Long]]{
+        val f = new FutureTask(new Callable[(JsValue, Long)]{
           def call =
             if (i % 2 == 0) time { JsValue.fromString(json) }
             else time { JsValue.fromStream(new ByteArrayInputStream(json.getBytes("utf-8"))) }
           })
         executor.execute(f)
         f
-      }.map{_.get}.toList mustNotExist {case (_, t) => t > maxTime}
+      }.map{_.get._2}.toList must not contain{(_: Long) > maxTime}
     }
   }
 }

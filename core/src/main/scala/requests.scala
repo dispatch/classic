@@ -179,7 +179,7 @@ class RequestVerbs(subject: Request) {
 
   private def form_ent(values: Traversable[(String, String)]) = subject.body.map {
     case ent: FormEntity => ent.add(values)
-    case ent => error("trying to add post parameters << to entity: " + ent)
+    case ent => sys.error("trying to add post parameters << to entity: " + ent)
   }.getOrElse(new UrlEncodedFormEntity(values))
 
 

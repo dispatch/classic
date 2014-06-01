@@ -2,7 +2,7 @@ import org.apache.http.client.methods.HttpUriRequest
 import org.apache.http.client.{ResponseHandler, HttpClient}
 import org.apache.http.protocol.HttpContext
 import org.apache.http.{HttpRequest, HttpHost}
-import org.specs._
+import org.specs2.mutable.Specification
 
 object HttpSpec extends Specification {
   import dispatch.classic._
@@ -50,8 +50,9 @@ object HttpSpec extends Specification {
       val http = new Http with thread.Safety {
         override def make_client: HttpClient = new SimpleDelegatingHttpClient(super.make_client)
       }
-      http must notBeNull // i.e. this code should compile
+      http must not beNull; // i.e. this code should compile
       http.shutdown()
+      success
     }
   }
 
@@ -77,7 +78,7 @@ object HttpSpec extends Specification {
       (http x (test / "do_not_want" as_str) {
         case (404, _, _, out) => out()
         case _ => "success is failure"
-      }) must include ("404 Not Found")
+      }) must contain ("404 Not Found")
     }
     "serve a gzip header" in {
       http(test.gzip >:> { _(CONTENT_ENCODING) }) must_== (Set("gzip"))
@@ -136,9 +137,5 @@ object HttpSpec extends Specification {
       Http( :/("technically.us") <& /("test") <& /("test.text") as_str ) must_== test2
     }
   }
-  doAfterSpec {
-    Http.shutdown()
-    http.shutdown()
-    httpfuture.shutdown()
-  }
+
 }

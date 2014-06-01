@@ -24,7 +24,7 @@ case class Property[T](sym: Symbol, ext: Extract[T]) extends Extract[T] with Ins
   /** Adds or replaces the property sym in the given JsValue (JsObject) */
   def << (t: T)(js: JsValue) = js match {
     case JsObject(m) => JsObject(m + (JsString(sym) -> JsValue(t)))
-    case js => error("Unable to replace property in " + js)
+    case js => sys.error("Unable to replace property in " + js)
   }
   override def toString = "%s ! %s" format (sym, ext)
 }
@@ -115,7 +115,7 @@ trait Js {
     /** @return new JsObject with the given sym property replaced by t */
     def << [T](t: T): JsIF = _ match {
       case JsObject(m) => JsObject(m + (JsString(sym) -> JsValue(t)))
-      case js => error("Unable to replace property in " + js)
+      case js => sys.error("Unable to replace property in " + js)
     }
     /** Chain this to another assertion inserting function to replace deep properties */
     def << (f: JsIF): JsIF = js => (this << f((this ! obj)(js)))(js)
@@ -130,7 +130,7 @@ trait Js {
   def %[A,B,C,D](a: JsF[A], b: JsF[B], c: JsF[C], d: JsF[D])(js: JsValue) = (a(js), b(js), c(js), d(js))
   /** Converts a Json extrator to an assertion extracting function (JsF). */
   implicit def ext2fun[T](ext: Extract[T]): JsF[T] = jsv => ext.unapply(jsv).getOrElse {
-    error("Extractor %s does not match JSON: %s" format (ext, jsv))
+    sys.error("Extractor %s does not match JSON: %s" format (ext, jsv))
   }
  }
 

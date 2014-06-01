@@ -5,21 +5,18 @@ object Dispatch extends Build {
   val shared = Defaults.defaultSettings ++ ls.Plugin.lsSettings ++ Seq(
     organization := "net.databinder",
     version := "0.8.10",
-    scalaVersion := "2.10.2",
+    scalaVersion := "2.10.4",
+    parallelExecution in Test := false,
+    testOptions in Test += Tests.Argument(TestFrameworks.Specs2, "sequential", "true"),
+    scalacOptions ++= "-deprecation" :: Nil,
     crossScalaVersions :=
-      Seq("2.8.0", "2.8.1", "2.8.2", "2.9.0", "2.9.0-1", "2.9.1", "2.9.1-1", "2.9.2", "2.9.3", "2.10.2"),
+      Seq("2.9.0", "2.9.0-1", "2.9.1", "2.9.1-1", "2.9.2", "2.9.3", "2.10.4", "2.11.1"),
     libraryDependencies <++= (scalaVersion) { sv => Seq(
       sv.split("[.-]").toList match {
-        case "2" :: "8" :: _ =>
-          "org.scala-tools.testing" % "specs_2.8.1" % "1.6.8" % "test"
-        case "2" :: "9" :: "0" :: _ =>
-          "org.scala-tools.testing" % "specs_2.9.0-1" % "1.6.8" % "test"
         case "2" :: "9" :: _ =>
-          "org.scala-tools.testing" % "specs_2.9.1" % "1.6.9" % "test"
-        case "2" :: "11" :: _ =>
-          // unlikely to work for testing but will allow us to compile, publish
-          "org.scala-tools.testing" % "specs_2.10" % "1.6.9" % "test"
-        case _ => "org.scala-tools.testing" %% "specs" % "1.6.9" % "test"
+          "org.specs2" % "specs2_2.9.2" % "1.12.4" % "test"
+        case _ =>
+          "org.specs2" %% "specs2" % "2.3.12" % "test"
       })
     },
     publishMavenStyle := true,
@@ -80,7 +77,11 @@ object Dispatch extends Build {
   lazy val http =
     Project("dispatch-http", file("http"), settings = httpShared ++ Seq(
       description :=
-        "Standard HTTP executor, uses Apache DefaultHttpClient"
+        "Standard HTTP executor, uses Apache DefaultHttpClient",
+      sources in Test := {
+        if (scalaVersion.value.startsWith("2.9.")) Nil
+        else (sources in Test).value
+      }
     )) dependsOn(
       core, futures)
   lazy val gae =
@@ -111,6 +112,10 @@ object Dispatch extends Build {
   lazy val json =
     Project("dispatch-json", file("json"), settings = shared ++ Seq(
       description := "A JSON parser",
+      sources in Test := {
+        if (scalaVersion.value.startsWith("2.9.")) Nil
+        else (sources in Test).value
+      },
       // https://github.com/harrah/xsbt/issues/85#issuecomment-1687483
       unmanagedClasspath in Compile += Attributed.blank(new java.io.File("doesnotexist")),
       parserDependency
@@ -143,10 +148,10 @@ object Dispatch extends Build {
     )) dependsOn(core, http)
 
   def aggregateTask[T](key: TaskKey[Seq[T]])
-                      (proj: ProjectRef, struct: Load.BuildStructure) = {
+                      (proj: ProjectRef, struct: BuildStructure) = {
     def collectProjects(op: ResolvedProject => Seq[ProjectRef])
                        (projRef: ProjectRef,
-                        struct: Load.BuildStructure): Seq[ProjectRef] = {
+                        struct: BuildStructure): Seq[ProjectRef] = {
       val delg = Project.getProject(projRef, struct).toSeq.flatMap(op)
       // Dependencies/aggregates might have their own dependencies/aggregates
       // so go recursive and do distinct.

@@ -1,11 +1,14 @@
 package dispatch.classic.foursquare
 
 import dispatch.classic._
-import org.specs._
+import org.specs2.mutable.Specification
 
 object FoursquareSpec extends Specification {
+
+  private val req = /\ / "v2" / "venues" / "search" <<? Map("ll" -> "123.123,456.456", "v" -> "19700101")
+
   "A basic foursquare request that requires auth" should {
-    "be able to be formed normally" in new context {
+    "be able to be formed normally" in {
       val builtReq = Auth(("key", "secret"))(req).to_uri.toString
 
       builtReq.contains("api.foursquare.com/v2/venues/search") must_== true
@@ -16,7 +19,7 @@ object FoursquareSpec extends Specification {
       builtReq.contains("https://") must_== true
     }
 
-    "be able to be formed normally through other apply" in new context {
+    "be able to be formed normally through other apply" in {
       val builtReq = Auth("key", "secret")(req).to_uri.toString
 
       builtReq.contains("api.foursquare.com/v2/venues/search") must_== true
@@ -29,6 +32,3 @@ object FoursquareSpec extends Specification {
   }
 }
 
-trait context {
-  val req = /\ / "v2" / "venues" / "search" <<? Map("ll" -> "123.123,456.456", "v" -> "19700101")
-}
